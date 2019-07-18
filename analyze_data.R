@@ -137,7 +137,8 @@ out_data1 <- dplyr::summarize(grp_data1,
                               max = analyze_curves(smoothed, Timepoint, 
                                                    bandwidth = 9, return = "max"),
                               maxtime = analyze_curves(smoothed, Timepoint, 
-                                                       bandwidth = 5, return = "maxtime"))
+                                                       bandwidth = 9, 
+                                                       return = "maxtime"))
 
 #Define layout of the plate
 layout_plt <- data.frame("Well" = 1:96, "Bacteria" = NA, "Phage" = "U136B",
@@ -170,10 +171,16 @@ setwd("C:/Users/mikeb/Google Drive/Research Projects/12 Growth Curves/")
 png("peakheights.png", width = 10, height = 7, units = "in", res = 300)
 ggplot(data = outmerge, aes(x = Init_Dens, y = max, color = MOI,
                             group = MOI)) +
-  facet_grid(~Bacteria) + geom_point() + geom_line() +
+  facet_grid(~Bacteria) + geom_point(size = 3) + geom_line() +
   theme_bw() +
   labs(y = "Height of Peak Bacterial Density",
-       x = "Initial Density of Bacteria & Phage")
+       x = "Initial Density of Bacteria & Phage") +
+  theme(strip.text = element_text(size = 18),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14),
+        axis.text.x = element_text(angle = 60, hjust = 1),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16))
 dev.off()
 
 ggplot(data = outmerge, aes(x = MOI, y = max, color = Init_Dens,
@@ -189,7 +196,7 @@ ggplot(data = outmerge, aes(x = MOI, y = maxtime, color = Init_Dens,
   facet_grid(~Bacteria) + geom_point() + geom_line()
 
 
-#Plot peaks
+#Plot curves & peaks
 view_peaks <- function(time_data, dens_data, well_contents, plt_point = TRUE,
                        peak_time = NULL, peak_dens = NULL, peak_well_contents,
                        numplots = 9, lwd = 1) {
@@ -238,32 +245,44 @@ for (bact in unique(tidymerge$Bacteria)) {
   png(filename = paste(bact, "_growcurves.png", sep = ""),
       width = 10, height = 10, units = "in", res = 300)
   print(ggplot(my_sub, aes(x = Timepoint, y = OD)) +
-          geom_line() +
+          geom_line(lwd = 2) +
           facet_grid(MOI~Init_Dens, drop = FALSE) + 
           geom_point(data = out_sub, aes(x = maxtime, y = max),
-                     size = 3, pch = 13) +
-          labs(title = bact) + theme_bw())
+                     size = 5, pch = 19, col = "red", alpha = 0.6) +
+          labs(title = bact, x = "Time (mins)", 
+               y = "Bacterial Density (OD600)") + 
+          theme_bw() +
+          theme(strip.text = element_text(size = 18),
+                axis.title = element_text(size = 18),
+                axis.text = element_text(size = 14),
+                legend.title = element_text(size = 18),
+                legend.text = element_text(size = 16),
+                title = element_text(size = 20)))
   dev.off()
   png(filename = paste(bact, "_growcurves_flip.png", sep = ""),
       width = 10, height = 10, units = "in", res = 300)
   print(ggplot(my_sub, aes(x = Timepoint, y = OD)) +
-          geom_line() +
+          geom_line(lwd = 2) +
           facet_grid(Init_Dens~MOI, drop = FALSE) + 
           geom_point(data = out_sub, aes(x = maxtime, y = max),
-                     size = 3, pch = 13) +
-          labs(title = bact) + theme_bw())
+                     size = 5, pch = 19, col = "red", alpha = 0.6) +
+          labs(title = bact) + theme_bw() +
+          theme(strip.text = element_text(size = 18),
+                axis.title = element_text(size = 18),
+                axis.text = element_text(size = 14),
+                legend.title = element_text(size = 18),
+                legend.text = element_text(size = 16),
+                title = element_text(size = 20)))
   
   dev.off()
-  
 }
 
 
 ###Plot EOP
 setwd("C:/Users/mikeb/Google Drive/Research Projects/12 Growth Curves/")
 eopdata <- read.csv("EOP_data.csv")
-setwd("C:/Users/mikeb/Documents/Code/growth-curves/")
 set.seed(7)
-png("eop_data.png", width = 10, height = 10, units = "in", res = 300)
+png("eop_data.png", width = 10, height = 7, units = "in", res = 300)
 ggplot(eopdata, aes(x = Bacteria, y = log(EOP))) +
   geom_jitter(aes(shape = BD), cex = 5, width = 0.2, height = 0) +
   scale_shape_manual(name = "Below Detection Limit",
@@ -274,5 +293,6 @@ ggplot(eopdata, aes(x = Bacteria, y = log(EOP))) +
         axis.text.x = element_text(angle = 60, hjust = 1),
         axis.title = element_text(size = 25),
         legend.title = element_text(size = 20),
-        legend.text = element_text(size = 15))
+        legend.text = element_text(size = 15)) +
+  labs(y = "Log(Efficiency of Plaquing)")
 dev.off()

@@ -283,7 +283,7 @@ setwd("C:/Users/mikeb/Google Drive/Research Projects/12 Growth Curves/")
 eopdata <- read.csv("EOP_data.csv")
 set.seed(7)
 png("eop_data.png", width = 10, height = 7, units = "in", res = 300)
-ggplot(eopdata, aes(x = Bacteria, y = log(EOP))) +
+ggplot(eopdata, aes(x = Bacteria, y = log10(EOP))) +
   geom_jitter(aes(shape = BD), cex = 5, width = 0.2, height = 0) +
   scale_shape_manual(name = "Below Detection Limit",
                      labels = c("No", "Yes"),

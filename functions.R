@@ -1,10 +1,50 @@
 #wide-curves: dataframe with each column corresponding to a single well
 #block-curves: dataframe where rows and columns match literally to a plate
 
+library(readxl)
 
-
-make_widecurves <- function() {
-  #todo
+make_widecurves <- function(files, startRow, endRow, startCol, endCol, sheet=1) {
+  #requires all files for a given growth curve to be the same file format
+  my_curves <- rep(NA, length(files))
+  require(tools)
+  if (file_ext(files)[1] == "csv") {
+    my_curves <- lapply(files, function(x) read.csv(x)[startRow:endRow, startCol:endCol])
+  } else if (file_ext(files)[1] == "xls" | file_ext(files)[1] == "xlsx") {
+    ##Define a function to convert Excel column name letters to numbers
+    # Input: A string of letters s
+    # Output: Corresponding column number
+    LettersToNumbers <- function(s){
+      # Uppercase
+      s_upper <- toupper(s)
+      # Convert string to a vector of single letters
+      s_split <- unlist(strsplit(s_upper, split=""))
+      # Convert each letter to the corresponding number
+      s_number <- sapply(s_split, function(x) {which(LETTERS == x)})
+      # Derive the numeric value associated with each letter
+      numbers <- 26^((length(s_number)-1):0)
+      # Calculate the column number
+      column_number <- sum(s_number * numbers)
+      column_number
+    }
+    ##Define function to convert Excel column numbers to letters
+    # Input: a column number
+    # Output: Corresponding column name (string of letters)
+    NumbersToLetters <- function(x) {
+      output <- ""
+      MY_LETTERS <- LETTERS[c(26, 1:25)]
+      while (x > 0) {
+        output <- paste(MY_LETTERS[(x)%%26+1], output, sep = "")
+        x <- floor(x/26)
+      }
+      return(output)
+    }
+    
+    require(readxl)
+    my_range <- paste(LETTERS[startCol], 
+    my_curves <- lapply(files, function(x) read_excel(x, sheet = sheet,
+                                                      range = 
+  
+  
 }
 
 layout_cleanup <- function(layout) {

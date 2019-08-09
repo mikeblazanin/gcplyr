@@ -79,11 +79,24 @@ make_widecurves <- function(blockcurves) {
   #Inputs: a list of blockcurves (optionally, named)
   #Outputs: a single widecurve dataframe
   
-  if (var(vapply(blockcurves, dim)))
+  #Check that all blockcurves have same dimensions
+  if (var(apply(blockcurves, MARGIN = 1, dim)[1]) == 0) {
+    stop("Not all blockcurves have the same number of rows of data")
+  }
+  if (var(apply(blockcurves, MARGIN = 1, dim)[2]) == 0) {
+    stop("Not all blockcurves have the same number of columns of data")
+  }
   
   output <- data.frame(matrix(nrow = length(blockcurves,
                                             ncol = nrow(blockcurves[1]) *
                                             ncol(blockcurves[1]))))
+  colnames(output) <- 1:ncol(output)
+  rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
+  
+  ##TODO: fix unlist here
+  #unlist dataframes & fill in output row-by-row (ideally via apply?)
+  apply(apply(blockcurves, MARGIN = 1, [[), MARGIN = 1, unlist, 
+        use.names = FALSE)
 }
   
 

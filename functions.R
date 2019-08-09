@@ -1,7 +1,91 @@
 #wide-curves: dataframe with each column corresponding to a single well
 #block-curves: dataframe where rows and columns match literally to a plate
 
-library(readxl)
+read_blockcurves <- function(files, extension = NULL, 
+                             startrow = NULL, endrow = NULL, 
+                             startcol = NULL, endcol = NULL,
+                             sheet = NULL) {
+  #Inputs: a list of relative filepaths, where each one is a single plate read
+  #Outputs: a list of blockcurves named by filename
+  
+  #Note if sheet is NULL defaults to first sheet
+  
+  require(tools)
+  #Note later we make a require call for readxl
+  
+  #Adjust inputs to be lists
+  check_diminputs <- function(diminput, dimname, files) {
+    if (length(diminput) != length(files)) {
+      if(length(diminput) != 1) {
+        stop(paste("More than one", dimname, "value is supplied, but the number
+                   of", dimname, "values is not equal to the number of files"))
+      } else {
+        output <- rep(diminput, length(files))
+      }
+    }
+  }
+  
+  startrow <- check_diminputs(startrow, "startrow", files)
+  endrow <- check_diminputs(endrow, "endrow", files)
+  startcol <- check_diminputs(startcol, "startcol", files)
+  endcol <- check_diminputs(endcol, "endcol", files)
+  
+  #Create empty recipient list
+  outputs <- rep(list(NA), length(files))
+  
+  #Determine file extension
+  if (is.null(extension) == FALSE) {
+    extension <- rep(extension, times = length(files))
+  } else {
+    extension <- vapply(files, tools::file_ext, FUN.VALUE = "test", 
+                        USE.NAMES = FALSE)
+  }
+  
+  if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
+
+  #Read files
+  i <- 1
+  while (i < length(files)) {
+    if (extension[i] == "csv") {
+        outputs[[i]] <- as.numeric(read.csv(files[i], colClasses = "character")
+                                   [startrow:endrow, startcol:endcol])
+    } else if (extension[i] == "xls") {
+        suppressMessages(outputs[[i]] <- 
+                           readxl::read_xls(files[i], col_names = FALSE, 
+                                    col_types = "text", sheet = sheet)
+                         [startrow:endrow, startcol:endcol])
+    } else if (extension[i] == "xlsx") {
+        suppressMessages(outputs[[i]] <- 
+                           readxl::read_xlsx(files[i], col_names = FALSE, 
+                                     col_types = "text", sheet = sheet)
+                         [startrow:endrow, startcol:endcol])
+    }
+  }
+  #Save timepoint information (without file extension)
+  names(outputs) <- sub("^([^.]*).*", "\\1", files)
+  
+  #Error checking for output dataframe dimensions
+  if (var(apply(outputs, MARGIN = 1, dim)[1]) == 0) {
+    warning("Not all blockcurves have the same number of rows of data")
+  }
+  if (var(apply(outputs, MARGIN = 1, dim)[2]) == 0) {
+    warning("Not all blockcurves have the same number of columns of data")
+  }
+  
+  return(outputs)
+}
+
+make_widecurves <- function(blockcurves) {
+  #Inputs: a list of blockcurves (optionally, named)
+  #Outputs: a single widecurve dataframe
+  
+  if (var(vapply(blockcurves, dim)))
+  
+  output <- data.frame(matrix(nrow = length(blockcurves,
+                                            ncol = nrow(blockcurves[1]) *
+                                            ncol(blockcurves[1]))))
+}
+  
 
 make_widecurves <- function(files, startRow, endRow, startCol, endCol, sheet=1) {
   #requires all files for a given growth curve to be the same file format
@@ -40,10 +124,10 @@ make_widecurves <- function(files, startRow, endRow, startCol, endCol, sheet=1) 
     }
     
     require(readxl)
-    my_range <- paste(LETTERS[startCol], 
+    my_range <- paste(LETTERS[startCol], )
     my_curves <- lapply(files, function(x) read_excel(x, sheet = sheet,
-                                                      range = 
-  
+                                                      range = ))
+  }
   
 }
 

@@ -76,15 +76,21 @@ read_blockcurves <- function(files, extension = NULL,
 }
 
 make_widecurves <- function(blockcurves) {
-  #Inputs: a list of blockcurves (optionally, named)
+  #Inputs: a [list of] blockcurve[s] (optionally, named)
   #Outputs: a single widecurve dataframe
   
-  #Check that all blockcurves have same dimensions
-  if (var(apply(blockcurves, MARGIN = 1, dim)[1]) == 0) {
-    stop("Not all blockcurves have the same number of rows of data")
+  if(class(blockcurves) != "list") {
+    blockcurves <- list(blockcurves)
   }
-  if (var(apply(blockcurves, MARGIN = 1, dim)[2]) == 0) {
-    stop("Not all blockcurves have the same number of columns of data")
+  
+  #Check that all blockcurves have same dimensions
+  if (length(blockcurves) > 1) {
+    if (var(apply(blockcurves, MARGIN = 1, dim)[1]) != 0) {
+      stop("Not all blockcurves have the same number of rows of data")
+    }
+    if (var(apply(blockcurves, MARGIN = 1, dim)[2]) != 0) {
+      stop("Not all blockcurves have the same number of columns of data")
+    }
   }
   
   output <- data.frame(matrix(nrow = length(blockcurves,
@@ -93,10 +99,15 @@ make_widecurves <- function(blockcurves) {
   colnames(output) <- 1:ncol(output)
   rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
   
-  ##TODO: fix unlist here
-  #unlist dataframes & fill in output row-by-row (ideally via apply?)
-  apply(apply(blockcurves, MARGIN = 1, [[), MARGIN = 1, unlist, 
-        use.names = FALSE)
+  #convert list of dataframes to single dataframe
+  #where each column is a well and each row is a plate read
+  #(each column is a row-column combination from the blockcurve)
+  #(each row is a single dataframe from blockcurves)
+  output <- data.frame(t(sapply(blockcurves, FUN = function(x) {c(t(x))})))
+  colnames(output) <- 1:ncol(output)
+  rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
+  
+  return(output)
 }
   
 

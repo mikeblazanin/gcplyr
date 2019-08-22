@@ -1,3 +1,8 @@
+#Change smoothing to include other functions
+#LOESS (which can simplify to a weighted moving average)
+#LOWESS
+#Spline models
+
 #wide-curves: dataframe with each column corresponding to a single well
 #block-curves: dataframe where rows and columns match literally to a plate
 
@@ -130,8 +135,15 @@ make_widecurves <- function(blockcurves) {
   
   return(output)
 }
-  
 
+read_widecurve <- function(filename) {
+  
+}
+
+melt_widecurves <- function(widecurves, timestamps = NULL) {
+  require(reshape2)
+  
+}
 
 layout_cleanup <- function(layout) {
   #This function takes a layout dataframe with ...'s where info needs to be 

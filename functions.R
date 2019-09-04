@@ -80,7 +80,7 @@ read_blockcurves <- function(files, extension = NULL,
   return(outputs)
 }
 
-uninterleave <- function(list, n) {
+uninterleave <- function(interleaved_list, n) {
   #Inputs: a list of R objects
   #Output: a list of lists of R objects
   #This function takes a list of R objects (e.g. a list of blockcurves)
@@ -89,17 +89,18 @@ uninterleave <- function(list, n) {
   # set of blockcurves)
   
   #Input checking
-  if (length(list) % n != 0) {
+  if ((length(interleaved_list) %% n) != 0) {
     stop("Length of list must be divisible by n")
   }
   
-  output <- rep(list(NA), n)
+  output <- rep(interleaved_list(NA), n)
   for (i in 1:n) {
-    output[[i]] <- list[seq(from = i, to = length(list), by = n)]
+    output[[i]] <- interleaved_list[seq(from = i, to = length(interleaved_list), 
+                                        by = n)]
   }
   
   return(output)
-}  
+}
 
 make_widecurves <- function(blockcurves) {
   #Inputs: a [list of] blockcurve[s] (optionally, named)
@@ -136,7 +137,7 @@ make_widecurves <- function(blockcurves) {
   return(output)
 }
 
-read_widecurve <- function(filename) {
+read_widecurves <- function(filename) {
   
 }
 
@@ -198,7 +199,10 @@ merge_lay_data <- function(layout, data) {
   return(data_mlt)
 }
 
-smooth_data <- function(my_data, smooth_over, subset_by) {
+smooth_data <- function(algorithm = "loess", x, y,
+                        formula = NULL, 
+
+moving_average <- function(my_data, window_width, subset_by) {
   #data must be sorted sequentially before fed into function
   #my_data is a vector of the data to be smoothed
   #smooth over is how many sequential entries to average
@@ -206,16 +210,16 @@ smooth_data <- function(my_data, smooth_over, subset_by) {
   out_list <- rep(NA, length(my_data))
   cntr = 1
   for (my_uniq in unique(subset_by)) {
-    my_sub <- subset(my_data, subset_by == my_uniq)
-    out_list[cntr:(cntr+length(my_sub)-smooth_over)] <- 0
-    for (i in 1:smooth_over) {
-      out_list[(cntr):(cntr+length(my_sub)-smooth_over)] <-
-        out_list[(cntr):(cntr+length(my_sub)-smooth_over)] + 
-        my_sub[i:(length(my_sub)-smooth_over+i)]
+    my_sub <- as.numeric(subset(my_data, subset_by == my_uniq))
+    out_list[cntr:(cntr+length(my_sub)-window_width)] <- 0
+    for (i in 1:window_width) {
+      out_list[(cntr):(cntr+length(my_sub)-window_width)] <-
+        out_list[(cntr):(cntr+length(my_sub)-window_width)] + 
+        my_sub[i:(length(my_sub)-window_width+i)]
     }  
     cntr <- cntr+length(my_sub)
   }
-  out_list <- out_list/smooth_over
+  out_list <- out_list/window_width
   return(out_list)
 }
 

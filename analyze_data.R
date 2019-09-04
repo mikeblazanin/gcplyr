@@ -79,7 +79,7 @@ tidycurves <- melt(my_widecurves, id.vars = 1, variable.name = "Well",
                    value.name = "OD")
 
 #smooth
-smooth_data <- function(my_data, smooth_over, subset_by) {
+moving_average <- function(my_data, window_width, subset_by) {
   #data must be sorted sequentially before fed into function
   #my_data is a vector of the data to be smoothed
   #smooth over is how many sequential entries to average
@@ -88,19 +88,19 @@ smooth_data <- function(my_data, smooth_over, subset_by) {
   cntr = 1
   for (my_uniq in unique(subset_by)) {
     my_sub <- as.numeric(subset(my_data, subset_by == my_uniq))
-    out_list[cntr:(cntr+length(my_sub)-smooth_over)] <- 0
-    for (i in 1:smooth_over) {
-      out_list[(cntr):(cntr+length(my_sub)-smooth_over)] <-
-        out_list[(cntr):(cntr+length(my_sub)-smooth_over)] + 
-        my_sub[i:(length(my_sub)-smooth_over+i)]
+    out_list[cntr:(cntr+length(my_sub)-window_width)] <- 0
+    for (i in 1:window_width) {
+      out_list[(cntr):(cntr+length(my_sub)-window_width)] <-
+        out_list[(cntr):(cntr+length(my_sub)-window_width)] + 
+        my_sub[i:(length(my_sub)-window_width+i)]
     }  
     cntr <- cntr+length(my_sub)
   }
-  out_list <- out_list/smooth_over
+  out_list <- out_list/window_width
   return(out_list)
 }
 
-tidycurves$smoothed <- smooth_data(tidycurves$OD, smooth_over = 2,
+tidycurves$smoothed <- smooth_data(tidycurves$OD, window_width = 2,
                               subset_by = tidycurves$Well)
 tidycurves$Timepoint <- as.POSIXct(tidycurves$Timepoint,
                                             format = "%Y-%m-%d %H-%M-%S")

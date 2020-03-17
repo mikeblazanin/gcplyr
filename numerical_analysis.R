@@ -77,11 +77,19 @@ for (i in 1:length(myseq)) {
   yinit <- c(S = init_dens, I = 0, P = init_dens/10)
   times <- seq(0, 2000, 1)
   # ln(1/2) = -r * doub_time
-  params <- c(r = 0.025, a = 10**-9, b = 150, tau = 100, K = 10**9)
+  params <- c(r = 0.025, a = 10**-7, b = 150, tau = 100, K = 10**9)
   
   yout <- dede(y = yinit, times = times, func = derivs, parms = params)
   yout <- as.data.frame(yout)
   yout$B <- yout$S + yout$I
+  
+  yout$new_infecs <- params["a"]*yout$S*yout$P
+  
+  yout$new_bursts <- c(rep(0, 100),
+                       yout$new_infecs[1:(nrow(yout)-100)])
+  
+  yout$dI <- yout$new_infecs-yout$new_bursts
+  yout$dI_sim <- c(yout$I[2:nrow(yout)] - yout$I[1:(nrow(yout)-1)], NA)
   
   ymelt <- reshape2::melt(data = as.data.frame(yout), id = c("time"),
                           value.name = "Density", variable.name = "Pop")
@@ -91,7 +99,8 @@ for (i in 1:length(myseq)) {
 }
 
 ggplot(data = ybig[ybig$init_dens == 10000 & 
-                     ybig$Pop != "B" &
+                     !(ybig$Pop %in% c("B", "dI", "dI_sim",
+                                       "new_infecs", "new_bursts")) &
                      ybig$time < 720,], 
        aes(x = time, y = Density+1, color = Pop)) +
         geom_line(lwd = 1.5, alpha = 1) + 
@@ -101,3 +110,13 @@ ggplot(data = ybig[ybig$init_dens == 10000 &
   geom_hline(yintercept = 1, lty = 2) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   NULL
+
+ggplot(data = ybig[ybig$Pop %in% c("dI", "dI_sim") &
+                     ybig$time < 700,],
+                   aes(x = time, y = Density, color = Pop)) +
+  geom_line() +
+  scale_y_continuous(trans = "log10") +
+  NULL
+
+
+

@@ -11,54 +11,57 @@ derivs <- function(t, y, parms) {
   #Set negative y values to 0 so they don't affect the dN's
   y[y < 0] <- 0
   
-  #with makes the named elements of a list available by simply calling the name
-  # (as if all the names were variables)
-  #It requires two arguments: a named list, and an expression to evaluate
-  #And will evaluate the expression in the environment where the names of the
-  # list are available as variables
-  with(as.list(c(y, parms)),
-       { 
-         #For troubleshooting
-         # print(paste("t=", t, sep = ""))
-         # print(paste("t-tau=", t-tau, sep = ""))
-         
-         #Old (exponential dS/dt)
-         #dS/dt = rS - aSP
-         # if (t < tau) {dS <- 0
-         # } else {
-         dS <- r*y[1] - a*y[1]*y[3]
-         
-         #New (logistic dS/dt)
-         #dS/dt = rS((K-S/K)) - aSP
-         dS <- r*y[1]*((K-y[1])/K) - a*y[1]*y[3]
-         
-         #dI/dt = aSP - aS(t-tau)P(t-tau)
-         if (t < tau) {dI <- a*y[1]*y[3]
-         } else {dI <- a*y[1]*y[3] - a*lagvalue(t-tau, 1)*lagvalue(t-tau, 3)}
-         #dP/dt = baS(t-tau)P(t-tau) - aSP
-         if (t < tau) {dP <- - a*y[1]*y[3]
-         } else {dP <- b*a*lagvalue(t-tau, 1)*lagvalue(t-tau, 3) - a*y[1]*y[3]}
-         
-         dN_vals <- list(c(dS, dI, dP))
-         
-         #Issue warnings about too small/too large yvals
-         if (any(y < 0)) {
-           warning(paste("pop(s)",
-                         paste(which(y < 0), collapse = ","),
-                         "below 0, returning dN = 0"))
-         }
-         dN_vals[y < 0] <- 0
-         
-         if (any(y > 10**100)) {
-           warning(paste("pop(s)",
-                         paste(which(y > 10**100), collapse = ","),
-                         "exceed max limit, 10^100, returning dN = 0"))
-         }
-         dN_vals[y > 10**100] <- 0
-         
-         return(dN_vals)
-       }
-  )
+  #Create output vector
+  dY <- c(S = 0, I = 0, P = 0)
+  
+  ##Calculate dS
+  
+  #Old (exponential dS/dt)
+  #dS/dt = rS - aSP
+  #dS <- parms["r"] * y["S"] - a * y["S"] * y["P"]
+  
+  #New (logistic dS/dt)
+  #dS/dt = rS((K-S/K)) - aSP
+  dY["S"] <- parms["r"] * y["S"] * ((parms["K"] - y["S"])/parms["K"]) - 
+    parms["a"] * y["S"] * y["P"]
+  
+  ##Calculate dI
+  #dI/dt = aSP - aS(t-tau)P(t-tau)
+  if (t < tau) {
+    dY["I"] <- parms["a"] * y["S"] * y["P"]
+  } else {
+    dY["I"] <- parms["a"] * y["S"]*y["P"] - 
+      parms["a"] * lagvalue(t - parms["tau"], 1)*lagvalue(t - parms["tau"], 3)
+  }
+  
+  ##Calculate dP
+  #dP/dt = baS(t-tau)P(t-tau) - aSP
+  if (t < tau) {
+    dY["P"] <- -parms["a"] * y["S"] * y["P"]
+  } else {
+    dY["P"] <- parms["b"] * parms["a"] * 
+      lagvalue(t-parms["tau"], 1)*lagvalue(t-parms["tau"], 3) - 
+      parms["a"]*y["S"]*y["P"]
+  }
+  
+  #Issue warnings about too small/too large yvals
+  if (any(y < 0)) {
+    warning(paste("pop(s)",
+                  paste(which(y < 0), collapse = ","),
+                  "below 0, returning dY = 0"))
+  }
+  dY[y < 0] <- 0
+  
+  if (any(y > 10**100)) {
+    warning(paste("pop(s)",
+                  paste(which(y > 10**100), collapse = ","),
+                  "exceed max limit, 10^100, returning dY = 0"))
+  }
+  dY[y > 10**100] <- 0
+  
+  #The return value of func should be a list, whose first element is a 
+  #vector containing the derivatives of y with respect to time
+  return(list(dY))
 }
 
 #myseq <- 10**seq(from = -3, to = 4, by = 1)

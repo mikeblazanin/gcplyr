@@ -105,25 +105,57 @@ for (myr in rseq) {
               yinit <- c(S = my_init_bact,
                          I = 0,
                          P = my_init_bact*my_moi)
-              times = seq(0, 1000, .1)
               params <- c(r = myr, a = mya, b = myb, tau = mytau,
                           K = myk)
               
-              #Run simulation(s)
-              yout <- as.data.frame(
-                dede(y = yinit, times = times, func = derivs, parms = params))
+              #Run simulation(s) with longer & longer times until equil reached
+              #Also, if equil has non-zero S & I run with shorter steps
+              keep_running <- TRUE #placeholder for triggering end of sims
+              j <- 0 #length counter (larger is longer times)
+              k <- 0 #step size counter (larger is smaller steps)
+              while(keep_running) {
+                #Define times, with lengths & steps doubling for ea j count
+                # and steps halving for ea k count
+                times <- seq(0, 100*2**j, 0.1*2**(j-k))
+                
+                #Run simuation
+                yout <- as.data.frame(
+                  dede(y = yinit, times = times, func = derivs, parms = params))
+                
+                #Infinite loop prevention check
+                if (j+k >= 15) {
+                  keep_running <- FALSE
+                  at_equil <- FALSE
+                }
+                
+                #Check if reached equilibrium
+                if (all(abs(yout[nrow(yout), 2:4] - 
+                            yout[nrow(yout)-1, 2:4]) < 1)) {
+                  #If at equil but S or I are non-zero, halve step size
+                  if(any(yout[nrow(yout), c("S", "I")] > 1)) {
+                    k <- k+1
+                  #If at equil and S & I are zero, stop
+                  } else {
+                    keep_running <- FALSE
+                    at_equil <- TRUE
+                  }
+                } else {
+                  j <- j+1
+                }
+              }
               
               #Calculate all bacteria (B)
               yout$B <- yout$S + yout$I
               
               #Reshape and combine with other outputs
-              ymelt <- reshape2::melt(data = as.data.frame(yout), id = c("time"),
-                                      value.name = "Density", variable.name = "Pop")
               ymelt <- cbind(data.frame(uniq_run = i, r = myr, a = mya, 
                                         b = myb, tau = mytau, K = myk, 
                                         init_dens = my_init_bact, 
-                                        init_moi = my_moi),
-                             ymelt)
+                                        init_moi = my_moi, equil = at_equil),
+                             reshape2::melt(data = as.data.frame(yout), 
+                                            id = c("time"),
+                                            value.name = "Density", 
+                                            variable.name = "Pop"))
               if (i == 1) {ybig <- ymelt
               } else {
                 ybig <- rbind(ybig, ymelt)
@@ -138,17 +170,26 @@ for (myr in rseq) {
   }
 }
 
-ybig$uniq_run <- match(paste(ybig$r, ybig$a, ybig$b, ybig$tau, ybig$K,
-                             ybig$init_dens, ybig$init_moi),
-                       unique(paste(ybig$r, ybig$a, ybig$b, ybig$tau, ybig$K,
-                                    ybig$init_dens, ybig$init_moi)))
+for (run in seq(from = 30, to = 70, by = 1)) {
+  print(
+    ggplot(data = ybig[ybig$uniq_run == run &
+                         ybig$Pop != "B",], 
+           aes(x = time, y = Density+1, color = Pop)) +
+            geom_line(lwd = 1.5, alpha = 1) + 
+      scale_y_continuous(trans = "log10") +
+      scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), 
+                                      by = round(max(ybig[ybig$uniq_run == run &
+                                                          ybig$Pop != "B", 
+                                                          "time"])/10))) +
+      geom_hline(yintercept = 1, lty = 2) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      NULL
+  )
+}
 
-ggplot(data = ybig[ybig$uniq_run == 9 &
-                     ybig$Pop != "B",], 
-       aes(x = time, y = Density+1, color = Pop)) +
-        geom_line(lwd = 1.5, alpha = 1) + 
-  scale_y_continuous(trans = "log10") +
-  scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), by = 100)) +
-  geom_hline(yintercept = 1, lty = 2) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  NULL
+
+#TODO:
+# handling for when step size was too big
+# can dede itself handle a stop-at-equilibrium condition?
+#   Yes, they're called roots. However, it's not clear whether
+#     it would really make things faster or not

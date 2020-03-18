@@ -76,53 +76,79 @@ derivs <- function(t, y, parms) {
   return(list(dY))
 }
 
-#myseq <- 10**seq(from = -3, to = 4, by = 1)
-myseq <- c(10000)
-for (i in 1:length(myseq)) {
-  init_dens <- myseq[i]
-  yinit <- c(S = init_dens, I = 0, P = init_dens/10)
-  times <- seq(0, 2000, .1)
-  # ln(1/2) = -r * doub_time
-  params <- c(r = 0.025, a = 5*10**-8, b = 150, tau = 100, K = 10**9)
-  
-  yout <- dede(y = yinit, times = times, func = derivs, parms = params)
-  yout <- as.data.frame(yout)
-  yout$B <- yout$S + yout$I
-  
-#  yout$new_infecs <- params["a"]*yout$S*yout$P
-  
-  # yout$new_bursts <- c(rep(0, 100),
-  #                      yout$new_infecs[1:(nrow(yout)-100)])
-#  yout$new_bursts_100ltr <- c(yout$new_bursts[101:nrow(yout)], rep(NA, 100))
-  
-  # yout$dI <- yout$new_infecs-yout$new_bursts
-  # yout$dI_sim <- c(yout$I[2:nrow(yout)] - yout$I[1:(nrow(yout)-1)], NA)
-  
-  ymelt <- reshape2::melt(data = as.data.frame(yout), id = c("time"),
-                          value.name = "Density", variable.name = "Pop")
-  ymelt$init_dens <- init_dens
-  if (i == 1) {ybig <- ymelt
-  } else {ybig <- rbind(ybig, ymelt)}
+#Based on lit review:
+#r ranges from .04/min (17 min doubling time)
+#         to 0.007/min (90 min doubling time)
+#   ln(1/2) = -r * doub_time
+#K ranges from say 10^7 to 10^9
+#adsorption ranges from 1x10^-12 to 1x10^-8
+#Lysis time ranges from 10 to 105 mins
+#Burst size ranges from 4.5 to 1000
+
+rseq <- 4*10**seq(from = -2, to = -3, by = -0.5)
+kseq <- 10**seq(from = 7, to = 9, by = 1)
+aseq <- 10**seq(from = -12, to = -8, by = 1)
+tauseq <- c(10, 50, 100)
+bseq <- c(5, 50, 500)
+init_dens_seq <- c(10**6)
+init_moi_seq <- c(10**-2)
+
+i <- 1
+for (myr in rseq) {
+  for (myk in kseq) {
+    for (mya in aseq) {
+      for (mytau in tauseq) {
+        for (myb in bseq) {
+          for (my_init_bact in init_dens_seq) {
+            for (my_moi in init_moi_seq) {
+              #Define pops & parameters
+              yinit <- c(S = my_init_bact,
+                         I = 0,
+                         P = my_init_bact*my_moi)
+              times = seq(0, 1000, .1)
+              params <- c(r = myr, a = mya, b = myb, tau = mytau,
+                          K = myk)
+              
+              #Run simulation(s)
+              yout <- as.data.frame(
+                dede(y = yinit, times = times, func = derivs, parms = params))
+              
+              #Calculate all bacteria (B)
+              yout$B <- yout$S + yout$I
+              
+              #Reshape and combine with other outputs
+              ymelt <- reshape2::melt(data = as.data.frame(yout), id = c("time"),
+                                      value.name = "Density", variable.name = "Pop")
+              ymelt <- cbind(data.frame(uniq_run = i, r = myr, a = mya, 
+                                        b = myb, tau = mytau, K = myk, 
+                                        init_dens = my_init_bact, 
+                                        init_moi = my_moi),
+                             ymelt)
+              if (i == 1) {ybig <- ymelt
+              } else {
+                ybig <- rbind(ybig, ymelt)
+              }
+              
+              i <- i+1
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-ggplot(data = ybig[ybig$init_dens == 10000 & 
-                     !(ybig$Pop %in% c("B", "dI", "dI_sim")) &
-                     ybig$time < 720,], 
+ybig$uniq_run <- match(paste(ybig$r, ybig$a, ybig$b, ybig$tau, ybig$K,
+                             ybig$init_dens, ybig$init_moi),
+                       unique(paste(ybig$r, ybig$a, ybig$b, ybig$tau, ybig$K,
+                                    ybig$init_dens, ybig$init_moi)))
+
+ggplot(data = ybig[ybig$uniq_run == 9 &
+                     ybig$Pop != "B",], 
        aes(x = time, y = Density+1, color = Pop)) +
         geom_line(lwd = 1.5, alpha = 1) + 
-  facet_wrap(~init_dens, scales = "free_y") +
   scale_y_continuous(trans = "log10") +
   scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), by = 100)) +
   geom_hline(yintercept = 1, lty = 2) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   NULL
-
-ggplot(data = ybig[ybig$Pop %in% c("dI", "dI_sim") &
-                     ybig$time < 700,],
-                   aes(x = time, y = Density, color = Pop)) +
-  geom_line() +
-  scale_y_continuous(trans = "log10") +
-  NULL
-
-
-

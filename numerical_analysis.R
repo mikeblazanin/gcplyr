@@ -6,6 +6,14 @@ derivs <- function(t, y, parms) {
   #The derivs function must return the derivative of all the variables at a
   # given time, in a list
   
+  #Issue warning about too small/negative yvals
+  if (any(y < 0)) {
+    warning(paste("pop(s)",
+                  paste(which(y < 0), collapse = ","),
+                  "below 0, treating as 0, returning dY = 0"))
+  }
+  ystart <- y
+  
   #Set negative y values to 0 so they don't affect the dN's
   y[y < 0] <- 0
   
@@ -42,14 +50,7 @@ derivs <- function(t, y, parms) {
       parms["a"]*y["S"]*y["P"]
   }
   
-  #Issue warnings about too small/too large yvals
-  if (any(y <= 0)) {
-    warning(paste("pop(s)",
-                  paste(which(y < 0), collapse = ","),
-                  "below 0, returning dY = 0"))
-  }
-  dY[y < 0] <- 0
-  
+  #Issue warning about too large pop
   if (any(y > 10**100)) {
     warning(paste("pop(s)",
                   paste(which(y > 10**100), collapse = ","),
@@ -57,12 +58,17 @@ derivs <- function(t, y, parms) {
     dY[y > 10**100] <- 0
   }
   
-  #Issue warning about declining pop already at 0
-  if (any(y == 0 & dY < 0)) {
-    warning(paste("pop(s)",
-                  paste(which(y == 0 & dY < 0), collapse = ","),
-                  "at 0 and declining, returning dY = 0"))
-    dY[y == 0 & dY < 0] <- 0
+  #Change dY for too small pops
+  if (any(ystart < 0)) {
+    dY[ystart < 0] <- 0
+    
+    #Issue warning about declining pop already at 0
+    if (any(ystart == 0 & dY < 0)) {
+      warning(paste("pop(s)",
+                    paste(which(y == 0 & dY < 0), collapse = ","),
+                    "at 0 and declining, returning dY = 0"))
+      dY[y == 0 & dY < 0] <- 0
+    }
   }
   
   #From documentation: The return value of func should be a list, whose first 
@@ -75,21 +81,22 @@ myseq <- c(10000)
 for (i in 1:length(myseq)) {
   init_dens <- myseq[i]
   yinit <- c(S = init_dens, I = 0, P = init_dens/10)
-  times <- seq(0, 2000, 1)
+  times <- seq(0, 2000, .1)
   # ln(1/2) = -r * doub_time
-  params <- c(r = 0.025, a = 10**-7, b = 150, tau = 100, K = 10**9)
+  params <- c(r = 0.025, a = 5*10**-8, b = 150, tau = 100, K = 10**9)
   
   yout <- dede(y = yinit, times = times, func = derivs, parms = params)
   yout <- as.data.frame(yout)
   yout$B <- yout$S + yout$I
   
-  yout$new_infecs <- params["a"]*yout$S*yout$P
+#  yout$new_infecs <- params["a"]*yout$S*yout$P
   
-  yout$new_bursts <- c(rep(0, 100),
-                       yout$new_infecs[1:(nrow(yout)-100)])
+  # yout$new_bursts <- c(rep(0, 100),
+  #                      yout$new_infecs[1:(nrow(yout)-100)])
+#  yout$new_bursts_100ltr <- c(yout$new_bursts[101:nrow(yout)], rep(NA, 100))
   
-  yout$dI <- yout$new_infecs-yout$new_bursts
-  yout$dI_sim <- c(yout$I[2:nrow(yout)] - yout$I[1:(nrow(yout)-1)], NA)
+  # yout$dI <- yout$new_infecs-yout$new_bursts
+  # yout$dI_sim <- c(yout$I[2:nrow(yout)] - yout$I[1:(nrow(yout)-1)], NA)
   
   ymelt <- reshape2::melt(data = as.data.frame(yout), id = c("time"),
                           value.name = "Density", variable.name = "Pop")
@@ -99,8 +106,7 @@ for (i in 1:length(myseq)) {
 }
 
 ggplot(data = ybig[ybig$init_dens == 10000 & 
-                     !(ybig$Pop %in% c("B", "dI", "dI_sim",
-                                       "new_infecs", "new_bursts")) &
+                     !(ybig$Pop %in% c("B", "dI", "dI_sim")) &
                      ybig$time < 720,], 
        aes(x = time, y = Density+1, color = Pop)) +
         geom_line(lwd = 1.5, alpha = 1) + 

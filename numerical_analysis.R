@@ -6,8 +6,8 @@ derivs <- function(t, y, parms) {
   #The derivs function must return the derivative of all the variables at a
   # given time, in a list
   
-  #Issue warning about too small/negative yvals
-  if (any(y < 0)) {
+  #Issue warning about too small/negative yvals (if warnings is TRUE)
+  if (!parms["warnings"] & any(y < 0)) {
     warning(paste("pop(s)",
                   paste(which(y < 0), collapse = ","),
                   "below 0, treating as 0, returning dY = 0"))
@@ -50,25 +50,17 @@ derivs <- function(t, y, parms) {
       parms["a"]*y["S"]*y["P"]
   }
   
-  #Issue warning about too large pop
-  if (any(y > 10**100)) {
+  #Issue warning about too large pop (if warnings is TRUE)
+  if (!parms["warnings"] & any(y > 10**100)) {
     warning(paste("pop(s)",
                   paste(which(y > 10**100), collapse = ","),
                   "exceed max limit, 10^100, returning dY = 0"))
-    dY[y > 10**100] <- 0
   }
+  dY[y > 10**100] <- 0
   
   #Change dY for too small pops
   if (any(ystart < 0)) {
     dY[ystart < 0] <- 0
-    
-    #Issue warning about declining pop already at 0
-    if (any(ystart == 0 & dY < 0)) {
-      warning(paste("pop(s)",
-                    paste(which(y == 0 & dY < 0), collapse = ","),
-                    "at 0 and declining, returning dY = 0"))
-      dY[y == 0 & dY < 0] <- 0
-    }
   }
   
   #From documentation: The return value of func should be a list, whose first 
@@ -106,7 +98,7 @@ for (myr in rseq) {
                          I = 0,
                          P = my_init_bact*my_moi)
               params <- c(r = myr, a = mya, b = myb, tau = mytau,
-                          K = myk)
+                          K = myk, warnings = FALSE)
               
               #Run simulation(s) with longer & longer times until equil reached
               #Also, if equil has non-zero S & I run with shorter steps
@@ -130,9 +122,9 @@ for (myr in rseq) {
                 
                 #Check if reached equilibrium
                 if (all(abs(yout[nrow(yout), 2:4] - 
-                            yout[nrow(yout)-1, 2:4]) < 1)) {
+                            yout[nrow(yout)-1, 2:4]) < .001)) {
                   #If at equil but S or I are non-zero, halve step size
-                  if(any(yout[nrow(yout), c("S", "I")] > 1)) {
+                  if(any(yout[nrow(yout), c("S", "I")] > 0.1)) {
                     k <- k+1
                   #If at equil and S & I are zero, stop
                   } else {
@@ -189,7 +181,9 @@ for (run in seq(from = 30, to = 70, by = 1)) {
 
 
 #TODO:
-# handling for when step size was too big
+# Figure out why at_equil is not in ybig
+# Figure out why some sims still stopping when equil pops are large
+# 
 # can dede itself handle a stop-at-equilibrium condition?
 #   Yes, they're called roots. However, it's not clear whether
 #     it would really make things faster or not

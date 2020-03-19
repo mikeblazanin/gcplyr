@@ -110,9 +110,14 @@ for (myr in rseq) {
                 # and steps halving for ea k count
                 times <- seq(0, 100*2**j, 0.1*2**(j-k))
                 
-                #Run simuation
-                yout <- as.data.frame(
-                  dede(y = yinit, times = times, func = derivs, parms = params))
+                #Run simuation (return NA if there is an error)
+                yout <- tryCatch(
+                  expr = {
+                    as.data.frame(
+                      dede(y = yinit, times = times, func = derivs, parms = params))
+                  },
+                  error = function(e) {return(NA)}
+                )
                 
                 #Infinite loop prevention check
                 if (j+k >= 15) {
@@ -120,19 +125,24 @@ for (myr in rseq) {
                   at_equil <- FALSE
                 }
                 
-                #Check if reached equilibrium
-                if (all(abs(yout[nrow(yout), 2:4] - 
-                            yout[nrow(yout)-1, 2:4]) < .001)) {
-                  #If at equil but S or I are non-zero, halve step size
-                  if(any(yout[nrow(yout), c("S", "I")] > 0.1)) {
-                    k <- k+1
-                  #If at equil and S & I are zero, stop
-                  } else {
-                    keep_running <- FALSE
-                    at_equil <- TRUE
-                  }
+                #If there was an error, increase k by 1 and re-run
+                if(is.na(yout)) {
+                  k <- k+1
+                #If there was no error, check for equilibrium
                 } else {
-                  j <- j+1
+                  if (!error & all(abs(yout[nrow(yout), 2:4] - 
+                              yout[nrow(yout)-1, 2:4]) < .001)) {
+                    #If at equil but S or I are non-zero, halve step size
+                    if(any(yout[nrow(yout), c("S", "I")] > 0.1)) {
+                      k <- k+1
+                    #If at equil and S & I are zero, stop
+                    } else {
+                      keep_running <- FALSE
+                      at_equil <- TRUE
+                    }
+                  } else {
+                    j <- j+1
+                  }
                 }
               }
               

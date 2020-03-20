@@ -2,6 +2,11 @@ library(deSolve)
 library(reshape2)
 library(ggplot2)
 
+#Okabe and Ito 2008 colorblind-safe qualitative color scale
+my_cols <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+             "#D55E00", "#CC79A7", "#000000")
+#scales::show_col(my_cols)
+
 derivs <- function(t, y, parms) {
   #The derivs function must return the derivative of all the variables at a
   # given time, in a list
@@ -293,6 +298,7 @@ if (F) {
                                         by = round(max(ybig[ybig$uniq_run == run &
                                                             ybig$Pop != "B", 
                                                             "time"])/10))) +
+        scale_color_manual(values = my_cols[c(2, 3, 1)]) +
         geom_hline(yintercept = 10, lty = 2) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1),
               title = element_text(size = 9)) +

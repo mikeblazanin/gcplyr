@@ -7,7 +7,7 @@ derivs <- function(t, y, parms) {
   # given time, in a list
   
   #Issue warning about too small/negative yvals (if warnings is TRUE)
-  if (!parms["warnings"] & any(y < 0)) {
+  if (parms["warnings"]==1 & any(y < 0)) {
     warning(paste("pop(s)",
                   paste(which(y < 0), collapse = ","),
                   "below 0, treating as 0, returning dY = 0"))
@@ -51,7 +51,7 @@ derivs <- function(t, y, parms) {
   }
   
   #Issue warning about too large pop (if warnings is TRUE)
-  if (!parms["warnings"] & any(y > 10**100)) {
+  if (parms["warnings"]==1 & any(y > 10**100)) {
     warning(paste("pop(s)",
                   paste(which(y > 10**100), collapse = ","),
                   "exceed max limit, 10^100, returning dY = 0"))
@@ -59,9 +59,7 @@ derivs <- function(t, y, parms) {
   dY[y > 10**100] <- 0
   
   #Change dY for too small pops
-  if (any(ystart < 0)) {
-    dY[ystart < 0] <- 0
-  }
+  dY[ystart < 0] <- 0
   
   #From documentation: The return value of func should be a list, whose first 
   #element is a vector containing the derivatives of y with respect to time
@@ -78,14 +76,18 @@ derivs <- function(t, y, parms) {
 #Burst size ranges from 4.5 to 1000
 
 rseq <- 4*10**seq(from = -2, to = -3, by = -0.5)
-kseq <- 10**seq(from = 7, to = 9, by = 1)
 aseq <- 10**seq(from = -12, to = -8, by = 1)
-tauseq <- c(10, 50, 100)
 bseq <- c(5, 50, 500)
+tauseq <- c(10, 50, 100)
+kseq <- 10**seq(from = 7, to = 9, by = 1)
 init_dens_seq <- c(10**6)
 init_moi_seq <- c(10**-2)
 
+length(rseq)*length(kseq)*length(aseq)*length(tauseq)*length(bseq)*
+  length(init_dens_seq)*length(init_moi_seq)
+
 i <- 1
+yfail <- NULL
 for (myr in rseq) {
   for (myk in kseq) {
     for (mya in aseq) {
@@ -98,7 +100,7 @@ for (myr in rseq) {
                          I = 0,
                          P = my_init_bact*my_moi)
               params <- c(r = myr, a = mya, b = myb, tau = mytau,
-                          K = myk, warnings = FALSE)
+                          K = myk, warnings = 0)
               
               #Run simulation(s) with longer & longer times until equil reached
               #Also, if equil has non-zero S & I run with shorter steps
@@ -120,17 +122,21 @@ for (myr in rseq) {
                 )
                 
                 #Infinite loop prevention check
-                if (j+k >= 15) {
+                if (j+k >= 10) {
                   keep_running <- FALSE
                   at_equil <- FALSE
                 }
                 
                 #If there was an error, increase k by 1 and re-run
-                if(is.na(yout)) {
+                if(is.null(nrow(yout))) {
                   k <- k+1
                 #If there was no error, check for equilibrium
                 } else {
-                  if (!error & all(abs(yout[nrow(yout), 2:4] - 
+                  #First drop all rows with nan
+                  yout <- yout[!(is.nan(yout$S) | is.nan(yout$I) | is.nan(yout$P)), ]
+                  
+                  #then check for equil
+                  if (all(abs(yout[nrow(yout), 2:4] - 
                               yout[nrow(yout)-1, 2:4]) < .001)) {
                     #If at equil but S or I are non-zero, halve step size
                     if(any(yout[nrow(yout), c("S", "I")] > 0.1)) {
@@ -146,24 +152,41 @@ for (myr in rseq) {
                 }
               }
               
-              #Calculate all bacteria (B)
-              yout$B <- yout$S + yout$I
-              
-              #Reshape and combine with other outputs
-              ymelt <- cbind(data.frame(uniq_run = i, r = myr, a = mya, 
-                                        b = myb, tau = mytau, K = myk, 
-                                        init_dens = my_init_bact, 
-                                        init_moi = my_moi, equil = at_equil),
-                             reshape2::melt(data = as.data.frame(yout), 
-                                            id = c("time"),
-                                            value.name = "Density", 
-                                            variable.name = "Pop"))
-              if (i == 1) {ybig <- ymelt
+              #If the run succeeded
+              if(!is.null(nrow(yout))) {
+                #Calculate all bacteria (B)
+                yout$B <- yout$S + yout$I
+                
+                #Reshape and combine with other outputs
+                ymelt <- cbind(data.frame(uniq_run = i, r = myr, a = mya, 
+                                          b = myb, tau = mytau, K = myk, 
+                                          init_dens = my_init_bact, 
+                                          init_moi = my_moi, equil = at_equil),
+                               reshape2::melt(data = as.data.frame(yout), 
+                                              id = c("time"),
+                                              value.name = "Density", 
+                                              variable.name = "Pop"))
+                if (i == 1) {ybig <- ymelt #This is the first run
+                } else {
+                  ybig <- rbind(ybig, ymelt) #It's a non-first run
+                }
+                
+                i <- i+1
+              #If the run failed
               } else {
-                ybig <- rbind(ybig, ymelt)
+                if (is.null(yfail)) { #This is the first failed run
+                  yfail <- data.frame(uniq_run = i, r = myr, a = mya, 
+                                       b = myb, tau = mytau, K = myk, 
+                                       init_dens = my_init_bact, 
+                                       init_moi = my_moi, equil = at_equil)
+                } else { #This is a non-first failed run
+                  yfail <- rbind(yfail, 
+                                 data.frame(uniq_run = i, r = myr, a = mya, 
+                                            b = myb, tau = mytau, K = myk, 
+                                            init_dens = my_init_bact, 
+                                            init_moi = my_moi, equil = at_equil))
+                }
               }
-              
-              i <- i+1
             }
           }
         }
@@ -172,21 +195,30 @@ for (myr in rseq) {
   }
 }
 
-for (run in seq(from = 30, to = 70, by = 1)) {
-  print(
-    ggplot(data = ybig[ybig$uniq_run == run &
-                         ybig$Pop != "B",], 
-           aes(x = time, y = Density+1, color = Pop)) +
-            geom_line(lwd = 1.5, alpha = 1) + 
-      scale_y_continuous(trans = "log10") +
-      scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), 
-                                      by = round(max(ybig[ybig$uniq_run == run &
-                                                          ybig$Pop != "B", 
-                                                          "time"])/10))) +
-      geom_hline(yintercept = 1, lty = 2) +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      NULL
-  )
+if (F) {
+  for (run in unique(ybig$uniq_run)) {
+  #for (run in seq(from = 395, to = 399, by = 1)) {
+    tiff(paste("./sim_curves/", run, ".tiff", sep = ""),
+         width = 5, height = 5, units = "in", res = 300)
+    print(
+      ggplot(data = ybig[ybig$uniq_run == run &
+                           ybig$Pop != "B",], 
+             aes(x = time, y = Density+1, color = Pop)) +
+              geom_line(lwd = 1.5, alpha = 1) + 
+        scale_y_continuous(trans = "log10") +
+        scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), 
+                                        by = round(max(ybig[ybig$uniq_run == run &
+                                                            ybig$Pop != "B", 
+                                                            "time"])/10))) +
+        geom_hline(yintercept = 1, lty = 2) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),
+              title = element_text(size = 12)) +
+        ggtitle(paste(ybig[min(which(ybig$uniq_run == run)), 2:8],
+                      collapse = ", ")) +
+        NULL
+    )
+    dev.off()
+  }
 }
 
 

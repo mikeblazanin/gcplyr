@@ -101,7 +101,6 @@ times <- seq(0, 99, 2.5*10**-2)
 yout <- as.data.frame(
   dede(y = yinit, times = times, func = derivs, parms = params))
 
-
 #Code for plotting population sizes over time
 ymelt <- reshape2::melt(data = as.data.frame(yout), 
                         id = c("time"),
@@ -109,16 +108,11 @@ ymelt <- reshape2::melt(data = as.data.frame(yout),
                         variable.name = "Pop")
 
 ggplot(data = ymelt, 
-       aes(x = time, y = Density+1, color = Pop)) +
+       aes(x = time, y = Density+10, color = Pop)) +
   geom_line(lwd = 1.5, alpha = 1) + 
   scale_y_continuous(trans = "log10") +
   scale_x_continuous(breaks = seq(from = 0, to = max(ymelt$time), 
                                   by = round(max(ymelt$time)/10))) +
-  geom_hline(yintercept = 1, lty = 2) +
+  geom_hline(yintercept = 10, lty = 2) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   NULL
-
-
-
-
-

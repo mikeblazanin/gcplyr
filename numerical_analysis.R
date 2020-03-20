@@ -88,6 +88,7 @@ length(rseq)*length(kseq)*length(aseq)*length(tauseq)*length(bseq)*
 
 i <- 1
 yfail <- NULL
+min_dens <- 1 #minimum density to be considered at equilibrium
 for (myr in rseq) {
   for (myk in kseq) {
     for (mya in aseq) {
@@ -135,20 +136,34 @@ for (myr in rseq) {
                   #First drop all rows with nan
                   yout <- yout[!(is.nan(yout$S) | is.nan(yout$I) | is.nan(yout$P)), ]
                   
-                  #then check for equil
-                  if (all(abs(yout[nrow(yout), 2:4] - 
-                              yout[nrow(yout)-1, 2:4]) < .001)) {
-                    #If at equil but S or I are non-zero, halve step size
-                    if(any(yout[nrow(yout), c("S", "I")] > 0.1)) {
-                      k <- k+1
-                    #If at equil and S & I are zero, stop
-                    } else {
-                      keep_running <- FALSE
-                      at_equil <- TRUE
-                    }
-                  } else {
+                  #S and I both at equil, we're done
+                  if (yout$S < min_dens & yout$I < min_dens) {
+                    keep_running <- FALSE
+                    at_equil <- TRUE
+                  #S not at equil, need more time
+                  } else if (yout$S >= min_dens) { 
                     j <- j+1
+                  #I not at equil (but S is because above check failed),
+                  #   need smaller steps
+                  } else if (yout$I >= min_dens) {
+                    k <- k+1
                   }
+                  
+                  ###Old version of equilibrium checking
+                  # #then check for equil
+                  # if (all(abs(yout[nrow(yout), 2:4] - 
+                  #             yout[nrow(yout)-1, 2:4]) < .001)) {
+                  #   #If at equil but S or I are non-zero, halve step size
+                  #   if(any(yout[nrow(yout), c("S", "I")] > 0.1)) {
+                  #     k <- k+1
+                  #   #If at equil and S & I are zero, stop
+                  #   } else {
+                  #     keep_running <- FALSE
+                  #     at_equil <- TRUE
+                  #   }
+                  # } else {
+                  #   j <- j+1
+                  # }
                 }
               }
               

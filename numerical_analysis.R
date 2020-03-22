@@ -84,7 +84,7 @@ derivs <- function(t, y, parms) {
 
 rseq <- c(0.04, 0.013, 0.004)
 #rseq <- 4*10**seq(from = -2, to = -3, by = -0.5)
-aseq <- 10**seq(from = -12, to = -8, by = 2)
+aseq <- 10**seq(from = -12, to = -8, by = 1)
 bseq <- c(20, 200)
 #bseq <- c(5, 50, 500)
 tauseq <- c(10, 100)
@@ -121,7 +121,9 @@ for (myr in rseq) {
                 #Run simulation(s) with longer & longer times until equil reached
                 #Also, if equil has non-zero I run with shorter steps
                 keep_running <- TRUE #placeholder for triggering end of sims
-                warned_before <- FALSE
+                #Placeholder for the number of times I has been detected above
+                # min_dens while S has not been
+                i_only_pos_times <- 0
                 j <- 0 #length counter (larger is longer times)
                 k <- 0 #step size counter (larger is smaller steps)
                 while(keep_running) {
@@ -152,7 +154,7 @@ for (myr in rseq) {
                   )
                   
                   #Infinite loop prevention check (j = 10 is 24 hrs)
-                  if (j >= 10 | k >= 10 | j+k >= 15) {
+                  if (j >= 10 | k >= 15 | j+k >= 20) {
                     keep_running <- FALSE
                     at_equil <- FALSE
                   }
@@ -160,16 +162,12 @@ for (myr in rseq) {
                   #If there was an error, increase k by 1 and re-run
                   if(yout_list[[1]] == 1) {
                     k <- k+1
-                  #If there was a warning, halve step size 
-                  # (and lengthen if first warning)
+                  #If there was a warning, could be several causes, so we
+                  # generally just halve step size and increase length
                   } else if (yout_list[[1]] == 2) {
-                    if (!warned_before) {
-                      j <- j+1
-                      k <- k+1
-                    }
-                    k <- k+1
-                    warned_before <- TRUE
-                  #If there was no error, check for equilibrium
+                    j <- j+1
+                    k <- k+2
+                  #If it was successful, check for equilibrium
                   } else if (yout_list[[1]] == 0) {
                     #First drop all rows with nan
                     yout_list[[2]] <- yout_list[[2]][!(is.nan(yout_list[[2]]$S) |
@@ -185,9 +183,16 @@ for (myr in rseq) {
                     } else if (yout_list[[2]]$S[nrow(yout_list[[2]])] >= min_dens) { 
                       j <- j+1
                     #I not at equil (but S is because above check failed),
-                    #   need smaller steps
+                    #   first we'll lengthen the simulation
+                    #    (to make sure it was long enough to catch the last burst)
+                    #   then we'll start shrinking our step size
                     } else if (yout_list[[2]]$I[nrow(yout_list[[2]])] >= min_dens) {
-                      k <- k+1
+                      if (i_only_pos_times < 1) {
+                        j <- j+1
+                        i_only_pos_times <- i_only_pos_times+1
+                      } else {
+                        k <- k+1
+                      }
                     }
                     
                     ###Old version of equilibrium checking
@@ -208,8 +213,8 @@ for (myr in rseq) {
                   }
                 }
                 
-                #If the run succeeded
-                if(!is.null(nrow(yout_list[[2]]))) {
+                #Once end conditions triggered, if run succeeded
+                if(yout_list[[1]] == 0 | yout_list[[1]] == 2) {
                   #Calculate all bacteria (B)
                   yout_list[[2]]$B <- yout_list[[2]]$S + yout_list[[2]]$I
                   
@@ -274,10 +279,40 @@ if (F) {
 
 
 #Check what runs didn't reach equilibrium
-unique(ybig$uniq_run[which(!ybig$equil)])
+y_noequil <- NULL
+for (run in unique(ybig$uniq_run[which(!ybig$equil)])) {
+  if (is.null(y_noequil)) {
+    y_noequil <- ybig[min(which(ybig$uniq_run == run)), 1:9]
+  } else {
+    y_noequil <- rbind(y_noequil, ybig[min(which(ybig$uniq_run == run)), 1:9])
+  }
+}
+y_noequil
+
+#for troubleshooting
+if (F) {
+  my_row <- 1
+  myr <- y_noequil$r[my_row]
+  mya <- y_noequil$a[my_row]
+  myb <- y_noequil$b[my_row]
+  mytau <- y_noequil$tau[my_row]
+  myk <- y_noequil$K[my_row]
+  myc <- y_noequil$c[my_row]
+}
 
 #Check what runs failed
 print(yfail)
+
+#for troubleshooting
+if (F) {
+  my_row <- 1
+  myr <- yfail$r[my_row]
+  mya <- yfail$a[my_row]
+  myb <- yfail$b[my_row]
+  mytau <- yfail$tau[my_row]
+  myk <- yfail$K[my_row]
+  myc <- yfail$c[my_row]
+}
 
 if (F) {
   for (run in unique(ybig$uniq_run)) {
@@ -312,9 +347,6 @@ if (F) {
 
 
 #TODO:
-# Figure out why at_equil is not in ybig
-# Figure out why some sims still stopping when equil pops are large
-# 
 # can dede itself handle a stop-at-equilibrium condition?
 #   Yes, they're called roots. However, it's not clear whether
 #     it would really make things faster or not

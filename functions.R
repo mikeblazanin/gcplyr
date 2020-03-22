@@ -10,7 +10,8 @@ read_blockcurves <- function(files, extension = NULL,
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
                              sheet = NULL) {
-  #Inputs: a list of relative filepaths, where each one is a single plate read
+  #Inputs: a list of filepaths relative to the current working directory, \
+  # where each one is a single plate read
   #Outputs: a list of blockcurves named by filename
   
   #Note if sheet is NULL defaults to first sheet
@@ -42,7 +43,7 @@ read_blockcurves <- function(files, extension = NULL,
   if (is.null(extension) == FALSE) {
     extension <- rep(extension, times = length(files))
   } else {
-    extension <- vapply(files, tools::file_ext, FUN.VALUE = "test", 
+    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
   }
   
@@ -70,10 +71,10 @@ read_blockcurves <- function(files, extension = NULL,
   names(outputs) <- sub("^([^.]*).*", "\\1", files)
   
   #Error checking for output dataframe dimensions
-  if (var(apply(outputs, MARGIN = 1, dim)[1]) == 0) {
+  if (var(apply(outputs, MARGIN = 1, dim)[1]) != 0) {
     warning("Not all blockcurves have the same number of rows of data")
   }
-  if (var(apply(outputs, MARGIN = 1, dim)[2]) == 0) {
+  if (var(apply(outputs, MARGIN = 1, dim)[2]) != 0) {
     warning("Not all blockcurves have the same number of columns of data")
   }
   
@@ -82,6 +83,8 @@ read_blockcurves <- function(files, extension = NULL,
 
 uninterleave <- function(interleaved_list, n) {
   #Inputs: a list of R objects
+  #        how many sub-lists there should be (i.e. how many groups should
+  #          the interleaved list be divided into)
   #Output: a list of lists of R objects
   #This function takes a list of R objects (e.g. a list of blockcurves)
   #and separates them into separate sub-lists (e.g. where each sub-list
@@ -93,7 +96,7 @@ uninterleave <- function(interleaved_list, n) {
     stop("Length of list must be divisible by n")
   }
   
-  output <- rep(interleaved_list(NA), n)
+  output <- rep(list(NA), n)
   for (i in 1:n) {
     output[[i]] <- interleaved_list[seq(from = i, to = length(interleaved_list), 
                                         by = n)]

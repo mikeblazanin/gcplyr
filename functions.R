@@ -333,3 +333,290 @@ for (i in 1:length(plate_reader_spreads))
  }
 
 
+## Code taken from Trav phage paper 3-22-2020 ----
+#Define function that calculates derivatives
+calc_deriv <- function(density, percapita = FALSE,
+                       subset_by = NULL, time = NULL,
+                       time_normalize = NULL) {
+  #Note! density values must be sorted sequentially into their unique sets already
+  
+  #Provided a vector of density values, this function returns (by default) the
+  # difference between sequential values
+  #if percapita = TRUE, the differences of density are divided by density
+  #if subset_by is provided, it should be a vector (same length as density),
+  # the unique values of which will separate calculations
+  #if time_normalize is specified, time should be provided as a simple 
+  # numeric (e.g. number of seconds) in some unit
+  #Then the difference will be normalized for the time_normalize value
+  #(e.g. if time is provided in seconds and the difference per hour is wanted,
+  # time_normalize should = 3600)
+  
+  #Check inputs
+  if (!is.numeric(time)) {
+    stop("time is not numeric")
+  }
+  if (!is.null(time_normalize)) {
+    if (!is.numeric(time_normalize)) {
+      stop("time_normalize is not numeric")
+    } else if (is.null(time)) {
+      stop("time_normalize is specified, but time is not provided")
+    }
+  }
+  
+  #Calc derivative
+  ans <- c(density[2:length(density)]-density[1:(length(density)-1)])
+  #Percapita (if specified)
+  if (percapita) {
+    ans <- ans/density[1:(length(density)-1)]
+  }
+  #Time normalize (if specified)
+  if (!is.null(time_normalize)) {
+    ans <- ans/
+      (c(time[2:length(time)]-time[1:(length(time)-1)])/time_normalize)
+  }
+  #Subset by (if specified)
+  if (!is.null(subset_by)) {
+    ans[subset_by[2:length(subset_by)] != subset_by[1:(length(subset_by)-1)]] <- NA
+  }
+  return(c(ans, NA))
+}
+
+#Smooth data
+gc_data$sm_loess <- NA
+for (my_well in unique(gc_data$uniq_well)) {
+  my_rows <- which(gc_data$uniq_well == my_well)
+  #Smooth with loess
+  gc_data$sm_loess[my_rows] <- loess(cfu_ml ~ Time_s, span = 0.4,
+                                     data = gc_data[my_rows, ])$fitted
+}
+
+#Calculate growth per hour from loess curve
+gc_data$deriv_sm_loess <- calc_deriv(gc_data$sm_loess,
+                                     subset_by = gc_data$uniq_well,
+                                     time = gc_data$Time_s,
+                                     time_normalize = 3600)
+
+#Calculate per capita growth per hour from loess curve
+gc_data$percap_deriv_sm_loess <- calc_deriv(gc_data$sm_loess,
+                                            percapita = TRUE,
+                                            subset_by = gc_data$uniq_well,
+                                            time = gc_data$Time_s,
+                                            time_normalize = 3600)
+
+find_local_extrema <- function(values, 
+                               return_maxima = TRUE,
+                               return_minima = TRUE,
+                               width_limit = NULL,
+                               height_limit = NULL,
+                               remove_endpoints = TRUE,
+                               na.rm = FALSE) {
+  #Takes a vector of values and returns a vector of the indices
+  # of all local value extrema (by default, returns both maxima and minima)
+  # To only return maxima or minima, change return_maxima/return_minima to FALSE
+  
+  #width_limit and/or height_limit must be provided
+  #Width is how wide the window will be to look for a maxima/minima
+  # Narrower width will be more sensitive to narrow local maxima/minima
+  # Wider width will be less sensitive to narrow local maxima/minima
+  #Height is how high or low a single step is allowed to take
+  # e.g. a maxima-finding function will not pass a valley deeper
+  # than height_limit
+  #Note that this also limits approaches to extrema, so if set too small
+  # function may converge on non-peaks
+  #If both width_limit and height_limit are provided, steps are limited
+  # conservatively (a single step must meet both criteria)
+  
+  #This function is designed to be compatible with dplyr::group_by and summarize
+  
+  #Check inputs
+  if (!return_maxima & !return_minima) {
+    stop("Both return_maxima and return_minima are FALSE, at least one must be TRUE")
+  }
+  if (is.null(width_limit) & is.null(height_limit)) {
+    stop("Either width_limit or height_limit must be provided")
+  }
+  if (!is.null(width_limit)) {
+    if (width_limit%%2 == 0) {
+      warning("width_limit must be odd, will use ", width_limit-1, " as width_limit")
+      width_limit <- width_limit - 1
+    }
+  }
+  if (is.null(width_limit) & !is.null(height_limit)) {
+    warning("height_limit alone tends to be sensitive to height_limit parameter, use with caution")
+  }
+  if (na.rm == TRUE & sum(is.na(values)) > 0) {
+    if (!all(is.na(values[(1+length(values)-sum(is.na(values))):length(values)]))) {
+      warning("Removing NAs found within values vector, returned indices will refer to non-NA values")
+      print(values)
+    }
+    values <- values[!is.na(values)]
+  } else if(any(is.na(values))) {
+    stop("Some provided values are NA and na.rm = FALSE")
+  }
+  
+  #Define sub-function to find limits of the window
+  get_window_limits <- function(cnt_pos,
+                                width_limit = NULL,
+                                height_limit = NULL,
+                                looking_for = c("minima", "maxima"),
+                                values = NULL) {
+    #Check inputs
+    if (length(looking_for) > 1) {stop("looking_for must be specified")}
+    if (!is.null(height_limit) & is.null(values)) {
+      stop("height_limit is specified, but no values are provided")
+    }
+    if (is.null(width_limit) & is.null(height_limit)) {
+      stop("Either width_limit or height_limit must be provided")
+    }
+    
+    #Define window limits
+    window_start <- c(NA, NA)
+    if (!is.null(width_limit)) { #using width limit
+      window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
+    }
+    if (!is.null(height_limit)) { #using height limig
+      #For startpoint height, we want the latest point that is
+      #behind of our current point and
+      #either:
+      # below current height - height limit
+      # or above current height + height limit
+      #Then we move one place forward 
+      # (so it's the last value w/in height limit)
+      window_start[2] <- max(c(1,
+                               1+which(1:length(values) < cnt_pos &
+                                         (values >= (values[cnt_pos] + height_limit) |
+                                            values <= (values[cnt_pos] - height_limit)))))
+      #Make sure we're going at least 1 point backwards
+      if(window_start[2] >= cnt_pos) {window_start[2] <- cnt_pos-1}
+    }
+    window_end <- c(NA, NA)
+    if (!is.null(width_limit)) { #using width limit
+      window_end[1] <- min(c(length(values), cnt_pos+floor(width_limit/2)))
+    }
+    if (!is.null(height_limit)) { #using height limit
+      #For endpoint height, we want the earliest point that is
+      #forward of our current point and
+      #either:
+      # below current height - height limit
+      # or above current height + height limit
+      #Then we move one place back 
+      # (so it's the last value w/in height limit)
+      window_end[2] <- min(c(length(values),
+                             -1+which(1:length(values) > cnt_pos & #not backwards
+                                        (values <= (values[cnt_pos] - height_limit) |
+                                           values >= (values[cnt_pos] + height_limit)))))
+      #Make sure we're going at least one point forwards
+      if (window_end[2] <= cnt_pos) {window_end[2] <- cnt_pos+1}
+    }
+    return(c(max(window_start, na.rm = T), min(window_end, na.rm = T)))
+  }
+  
+  find_next_extrema <- function(cnt_pos, values,
+                                width_limit = NULL,
+                                height_limit = NULL,
+                                looking_for = c("minima", "maxima")) {
+    if (cnt_pos == length(values)) {best_pos <- cnt_pos-1
+    } else {best_pos <- cnt_pos+1}
+    
+    #Save the starting position so we never go backwards
+    start_pos <- cnt_pos
+    
+    ##Looking for next maxima
+    if(looking_for == "maxima") {
+      while (cnt_pos != best_pos) {
+        #Move the previous best pointer to current pointer location
+        best_pos <- cnt_pos
+        #Get next window limits
+        window_lims <- get_window_limits(cnt_pos = cnt_pos,
+                                         width_limit = width_limit,
+                                         height_limit = height_limit,
+                                         looking_for = "maxima",
+                                         values = values)
+        #Make sure we're not going backwards
+        window_lims <- c(max(start_pos, window_lims[1]),
+                         max(start_pos, window_lims[2]))
+        #Then move current pointer to highest point within window
+        # (making sure not to check non-integer indices, or indices below 1 or
+        #  higher than the length of the vector)
+        cnt_pos <- window_lims[1]-1+which.max(values[window_lims[1]:window_lims[2]])
+      }
+      ##Looking for next minima
+    } else if (looking_for == "minima") {
+      while (cnt_pos != best_pos) {
+        #Move the previous best pointer to current pointer location
+        best_pos <- cnt_pos
+        #Get next window limits
+        window_lims <- get_window_limits(cnt_pos = cnt_pos,
+                                         width_limit = width_limit,
+                                         height_limit = height_limit,
+                                         looking_for = "minima",
+                                         values = values)
+        #Make sure we're not going backwards
+        window_lims <- c(max(start_pos, window_lims[1]),
+                         max(start_pos, window_lims[2]))
+        #Then move current pointer to lowest point within window
+        # (making sure not to check non-integer indices, or indices below 1 or
+        #  higher than the length of the vector)
+        cnt_pos <- window_lims[1]-1+which.min(values[window_lims[1]:window_lims[2]])
+      }
+    }
+    return(best_pos)
+  }
+  
+  cnt_pos <- 1
+  ##Find first maxima
+  maxima_list <- c(find_next_extrema(cnt_pos, values,
+                                     width_limit = width_limit,
+                                     height_limit = height_limit,
+                                     looking_for = "maxima"))
+  ##Find first minima
+  minima_list <- c(find_next_extrema(cnt_pos, values,
+                                     width_limit = width_limit,
+                                     height_limit = height_limit,
+                                     looking_for = "minima"))
+  
+  ##Check for next extrema until...
+  while (TRUE) {
+    #we're finding repeats
+    if (any(duplicated(c(minima_list, maxima_list)))) {break}
+    #or we hit the end of the values
+    if (length(values) %in% c(maxima_list, minima_list)) {
+      break
+    }
+    #Since maxima & minima must alternate, always start with furthest one 
+    # we've found so far
+    cnt_pos <- max(c(minima_list, maxima_list))
+    #we're looking for a maxima next
+    if (cnt_pos %in% minima_list) {
+      maxima_list <- c(maxima_list,
+                       find_next_extrema(cnt_pos, values,
+                                         width_limit = width_limit,
+                                         height_limit = height_limit,
+                                         looking_for = "maxima"))
+      #we're looking for a minima next
+    } else if (cnt_pos %in% maxima_list) {
+      minima_list <- c(minima_list,
+                       find_next_extrema(cnt_pos, values,
+                                         width_limit = width_limit,
+                                         height_limit = height_limit,
+                                         looking_for = "minima"))
+    }
+  }
+  
+  #Combine maxima & minima values & remove duplicates
+  output <- c()
+  if (return_maxima) {output <- c(output, maxima_list)}
+  if (return_minima) {output <- c(output, minima_list)}
+  #If remove endpoints is true, remove first or last values from return
+  if (remove_endpoints) {
+    if (1 %in% output) {output <- output[-which(output == 1)]}
+    if (length(values) %in% output) {
+      output <- output[-which(output == length(values))]}
+  }
+  #Remove duplicates
+  output <- unique(output)
+  #Order
+  output <- output[order(output)]
+  
+  return(output)
+}

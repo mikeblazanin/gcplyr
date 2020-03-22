@@ -1,6 +1,7 @@
 library(deSolve)
 library(reshape2)
 library(ggplot2)
+library(dplyr)
 
 #Okabe and Ito 2008 colorblind-safe qualitative color scale
 my_cols <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
@@ -314,6 +315,14 @@ if (F) {
   myc <- yfail$c[my_row]
 }
 
+#Find peaks & extinction via summarize
+ybig <- group_by_at(ybig, .vars = 1:9)
+y_summarized <- summarize(ybig[ybig$Pop == "B", ],
+                          max_dens = max(Density),
+                          max_time = time[Density == max_dens],
+                          extin_dens = Density[min(which(Density <= 10**4))],
+                          extin_time = time[min(which(Density <= 10**4))])
+
 if (F) {
   for (run in unique(ybig$uniq_run)) {
   #for (run in seq(from = 395, to = 399, by = 1)) {
@@ -328,6 +337,10 @@ if (F) {
                                 ybig$Pop == "B",], 
                   aes(x = time, y = Density+10),
                   color = "black", alpha = 0.5, lwd = 1.1) +
+        geom_point(data = y_summarized[y_summarized$uniq_run == run, ],
+                   aes(x = max_time, y = max_dens), color = "black") +
+        geom_point(data = y_summarized[y_summarized$uniq_run == run, ],
+                   aes(x = extin_time, y = extin_dens), color = "black") +
         scale_y_continuous(trans = "log10") +
         scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), 
                                         by = round(max(ybig[ybig$uniq_run == run &
@@ -342,6 +355,26 @@ if (F) {
         NULL
     )
     dev.off()
+  }
+}
+
+#Plot summarized statistics
+y_summarized$b <- as.character(y_summarized$b)
+y_summarized$r <- as.character(y_summarized$r)
+for (myc in 1) {
+  for (stat in c("max_dens", "max_time", "extin_dens", "extin_time")) {
+    print(ggplot(data = y_summarized[y_summarized$c == myc, ],
+                 aes(x = a, y = get(stat), color = r, shape = b)) + 
+            geom_point(size = 3, alpha = 0.8) + 
+            geom_line(size = 1.1, alpha = 0.6) +
+            facet_grid(~tau) +
+            labs(y = stat) +
+            scale_y_continuous(trans = "log10") +
+            scale_x_continuous(trans = "log10") +
+            scale_color_manual(values = my_cols) +
+            theme_bw() +
+            NULL
+    )
   }
 }
 

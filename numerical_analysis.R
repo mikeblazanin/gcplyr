@@ -1,8 +1,4 @@
 #TODO:
-# look at derivative plot
-# look at deriv per capita plot
-# extract data from above plots
-# run curves with 0 phage (- control, so to speak)
 # run curves varying initial density & moi
 # given control curves and curves varying in density & moi,
 #   figure out how one could calculate phage parameters
@@ -10,11 +6,13 @@
 # can dede itself handle a stop-at-equilibrium condition?
 #   Yes, they're called roots. However, it's not clear whether
 #     it would really make things faster or not
+# add in the evolution of resistant bacteria
 
 ## Import libraries ----
 
 library(deSolve)
 #library(reshape2)
+library(data.table)
 library(ggplot2)
 library(dplyr)
 
@@ -472,8 +470,7 @@ ybig$deriv_percap <- calc_deriv(density = ybig$Density,
 dens_offset <- 10
 if (F) {
   for (run in unique(ybig$uniq_run)) {
-  #for (run in seq(from = 395, to = 399, by = 1)) {
-    tiff(paste("./sim_curves_dens/", run, ".tiff", sep = ""),
+    tiff(paste("./run1_dens_curves/", run, ".tiff", sep = ""),
          width = 5, height = 5, units = "in", res = 300)
     print(
       ggplot(data = ybig[ybig$uniq_run == run &
@@ -516,6 +513,8 @@ y_summarized$tau <- as.factor(y_summarized$tau)
 y_summarized$a <- as.factor(y_summarized$a)
 #y_summarized$r <- as.character(y_summarized$r)
 for (stat in c("max_dens", "max_time", "extin_time")) {
+  tiff(paste("./run1_statplots/", stat, ".tiff", sep = ""),
+       width = 5, height = 5, units = "in", res = 300)
   print(ggplot(data = y_summarized,
                aes(x = a, y = get(stat), color = b, group = b)) + 
           geom_point(size = 3, alpha = 0.8) + 
@@ -528,16 +527,18 @@ for (stat in c("max_dens", "max_time", "extin_time")) {
           theme_bw() +
           theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
           ggtitle("tau") +
-          NULL
-  )
+          NULL)
+  dev.off()
 }
 
-y_sum_melt1 <- melt(y_summarized,
+y_sum_melt1 <- reshape2::melt(y_summarized,
                    id.vars = 1:9,
                    variable.name = "sum_stat",
                    value.name = "stat_val")
 
-ggplot(data = y_sum_melt[y_sum_melt$sum_stat != "extin_dens", ],
+tiff("./run1_statplots/all_stats.tiff",
+     width = 5, height = 5, units = "in", res = 300)
+ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
        aes(x = a, y = stat_val, color = b, group = b)) +
   geom_point(size = 3, alpha = 0.8) + 
   geom_line(size = 1.1, alpha = 0.6) +
@@ -549,28 +550,125 @@ ggplot(data = y_sum_melt[y_sum_melt$sum_stat != "extin_dens", ],
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggtitle("tau") +
   NULL
+dev.off()
 
+## Make paired plots ----
+tiff("./run1_statplots/maxdens_maxtime.tiff",
+     width = 5, height = 5, units = "in", res = 300)
 ggplot(data = y_summarized,
-       aes(x = max_dens, y = max_time, color = a, 
-           shape = b, group = b)) +
+       aes(x = max_dens, y = max_time, color = b, fill = b, 
+           shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
-  geom_line() +
-  facet_grid(tau~.) +
   scale_x_continuous(trans = "log10") +
-  scale_y_continuous(trans = "log10")
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  scale_shape_manual(values = 21:25) +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  scale_fill_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  NULL
+dev.off()
 
+tiff("./run1_statplots/maxdens_maxtime_facet.tiff",
+     width = 6, height = 4, units = "in", res = 300)
 ggplot(data = y_summarized,
-       aes(x = max_dens, y = extin_time, color = a, 
-           shape = b)) +
+       aes(x = max_dens, y = max_time, color = b, fill = b, 
+           shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
-  facet_grid(tau~.) +
+  facet_grid(~tau) +
   scale_x_continuous(trans = "log10") +
-  scale_y_continuous(trans = "log10")
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  scale_shape_manual(values = 21:25) +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  scale_fill_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("tau") +
+  NULL
+dev.off()
 
+tiff("./run1_statplots/maxdens_extintime.tiff",
+     width = 5, height = 5, units = "in", res = 300)
 ggplot(data = y_summarized,
-       aes(x = max_time, y = extin_time, color = a, 
-           shape = b)) +
+       aes(x = max_dens, y = extin_time, color = b, fill = b, 
+           shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
-  facet_grid(tau~.) +
+  #facet_grid(tau~.) +
   scale_x_continuous(trans = "log10") +
-  scale_y_continuous(trans = "log10")
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  scale_shape_manual(values = 21:25) +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  scale_fill_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  NULL
+dev.off()
+
+tiff("./run1_statplots/maxdens_extintime_facet.tiff",
+     width = 6, height = 4, units = "in", res = 300)
+ggplot(data = y_summarized,
+       aes(x = max_dens, y = extin_time, color = b, fill = b, 
+           shape = a)) +
+  geom_point(size = 2.5, alpha = 0.5) +
+  facet_grid(~tau) +
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  scale_shape_manual(values = 21:25) +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  scale_fill_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("tau") +
+  NULL
+dev.off()
+
+tiff("./run1_statplots/maxtime_extintime.tiff",
+     width = 5, height = 5, units = "in", res = 300)
+ggplot(data = y_summarized,
+       aes(x = max_time, y = extin_time, color = b, fill = b,
+           shape = a)) +
+  geom_point(size = 2.5, alpha = 0.5) +
+#  facet_grid(tau~.) +
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10") +
+  scale_shape_manual(values = 21:25) +
+  theme_bw() +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  scale_fill_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  NULL
+dev.off()
+
+tiff("./run1_statplots/maxtime_extintime_facet.tiff",
+     width = 6, height = 4, units = "in", res = 300)
+ggplot(data = y_summarized,
+       aes(x = max_time, y = extin_time, color = b, fill = b,
+           shape = a)) +
+  geom_point(size = 2.5, alpha = 0.5) +
+  facet_grid(~tau) +
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10") +
+  scale_shape_manual(values = 21:25) +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  scale_fill_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("tau") +
+  NULL
+dev.off()
+
+#Make plots that include derivs
+ybig_melt <- data.table::melt(as.data.table(ybig),
+                              measure.vars = c("Density", "deriv", "deriv_percap"),
+                              variable.name = "var_measured",
+                              value.name = "value")
+for (run in unique(ybig_melt$uniq_run)) {
+  tiff(paste("./run1_dens_and_derivs/", run, ".tiff", sep = ""),
+       width = 4, height = 8, units = "in", res = 300)
+  print(ggplot(data = ybig_melt[ybig_melt$uniq_run == run &
+                                  ybig_melt$Pop == "B" &
+                                  ybig_melt$time > 0, ],
+               aes(x = time, y = value)) +
+          geom_point() +
+          facet_grid(var_measured~., scales = "free_y") +
+          theme_bw())
+  dev.off()
+}
+

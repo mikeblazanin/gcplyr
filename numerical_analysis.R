@@ -1,5 +1,4 @@
 #TODO:
-# functionalize the big run
 # look at derivative plot
 # look at deriv per capita plot
 # extract data from above plots
@@ -15,7 +14,7 @@
 ## Import libraries ----
 
 library(deSolve)
-library(reshape2)
+#library(reshape2)
 library(ggplot2)
 library(dplyr)
 
@@ -134,6 +133,17 @@ run_sims <- function(rvals,
                   length(tauvals)*length(bvals)*length(cvals)*
                   length(init_bact_dens_vals)*length(init_moi_vals),
                 "simulations will be run"))
+    
+    #Save sequence of 10% cutoff points for later reference
+    progress_seq <- round(seq(from = 0, 
+                              to = (length(rvals)*length(kvals)*length(avals)*
+                                      length(tauvals)*length(bvals)*length(cvals)*
+                                      length(init_bact_dens_vals)*
+                                      length(init_moi_vals)),
+                              by = (length(rvals)*length(kvals)*length(avals)*
+                                      length(tauvals)*length(bvals)*length(cvals)*
+                                      length(init_bact_dens_vals)*
+                                      length(init_moi_vals))/10))
   }
   
   #Make placeholders
@@ -148,7 +158,8 @@ run_sims <- function(rvals,
                                          length(init_moi_vals)),
                      "r" = NA, "a" = NA, "b" = NA, "tau" = NA, "K" = NA,
                      "c" = NA, "init_bact_dens" = NA, "init_moi" = NA,
-                     "equil" = NA, "time" = NA, "Pop" = NA, "Density" = NA)
+                     "equil" = NA, "time" = NA, "Pop" = as.character(NA), 
+                     "Density" = NA, stringsAsFactors = F)
                                         
   #Cycle through all parameter combinations
   for (myr in rvals) {
@@ -276,10 +287,11 @@ run_sims <- function(rvals,
                                               b = myb, tau = mytau, K = myk, 
                                               c = myc, init_bact_dens = my_init_bact, 
                                               init_moi = my_moi, equil = at_equil),
-                                   reshape2::melt(data = as.data.frame(yout_list[[2]]), 
-                                                  id = c("time"),
+                                   data.table::melt(data = data.table::as.data.table(yout_list[[2]]), 
+                                                  id.vars = c("time"),
                                                   value.name = "Density", 
-                                                  variable.name = "Pop"))
+                                                  variable.name = "Pop",
+                                                  variable.factor = FALSE))
                     
                   #If the run failed
                   } else {
@@ -297,6 +309,12 @@ run_sims <- function(rvals,
                     }
                   }
                   i <- i+1
+                  
+                  #Print progress update
+                  if (print_info & i %in% progress_seq) {
+                    print(paste((which(progress_seq == i)-1)*10,
+                                "% completed", sep = ""))
+                  }
                 }
               }
             }
@@ -360,6 +378,53 @@ run_sims <- function(rvals,
   }
 }
 
+## Define function that calculates derivatives ----
+calc_deriv <- function(density, percapita = FALSE,
+                       subset_by = NULL, time = NULL,
+                       time_normalize = NULL) {
+  #Note! density values must be sorted sequentially into their unique sets already
+  
+  #Provided a vector of density values, this function returns (by default) the
+  # difference between sequential values
+  #if percapita = TRUE, the differences of density are divided by density
+  #if subset_by is provided, it should be a vector (same length as density),
+  # the unique values of which will separate calculations
+  #if time_normalize is specified, time should be provided as a simple 
+  # numeric (e.g. number of seconds) in some unit
+  #Then the difference will be normalized for the time_normalize value
+  #(e.g. if time is provided in seconds and the difference per hour is wanted,
+  # time_normalize should = 3600)
+  
+  #Check inputs
+  if (!is.numeric(time)) {
+    stop("time is not numeric")
+  }
+  if (!is.null(time_normalize)) {
+    if (!is.numeric(time_normalize)) {
+      stop("time_normalize is not numeric")
+    } else if (is.null(time)) {
+      stop("time_normalize is specified, but time is not provided")
+    }
+  }
+  
+  #Calc derivative
+  ans <- c(density[2:length(density)]-density[1:(length(density)-1)])
+  #Percapita (if specified)
+  if (percapita) {
+    ans <- ans/density[1:(length(density)-1)]
+  }
+  #Time normalize (if specified)
+  if (!is.null(time_normalize)) {
+    ans <- ans/
+      (c(time[2:length(time)]-time[1:(length(time)-1)])/time_normalize)
+  }
+  #Subset by (if specified)
+  if (!is.null(subset_by)) {
+    ans[subset_by[2:length(subset_by)] != subset_by[1:(length(subset_by)-1)]] <- NA
+  }
+  return(c(ans, NA))
+}
+
 ## Lit review of parameters ----
 #r ranges from .04/min (17 min doubling time)
 #         to 0.007/min (90 min doubling time)
@@ -390,6 +455,18 @@ y_summarized <- summarize(ybig[ybig$Pop == "B", ],
                           max_time = time[Density == max_dens],
                           extin_dens = Density[min(which(Density <= 10**4))],
                           extin_time = time[min(which(Density <= 10**4))])
+
+#Calculate derivatives
+ybig$deriv <- calc_deriv(density = ybig$Density, 
+                           percapita = FALSE,
+                           subset_by = paste(ybig$uniq_run, ybig$Pop), 
+                           time = ybig$time,
+                           time_normalize = 60)
+ybig$deriv_percap <- calc_deriv(density = ybig$Density, 
+                                percapita = TRUE,
+                                subset_by = paste(ybig$uniq_run, ybig$Pop), 
+                                time = ybig$time,
+                                time_normalize = 60)
 
 #Make plots of density against time
 dens_offset <- 10

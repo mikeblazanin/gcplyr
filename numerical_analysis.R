@@ -8,6 +8,11 @@
 # given control curves and curves varying in density & moi,
 #   figure out how one could calculate phage parameters
 #   or phage fitness
+# can dede itself handle a stop-at-equilibrium condition?
+#   Yes, they're called roots. However, it's not clear whether
+#     it would really make things faster or not
+
+## Import libraries ----
 
 library(deSolve)
 library(reshape2)
@@ -19,6 +24,7 @@ my_cols <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
              "#D55E00", "#CC79A7", "#000000")
 scales::show_col(my_cols)
 
+## Define derivatives function ----
 derivs <- function(t, y, parms) {
   #The derivs function must return the derivative of all the variables at a
   # given time, in a list
@@ -85,29 +91,7 @@ derivs <- function(t, y, parms) {
   return(list(dY))
 }
 
-#Based on lit review:
-#r ranges from .04/min (17 min doubling time)
-#         to 0.007/min (90 min doubling time)
-#   ln(1/2) = -r * doub_time
-#K ranges from say 10^7 to 10^9
-#adsorption ranges from 1x10^-12 to 1x10^-8
-#Lysis time ranges from 10 to 105 mins
-#Burst size ranges from 4.5 to 1000
-
-rseq <- c(0.023) #(30 min doubling time)
-#rseq <- c(0.04, 0.013, 0.004)
-#rseq <- 4*10**seq(from = -2, to = -3, by = -0.5)
-aseq <- 10**seq(from = -12, to = -8, by = 1)
-#bseq <- c(20, 200)
-bseq <- signif(5*10**seq(from = 0, to = 2, by = 0.5), 3)
-tauseq <- signif(10**seq(from = 1, to = 2, by = 0.25), 3)
-#tauseq <- c(10, 32, 100)
-kseq <- c(10**9)
-#kseq <- 10**seq(from = 7, to = 9, by = 1)
-cseq <- c(1)
-init_dens_seq <- c(10**6)
-init_moi_seq <- c(10**-2)
-
+## Define function for running simulations across many parameter values ----
 run_sims <- function(rvals,
                      kvals,
                      avals,
@@ -352,36 +336,55 @@ run_sims <- function(rvals,
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       NULL
   }
+  
+  #for troubleshooting runs that don't get to equilibrium
+  if (F) {
+    my_row <- 1
+    myr <- y_noequil$r[my_row]
+    mya <- y_noequil$a[my_row]
+    myb <- y_noequil$b[my_row]
+    mytau <- y_noequil$tau[my_row]
+    myk <- y_noequil$K[my_row]
+    myc <- y_noequil$c[my_row]
+  }
+  
+  #for troubleshooting runs that fail
+  if (F) {
+    my_row <- 1
+    myr <- yfail$r[my_row]
+    mya <- yfail$a[my_row]
+    myb <- yfail$b[my_row]
+    mytau <- yfail$tau[my_row]
+    myk <- yfail$K[my_row]
+    myc <- yfail$c[my_row]
+  }
 }
 
+## Lit review of parameters ----
+#r ranges from .04/min (17 min doubling time)
+#         to 0.007/min (90 min doubling time)
+#   ln(1/2) = -r * doub_time
+#K ranges from say 10^7 to 10^9
+#adsorption ranges from 1x10^-12 to 1x10^-8
+#Lysis time ranges from 10 to 105 mins
+#Burst size ranges from 4.5 to 1000
 
-#for troubleshooting
-if (F) {
-  my_row <- 1
-  myr <- y_noequil$r[my_row]
-  mya <- y_noequil$a[my_row]
-  myb <- y_noequil$b[my_row]
-  mytau <- y_noequil$tau[my_row]
-  myk <- y_noequil$K[my_row]
-  myc <- y_noequil$c[my_row]
-}
-
-#Check what runs failed
-print(yfail)
-
-#for troubleshooting
-if (F) {
-  my_row <- 1
-  myr <- yfail$r[my_row]
-  mya <- yfail$a[my_row]
-  myb <- yfail$b[my_row]
-  mytau <- yfail$tau[my_row]
-  myk <- yfail$K[my_row]
-  myc <- yfail$c[my_row]
-}
+## Run #1 ----
+run1 <- run_sims(rvals = c(0.023), #(30 min doubling time)
+                 kvals = c(10**9),
+                 avals = 10**seq(from = -12, to = -8, by = 1),
+                 tauvals = signif(10**seq(from = 1, to = 2, by = 0.25), 3),
+                 bvals = signif(5*10**seq(from = 0, to = 2, by = 0.5), 3),
+                 cvals = 1,
+                 init_bact_dens_vals = 10**6,
+                 init_moi_vals = 10**-2,
+                 min_dens = 0.1,
+                 init_time = 100,
+                 init_stepsize = 1,
+                 print_info = TRUE)
 
 #Find peaks & extinction via summarize
-ybig <- group_by_at(ybig, .vars = 1:9)
+ybig <- group_by_at(run1[[1]], .vars = 1:9)
 y_summarized <- summarize(ybig[ybig$Pop == "B", ],
                           max_dens = max(Density),
                           max_time = time[Density == max_dens],
@@ -494,8 +497,3 @@ ggplot(data = y_summarized,
   facet_grid(tau~.) +
   scale_x_continuous(trans = "log10") +
   scale_y_continuous(trans = "log10")
-
-#TODO:
-# can dede itself handle a stop-at-equilibrium condition?
-#   Yes, they're called roots. However, it's not clear whether
-#     it would really make things faster or not

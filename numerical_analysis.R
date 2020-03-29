@@ -7,6 +7,13 @@
 #   Yes, they're called roots. However, it's not clear whether
 #     it would really make things faster or not
 # add in the evolution of resistant bacteria
+# collect area-under-curve?
+# use deriv-percap of B to find max decay rate?
+# think about characteristics to be taken when curves are too slow
+#   (e.g. time to grow above some threshold density)
+# test whether it's better to average replicate wells first, then analyze
+#   or analyze each independently then average stats together
+# plot B curves on same plot
 
 ## Import libraries ----
 
@@ -452,7 +459,10 @@ y_summarized <- summarize(ybig[ybig$Pop == "B", ],
                           max_dens = max(Density),
                           max_time = time[Density == max_dens],
                           extin_dens = Density[min(which(Density <= 10**4))],
-                          extin_time = time[min(which(Density <= 10**4))])
+                          extin_time = time[min(which(Density <= 10**4))],
+                          aoc = sum(Density[time < extin_time])*
+                            extin_time)
+
 
 #Calculate derivatives
 ybig$deriv <- calc_deriv(density = ybig$Density, 
@@ -466,7 +476,7 @@ ybig$deriv_percap <- calc_deriv(density = ybig$Density,
                                 time = ybig$time,
                                 time_normalize = 60)
 
-#Make plots of density against time
+#Make plots of density against time ----
 dens_offset <- 10
 if (F) {
   for (run in unique(ybig$uniq_run)) {
@@ -507,12 +517,12 @@ if (F) {
   }
 }
 
-#Plot summarized statistics
+#Plot summarized statistics ----
 y_summarized$b <- as.factor(y_summarized$b)
 y_summarized$tau <- as.factor(y_summarized$tau)
 y_summarized$a <- as.factor(y_summarized$a)
 #y_summarized$r <- as.character(y_summarized$r)
-for (stat in c("max_dens", "max_time", "extin_time")) {
+for (stat in c("max_dens", "max_time", "extin_time", "aoc")) {
   tiff(paste("./run1_statplots/", stat, ".tiff", sep = ""),
        width = 5, height = 5, units = "in", res = 300)
   print(ggplot(data = y_summarized,
@@ -540,7 +550,7 @@ tiff("./run1_statplots/all_stats.tiff",
      width = 5, height = 5, units = "in", res = 300)
 ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
        aes(x = a, y = stat_val, color = b, group = b)) +
-  geom_point(size = 3, alpha = 0.8) + 
+  geom_point(size = 2, alpha = 0.8) + 
   geom_line(size = 1.1, alpha = 0.6) +
   facet_grid(sum_stat~tau, scales = "free_y") +
   scale_y_continuous(trans = "log10") +
@@ -549,6 +559,38 @@ ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggtitle("tau") +
+  NULL
+dev.off()
+
+tiff("./run1_statplots/all_stats2.tiff",
+     width = 5, height = 5, units = "in", res = 300)
+ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
+       aes(x = b, y = stat_val, color = tau, group = tau)) +
+  geom_point(size = 2, alpha = 0.8) + 
+  geom_line(size = 1.1, alpha = 0.6) +
+  facet_grid(sum_stat~a, scales = "free_y") +
+  scale_y_continuous(trans = "log10") +
+  #scale_x_continuous(trans = "log10") +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("a") +
+  NULL
+dev.off()
+
+tiff("./run1_statplots/all_stats3.tiff",
+     width = 5, height = 5, units = "in", res = 300)
+ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
+       aes(x = tau, y = stat_val, color = a, group = a)) +
+  geom_point(size = 2, alpha = 0.8) + 
+  geom_line(size = 1.1, alpha = 0.6) +
+  facet_grid(sum_stat~b, scales = "free_y") +
+  scale_y_continuous(trans = "log10") +
+  #scale_x_continuous(trans = "log10") +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("b") +
   NULL
 dev.off()
 
@@ -672,3 +714,16 @@ for (run in unique(ybig_melt$uniq_run)) {
   dev.off()
 }
 
+# Plot multiple B's on same axis
+ybig$a <- as.factor(ybig$a)
+tiff("./run1_statplots/B_plots.tiff", width = 10, height = 10, units = "in", res = 300)
+ggplot(data = ybig[ybig$Pop == "B" &
+                     ybig$Density > 0, ],
+       aes(x = time, y = Density+10, color = a)) +
+  geom_line(lwd = 1, alpha = 0.5) +
+  geom_hline(yintercept = 10, lty = 2) +
+  facet_grid(tau~b, scales = "free") +
+  scale_y_continuous(trans = "log10") +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme_bw()
+dev.off()

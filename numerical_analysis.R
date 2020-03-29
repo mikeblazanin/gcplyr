@@ -13,7 +13,6 @@
 #   (e.g. time to grow above some threshold density)
 # test whether it's better to average replicate wells first, then analyze
 #   or analyze each independently then average stats together
-# plot B curves on same plot
 
 ## Import libraries ----
 
@@ -454,61 +453,67 @@ run1 <- run_sims(rvals = c(0.023), #(30 min doubling time)
                  print_info = TRUE)
 
 #Find peaks & extinction via summarize
-ybig <- group_by_at(run1[[1]], .vars = 1:9)
-y_summarized <- summarize(ybig[ybig$Pop == "B", ],
-                          max_dens = max(Density),
-                          max_time = time[Density == max_dens],
-                          extin_dens = Density[min(which(Density <= 10**4))],
-                          extin_time = time[min(which(Density <= 10**4))],
-                          aoc = sum(Density[time < extin_time])*
-                            extin_time)
-
+ybig1 <- group_by_at(run1[[1]], .vars = 1:9)
+y_summarized1 <- summarize(ybig1,
+                          max_dens = max(Density[Pop == "B"]),
+                          max_time = time[Pop == "B" & 
+                                            Density[Pop == "B"] == max_dens],
+                          extin_index = min(which(Pop == "B" &
+                                                    Density <= 10**4)),
+                          extin_dens = Density[extin_index],
+                          extin_time = time[extin_index],
+                          aoc = sum(Density[Pop == "B" & time < extin_time])*
+                            extin_time,
+                          phage_final = max(Density[Pop == "P"]),
+                          phage_extin = Density[Pop == "P" & time == extin_time]
+)
+                          
 
 #Calculate derivatives
-ybig$deriv <- calc_deriv(density = ybig$Density, 
+ybig1$deriv <- calc_deriv(density = ybig1$Density, 
                            percapita = FALSE,
-                           subset_by = paste(ybig$uniq_run, ybig$Pop), 
-                           time = ybig$time,
+                           subset_by = paste(ybig1$uniq_run, ybig1$Pop), 
+                           time = ybig1$time,
                            time_normalize = 60)
-ybig$deriv_percap <- calc_deriv(density = ybig$Density, 
+ybig1$deriv_percap <- calc_deriv(density = ybig1$Density, 
                                 percapita = TRUE,
-                                subset_by = paste(ybig$uniq_run, ybig$Pop), 
-                                time = ybig$time,
+                                subset_by = paste(ybig1$uniq_run, ybig1$Pop), 
+                                time = ybig1$time,
                                 time_normalize = 60)
 
 #Make plots of density against time ----
 dens_offset <- 10
 if (F) {
-  for (run in unique(ybig$uniq_run)) {
+  for (run in unique(ybig1$uniq_run)) {
     tiff(paste("./run1_dens_curves/", run, ".tiff", sep = ""),
          width = 5, height = 5, units = "in", res = 300)
     print(
-      ggplot(data = ybig[ybig$uniq_run == run &
-                           ybig$Pop %in% c("S", "I", "P"),], 
+      ggplot(data = ybig1[ybig1$uniq_run == run &
+                           ybig1$Pop %in% c("S", "I", "P"),], 
              aes(x = time, y = Density+dens_offset, color = Pop)) +
               geom_line(lwd = 1.5, alpha = 1) + 
-        geom_line(data = ybig[ybig$uniq_run == run &
-                                ybig$Pop == "B",], 
+        geom_line(data = ybig1[ybig1$uniq_run == run &
+                                ybig1$Pop == "B",], 
                   aes(x = time, y = Density+dens_offset),
                   color = "black", alpha = 0.5, lwd = 1.1) +
-        geom_line(data = ybig[ybig$uniq_run == run &
-                                ybig$Pop == "PI",],
+        geom_line(data = ybig1[ybig1$uniq_run == run &
+                                ybig1$Pop == "PI",],
                   aes(x = time, y = Density+dens_offset),
                   color = "black", alpha = 0.5, lwd = 1, lty = 3) +
-        geom_point(data = y_summarized[y_summarized$uniq_run == run, ],
+        geom_point(data = y_summarized1[y_summarized1$uniq_run == run, ],
                    aes(x = max_time, y = max_dens+dens_offset), color = "black") +
-        geom_point(data = y_summarized[y_summarized$uniq_run == run, ],
+        geom_point(data = y_summarized1[y_summarized1$uniq_run == run, ],
                    aes(x = extin_time, y = extin_dens+dens_offset), color = "black") +
         scale_y_continuous(trans = "log10") +
-        scale_x_continuous(breaks = seq(from = 0, to = max(ybig$time), 
-                                        by = round(max(ybig[ybig$uniq_run == run &
-                                                            ybig$Pop != "B", 
+        scale_x_continuous(breaks = seq(from = 0, to = max(ybig1$time), 
+                                        by = round(max(ybig1[ybig1$uniq_run == run &
+                                                            ybig1$Pop != "B", 
                                                             "time"])/10))) +
         scale_color_manual(values = my_cols[c(2, 3, 1)]) +
         geom_hline(yintercept = 10, lty = 2) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1),
               title = element_text(size = 9)) +
-        ggtitle(paste(ybig[min(which(ybig$uniq_run == run)), 2:9],
+        ggtitle(paste(ybig1[min(which(ybig1$uniq_run == run)), 2:9],
                       collapse = ", ")) +
         labs(y = paste("Density +", dens_offset)) +
         NULL
@@ -518,14 +523,14 @@ if (F) {
 }
 
 #Plot summarized statistics ----
-y_summarized$b <- as.factor(y_summarized$b)
-y_summarized$tau <- as.factor(y_summarized$tau)
-y_summarized$a <- as.factor(y_summarized$a)
-#y_summarized$r <- as.character(y_summarized$r)
-for (stat in c("max_dens", "max_time", "extin_time", "aoc")) {
+y_summarized1$b <- as.factor(y_summarized1$b)
+y_summarized1$tau <- as.factor(y_summarized1$tau)
+y_summarized1$a <- as.factor(y_summarized1$a)
+#y_summarized1$r <- as.character(y_summarized1$r)
+for (stat in c("max_dens", "max_time", "extin_time", "aoc", "phage_final")) {
   tiff(paste("./run1_statplots/", stat, ".tiff", sep = ""),
        width = 5, height = 5, units = "in", res = 300)
-  print(ggplot(data = y_summarized,
+  print(ggplot(data = y_summarized1,
                aes(x = a, y = get(stat), color = b, group = b)) + 
           geom_point(size = 3, alpha = 0.8) + 
           geom_line(size = 1.1, alpha = 0.6) +
@@ -541,7 +546,7 @@ for (stat in c("max_dens", "max_time", "extin_time", "aoc")) {
   dev.off()
 }
 
-y_sum_melt1 <- reshape2::melt(y_summarized,
+y_sum_melt1 <- reshape2::melt(y_summarized1,
                    id.vars = 1:9,
                    variable.name = "sum_stat",
                    value.name = "stat_val")
@@ -594,10 +599,33 @@ ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
   NULL
 dev.off()
 
-## Make paired plots ----
+#Plot stats against ea other ----
+
+#First plot all at once
+for (col in c("max_dens", "max_time",
+              "extin_time", "aoc", "phage_final")) {
+  y_summarized1[, paste(col, "_log10", sep = "")] <- log10(y_summarized1[, col])
+}
+
+tiff("./run1_statplots/stat_cors.tiff", width = 10, height = 10, units = "in", res = 300)
+#Make base figure
+p <- GGally::ggpairs(y_summarized1,
+                     aes(color = b, shape = a),
+                     columns = c("max_dens_log10", "max_time_log10",
+                                 "extin_time_log10", "aoc_log10", 
+                                 "phage_final_log10"),
+                     lower = list(continuous = "points"),
+                     upper = list(continuous = "points")) +
+  theme_bw() +
+  theme(strip.text = element_text(size = 7),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+print(p)
+dev.off()
+
+#Then make indiv paired plots
 tiff("./run1_statplots/maxdens_maxtime.tiff",
      width = 5, height = 5, units = "in", res = 300)
-ggplot(data = y_summarized,
+ggplot(data = y_summarized1,
        aes(x = max_dens, y = max_time, color = b, fill = b, 
            shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
@@ -612,7 +640,7 @@ dev.off()
 
 tiff("./run1_statplots/maxdens_maxtime_facet.tiff",
      width = 6, height = 4, units = "in", res = 300)
-ggplot(data = y_summarized,
+ggplot(data = y_summarized1,
        aes(x = max_dens, y = max_time, color = b, fill = b, 
            shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
@@ -630,7 +658,7 @@ dev.off()
 
 tiff("./run1_statplots/maxdens_extintime.tiff",
      width = 5, height = 5, units = "in", res = 300)
-ggplot(data = y_summarized,
+ggplot(data = y_summarized1,
        aes(x = max_dens, y = extin_time, color = b, fill = b, 
            shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
@@ -646,7 +674,7 @@ dev.off()
 
 tiff("./run1_statplots/maxdens_extintime_facet.tiff",
      width = 6, height = 4, units = "in", res = 300)
-ggplot(data = y_summarized,
+ggplot(data = y_summarized1,
        aes(x = max_dens, y = extin_time, color = b, fill = b, 
            shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
@@ -664,7 +692,7 @@ dev.off()
 
 tiff("./run1_statplots/maxtime_extintime.tiff",
      width = 5, height = 5, units = "in", res = 300)
-ggplot(data = y_summarized,
+ggplot(data = y_summarized1,
        aes(x = max_time, y = extin_time, color = b, fill = b,
            shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
@@ -680,7 +708,7 @@ dev.off()
 
 tiff("./run1_statplots/maxtime_extintime_facet.tiff",
      width = 6, height = 4, units = "in", res = 300)
-ggplot(data = y_summarized,
+ggplot(data = y_summarized1,
        aes(x = max_time, y = extin_time, color = b, fill = b,
            shape = a)) +
   geom_point(size = 2.5, alpha = 0.5) +
@@ -697,7 +725,7 @@ ggplot(data = y_summarized,
 dev.off()
 
 #Make plots that include derivs
-ybig_melt <- data.table::melt(as.data.table(ybig),
+ybig_melt <- data.table::melt(as.data.table(ybig1),
                               measure.vars = c("Density", "deriv", "deriv_percap"),
                               variable.name = "var_measured",
                               value.name = "value")
@@ -714,16 +742,145 @@ for (run in unique(ybig_melt$uniq_run)) {
   dev.off()
 }
 
-# Plot multiple B's on same axis
-ybig$a <- as.factor(ybig$a)
-tiff("./run1_statplots/B_plots.tiff", width = 10, height = 10, units = "in", res = 300)
-ggplot(data = ybig[ybig$Pop == "B" &
-                     ybig$Density > 0, ],
+# Plot multiple B's on same axes ----
+ybig1$a <- as.factor(ybig1$a)
+ybig1$b <- as.factor(ybig1$b)
+ybig1$tau <- as.factor(ybig1$tau)
+tiff("./run1_statplots/B_plots.tiff", width = 10, height = 10, 
+     units = "in", res = 300)
+ggplot(data = ybig1[ybig1$Pop == "B" &
+                     ybig1$Density > 0, ],
        aes(x = time, y = Density+10, color = a)) +
   geom_line(lwd = 1, alpha = 0.5) +
   geom_hline(yintercept = 10, lty = 2) +
   facet_grid(tau~b, scales = "free") +
   scale_y_continuous(trans = "log10") +
   scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
-  theme_bw()
+  theme_bw() +
+  ggtitle("b (top), tau (side)")
 dev.off()
+
+tiff("./run1_statplots/B_plots2.tiff", width = 10, height = 10, 
+     units = "in", res = 300)
+ggplot(data = ybig1[ybig1$Pop == "B" &
+                     ybig1$Density > 0, ],
+       aes(x = time, y = Density+10, color = tau)) +
+  geom_line(lwd = 1, alpha = 0.5) +
+  geom_hline(yintercept = 10, lty = 2) +
+  facet_grid(b~a, scales = "free") +
+  scale_y_continuous(trans = "log10") +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme_bw() +
+  ggtitle("a (top), b (side)")
+dev.off()
+
+tiff("./run1_statplots/B_plots3.tiff", width = 10, height = 10, 
+     units = "in", res = 300)
+ggplot(data = ybig1[ybig1$Pop == "B" &
+                     ybig1$Density > 0, ],
+       aes(x = time, y = Density+10, color = b)) +
+  geom_line(lwd = 1, alpha = 0.5) +
+  geom_hline(yintercept = 10, lty = 2) +
+  facet_grid(tau~a, scales = "free") +
+  scale_y_continuous(trans = "log10") +
+  scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+  theme_bw() +
+  ggtitle("a (top), tau (side)")
+dev.off()
+
+## Run #2 ----
+run2 <- run_sims(rvals = signif(0.04*10**seq(from = 0, to = -0.7, by = -0.175), 3),
+                 kvals = c(10**9),
+                 avals = 10**seq(from = -12, to = -8, by = 1),
+                 tauvals = signif(10**seq(from = 1, to = 2, by = 0.25), 3),
+                 bvals = signif(5*10**seq(from = 0, to = 2, by = 0.5), 3),
+                 cvals = 1,
+                 init_bact_dens_vals = 10**6,
+                 init_moi_vals = 10**-2,
+                 min_dens = 0.1,
+                 init_time = 100,
+                 init_stepsize = 1,
+                 print_info = TRUE)
+
+#Check fails/no equils
+run2[[2]]
+
+run2[[3]]
+
+#Find peaks & extinction via summarize
+ybig2 <- group_by_at(run2[[1]], .vars = 1:9)
+ybig2 <- ybig2[complete.cases(ybig2), ]
+y_summarized2 <- summarize(ybig2,
+                           max_dens = max(Density[Pop == "B"]),
+                           max_time = time[Pop == "B" & 
+                                             Density[Pop == "B"] == max_dens],
+                           extin_index = min(which(Pop == "B" &
+                                                     Density <= 10**4)),
+                           extin_dens = Density[extin_index],
+                           extin_time = time[extin_index],
+                           aoc = sum(Density[Pop == "B" & time < extin_time])*
+                             extin_time,
+                           phage_final = max(Density[Pop == "P"]),
+                           phage_extin = Density[Pop == "P" & time == extin_time]
+)
+
+## Plot summarized stats ----
+y_sum_melt2 <- reshape2::melt(y_summarized2,
+                              id.vars = 1:9,
+                              variable.name = "sum_stat",
+                              value.name = "stat_val")
+
+y_sum_melt2$b <- as.factor(y_sum_melt2$b)
+for (myr in unique(y_sum_melt2$r)) {
+  tiff(paste("./run2_statplots/all_stats_r=", 
+             formatC(myr, digits = 5, format = "f"), 
+             ".tiff", sep = ""),
+       width = 5, height = 5, units = "in", res = 300)
+  print(ggplot(data = y_sum_melt2[y_sum_melt2$r == myr &
+                              y_sum_melt2$sum_stat %in% 
+                              c("max_dens", "max_time", 
+                                "extin_time", "phage_final"), ],
+         aes(x = a, y = stat_val, color = b, group = b)) +
+    geom_point(size = 2, alpha = 0.8) + 
+    geom_line(size = 1.1, alpha = 0.6) +
+    facet_grid(sum_stat~tau, scales = "free_y") +
+    scale_y_continuous(trans = "log10") +
+    scale_x_continuous(trans = "log10") +
+    scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    ggtitle(paste("r=", myr, " tau", sep = "")) +
+    NULL
+  )
+  dev.off()
+}
+
+#Plot stats against ea other ----
+
+#First plot all at once
+for (col in c("max_dens", "max_time",
+              "extin_time", "aoc", "phage_final")) {
+  y_summarized2[, paste(col, "_log10", sep = "")] <- log10(y_summarized2[, col])
+}
+
+y_summarized2$a <- as.factor(y_summarized2$a)
+y_summarized2$b <- as.factor(y_summarized2$b)
+for (myr in unique(y_summarized2$r)) {
+  tiff(paste("./run2_statplots/stat_cors_r=", 
+             formatC(myr, digits = 5, format = "f"),
+             ".tiff", sep = ""),
+       width = 15, height = 15, units = "in", res = 300)
+  #Make base figure
+  p <- GGally::ggpairs(y_summarized2[y_summarized2$r == myr, ],
+                       aes(color = b, shape = a),
+                       columns = c("max_dens_log10", "max_time_log10",
+                                   "extin_time_log10", "aoc_log10", 
+                                   "phage_final_log10"),
+                       lower = list(continuous = "points"),
+                       upper = list(continuous = "points")) +
+    theme_bw() +
+    theme(strip.text = element_text(size = 10),
+          axis.text.x = element_text(angle = 45, hjust = 0))
+  print(p)
+  dev.off()
+}

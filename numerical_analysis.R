@@ -13,6 +13,9 @@
 #   (e.g. time to grow above some threshold density)
 # test whether it's better to average replicate wells first, then analyze
 #   or analyze each independently then average stats together
+# When stats are plotted against each other there are lots of logistic curves
+#  fit a logistic eq to them and see what they are
+#  (e.g. are they just the bacterial curve when no phage around?)
 
 ## Import libraries ----
 
@@ -465,7 +468,10 @@ y_summarized1 <- summarize(ybig1,
                           aoc = sum(Density[Pop == "B" & time < extin_time])*
                             extin_time,
                           phage_final = max(Density[Pop == "P"]),
-                          phage_extin = Density[Pop == "P" & time == extin_time]
+                          phage_extin = Density[Pop == "P" & time == extin_time],
+                          phage_r = (log(phage_final)-
+                                       log(init_bact_dens[1]*init_moi[1]))/
+                            extin_time
 )
                           
 
@@ -527,7 +533,8 @@ y_summarized1$b <- as.factor(y_summarized1$b)
 y_summarized1$tau <- as.factor(y_summarized1$tau)
 y_summarized1$a <- as.factor(y_summarized1$a)
 #y_summarized1$r <- as.character(y_summarized1$r)
-for (stat in c("max_dens", "max_time", "extin_time", "aoc", "phage_final")) {
+for (stat in c("max_dens", "max_time", "extin_time", 
+               "aoc", "phage_final", "phage_r")) {
   tiff(paste("./run1_statplots/", stat, ".tiff", sep = ""),
        width = 5, height = 5, units = "in", res = 300)
   print(ggplot(data = y_summarized1,
@@ -552,17 +559,20 @@ y_sum_melt1 <- reshape2::melt(y_summarized1,
                    value.name = "stat_val")
 
 tiff("./run1_statplots/all_stats.tiff",
-     width = 5, height = 5, units = "in", res = 300)
-ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat != "extin_dens", ],
+     width = 5, height = 6, units = "in", res = 300)
+ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat %in%
+                            c("max_dens", "max_time", "extin_time", 
+                              "aoc", "phage_final", "phage_r"), ],
        aes(x = a, y = stat_val, color = b, group = b)) +
-  geom_point(size = 2, alpha = 0.8) + 
+  geom_point(size = 1.5, alpha = 0.8) + 
   geom_line(size = 1.1, alpha = 0.6) +
   facet_grid(sum_stat~tau, scales = "free_y") +
   scale_y_continuous(trans = "log10") +
   #scale_x_continuous(trans = "log10") +
   scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text.y = element_text(size = 10)) +
   ggtitle("tau") +
   NULL
 dev.off()
@@ -603,7 +613,7 @@ dev.off()
 
 #First plot all at once
 for (col in c("max_dens", "max_time",
-              "extin_time", "aoc", "phage_final")) {
+              "extin_time", "aoc", "phage_final", "phage_r")) {
   y_summarized1[, paste(col, "_log10", sep = "")] <- log10(y_summarized1[, col])
 }
 
@@ -613,7 +623,7 @@ p <- GGally::ggpairs(y_summarized1,
                      aes(color = b, shape = a),
                      columns = c("max_dens_log10", "max_time_log10",
                                  "extin_time_log10", "aoc_log10", 
-                                 "phage_final_log10"),
+                                 "phage_final_log10", "phage_r_log10"),
                      lower = list(continuous = "points"),
                      upper = list(continuous = "points")) +
   theme_bw() +
@@ -821,7 +831,10 @@ y_summarized2 <- summarize(ybig2,
                            aoc = sum(Density[Pop == "B" & time < extin_time])*
                              extin_time,
                            phage_final = max(Density[Pop == "P"]),
-                           phage_extin = Density[Pop == "P" & time == extin_time]
+                           phage_extin = Density[Pop == "P" & time == extin_time],
+                           phage_r = (log(phage_final)-
+                                        log(init_bact_dens[1]*init_moi[1]))/
+                             extin_time
 )
 
 ## Plot summarized stats ----
@@ -839,7 +852,8 @@ for (myr in unique(y_sum_melt2$r)) {
   print(ggplot(data = y_sum_melt2[y_sum_melt2$r == myr &
                               y_sum_melt2$sum_stat %in% 
                               c("max_dens", "max_time", 
-                                "extin_time", "phage_final"), ],
+                                "extin_time", "phage_final",
+                                "phage_r"), ],
          aes(x = a, y = stat_val, color = b, group = b)) +
     geom_point(size = 2, alpha = 0.8) + 
     geom_line(size = 1.1, alpha = 0.6) +
@@ -859,7 +873,7 @@ for (myr in unique(y_sum_melt2$r)) {
 
 #First plot all at once
 for (col in c("max_dens", "max_time",
-              "extin_time", "aoc", "phage_final")) {
+              "extin_time", "aoc", "phage_final", "phage_r")) {
   y_summarized2[, paste(col, "_log10", sep = "")] <- log10(y_summarized2[, col])
 }
 
@@ -875,7 +889,7 @@ for (myr in unique(y_summarized2$r)) {
                        aes(color = b, shape = a),
                        columns = c("max_dens_log10", "max_time_log10",
                                    "extin_time_log10", "aoc_log10", 
-                                   "phage_final_log10"),
+                                   "phage_final_log10", "phage_r_log10"),
                        lower = list(continuous = "points"),
                        upper = list(continuous = "points")) +
     theme_bw() +

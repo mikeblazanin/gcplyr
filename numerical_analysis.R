@@ -16,6 +16,7 @@
 # When stats are plotted against each other there are lots of logistic curves
 #  fit a logistic eq to them and see what they are
 #  (e.g. are they just the bacterial curve when no phage around?)
+# Go back and re-learn multivariate calc
 
 ## Import libraries ----
 
@@ -897,4 +898,83 @@ for (myr in unique(y_summarized2$r)) {
           axis.text.x = element_text(angle = 45, hjust = 0))
   print(p)
   dev.off()
+}
+
+#Relating max_dens to max_time
+max_dens_func <- function(t, K, P_0, r) log10(K/(1+((K-P_0)/P_0)*exp(-r*t)))
+for (myr in unique(y_summarized2$r)) {
+  print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
+               aes(x = max_time, y = max_dens, color = a, shape = b)) +
+          geom_point() +
+          scale_y_continuous(trans = "log10") +
+          stat_function(fun = max_dens_func, 
+                        args = list(K = 10**9, P_0 = 1*10**6, r = myr)) +
+          ggtitle(paste("r =", myr)))
+}
+
+#Relating phage_final to max_dens and b
+y_summarized2$tau <- as.factor(y_summarized2$tau)
+
+phage_final_func <- function(max_dens, a, b, tau) {
+  log10(max_dens) + log10(b)
+}
+  
+for (myr in unique(y_summarized2$r)) {
+#myr <- 0.00798
+  print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
+               aes(x = max_dens, y = phage_final, color = b, shape = tau)) +
+          geom_point() +
+          scale_y_continuous(trans = "log10") +
+          scale_x_continuous(trans = "log10") +
+          ggtitle(paste("r =", myr)) +
+          stat_function(fun = phage_final_func,
+                        args = list(b = 5)) +
+          stat_function(fun = phage_final_func,
+                        args = list(b = 15.8)) +
+          stat_function(fun = phage_final_func,
+                        args = list(b = 50)) +
+          stat_function(fun = phage_final_func,
+                        args = list(b = 158)) +
+          stat_function(fun = phage_final_func,
+                        args = list(b = 500)) +
+          NULL
+  )
+}
+           
+temp <- y_summarized2[y_summarized2$r == 0.00798 &
+                        y_summarized2$max_dens_log10 < 8.95, ]
+
+model1 <- lm(phage_final_log10 ~ max_dens_log10 + b,
+             temp)
+summary(model1)
+
+ggplot(data = temp,
+       aes(x = max_dens_log10, y = phage_final_log10, color = b)) +
+  geom_point() +
+  geom_line(data = fortify(model2), aes(x = max_dens_log10, y = .fitted))
+
+#Relating phage_final to max_time
+phage_final_func2 <- function(max_time, K, P_0, r, b) {
+  #note output is in terms of phage_final_log10
+  #log10(phage_final) = log10(K/(1+((K-P_0)/P_0)*exp(-r*max_time))) + log10(b)
+  log10(K/(1+((K-P_0)/P_0)*exp(-r*max_time))) + log10(b)
+}
+
+for (myr in unique(y_summarized2$r)) {
+#myr <- 0.00798
+  print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
+               aes(x = max_time, y = phage_final_log10, color = b, shape = a)) +
+          geom_point() +
+          stat_function(fun = phage_final_func2,
+                        args = list(b = 5, K = 10**9, P_0 = 10**6, r = myr)) +
+          stat_function(fun = phage_final_func2,
+                        args = list(b = 15.8, K = 10**9, P_0 = 10**6, r = myr)) +
+          stat_function(fun = phage_final_func2,
+                        args = list(b = 50, K = 10**9, P_0 = 10**6, r = myr)) +
+          stat_function(fun = phage_final_func2,
+                        args = list(b = 158, K = 10**9, P_0 = 10**6, r = myr)) +
+          stat_function(fun = phage_final_func2,
+                        args = list(b = 500, K = 10**9, P_0 = 10**6, r = myr)) +
+          ggtitle(paste("r =", myr)) +
+          NULL)
 }

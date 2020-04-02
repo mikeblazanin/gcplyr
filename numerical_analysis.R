@@ -7,7 +7,7 @@
 #   Yes, they're called roots. However, it's not clear whether
 #     it would really make things faster or not
 # add in the evolution of resistant bacteria
-# collect area-under-curve?
+# fix area-under-curve calculations
 # use deriv-percap of B to find max decay rate?
 # think about characteristics to be taken when curves are too slow
 #   (e.g. time to grow above some threshold density)
@@ -466,7 +466,7 @@ y_summarized1 <- summarize(ybig1,
                                                     Density <= 10**4)),
                           extin_dens = Density[extin_index],
                           extin_time = time[extin_index],
-                          aoc = sum(Density[Pop == "B" & time < extin_time])*
+                          auc = sum(Density[Pop == "B" & time < extin_time])*
                             extin_time,
                           phage_final = max(Density[Pop == "P"]),
                           phage_extin = Density[Pop == "P" & time == extin_time],
@@ -535,7 +535,7 @@ y_summarized1$tau <- as.factor(y_summarized1$tau)
 y_summarized1$a <- as.factor(y_summarized1$a)
 #y_summarized1$r <- as.character(y_summarized1$r)
 for (stat in c("max_dens", "max_time", "extin_time", 
-               "aoc", "phage_final", "phage_r")) {
+               "auc", "phage_final", "phage_r")) {
   tiff(paste("./run1_statplots/", stat, ".tiff", sep = ""),
        width = 5, height = 5, units = "in", res = 300)
   print(ggplot(data = y_summarized1,
@@ -563,7 +563,7 @@ tiff("./run1_statplots/all_stats.tiff",
      width = 5, height = 6, units = "in", res = 300)
 ggplot(data = y_sum_melt1[y_sum_melt1$sum_stat %in%
                             c("max_dens", "max_time", "extin_time", 
-                              "aoc", "phage_final", "phage_r"), ],
+                              "auc", "phage_final", "phage_r"), ],
        aes(x = a, y = stat_val, color = b, group = b)) +
   geom_point(size = 1.5, alpha = 0.8) + 
   geom_line(size = 1.1, alpha = 0.6) +
@@ -614,7 +614,7 @@ dev.off()
 
 #First plot all at once
 for (col in c("max_dens", "max_time",
-              "extin_time", "aoc", "phage_final", "phage_r")) {
+              "extin_time", "auc", "phage_final", "phage_r")) {
   y_summarized1[, paste(col, "_log10", sep = "")] <- log10(y_summarized1[, col])
 }
 
@@ -623,7 +623,7 @@ tiff("./run1_statplots/stat_cors.tiff", width = 10, height = 10, units = "in", r
 p <- GGally::ggpairs(y_summarized1,
                      aes(color = b, shape = a),
                      columns = c("max_dens_log10", "max_time_log10",
-                                 "extin_time_log10", "aoc_log10", 
+                                 "extin_time_log10", "auc_log10", 
                                  "phage_final_log10", "phage_r_log10"),
                      lower = list(continuous = "points"),
                      upper = list(continuous = "points")) +
@@ -829,7 +829,8 @@ y_summarized2 <- summarize(ybig2,
                                                      Density <= 10**4)),
                            extin_dens = Density[extin_index],
                            extin_time = time[extin_index],
-                           aoc = sum(Density[Pop == "B" & time < extin_time])*
+                           extin_time_sincemax = extin_time-max_time,
+                           auc = sum(Density[Pop == "B" & time < extin_time])*
                              extin_time,
                            phage_final = max(Density[Pop == "P"]),
                            phage_extin = Density[Pop == "P" & time == extin_time],
@@ -849,12 +850,12 @@ for (myr in unique(y_sum_melt2$r)) {
   tiff(paste("./run2_statplots/all_stats_r=", 
              formatC(myr, digits = 5, format = "f"), 
              ".tiff", sep = ""),
-       width = 5, height = 5, units = "in", res = 300)
+       width = 5, height = 7, units = "in", res = 300)
   print(ggplot(data = y_sum_melt2[y_sum_melt2$r == myr &
                               y_sum_melt2$sum_stat %in% 
                               c("max_dens", "max_time", 
-                                "extin_time", "phage_final",
-                                "phage_r"), ],
+                                "extin_time", "extin_time_sincemax",
+                                "phage_final", "phage_r"), ],
          aes(x = a, y = stat_val, color = b, group = b)) +
     geom_point(size = 2, alpha = 0.8) + 
     geom_line(size = 1.1, alpha = 0.6) +
@@ -870,14 +871,17 @@ for (myr in unique(y_sum_melt2$r)) {
   dev.off()
 }
 
-#Plot stats against ea other ----
+###Plot stats against ea other ----
 
-#First plot all at once
-for (col in c("max_dens", "max_time",
-              "extin_time", "aoc", "phage_final", "phage_r")) {
+##First plot all at once
+
+#Calculate log10's
+for (col in c("max_dens", "max_time", "extin_time", "extin_time_sincemax",
+              "auc", "phage_final", "phage_r")) {
   y_summarized2[, paste(col, "_log10", sep = "")] <- log10(y_summarized2[, col])
 }
 
+#Make plots
 y_summarized2$a <- as.factor(y_summarized2$a)
 y_summarized2$b <- as.factor(y_summarized2$b)
 for (myr in unique(y_summarized2$r)) {
@@ -889,7 +893,9 @@ for (myr in unique(y_summarized2$r)) {
   p <- GGally::ggpairs(y_summarized2[y_summarized2$r == myr, ],
                        aes(color = b, shape = a),
                        columns = c("max_dens_log10", "max_time_log10",
-                                   "extin_time_log10", "aoc_log10", 
+                                   "extin_time_log10", 
+                                   "extin_time_sincemax_log10",
+                                   "auc_log10", 
                                    "phage_final_log10", "phage_r_log10"),
                        lower = list(continuous = "points"),
                        upper = list(continuous = "points")) +
@@ -900,6 +906,8 @@ for (myr in unique(y_summarized2$r)) {
   dev.off()
 }
 
+##Now selected pairs, looking for underlying functions
+
 #Relating max_dens to max_time
 max_dens_func <- function(t, K, P_0, r) log10(K/(1+((K-P_0)/P_0)*exp(-r*t)))
 for (myr in unique(y_summarized2$r)) {
@@ -908,42 +916,19 @@ for (myr in unique(y_summarized2$r)) {
           geom_point() +
           scale_y_continuous(trans = "log10") +
           stat_function(fun = max_dens_func, 
-                        args = list(K = 10**9, P_0 = 1*10**6, r = myr)) +
-          ggtitle(paste("r =", myr)))
+                        args = list(K = 10**9, P_0 = 1*10**6, r = myr),
+                        color = "black", lwd = 1, alpha = 0.1) +
+          ggtitle(paste("r =", myr)) +
+          theme_bw()
+  )
 }
 
 #Relating phage_final to max_dens and b
 y_summarized2$tau <- as.factor(y_summarized2$tau)
 
-phage_final_func <- function(max_dens, a, b, tau) {
-  log10(max_dens) + log10(b)
-}
-  
-for (myr in unique(y_summarized2$r)) {
-#myr <- 0.00798
-  print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
-               aes(x = max_dens, y = phage_final, color = b, shape = tau)) +
-          geom_point() +
-          scale_y_continuous(trans = "log10") +
-          scale_x_continuous(trans = "log10") +
-          ggtitle(paste("r =", myr)) +
-          stat_function(fun = phage_final_func,
-                        args = list(b = 5)) +
-          stat_function(fun = phage_final_func,
-                        args = list(b = 15.8)) +
-          stat_function(fun = phage_final_func,
-                        args = list(b = 50)) +
-          stat_function(fun = phage_final_func,
-                        args = list(b = 158)) +
-          stat_function(fun = phage_final_func,
-                        args = list(b = 500)) +
-          NULL
-  )
-}
-           
+#First try fitting a model to the data
 temp <- y_summarized2[y_summarized2$r == 0.00798 &
                         y_summarized2$max_dens_log10 < 8.95, ]
-
 model1 <- lm(phage_final_log10 ~ max_dens_log10 + b,
              temp)
 summary(model1)
@@ -953,28 +938,118 @@ ggplot(data = temp,
   geom_point() +
   geom_line(data = fortify(model2), aes(x = max_dens_log10, y = .fitted))
 
-#Relating phage_final to max_time
+#The model seems to suggest the following "true" underlying model:
+phage_final_func <- function(x, a, b, tau) {
+  log10(b*x)
+}
+
+#Pre-define all the stat_functions into a list to add all at once
+stat_func_list1 <- list()
+i <- 1
+for (myb in unique(y_summarized2$b)) {
+  stat_func_list1[[i]] <- stat_function(fun = phage_final_func,
+                                        args = list(b = as.numeric(as.character(myb))),
+                                        color = colorRampPalette(colors = c("gold", "dark red"))(5)[i])
+  i <- i+1
+}
+
+#Make plots
+for (myr in unique(y_summarized2$r)) {
+#myr <- 0.00798
+  print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
+               aes(x = max_dens, y = phage_final, color = b, shape = tau)) +
+          geom_point() +
+          scale_y_continuous(trans = "log10") +
+          scale_x_continuous(trans = "log10") +
+          scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+          ggtitle(paste("r =", myr)) +
+          stat_func_list1 +
+          NULL
+  )
+}
+
+#Since max_dens is related to max_time, and phage_final is related to max_dens
+#We can relate phage_final to max_time
 phage_final_func2 <- function(max_time, K, P_0, r, b) {
   #note output is in terms of phage_final_log10
   #log10(phage_final) = log10(K/(1+((K-P_0)/P_0)*exp(-r*max_time))) + log10(b)
   log10(K/(1+((K-P_0)/P_0)*exp(-r*max_time))) + log10(b)
 }
 
+#Pre-define all the stat_functions into a list to add all at once
+# (this is a nested list, the upper level corresponding to different
+# r values, and the inner level to different b values)
+stat_func_list2 <- list()
+i <- 1
+j <- 1
+for (myr in unique(y_summarized2$r)) {
+  j <- 1
+  stat_func_list2[[i]] <- list()
+  for (myb in unique(y_summarized2$b)) {
+    stat_func_list2[[i]][[j]] <- stat_function(fun = phage_final_func2,
+                                          args = list(b = as.numeric(as.character(myb)), 
+                                                      K = 10**9, P_0 = 10**6, r = myr),
+                                          color = colorRampPalette(colors = c("gold", "dark red"))(5)[i])
+    j <- j+1
+  }
+  i <- i+1
+}
+
+i <- 1
 for (myr in unique(y_summarized2$r)) {
 #myr <- 0.00798
   print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
                aes(x = max_time, y = phage_final_log10, color = b, shape = a)) +
           geom_point() +
-          stat_function(fun = phage_final_func2,
-                        args = list(b = 5, K = 10**9, P_0 = 10**6, r = myr)) +
-          stat_function(fun = phage_final_func2,
-                        args = list(b = 15.8, K = 10**9, P_0 = 10**6, r = myr)) +
-          stat_function(fun = phage_final_func2,
-                        args = list(b = 50, K = 10**9, P_0 = 10**6, r = myr)) +
-          stat_function(fun = phage_final_func2,
-                        args = list(b = 158, K = 10**9, P_0 = 10**6, r = myr)) +
-          stat_function(fun = phage_final_func2,
-                        args = list(b = 500, K = 10**9, P_0 = 10**6, r = myr)) +
+          stat_func_list2[[i]] +
+          scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
           ggtitle(paste("r =", myr)) +
           NULL)
+  i <- i+1
 }
+
+
+
+
+
+#Relating max_dens to extin_time
+max_dens_func2 <- function(extin_time, K, P_0, r) {
+  log10(K/(1+((K-P_0)/P_0)*exp(-r*extin_time)))
+}
+  
+#for (myr in unique(y_summarized2$r)) {
+  myr <- 0.00798
+  print(ggplot(data = y_summarized2[y_summarized2$r == myr, ],
+               aes(x = extin_time, y = max_dens, color = b, shape = a)) +
+          geom_point() +
+          stat_function(fun = max_dens_func2,
+                        args = list(K = 10**9, P_0 = 10**6, r = myr)) +
+          scale_y_continuous(trans = "log10") +
+          ggtitle(paste("r =", myr)) +
+          NULL)
+#}
+
+#Relating phage_r to extin_time
+y_summarized2$tau <- as.factor(y_summarized2$tau)
+
+phage_r_model1 <- lm(phage_r_log10 ~ extin_time_log10 + 
+                       a + a:extin_time_log10 + 
+                       b + b:extin_time_log10 +
+                       tau + tau:extin_time_log10,
+                     y_summarized2)
+anova(phage_r_model1)
+summary(phage_r_model1)
+
+  #for (myr in unique(y_summarized2$r)) {
+  myr <- 0.00798
+  print(ggplot(data = y_summarized2[y_summarized2$max_dens_log10 < 8.95, ],
+               aes(x = extin_time_log10, y = phage_r_log10, 
+                   color = a, shape = tau)) +
+          geom_point(alpha = 0.5) +
+          facet_grid(~b) +
+          # stat_function(fun = max_dens_func2,
+          #               args = list(K = 10**9, P_0 = 10**6, r = myr)) +
+#          scale_y_continuous(trans = "log10") +
+#          ggtitle(paste("r =", myr)) +
+          NULL)
+  #}

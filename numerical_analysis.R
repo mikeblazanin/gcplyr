@@ -453,18 +453,35 @@ calc_deriv <- function(density, percapita = FALSE,
 #Burst size ranges from 4.5 to 1000
 
 ## Run #1 ----
-run1 <- run_sims(rvals = c(0.023), #(30 min doubling time)
-                 kvals = c(10**9),
-                 avals = 10**seq(from = -12, to = -8, by = 1),
-                 tauvals = signif(10**seq(from = 1, to = 2, by = 0.25), 3),
-                 bvals = signif(5*10**seq(from = 0, to = 2, by = 0.5), 3),
-                 cvals = 1,
-                 init_bact_dens_vals = 10**6,
-                 init_moi_vals = 10**-2,
-                 min_dens = 0.1,
-                 init_time = 100,
-                 init_stepsize = 1,
-                 print_info = TRUE)
+
+if (F) {
+  run1 <- run_sims(rvals = c(0.023), #(30 min doubling time)
+                   kvals = c(10**9),
+                   avals = 10**seq(from = -12, to = -8, by = 1),
+                   tauvals = signif(10**seq(from = 1, to = 2, by = 0.25), 3),
+                   bvals = signif(5*10**seq(from = 0, to = 2, by = 0.5), 3),
+                   cvals = 1,
+                   init_bact_dens_vals = 10**6,
+                   init_moi_vals = 10**-2,
+                   min_dens = 0.1,
+                   init_time = 100,
+                   init_stepsize = 1,
+                   print_info = TRUE)
+  #Save results so they can be re-loaded in future
+  write.csv(run1[[1]], "run1_1.csv", row.names = F)
+  if (!is.null(run1[[2]])) {write.csv(run1[[2]], "run1_2.csv", row.names = F)}
+  if (!is.null(run1[[3]])) {write.csv(run1[[3]], "run1_3.csv", row.names = F)}
+} else {
+  #Load results previously simulated
+  temp1 <- read.csv("run1_1.csv", stringsAsFactors = F)
+  if ("run1_2.csv" %in% list.files()) {
+    temp2 <- read.csv("run1_2.csv", stringsAsFactors = F)
+  } else {temp2 <- NULL}
+  if ("run1_3.csv" %in% list.files()) {
+    temp3 <- read.csv("run1_3.csv", stringsAsFactors = F)
+  } else {temp3 <- NULL}
+  run1 <- list(temp1, temp2, temp3)
+}
 
 #Find peaks & extinction via summarize
 ybig1 <- group_by_at(run1[[1]], .vars = 1:9)
@@ -815,18 +832,34 @@ ggplot(data = ybig1[ybig1$Pop == "B" &
 dev.off()
 
 ## Run #2 ----
-run2 <- run_sims(rvals = signif(0.04*10**seq(from = 0, to = -0.7, by = -0.175), 3),
-                 kvals = c(10**9),
-                 avals = 10**seq(from = -12, to = -8, by = 1),
-                 tauvals = signif(10**seq(from = 1, to = 2, by = 0.25), 3),
-                 bvals = signif(5*10**seq(from = 0, to = 2, by = 0.5), 3),
-                 cvals = 1,
-                 init_bact_dens_vals = 10**6,
-                 init_moi_vals = 10**-2,
-                 min_dens = 0.1,
-                 init_time = 100,
-                 init_stepsize = 1,
-                 print_info = TRUE)
+if (F) {
+  run2 <- run_sims(rvals = signif(0.04*10**seq(from = 0, to = -0.7, by = -0.175), 3),
+                   kvals = c(10**9),
+                   avals = 10**seq(from = -12, to = -8, by = 1),
+                   tauvals = signif(10**seq(from = 1, to = 2, by = 0.25), 3),
+                   bvals = signif(5*10**seq(from = 0, to = 2, by = 0.5), 3),
+                   cvals = 1,
+                   init_bact_dens_vals = 10**6,
+                   init_moi_vals = 10**-2,
+                   min_dens = 0.1,
+                   init_time = 100,
+                   init_stepsize = 1,
+                   print_info = TRUE)
+  #Save results so they can be re-loaded in future
+  write.csv(run2[[1]], "run2_1.csv", row.names = F)
+  if (!is.null(run2[[2]])) {write.csv(run2[[2]], "run2_2.csv", row.names = F)}
+  if (!is.null(run2[[3]])) {write.csv(run2[[3]], "run2_3.csv", row.names = F)}
+} else {
+  #Load results previously simulated
+  temp1 <- read.csv("run2_1.csv", stringsAsFactors = F)
+  if ("run2_2.csv" %in% list.files()) {
+    temp2 <- read.csv("run2_2.csv", stringsAsFactors = F)
+  } else {temp2 <- NULL}
+  if ("run2_3.csv" %in% list.files()) {
+    temp3 <- read.csv("run2_3.csv", stringsAsFactors = F)
+  } else {temp3 <- NULL}
+  run2 <- list(temp1, temp2, temp3)
+}
 
 #Check fails/no equils
 run2[[2]]
@@ -1035,6 +1068,175 @@ for (myr in unique(y_summarized2$r)) {
   i <- i+1
 }
 
+##Run #3 ----
+
+if (F) {
+  run3 <- run_sims(rvals = c(0.04, 0.0179),
+                 kvals = c(10**9),
+                 avals = 10**seq(from = -12, to = -8, by = 2),
+                 tauvals = signif(20**seq(from = 1, to = 1.5, by = 0.5), 3),
+                 bvals = signif(5*10**seq(from = 1, to = 2, by = 1), 3),
+                 cvals = 1,
+                 init_bact_dens_vals = c(10**4, 10**5, 10**6),
+                 init_moi_vals = c(10**-2, 10**-1, 1),
+                 min_dens = 0.1,
+                 init_time = 100,
+                 init_stepsize = 1,
+                 print_info = TRUE)
+  #Save results so they can be re-loaded in future
+  write.csv(run3[[1]], "run3_1.csv", row.names = F)
+  if (!is.null(run3[[2]])) {write.csv(run3[[2]], "run3_2.csv", row.names = F)}
+  if (!is.null(run3[[3]])) {write.csv(run3[[3]], "run3_3.csv", row.names = F)}
+} else {
+  #Load results previously simulated
+  temp1 <- read.csv("run3_1.csv", stringsAsFactors = F)
+  if ("run3_2.csv" %in% list.files()) {
+    temp2 <- read.csv("run3_2.csv", stringsAsFactors = F)
+  } else {temp2 <- NULL}
+  if ("run3_3.csv" %in% list.files()) {
+    temp3 <- read.csv("run3_3.csv", stringsAsFactors = F)
+  } else {temp3 <- NULL}
+  run3 <- list(temp1, temp2, temp3)
+}
+
+#Check fails/no equils
+run3[[2]]
+
+run3[[3]]
+
+#Find peaks & extinction via summarize
+ybig3 <- group_by_at(run3[[1]], .vars = 1:9)
+ybig3 <- ybig3[complete.cases(ybig3), ]
+y_summarized3 <- summarize(ybig3,
+                           max_dens = max(Density[Pop == "B"]),
+                           max_time = time[Pop == "B" & 
+                                             Density[Pop == "B"] == max_dens],
+                           extin_index = min(which(Pop == "B" &
+                                                     Density <= 10**3)),
+                           extin_dens = Density[extin_index],
+                           extin_time = time[extin_index],
+                           extin_time_sincemax = extin_time-max_time,
+                           auc = sum(Density[Pop == "B" & time < extin_time])*
+                             extin_time,
+                           phage_final = max(Density[Pop == "P"]),
+                           phage_extin = Density[Pop == "P" & time == extin_time],
+                           phage_r = (log(phage_final)-
+                                        log(init_bact_dens[1]*init_moi[1]))/
+                             extin_time
+)
+
+#Make plots of density against time ----
+dens_offset <- 10
+if (F) {
+  for (run in unique(ybig3$uniq_run)) {
+    tiff(paste("./run3_dens_curves/", run, ".tiff", sep = ""),
+         width = 5, height = 5, units = "in", res = 300)
+    print(
+      ggplot(data = ybig3[ybig3$uniq_run == run &
+                            ybig3$Pop %in% c("S", "I", "P"),], 
+             aes(x = time, y = Density+dens_offset, color = Pop)) +
+        geom_line(lwd = 1.5, alpha = 1) + 
+        geom_line(data = ybig3[ybig3$uniq_run == run &
+                                 ybig3$Pop == "B",], 
+                  aes(x = time, y = Density+dens_offset),
+                  color = "black", alpha = 0.5, lwd = 1.1) +
+        geom_line(data = ybig3[ybig3$uniq_run == run &
+                                 ybig3$Pop == "PI",],
+                  aes(x = time, y = Density+dens_offset),
+                  color = "black", alpha = 0.5, lwd = 1, lty = 3) +
+        geom_point(data = y_summarized3[y_summarized3$uniq_run == run, ],
+                   aes(x = max_time, y = max_dens+dens_offset), color = "black") +
+        geom_point(data = y_summarized3[y_summarized3$uniq_run == run, ],
+                   aes(x = extin_time, y = extin_dens+dens_offset), color = "black") +
+        scale_y_continuous(trans = "log10") +
+        scale_x_continuous(breaks = seq(from = 0, to = max(ybig3$time), 
+                                        by = round(max(ybig3[ybig3$uniq_run == run &
+                                                               ybig3$Pop != "B", 
+                                                             "time"])/10))) +
+        scale_color_manual(values = my_cols[c(2, 3, 1)]) +
+        geom_hline(yintercept = 10, lty = 2) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),
+              title = element_text(size = 9)) +
+        ggtitle(paste(ybig3[min(which(ybig3$uniq_run == run)), 2:9],
+                      collapse = ", ")) +
+        labs(y = paste("Density +", dens_offset)) +
+        NULL
+    )
+    dev.off()
+  }
+}
+
+## Plot summarized stats ----
+y_sum_melt3 <- reshape2::melt(y_summarized3,
+                              id.vars = 1:9,
+                              variable.name = "sum_stat",
+                              value.name = "stat_val")
+
+y_sum_melt3$init_moi <- as.factor(y_sum_melt3$init_moi)
+for (myr in unique(y_sum_melt3$r)) {
+  for (myb in unique(y_sum_melt3$b)) {
+    tiff(paste("./run3_statplots/all_stats_r=", 
+               formatC(myr, digits = 5, format = "f"), 
+               ",b=", myb, ".tiff", sep = ""),
+         width = 5, height = 7, units = "in", res = 300)
+    print(ggplot(data = y_sum_melt3[y_sum_melt3$r == myr &
+                                      y_sum_melt3$b == myb &
+                                      y_sum_melt3$sum_stat %in% 
+                                      c("max_dens", "max_time", 
+                                        "extin_time", "extin_time_sincemax",
+                                        "phage_final", "phage_r"), ],
+                 aes(x = init_bact_dens, y = stat_val, color = init_moi, group = init_moi)) +
+            geom_point(size = 2, alpha = 0.8) + 
+            geom_line(size = 1.1, alpha = 0.6) +
+            facet_grid(sum_stat~tau*a, scales = "free_y") +
+            scale_y_continuous(trans = "log10") +
+            scale_x_continuous(trans = "log10") +
+            scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+            ggtitle(paste("r=", myr, " tau", sep = "")) +
+            NULL
+    )
+    dev.off()
+  }
+}
+
+###Plot stats against ea other ----
+
+##First plot all at once
+
+#Calculate log10's
+for (col in c("max_dens", "max_time", "extin_time", "extin_time_sincemax",
+              "auc", "phage_final", "phage_r")) {
+  y_summarized3[, paste(col, "_log10", sep = "")] <- log10(y_summarized3[, col])
+}
+
+#Make plots
+y_summarized3$init_moi <- as.factor(y_summarized3$init_moi)
+y_summarized3$init_bact_dens <- as.factor(y_summarized3$init_bact_dens)
+for (myr in unique(y_summarized3$r)) {
+  tiff(paste("./run3_statplots/stat_cors_r=", 
+             formatC(myr, digits = 5, format = "f"),
+             ".tiff", sep = ""),
+       width = 15, height = 15, units = "in", res = 300)
+  #Make base figure
+  p <- GGally::ggpairs(y_summarized3[y_summarized3$r == myr, ],
+                       aes(color = init_moi, shape = init_bact_dens),
+                       columns = c("max_dens_log10", "max_time_log10",
+                                   "extin_time_log10", 
+                                   "extin_time_sincemax_log10",
+                                   "auc_log10", 
+                                   "phage_final_log10", "phage_r_log10"),
+                       lower = list(continuous = "points"),
+                       upper = list(continuous = "points")) +
+    theme_bw() +
+    theme(strip.text = element_text(size = 10),
+          axis.text.x = element_text(angle = 45, hjust = 0))
+  print(p)
+  dev.off()
+}
+
+
 ###Work in progress below: ----
 
 ##Relating max dens to extin_time
@@ -1062,22 +1264,26 @@ sq_err_func <- function(params, x_vals, y_vals) {
   #return(sum((100*(pred_vals-y_vals)/y_vals)**2))
 }
 
-#Find fits
-fit_output <- data.frame(myr = numeric(), r = numeric(), 
-                         K = numeric(), P_0 = numeric())
-# for (myr in unique(y_summarized2$r)) {
-  myr <- 0.00798
-  temp <- optim(fn = sq_err_func,
-                par = c(r = myr, K = 10**9, P_0 = 10**6),
-                x_vals = y_summarized2$extin_time[y_summarized2$r == myr],
-                y_vals = y_summarized2$max_dens[y_summarized2$r == myr],
-                method = "BFGS")
-  fit_output <- rbind(fit_output,
-                      data.frame(myr = myr,
-                                 r = temp$par["r"],
-                                 K = temp$par["K"],
-                                 P_0 = temp$par["P_0"]))
-# }
+#this stuff is producing warnings even when not run:
+# Warning messages:
+#   1: Unknown or uninitialised column: 'par'
+
+# #Find fits
+# fit_output <- data.frame(myr = numeric(), r = numeric(), 
+#                          K = numeric(), P_0 = numeric())
+# # for (myr in unique(y_summarized2$r)) {
+#   myr <- 0.00798
+#   temp <- optim(fn = sq_err_func,
+#                 #par = c(r = myr, K = 10**9, P_0 = 10**6), 
+#                 x_vals = y_summarized2$extin_time[y_summarized2$r == myr],
+#                 y_vals = y_summarized2$max_dens[y_summarized2$r == myr],
+#                 method = "BFGS")
+#   fit_output <- rbind(fit_output,
+#                       data.frame(myr = myr,
+#                                  r = temp$par["r"],
+#                                  K = temp$par["K"],
+#                                  P_0 = temp$par["P_0"]))
+# # }
 
 #Calc ratio of logistic curve's fit r to the r in the simulations (myr)
 fit_output$r_divby_myr <- fit_output$r/fit_output$myr

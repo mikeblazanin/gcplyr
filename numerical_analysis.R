@@ -919,6 +919,50 @@ for (myr in unique(y_sum_melt2$r)) {
   dev.off()
 }
 
+##Just extin_time ----
+ggplot(data = y_summarized2,
+       aes(x = a, y = extin_time, color = b, group = b)) +
+  #geom_point() + 
+  geom_line(lwd = 1.25, alpha = 0.8) +
+  scale_color_manual(values = my_cols[c(1, 2, 3, 5, 7)]) +
+  facet_grid(r~tau) +
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(data = y_summarized2,
+       aes(x = b, y = extin_time, color = as.factor(r),
+           group = as.factor(r))) +
+  #geom_point() + 
+  geom_line(lwd = 1.25, alpha = 0.8) +
+  scale_color_manual(values = my_cols[c(1, 2, 3, 5, 7)]) +
+  facet_grid(tau~a) +
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(data = y_summarized2,
+       aes(x = r, y = extin_time, color = as.factor(tau),
+           group = as.factor(tau))) +
+  #geom_point() + 
+  geom_line(lwd = 1.25, alpha = 0.8) +
+  scale_color_manual(values = my_cols[c(1, 2, 3, 5, 7)]) +
+  facet_grid(a~b) +
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(data = y_summarized2,
+       aes(x = tau, y = extin_time, color = as.factor(a),
+           group = as.factor(a))) +
+  #geom_point() + 
+  geom_line(lwd = 1.25, alpha = 0.8) +
+  scale_color_manual(values = my_cols[c(1, 2, 3, 5, 7)]) +
+  facet_grid(b~r) +
+  scale_y_continuous(trans = "log10") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ###Plot stats against ea other ----
 
 ##First plot all at once
@@ -1201,6 +1245,16 @@ for (myr in unique(y_sum_melt3$r)) {
   }
 }
 
+#Let's focus in on extin_time
+ggplot(data = y_summarized3,
+       aes(x = init_bact_dens, y = extin_time, color = init_moi,
+           shape = a)) +
+  geom_point() +
+  facet_grid(r~b*tau) +
+#  geom_line() +
+  theme_bw() +
+  NULL
+
 ###Plot stats against ea other ----
 
 ##First plot all at once
@@ -1235,6 +1289,96 @@ for (myr in unique(y_summarized3$r)) {
   print(p)
   dev.off()
 }
+
+###Run #4 ----
+
+if (F) {
+  run4 <- run_sims(rvals = signif(0.04*10**seq(from = 1, to = -2, by = -0.67), 3),
+                   kvals = c(10**9),
+                   avals = 10**seq(from = -14, to = -6, by = 2),
+                   tauvals = signif(10**seq(from = 0, to = 3, by = 0.75), 3),
+                   bvals = signif(5*10**seq(from = -1, to = 3, by = 1), 3),
+                   cvals = 1,
+                   init_bact_dens_vals = 10**6,
+                   init_moi_vals = 10**-2,
+                   min_dens = 0.1,
+                   init_time = 100,
+                   init_stepsize = 1,
+                   print_info = TRUE)
+  #Save results so they can be re-loaded in future
+  write.csv(run4[[1]], "run4_1.csv", row.names = F)
+  if (!is.null(run4[[2]])) {write.csv(run4[[2]], "run4_2.csv", row.names = F)}
+  if (!is.null(run4[[3]])) {write.csv(run4[[3]], "run4_3.csv", row.names = F)}
+} else {
+  #Load results previously simulated
+  temp1 <- read.csv("run4_1.csv", stringsAsFactors = F)
+  if ("run4_2.csv" %in% list.files()) {
+    temp2 <- read.csv("run4_2.csv", stringsAsFactors = F)
+  } else {temp2 <- NULL}
+  if ("run4_3.csv" %in% list.files()) {
+    temp3 <- read.csv("run4_3.csv", stringsAsFactors = F)
+  } else {temp3 <- NULL}
+  run4 <- list(temp1, temp2, temp3)
+}
+
+#Check fails/no equils
+run4[[2]]
+
+run4[[3]]
+
+#Find peaks & extinction via summarize
+ybig4 <- group_by_at(run4[[1]], .vars = 1:9)
+ybig4 <- ybig4[complete.cases(ybig4), ]
+y_summarized4 <- summarize(ybig4,
+                           max_dens = max(Density[Pop == "B"]),
+                           max_time = time[Pop == "B" & 
+                                             Density[Pop == "B"] == max_dens],
+                           extin_index = min(which(Pop == "B" &
+                                                     Density <= 10**4)),
+                           extin_dens = Density[extin_index],
+                           extin_time = time[extin_index],
+                           extin_time_sincemax = extin_time-max_time,
+                           auc = sum(Density[Pop == "B" & time < extin_time])*
+                             extin_time,
+                           phage_final = max(Density[Pop == "P"]),
+                           phage_extin = Density[Pop == "P" & time == extin_time],
+                           phage_r = (log(phage_final)-
+                                        log(init_bact_dens[1]*init_moi[1]))/
+                             extin_time
+)
+
+## Plot summarized stats ----
+y_sum_melt4 <- reshape2::melt(y_summarized4,
+                              id.vars = 1:9,
+                              variable.name = "sum_stat",
+                              value.name = "stat_val")
+
+y_sum_melt4$b <- as.factor(y_sum_melt4$b)
+for (myr in unique(y_sum_melt4$r)) {
+  tiff(paste("./run2_statplots/all_stats_r=", 
+             formatC(myr, digits = 5, format = "f"), 
+             ".tiff", sep = ""),
+       width = 5, height = 7, units = "in", res = 300)
+  print(ggplot(data = y_sum_melt4[y_sum_melt4$r == myr &
+                                    y_sum_melt4$sum_stat %in% 
+                                    c("max_dens", "max_time", 
+                                      "extin_time", "extin_time_sincemax",
+                                      "phage_final", "phage_r"), ],
+               aes(x = a, y = stat_val, color = b, group = b)) +
+          geom_point(size = 2, alpha = 0.8) + 
+          geom_line(size = 1.1, alpha = 0.6) +
+          facet_grid(sum_stat~tau, scales = "free_y") +
+          scale_y_continuous(trans = "log10") +
+          scale_x_continuous(trans = "log10") +
+          scale_color_manual(values = colorRampPalette(colors = c("gold", "dark red"))(5)) +
+          theme_bw() +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+          ggtitle(paste("r=", myr, " tau", sep = "")) +
+          NULL
+  )
+  dev.off()
+}
+
 
 
 ###Work in progress below: ----

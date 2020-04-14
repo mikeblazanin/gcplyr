@@ -10,8 +10,14 @@ read_blockcurves <- function(files, extension = NULL,
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
                              sheet = NULL) {
-  #Inputs: a list of filepaths relative to the current working directory, \
-  # where each one is a single plate read
+  #Inputs:  a list of filepaths relative to the current working directory,
+  #           where each one is a single plate read
+  #         (optional) the extension of the files,"csv", "xls", or "xlsx"
+  #           (will attempt to infer extension if none is provided)
+  #         (optional) the row & columns where the density data is located
+  #         startrow, endrow, startcol, endcol, sheet and extension can either
+  #          be vectors or lists the same length as files, or a single value
+  # 
   #Outputs: a list of blockcurves named by filename
   
   #Note if sheet is NULL defaults to first sheet
@@ -26,7 +32,7 @@ read_blockcurves <- function(files, extension = NULL,
         stop(paste("More than one", dimname, "value is supplied, but the number
                    of", dimname, "values is not equal to the number of files"))
       } else {
-        output <- rep(diminput, length(files))
+        return(rep(diminput, length(files)))
       }
     }
   }
@@ -35,16 +41,17 @@ read_blockcurves <- function(files, extension = NULL,
   endrow <- check_diminputs(endrow, "endrow", files)
   startcol <- check_diminputs(startcol, "startcol", files)
   endcol <- check_diminputs(endcol, "endcol", files)
+  sheet <- check_diminputs(sheet, "sheet", files)
   
   #Create empty recipient list
   outputs <- rep(list(NA), length(files))
   
   #Determine file extension
-  if (is.null(extension) == FALSE) {
-    extension <- rep(extension, times = length(files))
-  } else {
+  if (is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
+  } else {
+    extension <- check_diminputs(extension, "extension", files)
   }
   
   if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
@@ -54,17 +61,17 @@ read_blockcurves <- function(files, extension = NULL,
   while (i < length(files)) {
     if (extension[i] == "csv") {
         outputs[[i]] <- as.numeric(read.csv(files[i], colClasses = "character")
-                                   [startrow:endrow, startcol:endcol])
+                                   [startrow[i]:endrow[i], startcol[i]:endcol[i]])
     } else if (extension[i] == "xls") {
         suppressMessages(outputs[[i]] <- 
                            readxl::read_xls(files[i], col_names = FALSE, 
-                                    col_types = "text", sheet = sheet)
-                         [startrow:endrow, startcol:endcol])
+                                    col_types = "text", sheet = sheet[i])
+                         [startrow[i]:endrow[i], startcol[i]:endcol[i]])
     } else if (extension[i] == "xlsx") {
         suppressMessages(outputs[[i]] <- 
                            readxl::read_xlsx(files[i], col_names = FALSE, 
-                                     col_types = "text", sheet = sheet)
-                         [startrow:endrow, startcol:endcol])
+                                     col_types = "text", sheet = sheet[i])
+                         [startrow[i]:endrow[i], startcol[i]:endcol[i]])
     }
   }
   #Save timepoint information (without file extension)

@@ -6,10 +6,24 @@
 #wide-curves: dataframe with each column corresponding to a single well
 #block-curves: dataframe where rows and columns match literally to a plate
 
+check_diminputs <- function(diminput, dimname, files) {
+  #A function that adjusts inputs to be lists if they're not already
+  if (length(diminput) != length(files)) {
+    if(length(diminput) != 1) {
+      stop(paste("More than one", dimname, "value is supplied, but the number
+                   of", dimname, "values is not equal to the number of files"))
+    } else {
+      return(rep(diminput, length(files)))
+    }
+  }
+}
+
 read_blockcurves <- function(files, extension = NULL, 
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
                              sheet = NULL) {
+  #A function that reads blockcurves into the R environment
+  
   #Inputs:  a list of filepaths relative to the current working directory,
   #           where each one is a single plate read
   #         (optional) the extension of the files,"csv", "xls", or "xlsx"
@@ -17,6 +31,7 @@ read_blockcurves <- function(files, extension = NULL,
   #         (optional) the row & columns where the density data is located
   #         startrow, endrow, startcol, endcol, sheet and extension can either
   #          be vectors or lists the same length as files, or a single value
+  #          that applies for all files
   # 
   #Outputs: a list of blockcurves named by filename
   
@@ -25,23 +40,21 @@ read_blockcurves <- function(files, extension = NULL,
   require(tools)
   #Note later we make a require call for readxl
   
-  #Adjust inputs to be lists
-  check_diminputs <- function(diminput, dimname, files) {
-    if (length(diminput) != length(files)) {
-      if(length(diminput) != 1) {
-        stop(paste("More than one", dimname, "value is supplied, but the number
-                   of", dimname, "values is not equal to the number of files"))
-      } else {
-        return(rep(diminput, length(files)))
-      }
-    }
+  if (!is.null(startrow)) {
+    startrow <- check_diminputs(startrow, "startrow", files)
   }
-  
-  startrow <- check_diminputs(startrow, "startrow", files)
-  endrow <- check_diminputs(endrow, "endrow", files)
-  startcol <- check_diminputs(startcol, "startcol", files)
-  endcol <- check_diminputs(endcol, "endcol", files)
-  sheet <- check_diminputs(sheet, "sheet", files)
+  if (!is.null(endrow)) { 
+    endrow <- check_diminputs(endrow, "endrow", files)
+  }
+  if (!is.null(startcol)) {
+    startcol <- check_diminputs(startcol, "startcol", files)
+  }
+  if (!is.null(endcol)) {
+    endcol <- check_diminputs(endcol, "endcol", files)
+  }
+  if (!is.null(sheet)) {
+    sheet <- check_diminputs(sheet, "sheet", files)
+  }
   
   #Create empty recipient list
   outputs <- rep(list(NA), length(files))
@@ -132,7 +145,7 @@ make_widecurves <- function(blockcurves) {
   
   output <- data.frame(matrix(nrow = length(blockcurves,
                                             ncol = nrow(blockcurves[1]) *
-                                            ncol(blockcurves[1]))))
+                                              ncol(blockcurves[1]))))
   colnames(output) <- 1:ncol(output)
   rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
   

@@ -27,6 +27,7 @@
 #  One representing bacterial growth, and one representing bacterial decay
 #  We're kind of idealizing bacterial growth as logistic and phage
 #   growth as logistic and B(t) is just the integrated difference between them
+# Parallelize for running on cluster with much faster walltime
 
 ## Import libraries ----
 

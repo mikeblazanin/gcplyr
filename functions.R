@@ -1,3 +1,7 @@
+#TODO: actually test & check that functions work
+#       figure out where well names are brought in and put them
+#        in the column names
+
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
 #LOWESS
@@ -70,8 +74,7 @@ read_blockcurves <- function(files, extension = NULL,
   if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
 
   #Read files
-  i <- 1
-  while (i < length(files)) {
+  for (i in 1:length(files)) {
     if (extension[i] == "csv") {
         outputs[[i]] <- as.numeric(read.csv(files[i], colClasses = "character")
                                    [startrow[i]:endrow[i], startcol[i]:endcol[i]])
@@ -125,7 +128,7 @@ uninterleave <- function(interleaved_list, n) {
   return(output)
 }
 
-make_widecurves <- function(blockcurves) {
+widen_blockcurves <- function(blockcurves) {
   #Inputs: a [list of] blockcurve[s] (optionally, named)
   #Outputs: a single widecurve dataframe
   
@@ -143,11 +146,12 @@ make_widecurves <- function(blockcurves) {
     }
   }
   
-  output <- data.frame(matrix(nrow = length(blockcurves,
-                                            ncol = nrow(blockcurves[1]) *
-                                              ncol(blockcurves[1]))))
-  colnames(output) <- 1:ncol(output)
-  rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
+  ##Pretty sure these rows don't do anything
+  # output <- data.frame(matrix(nrow = length(blockcurves,
+  #                                           ncol = nrow(blockcurves[1]) *
+  #                                             ncol(blockcurves[1]))))
+  # colnames(output) <- 1:ncol(output)
+  # rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
   
   #convert list of dataframes to single dataframe
   #where each column is a well and each row is a plate read
@@ -160,12 +164,142 @@ make_widecurves <- function(blockcurves) {
   return(output)
 }
 
-read_widecurves <- function(filename) {
-  
+import_blockcurves <- function(files, num_plates = 1, ...) {
+  blockcurves1 <- read_blockcurves(files = files, ...)
+  blockcurves2 <- uninterleave(blockcurves1, n = num_plates)
+  widecurves <- rep(list(NA), num_plates)
+  for (i in 1:length(blockcurves2)) {
+    widecurves[[i]] <- widen_blockcurves(blockcurves2[[i]])
+  }
+  names(widecurves) <- paste("plate_", 1:length(widecurves), sep = "")
+  return(widecurves)
 }
 
-melt_widecurves <- function(widecurves, timestamps = NULL) {
-  require(reshape2)
+import_widecurves <- function(files, extension = NULL, 
+                              startrow = NULL, endrow = NULL, 
+                              startcol = NULL, endcol = NULL,
+                              timecol = NULL, headrow = NULL,
+                              sheet = NULL) {
+  #Inputs:  a list of filepaths relative to the current working directory,
+  #           where each one is a widecurves set of data
+  #         (optional) the extension of the files,"csv", "xls", or "xlsx"
+  #           (will attempt to infer extension if none is provided)
+  #         (optional) the row & columns where the data is located
+  #         (optional) the column where timestamp info is located
+  #           (if none provided by default the column immediately to the left 
+  #           of startcol is assumed to be the time column)
+  #         (optional) the sheet where data is located (if xls or xlsx)
+  #           if none provided, defaults to first sheet
+  #         startrow, endrow, startcol, endcol, timecol, sheet and extension 
+  #           can either be vectors or lists the same length as files, 
+  #           or a single value that applies for all files
+  # 
+  #Outputs: a list of blockcurves named by filename
+  
+  if (!is.null(startrow)) {
+    startrow <- check_diminputs(startrow, "startrow", files)
+  }
+  if (!is.null(endrow)) { 
+    endrow <- check_diminputs(endrow, "endrow", files)
+  }
+  if (!is.null(startcol)) {
+    startcol <- check_diminputs(startcol, "startcol", files)
+  }
+  if (!is.null(endcol)) {
+    endcol <- check_diminputs(endcol, "endcol", files)
+  }
+  if (!is.null(timecol)) {
+    timecol <- check_diminputs(timecol, "timecol", files)
+  } else if (as.numeric(startcol) > 1) {
+    timecol <- rep(as.numeric(startcol)-1, length(files))
+  } else {timecol <- NA}
+  if (!is.null(sheet)) {
+    sheet <- check_diminputs(sheet, "sheet", files)
+  }
+  if (!is.null(headrow)) {
+    headrow <- check_diminputs(headrow, "headrow", files)
+  } else if (as.numeric(startrow) > 1) {
+    headrow <- rep(as.numeric(startrow)-1, length(files))
+  } else {headrow <- NA}
+  
+  #Create empty recipient list
+  outputs <- rep(list(NA), length(files))
+  
+  #Determine file extension
+  if (is.null(extension)) {
+    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
+                        USE.NAMES = FALSE)
+  } else {
+    extension <- check_diminputs(extension, "extension", files)
+  }
+  
+  if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
+  
+  #Read files (adding time info as row names)
+  for (i in 1:length(files)) {
+    if (extension[i] == "csv") {
+      outputs[[i]] <- as.numeric(read.csv(files[i], colClasses = "character")
+                                 [startrow[i]:endrow[i], startcol[i]:endcol[i]])
+      if (!is.na(timecol[i])) {
+        row.names(outputs[[i]]) <- as.numeric(read.csv(files[i], colClasses = "character")
+                                              [startrow[i]:endrow[i], timecol[i]])
+      }
+      if (!is.na(headrow[i])) {
+        colnames(outputs[[i]]) <- (read.csv(files[i], colClasses = "character")
+        [headrow[i], startcol[i]:endcol[i]])
+      }
+    } else if (extension[i] == "xls") {
+      suppressMessages(outputs[[i]] <- 
+                         readxl::read_xls(files[i], col_names = FALSE, 
+                                           col_types = "text", sheet = sheet[i])
+                          [startrow[i]:endrow[i], startcol[i]:endcol[i]])
+      if (!is.na(timecol[i])) {
+        suppressMessages(row.names(outputs[[i]]) <- 
+                           readxl::read_xls(files[i], col_names = FALSE, 
+                                            col_types = "text", sheet = sheet[i])
+                         [startrow[i]:endrow[i], timecol[i]])
+      }
+      if (!is.na(headrow[i])) {
+        suppressMessages(colnames(outputs[[i]]) <-
+                           readxl::read_xls(files[i], col_names = FALSE, 
+                                            col_types = "text", sheet = sheet[i])
+                         [headrow[i], startcol[i]:endcol[i]])
+      }
+    } else if (extension[i] == "xlsx") {
+      suppressMessages(outputs[[i]] <- 
+                         readxl::read_xlsx(files[i], col_names = FALSE, 
+                                           col_types = "text", sheet = sheet[i])
+                       [startrow[i]:endrow[i], startcol[i]:endcol[i]])
+      if (!is.na(timecol[i])) {
+        suppressMessages(row.names(outputs[[i]]) <- 
+                           readxl::read_xlsx(files[i], col_names = FALSE, 
+                                             col_types = "text", sheet = sheet[i])
+                         [startrow[i]:endrow[i], timecol[i]])
+      }
+      if (!is.na(headrow[i])) {
+        suppressMessages(colnames(outputs[[i]]) <-
+                           readxl::read_xlsx(files[i], col_names = FALSE, 
+                                            col_types = "text", sheet = sheet[i])
+                         [headrow[i], startcol[i]:endcol[i]])
+      }
+    }
+  }
+  names(outputs) <- files
+  
+  return(outputs)
+}
+
+pivot_widecurves_longer <- function(widecurves, timestamps = NULL) {
+  #If timestamps is not provided, it is assumed to be in the rownames
+  # of each widecurves dataframe
+  #If timestamps is a vector the same length as the number of rows
+  # in widecurves
+  
+  require(tidyr)
+  
+  
+  
+  tidyr::pivot_longer()
   
 }
 

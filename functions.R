@@ -25,7 +25,9 @@ check_diminputs <- function(diminput, dimname, files) {
 read_blockcurves <- function(files, extension = NULL, 
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
-                             sheet = NULL) {
+                             sheet = NULL, block_names = NULL,
+                             infer_colnames = FALSE,
+                             infer_rownames = FALSE) {
   #A function that reads blockcurves into the R environment
   
   #Inputs:  a list of filepaths relative to the current working directory,
@@ -59,45 +61,118 @@ read_blockcurves <- function(files, extension = NULL,
   if (!is.null(sheet)) {
     sheet <- check_diminputs(sheet, "sheet", files)
   }
+  infer_colnames <- check_diminputs(infer_colnames, "infer_colnames", files)
+  infer_rownames <- check_diminputs(infer_rownames, "infer_rownames", files)
   
-  #Create empty recipient list
-  outputs <- rep(list(NA), length(files))
-  
-  #Determine file extension
+  #Determine file extension(s)
   if (is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
   } else {
     extension <- check_diminputs(extension, "extension", files)
+    stopifnot(extension %in% c("csv", "xls", "xlsx"))
   }
   
   if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
+  
+  #Create empty list for read-in blockcurves
+  outputs <- rep(list(NA), length(files))
 
   #Read files
   for (i in 1:length(files)) {
     if (extension[i] == "csv") {
-        outputs[[i]] <- as.numeric(read.csv(files[i], colClasses = "character")
-                                   [startrow[i]:endrow[i], startcol[i]:endcol[i]])
+        #Read file & save
+        outputs[[i]] <- 
+          read.csv(files[i], colClasses = "character", 
+                   header = FALSE)[startrow[i]:endrow[i],startcol[i]:endcol[i]]
+        #If chosen, infer column names & row names
+        if (infer_colnames[i] & startrow[i] > 1) {
+          colnames(outputs[[i]]) <- 
+            read.csv(files[i], colClasses = "character", 
+                     header = FALSE)[(startrow[i]-1),startcol[i]:endcol[i]]
+        }
+        if (infer_rownames[i] & startcol[i] > 1) {
+          row.names(outputs[[i]]) <-
+            read.csv(files[i], colClasses = "character",
+                     header = FALSE)[startrow[i]:endrow[i],startcol[i]-1]
+        }
     } else if (extension[i] == "xls") {
-        suppressMessages(outputs[[i]] <- 
-                           readxl::read_xls(files[i], col_names = FALSE, 
-                                    col_types = "text", sheet = sheet[i])
-                         [startrow[i]:endrow[i], startcol[i]:endcol[i]])
+      #Read file and save
+      suppressMessages(
+        outputs[[i]] <- 
+          as.data.frame(
+            readxl::read_xls(files[i], col_names = FALSE, col_types = "text", 
+                             sheet = sheet[i]))[startrow[i]:endrow[i], 
+                                                startcol[i]:endcol[i]])
+      #If chosen, infer column names & row names
+      if (infer_colnames[i] & startrow[i] > 1) {
+        suppressMessages(
+          colnames(outputs[[i]]) <- 
+            as.data.frame(readxl::read_xls(files[i], col_names = FALSE, 
+                                           col_types = "text", 
+                                           sheet = sheet[i]))[(startrow[i]-1),
+                                                              startcol[i]:endcol[i]])
+      }
+      if (infer_rownames[i] & startcol[i] > 1) {
+        suppressMessages(
+          row.names(outputs[[i]]) <-
+            as.data.frame(readxl::read_xls(files[i], col_names = FALSE, 
+                                           col_types = "text", 
+                                           sheet = sheet[i]))[startrow[i]:endrow[i],
+                                                              (startcol[i]-1)])
+      }
     } else if (extension[i] == "xlsx") {
-        suppressMessages(outputs[[i]] <- 
-                           readxl::read_xlsx(files[i], col_names = FALSE, 
-                                     col_types = "text", sheet = sheet[i])
-                         [startrow[i]:endrow[i], startcol[i]:endcol[i]])
+      #Read file
+      suppressMessages(
+        outputs[[i]] <- 
+          as.data.frame(
+            readxl::read_xlsx(files[i], col_names = FALSE, col_types = "text", 
+                            sheet = sheet[i]))[startrow[i]:endrow[i], 
+                                               startcol[i]:endcol[i]])
+      #If chosen, infer column names & row names
+      if (infer_colnames[i] & startrow[i] > 1) {
+        suppressMessages(
+          colnames(outputs[[i]]) <- 
+            as.data.frame(
+              readxl::read_xlsx(files[i], col_names = FALSE, col_types = "text", 
+                                sheet = sheet[i]))[(startrow[i]-1),
+                                                   startcol[i]:endcol[i]])
+      }
+      if (infer_rownames[i] & startcol[i] > 1) {
+        suppressMessages(
+          row.names(outputs[[i]]) <-
+            as.data.frame(
+              readxl::read_xlsx(files[i], col_names = FALSE, col_types = "text", 
+                                sheet = sheet[i]))[startrow[i]:endrow[i],
+                                                   (startcol[i]-1)])
+      }
+    }
+    #If rownames & colnames were not inferred, simply number them
+    if (infer_colnames[i] == FALSE | startrow[i] <= 1) {
+      colnames(outputs[[i]]) <- paste("C", 1:ncol(outputs[[i]]), sep = "")
+    }
+    if (infer_rownames[i] == FALSE | startcol[i] <= 1) {
+      rownames(outputs[[i]]) <- paste("R", 1:nrow(outputs[[i]]), sep = "")
     }
   }
-  #Save timepoint information (without file extension)
-  names(outputs) <- sub("^([^.]*).*", "\\1", files)
+  
+  #Add filenames to blockcurves
+  if (!is.null(block_names)) {
+    stopifnot(length(block_names) == length(files))
+    names(outputs) <- block_names
+  } else {
+    #infer the names from filenames, stripping off the extension from end
+    # and the dot at the beginning (if any)
+    names(outputs) <- sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files)
+  }
   
   #Error checking for output dataframe dimensions
-  if (var(apply(outputs, MARGIN = 1, dim)[1]) != 0) {
+  if (var(sapply(outputs, simplify = TRUE, 
+                 FUN = function(x) {dim(x)[1]})) != 0) {
     warning("Not all blockcurves have the same number of rows of data")
   }
-  if (var(apply(outputs, MARGIN = 1, dim)[2]) != 0) {
+  if (var(sapply(outputs, simplify = TRUE,
+                 FUN = function(x) {dim(x)[1]})) != 0) {
     warning("Not all blockcurves have the same number of columns of data")
   }
   

@@ -203,7 +203,7 @@ uninterleave <- function(interleaved_list, n) {
   return(output)
 }
 
-widen_blockcurves <- function(blockcurves) {
+widen_blockcurves <- function(blockcurves, names_sep = "_") {
   #Inputs: a [list of] blockcurve[s] (optionally, named)
   #Outputs: a single widecurve dataframe
   
@@ -213,10 +213,12 @@ widen_blockcurves <- function(blockcurves) {
   
   #Check that all blockcurves have same dimensions
   if (length(blockcurves) > 1) {
-    if (var(apply(blockcurves, MARGIN = 1, dim)[1]) != 0) {
+    if (var(sapply(blockcurves, simplify = TRUE, 
+                   FUN = function(x) {dim(x)[1]})) != 0) {
       stop("Not all blockcurves have the same number of rows of data")
     }
-    if (var(apply(blockcurves, MARGIN = 1, dim)[2]) != 0) {
+    if (var(sapply(blockcurves, simplify = TRUE,
+                   FUN = function(x) {dim(x)[1]})) != 0) {
       stop("Not all blockcurves have the same number of columns of data")
     }
   }
@@ -232,19 +234,25 @@ widen_blockcurves <- function(blockcurves) {
   #where each column is a well and each row is a plate read
   #(each column is a row-column combination from the blockcurve)
   #(each row is a single dataframe from blockcurves)
+  #rownames automatically carry through if blockcurves is named
   output <- data.frame(t(sapply(blockcurves, FUN = function(x) {c(t(x))})))
-  colnames(output) <- 1:ncol(output)
-  rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
-  
+  #Assign column names
+  colnames(output) <- paste(rep(rownames(blockcurves[[1]]),
+                                each = ncol(blockcurves[[1]])), 
+                            colnames(blockcurves[[1]]),
+                            sep = names_sep)
+
   return(output)
 }
 
-import_blockcurves <- function(files, num_plates = 1, ...) {
+import_blockcurves <- function(files, num_plates = 1,
+                               names_sep = "_", ...) {
   blockcurves1 <- read_blockcurves(files = files, ...)
   blockcurves2 <- uninterleave(blockcurves1, n = num_plates)
   widecurves <- rep(list(NA), num_plates)
   for (i in 1:length(blockcurves2)) {
-    widecurves[[i]] <- widen_blockcurves(blockcurves2[[i]])
+    widecurves[[i]] <- widen_blockcurves(blockcurves2[[i]],
+                                         names_sep = names_sep)
   }
   names(widecurves) <- paste("plate_", 1:length(widecurves), sep = "")
   return(widecurves)

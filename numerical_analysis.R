@@ -885,7 +885,8 @@ y_summarized2 <- summarize(ybig2,
                            phage_extin = Density[Pop == "P" & time == extin_time],
                            phage_r = (log(phage_final)-
                                         log(init_bact_dens[1]*init_moi[1]))/
-                             extin_time
+                             extin_time,
+                           phage_atmaxdens = Density[Pop == "P" & time == max_time]
 )
 
 ## Plot summarized stats ----
@@ -903,8 +904,12 @@ for (myr in unique(y_sum_melt2$r)) {
   print(ggplot(data = y_sum_melt2[y_sum_melt2$r == myr &
                               y_sum_melt2$sum_stat %in% 
                               c("max_dens", "max_time", 
-                                "extin_time", "extin_time_sincemax",
-                                "phage_final", "phage_r"), ],
+                                "extin_time", 
+                                #"extin_time_sincemax",
+                                "phage_final", 
+                                "phage_r",
+                                "phage_atmaxdens"
+                                ), ],
          aes(x = a, y = stat_val, color = b, group = b)) +
     geom_point(size = 2, alpha = 0.8) + 
     geom_line(size = 1.1, alpha = 0.6) +

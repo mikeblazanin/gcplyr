@@ -1,11 +1,22 @@
-#TODO: actually test & check that functions work
+#TODO:  actually test & check that functions work
 #       figure out where well names are brought in and put them
 #        in the column names
+#       Compare setup to other packages for similar analyses, eg growthcurver
+#       Get this in package form before the quarantine ends!!!
+#       in growthcurver they keep the timestamps in a column named "time",
+#         I should follow a similar convention
+#         This is especially useful if there are multiple "variable" type
+#           columns (e.g. Temperature) that are also output and that
+#           the users want to keep (because rownames can only include
+#           one thing)
+#       add support for providing only startcol and startrow, with automatic
+#         inference that the rest of the dataframe is data
 
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
 #LOWESS
 #Spline models
+#General additive model
 
 #wide-curves: dataframe with each column corresponding to a single well
 #block-curves: dataframe where rows and columns match literally to a plate
@@ -259,8 +270,26 @@ import_blockcurves <- function(files, num_plates = 1,
 import_widecurves <- function(files, extension = NULL, 
                               startrow = NULL, endrow = NULL, 
                               startcol = NULL, endcol = NULL,
-                              timecol = NULL, headrow = NULL,
-                              sheet = NULL) {
+                              infer_header = TRUE,
+                              sheet = NULL, wide_names = NULL) {
+  #CLEAN THIS UP LATER
+  #Logic:   if infer_header TRUE
+  #           if startrow is provided, header is startrow-1
+  #           if startrow NULL header is row 1
+  #         if infer_header FALSE
+  #           columns are simply numbered well_1, well_2, etc
+  #         
+  #         if timecol provided
+  #           timecol is timecol
+  #         if timecol NULL
+  #           if infer_timecol TRUE
+  #             if startcol is provided, timecol is startcol-1
+  #             if startcol is NULL, timecol is col 1
+  #           if infer_timecol FALSE
+  #             rows are numbered timepoint_1, timepoint_2, etc
+ 
+  
+  
   #Inputs:  a list of filepaths relative to the current working directory,
   #           where each one is a widecurves set of data
   #         (optional) the extension of the files,"csv", "xls", or "xlsx"
@@ -277,6 +306,11 @@ import_widecurves <- function(files, extension = NULL,
   # 
   #Outputs: a list of blockcurves named by filename
   
+  if (!sum(is.null(startrow), is.null(endrow), 
+           is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
+    stop("either all or none of startrow, endrow, startcol, and endcol must be provided")
+  }
+  
   if (!is.null(startrow)) {
     startrow <- check_diminputs(startrow, "startrow", files)
   }
@@ -289,83 +323,72 @@ import_widecurves <- function(files, extension = NULL,
   if (!is.null(endcol)) {
     endcol <- check_diminputs(endcol, "endcol", files)
   }
-  if (!is.null(timecol)) {
-    timecol <- check_diminputs(timecol, "timecol", files)
-  } else if (as.numeric(startcol) > 1) {
-    timecol <- rep(as.numeric(startcol)-1, length(files))
-  } else {timecol <- NA}
   if (!is.null(sheet)) {
     sheet <- check_diminputs(sheet, "sheet", files)
   }
-  if (!is.null(headrow)) {
-    headrow <- check_diminputs(headrow, "headrow", files)
-  } else if (as.numeric(startrow) > 1) {
-    headrow <- rep(as.numeric(startrow)-1, length(files))
-  } else {headrow <- NA}
+  if (!is.null(timecol)) {
+    timecol <- check_diminputs(timecol, "timecol", files)
+  }
+  infer_header <- check_diminputs(infer_header, "infer_header", files)
+  infer_timecol <- check_diminputs(infer_timecol, "infer_timecol", files)
   
-  #Create empty recipient list
-  outputs <- rep(list(NA), length(files))
-  
-  #Determine file extension
+  #Determine file extension(s)
   if (is.null(extension)) {
-    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
+    require(tools)
+    #Note later we make a require call for readxl if needed
+    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
   } else {
     extension <- check_diminputs(extension, "extension", files)
+    stopifnot(extension %in% c("csv", "xls", "xlsx"))
   }
   
   if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
   
-  #Read files (adding time info as row names)
+  #Create empty recipient list
+  outputs <- rep(list(NA), length(files))
+  
+  #Import data
   for (i in 1:length(files)) {
+    #Read file & save in temp
     if (extension[i] == "csv") {
-      outputs[[i]] <- as.numeric(read.csv(files[i], colClasses = "character")
-                                 [startrow[i]:endrow[i], startcol[i]:endcol[i]])
-      if (!is.na(timecol[i])) {
-        row.names(outputs[[i]]) <- as.numeric(read.csv(files[i], colClasses = "character")
-                                              [startrow[i]:endrow[i], timecol[i]])
-      }
-      if (!is.na(headrow[i])) {
-        colnames(outputs[[i]]) <- (read.csv(files[i], colClasses = "character")
-        [headrow[i], startcol[i]:endcol[i]])
-      }
+       temp <- read.csv(files[i], colClasses = "character", header = FALSE)
     } else if (extension[i] == "xls") {
-      suppressMessages(outputs[[i]] <- 
-                         readxl::read_xls(files[i], col_names = FALSE, 
-                                           col_types = "text", sheet = sheet[i])
-                          [startrow[i]:endrow[i], startcol[i]:endcol[i]])
-      if (!is.na(timecol[i])) {
-        suppressMessages(row.names(outputs[[i]]) <- 
+      suppressMessages(temp <- 
+                         as.data.frame(
                            readxl::read_xls(files[i], col_names = FALSE, 
-                                            col_types = "text", sheet = sheet[i])
-                         [startrow[i]:endrow[i], timecol[i]])
-      }
-      if (!is.na(headrow[i])) {
-        suppressMessages(colnames(outputs[[i]]) <-
-                           readxl::read_xls(files[i], col_names = FALSE, 
-                                            col_types = "text", sheet = sheet[i])
-                         [headrow[i], startcol[i]:endcol[i]])
-      }
+                                           col_types = "text", sheet = sheet[i])))
     } else if (extension[i] == "xlsx") {
-      suppressMessages(outputs[[i]] <- 
+      suppressMessages(temp <- 
+                         as.data.frame(
                          readxl::read_xlsx(files[i], col_names = FALSE, 
-                                           col_types = "text", sheet = sheet[i])
-                       [startrow[i]:endrow[i], startcol[i]:endcol[i]])
-      if (!is.na(timecol[i])) {
-        suppressMessages(row.names(outputs[[i]]) <- 
-                           readxl::read_xlsx(files[i], col_names = FALSE, 
-                                             col_types = "text", sheet = sheet[i])
-                         [startrow[i]:endrow[i], timecol[i]])
+                                           col_types = "text", sheet = sheet[i])))
+    }
+    
+    #Infer colnames/take subsets as needed
+    if (infer_header[i] == TRUE) {
+      if (is.null(startrow[i])) { #startrow etc is not provided
+        outputs[[i]] <- temp[2:nrow(temp), ]
+        colnames(outputs[[i]]) <- temp[1, ]
+      } else { #startrow is provided
+        outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
+        colnames(outputs[[i]]) <- temp[startrow[i]-1, startcol[i]:endcol[i]]
       }
-      if (!is.na(headrow[i])) {
-        suppressMessages(colnames(outputs[[i]]) <-
-                           readxl::read_xlsx(files[i], col_names = FALSE, 
-                                            col_types = "text", sheet = sheet[i])
-                         [headrow[i], startcol[i]:endcol[i]])
-      }
+    } else { #we're not to infer header
+      outputs[[i]] <- temp
+      colnames(outputs[[i]]) <- paste("well_", 1:ncol(temp))
     }
   }
-  names(outputs) <- files
+  
+  #Add filenames to widecurves
+  if (!is.null(wide_names)) {
+    stopifnot(length(wide_names) == length(files))
+    names(outputs) <- wide_names
+  } else {
+    #infer the names from filenames, stripping off the extension from end
+    # and the dot at the beginning (if any)
+    names(outputs) <- sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files)
+  }
   
   return(outputs)
 }

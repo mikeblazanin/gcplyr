@@ -71,9 +71,6 @@ read_blockcurves <- function(files, extension = NULL,
   
   #Note if sheet is NULL defaults to first sheet
   
-  require(tools)
-  #Note later we make a require call for readxl
-  
   if (!sum(is.null(startrow), is.null(endrow), 
           is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
     stop("either all or none of startrow, endrow, startcol, and endcol must be provided")
@@ -99,6 +96,8 @@ read_blockcurves <- function(files, extension = NULL,
   
   #Determine file extension(s)
   if (is.null(extension)) {
+    require(tools)
+    #Note later we make a require call for readxl if needed
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
   } else {

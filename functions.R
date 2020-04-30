@@ -36,7 +36,8 @@ check_diminputs <- function(diminput, dimname, files) {
 read_blockcurves <- function(files, extension = NULL, 
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
-                             sheet = NULL, block_names = NULL,
+                             sheet = NULL, metadata = NULL,
+                             block_names = NULL,
                              infer_colnames = TRUE,
                              infer_rownames = TRUE) {
   #A function that reads blockcurves into the R environment
@@ -66,10 +67,39 @@ read_blockcurves <- function(files, extension = NULL,
   #         if FALSE
   #            columns will simply be numbered with a "C" prefix
   #            rows will simply be numbered with a "R" prefix
+  #         metadata is a list where each item in the list is a vector of length 2
+  #           where each vector is a row,column pair for where in the blockcurve
+  #           input file the metadata information is located.
+  #           Metadata is returned in the 2nd element of the output nested list
+  #           with the first element of Metadata being the blockcurve_name and
+  #           subsequent elements being those specified by the metadata argument
+  #           (by default blockcurve_name is inferred from the filename, but
+  #           a list of blockcurve_names can be specifically provided if desired)
   #         
   #Outputs: a list of blockcurves named by filename
   
   #Note if sheet is NULL defaults to first sheet
+  
+  ##TODO
+  ##      change read_blockcurves so it can handle an arbitrary number of additional
+  ##      pieces of information to extract from each blockcurve file
+  ##      (we can call this metadata or something like that)
+  ##      these pieces of information can be passed as a list of (named) vectors
+  ##      where each vector is the c(row, column) where the information should be
+  ##      pulled from. Then have read_blockcurves return this information
+  ##      as additional (named) entries of each entry in the list
+  ##      e.g. [[1]] [1] data #1 [2] time #1 [3] temp #1 [4] Abs #1
+  ##           [[2]] [1] data #2 [2] time #2 [3] temp #2 [4] Abs #2
+  ##           ...
+  ##      Then uninterleave should still work the same, because it will rearrange
+  ##      the sub-lists (leaving the meta-data intact)
+  ##      Then widen_blockcurves will have to take this metadata out and
+  ##      put it as the first, second, third, etc columns before the data columns
+  ##      alternatively perhaps it should be:
+  ##      [[1]] [1] data #1 [2] "meta-data" [2][1] name #1 
+  ##                                        [2][2] time #1 
+  ##                                        [2][3] temp #1 
+  ##                                        etc...
   
   if (!sum(is.null(startrow), is.null(endrow), 
           is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
@@ -94,6 +124,10 @@ read_blockcurves <- function(files, extension = NULL,
   infer_colnames <- check_diminputs(infer_colnames, "infer_colnames", files)
   infer_rownames <- check_diminputs(infer_rownames, "infer_rownames", files)
   
+  if (!is.null(block_names)) {
+    stopifnot(length(block_names) == length(files))
+  }
+  
   #Determine file extension(s)
   if (is.null(extension)) {
     require(tools)
@@ -108,13 +142,26 @@ read_blockcurves <- function(files, extension = NULL,
   if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
   
   #Create empty list for read-in blockcurves
-  outputs <- rep(list(NA), length(files))
+  if (is.null(metadata)) { #there is no user-specified metadata
+    outputs <- rep(list(list("data" = NA, 
+                             "metadata" = list("block_name" = NA))), length(files))
+  } else { #there is user-specified metadata
+    metadata_vector <- list(rep(NA, times = length(metadata)+1))
+    names(metadata_vector[[1]]) <- c("block_name", names(metadata))
+    #Okay so the goal here is to have each blockcurve returned as an item in a big list
+    #each item will itself be a named list with 2 things: "data" and "metadata"
+    #data is just the dataframe (with colnames & rownames inferred or not)
+    #within metadata there will at least be "name" for the blockcurve filename
+    #but users can specify other metadata they would like extracted 
+    # (with a named list of c(row, column) combinations)
+    outputs <- rep(list(list("data" = NA, "metadata" = metadata_vector)), length(files))
+  }
 
   #Import data
   for (i in 1:length(files)) {
     temp_rownames <- NULL
     temp_colnames <- NULL
-    #Read file & save in temp
+    ##Read file & save in temp
     if (extension[i] == "csv") {
         temp <- read.csv(files[i], colClasses = "character", 
                          header = FALSE)
@@ -132,19 +179,19 @@ read_blockcurves <- function(files, extension = NULL,
                               sheet = sheet[i])))
     }
     
-    #Infer rownames & colnames/take subsets as needed
+    ##Infer rownames & colnames/take subsets as needed
     if (is.null(startrow[i])) { #startrow etc are not provided
       if (infer_colnames[i] & infer_rownames[i] & temp[1, 1] == "") {
         #we're inferring colnames & rownames as the first row & col
-        outputs[[i]] <- temp[2:nrow(temp), 2:ncol(temp)]
+        outputs[[i]]$data <- temp[2:nrow(temp), 2:ncol(temp)]
         temp_rownames <- temp[2:nrow(temp), 1]
         temp_colnames <- temp[1, 2:ncol(temp)]
       } else {
         #we're not inferring any rownames nor colnames
-        outputs[[i]] <- temp
+        outputs[[i]]$data <- temp
       }
     } else { #startrow etc are provided
-      outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
+      outputs[[i]]$data <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
       if (infer_colnames[i] & startrow[i] > 1) {
         temp_colnames <- temp[startrow[i]-1, startcol[i]:endcol[i]]
       }
@@ -160,27 +207,34 @@ read_blockcurves <- function(files, extension = NULL,
       temp_rownames <- paste("R", 1:nrow(outputs[[i]]), sep = "")
     }
     #Assign temp rownames and colnames
-    colnames(outputs[[i]]) <- temp_colnames
-    rownames(outputs[[i]]) <- temp_rownames
+    colnames(outputs[[i]]$data) <- temp_colnames
+    rownames(outputs[[i]]$data) <- temp_rownames
   }
   
-  #Add filenames to blockcurves
-  if (!is.null(block_names)) {
-    stopifnot(length(block_names) == length(files))
-    names(outputs) <- block_names
-  } else {
+  ##Add metadata
+  #Add filenames to metadata
+  if (!is.null(block_names)) { #block_names were provided
+    outputs[[i]]$metadata[[1]]["block_name"] <- block_names[i]
+  } else { #block_names were not provided, infer from filename
     #infer the names from filenames, stripping off the extension from end
     # and the dot at the beginning (if any)
-    names(outputs) <- sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files)
+    outputs[[i]]$metadata[[1]]["block_name"] <- 
+      sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files)
+  }
+  #Add user-specified metadata
+  if (length(metadata) > 1) {
+    for (j in 2:length(metadata)) {
+      outputs[[i]]$metadata[[1]][j] <- temp[metadata[[j]][1], metadata[[j]][2]]
+    }
   }
   
-  #Error checking for output dataframe dimensions
+  ##Error checking for output dataframe dimensions
   if (var(sapply(outputs, simplify = TRUE, 
-                 FUN = function(x) {dim(x)[1]})) != 0) {
+                 FUN = function(x) {dim(x[[1]]$data)[1]})) != 0) {
     warning("Not all blockcurves have the same number of rows of data")
   }
   if (var(sapply(outputs, simplify = TRUE,
-                 FUN = function(x) {dim(x)[1]})) != 0) {
+                 FUN = function(x) {dim(x[[1]]$data)[1]})) != 0) {
     warning("Not all blockcurves have the same number of columns of data")
   }
   

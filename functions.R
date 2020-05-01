@@ -144,17 +144,18 @@ read_blockcurves <- function(files, extension = NULL,
   #Create empty list for read-in blockcurves
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = list("block_name" = NA))), length(files))
+                             "metadata" = c("block_name" = "NA"))), length(files))
   } else { #there is user-specified metadata
-    metadata_vector <- list(rep(NA, times = length(metadata)+1))
-    names(metadata_vector[[1]]) <- c("block_name", names(metadata))
+    metadata_vector <- rep(NA, times = length(metadata)+1)
+    names(metadata_vector) <- c("block_name", names(metadata))
     #Okay so the goal here is to have each blockcurve returned as an item in a big list
     #each item will itself be a named list with 2 things: "data" and "metadata"
     #data is just the dataframe (with colnames & rownames inferred or not)
     #within metadata there will at least be "name" for the blockcurve filename
     #but users can specify other metadata they would like extracted 
     # (with a named list of c(row, column) combinations)
-    outputs <- rep(list(list("data" = NA, "metadata" = metadata_vector)), length(files))
+    outputs <- rep(list(list("data" = NA, 
+                             "metadata" = metadata_vector)), length(files))
   }
 
   #Import data
@@ -209,32 +210,32 @@ read_blockcurves <- function(files, extension = NULL,
     #Assign temp rownames and colnames
     colnames(outputs[[i]]$data) <- temp_colnames
     rownames(outputs[[i]]$data) <- temp_rownames
-  }
-  
-  ##Add metadata
-  #Add filenames to metadata
-  if (!is.null(block_names)) { #block_names were provided
-    outputs[[i]]$metadata[[1]]["block_name"] <- block_names[i]
-  } else { #block_names were not provided, infer from filename
-    #infer the names from filenames, stripping off the extension from end
-    # and the dot at the beginning (if any)
-    outputs[[i]]$metadata[[1]]["block_name"] <- 
-      sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files)
-  }
-  #Add user-specified metadata
-  if (length(metadata) > 1) {
-    for (j in 2:length(metadata)) {
-      outputs[[i]]$metadata[[1]][j] <- temp[metadata[[j]][1], metadata[[j]][2]]
+    
+    ##Add metadata
+    #Add filenames to metadata
+    if (!is.null(block_names)) { #block_names were provided
+      outputs[[i]]$metadata["block_name"] <- block_names[i]
+    } else { #block_names were not provided, infer from filename
+      #infer the names from filenames, stripping off the extension from end
+      # and the dot at the beginning (if any)
+      outputs[[i]]$metadata["block_name"] <- 
+        sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files[i])
+    }
+    #Add user-specified metadata (if any)
+    if (!is.null(metadata)) {
+      for (j in 1:length(metadata)) {
+        outputs[[i]]$metadata[j+1] <- temp[metadata[[j]][1], metadata[[j]][2]]
+      }
     }
   }
   
   ##Error checking for output dataframe dimensions
   if (var(sapply(outputs, simplify = TRUE, 
-                 FUN = function(x) {dim(x[[1]]$data)[1]})) != 0) {
+                 FUN = function(x) {dim(x$data)[1]})) != 0) {
     warning("Not all blockcurves have the same number of rows of data")
   }
   if (var(sapply(outputs, simplify = TRUE,
-                 FUN = function(x) {dim(x[[1]]$data)[1]})) != 0) {
+                 FUN = function(x) {dim(x$data)[2]})) != 0) {
     warning("Not all blockcurves have the same number of columns of data")
   }
   

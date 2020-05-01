@@ -1,6 +1,4 @@
 #TODO:  actually test & check that functions work
-#       figure out where well names are brought in and put them
-#        in the column names
 #       Compare setup to other packages for similar analyses, eg growthcurver
 #       Get this in package form before the quarantine ends!!!
 #       in growthcurver they keep the timestamps in a column named "time",
@@ -11,6 +9,7 @@
 #           one thing)
 #       add support for providing only startcol and startrow, with automatic
 #         inference that the rest of the dataframe is data
+#       Improve comments/documentation
 
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
@@ -142,7 +141,7 @@ read_blockcurves <- function(files, extension = NULL,
     stopifnot(extension %in% c("csv", "xls", "xlsx"))
   }
   
-  if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
+  if (any(extension == "xls" | extension == "xlsx")) {require(readxl)}
   
   #Create empty list for read-in blockcurves
   if (is.null(metadata)) { #there is no user-specified metadata
@@ -367,9 +366,16 @@ import_blockcurves <- function(files, num_plates = 1, ...) {
 import_widecurves <- function(files, extension = NULL, 
                               startrow = NULL, endrow = NULL, 
                               startcol = NULL, endcol = NULL,
-                              infer_header = TRUE,
-                              sheet = NULL, wide_names = NULL) {
+                              header = TRUE,
+                              sheet = NULL, 
+                              wide_names = NULL) {
   #CLEAN THIS UP LATER
+  #Logic 2.0: if header TRUE
+  #             if startrow provided, header is startrow-1
+  #             if startrow not provided, header is 1
+  #           if header FALSE
+  #             columns numbered V1...Vn
+  #
   #Logic:   if infer_header TRUE
   #           if startrow is provided, header is startrow-1
   #           if startrow NULL header is row 1
@@ -423,11 +429,11 @@ import_widecurves <- function(files, extension = NULL,
   if (!is.null(sheet)) {
     sheet <- check_diminputs(sheet, "sheet", files)
   }
-  if (!is.null(timecol)) {
-    timecol <- check_diminputs(timecol, "timecol", files)
+  
+  if (!is.null(startrow) & header == TRUE & startrow <= 1) {
+    warning("startrow <= 1 but header is TRUE, treating header as FALSE")
+    header <- FALSE
   }
-  infer_header <- check_diminputs(infer_header, "infer_header", files)
-  infer_timecol <- check_diminputs(infer_timecol, "infer_timecol", files)
   
   #Determine file extension(s)
   if (is.null(extension)) {
@@ -437,10 +443,10 @@ import_widecurves <- function(files, extension = NULL,
                         USE.NAMES = FALSE)
   } else {
     extension <- check_diminputs(extension, "extension", files)
-    stopifnot(extension %in% c("csv", "xls", "xlsx"))
+    stopifnot(all(extension %in% c("csv", "xls", "xlsx")))
   }
   
-  if (sum(extension == "xls" | extension == "xlsx") > 0) {require(readxl)}
+  if (any(extension == "xls" | extension == "xlsx")) {require(readxl)}
   
   #Create empty recipient list
   outputs <- rep(list(NA), length(files))
@@ -463,17 +469,21 @@ import_widecurves <- function(files, extension = NULL,
     }
     
     #Infer colnames/take subsets as needed
-    if (infer_header[i] == TRUE) {
+    if (header == TRUE) {
       if (is.null(startrow[i])) { #startrow etc is not provided
         outputs[[i]] <- temp[2:nrow(temp), ]
         colnames(outputs[[i]]) <- temp[1, ]
-      } else { #startrow is provided
-        outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-        colnames(outputs[[i]]) <- temp[startrow[i]-1, startcol[i]:endcol[i]]
+      } else { #startrow etc is provided
+        outputs[[i]] <- temp[startrow:endrow, startcol:endcol]
+        colnames(outputs[[i]]) <- temp[startrow-1, startcol:endcol]
       }
-    } else { #we're not to infer header
-      outputs[[i]] <- temp
-      colnames(outputs[[i]]) <- paste("well_", 1:ncol(temp))
+    } else { #header is false
+      if (is.null(startrow[i])) { #startrow etc is not provided
+        outputs[[i]] <- temp
+      } else { #startrow etc is provided
+        outputs[[i]] <- temp[startrow:endrow, startcol:endcol]
+      }
+      colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
     }
   }
   
@@ -484,7 +494,7 @@ import_widecurves <- function(files, extension = NULL,
   } else {
     #infer the names from filenames, stripping off the extension from end
     # and the dot at the beginning (if any)
-    names(outputs) <- sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files)
+    names(outputs) <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
   }
   
   return(outputs)

@@ -269,56 +269,89 @@ uninterleave <- function(interleaved_list, n) {
   return(output)
 }
 
-widen_blockcurves <- function(blockcurves, names_sep = "_") {
+widen_blockcurves <- function(blockcurves, wellnames_sep = "_", 
+                              nested_metadata = NULL) {
   #Inputs: a [list of] blockcurve[s] (optionally, named)
+  #         blockcurves should be data.frames
+  #         nested_metadata can be TRUE, FALSE, or NULL (if null, will infer TRUE or FALSE)
   #Outputs: a single widecurve dataframe
   
   if(class(blockcurves) != "list") {
     blockcurves <- list(blockcurves)
   }
   
+  #Infer nestedness if nested_metadata is set to NULL
+  if (is.null(nested_metadata)) {
+    if (all(sapply(blockcurves, simplify = TRUE, FUN = class) == "data.frame")) {
+      nested_metadata <- FALSE
+      warning("Inferring nested_metadata to be FALSE")
+    } else if (all(sapply(blockcurves, simplify = TRUE, FUN = class) == "list")) {
+      nested_metadata <- TRUE
+      warning("Inferring nested_metadata to be TRUE")
+    } else {
+      stop("Unable to infer nested_metadata, this may be because blockcurves vary in nestedness or are not data.frame's")
+    }
+  }
+  
   #Check that all blockcurves have same dimensions
-  if (length(blockcurves) > 1) {
+  if (nested_metadata) { #there is nested metadata
+    if (var(sapply(blockcurves, simplify = TRUE, 
+                   FUN = function(x) {dim(x[[1]])[1]})) != 0) {
+      stop("Not all blockcurves have the same number of rows of data")
+    }
+    if (var(sapply(blockcurves, simplify = TRUE,
+                   FUN = function(x) {dim(x[[1]])[2]})) != 0) {
+      stop("Not all blockcurves have the same number of columns of data")
+    }
+  } else { #there is not nested metadata
     if (var(sapply(blockcurves, simplify = TRUE, 
                    FUN = function(x) {dim(x)[1]})) != 0) {
       stop("Not all blockcurves have the same number of rows of data")
     }
     if (var(sapply(blockcurves, simplify = TRUE,
-                   FUN = function(x) {dim(x)[1]})) != 0) {
+                   FUN = function(x) {dim(x)[2]})) != 0) {
       stop("Not all blockcurves have the same number of columns of data")
     }
   }
-  
-  ##Pretty sure these rows don't do anything
-  # output <- data.frame(matrix(nrow = length(blockcurves,
-  #                                           ncol = nrow(blockcurves[1]) *
-  #                                             ncol(blockcurves[1]))))
-  # colnames(output) <- 1:ncol(output)
-  # rownames(output) <- names(blockcurves) #doesn't change if blockcurves are unnamed
-  
+    
   #convert list of dataframes to single dataframe
   #where each column is a well and each row is a plate read
   #(each column is a row-column combination from the blockcurve)
   #(each row is a single dataframe from blockcurves)
-  #rownames automatically carry through if blockcurves is named
-  output <- data.frame(t(sapply(blockcurves, FUN = function(x) {c(t(x))})))
-  #Assign column names
-  colnames(output) <- paste(rep(rownames(blockcurves[[1]]),
-                                each = ncol(blockcurves[[1]])), 
-                            colnames(blockcurves[[1]]),
-                            sep = names_sep)
+  #Adding the metadata as the first n columns
+  if (nested_metadata) { #There is nested metadata
+    #Reshape
+    output <- data.frame(t(sapply(blockcurves, simplify = TRUE, 
+                                  function(x) {c(x[[2]],
+                                                 t(x[[1]]))})))
+    #Assign column names
+    colnames(output) <- c(names(blockcurves[[1]][[2]]),
+                          paste(rep(rownames(blockcurves[[1]][[1]]),
+                                    each = ncol(blockcurves[[1]][[1]])),
+                                colnames(blockcurves[[1]][[1]]),
+                                sep = wellnames_sep))
+  } else { #There is not nested metadata
+    #Reshape
+    output <- data.frame(t(sapply(blockcurves, simplify = TRUE, 
+                                  function(x) {c(t(x))})))
+    #Assign column names
+    colnames(output) <- paste(rep(rownames(blockcurves[[1]]),
+                                  each = ncol(blockcurves[[1]])),
+                              colnames(blockcurves[[1]]),
+                              sep = wellnames_sep)
+  }
 
   return(output)
 }
 
 import_blockcurves <- function(files, num_plates = 1,
-                               names_sep = "_", ...) {
+                               wellnames_sep = "_", ...) {
   blockcurves1 <- read_blockcurves(files = files, ...)
   blockcurves2 <- uninterleave(blockcurves1, n = num_plates)
   widecurves <- rep(list(NA), num_plates)
   for (i in 1:length(blockcurves2)) {
     widecurves[[i]] <- widen_blockcurves(blockcurves2[[i]],
-                                         names_sep = names_sep)
+                                         wellnames_sep = wellnames_sep)
   }
   names(widecurves) <- paste("plate_", 1:length(widecurves), sep = "")
   return(widecurves)

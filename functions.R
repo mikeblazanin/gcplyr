@@ -202,12 +202,15 @@ read_blockcurves <- function(files, extension = NULL,
     }
     #If temp_colnames or temp_rownames haven't been inferred, number them
     if (is.null(temp_colnames)) {
-      temp_colnames <- paste("C", 1:ncol(outputs[[i]]), sep = "")
+      temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = ".")
     }
     if (is.null(temp_rownames)) {
-      temp_rownames <- paste("R", 1:nrow(outputs[[i]]), sep = "")
+      if (nrow(outputs[[i]]$data) > 26) {
+        stop("Automatic rownames for blockcurves with more than 26 rows is not supported")
+      }
+      temp_rownames <- paste("R", LETTERS[1:nrow(outputs[[i]]$data)], sep = ".")
     }
-    #Assign temp rownames and colnames
+    #Assign rownames and colnames from temp_variables
     colnames(outputs[[i]]$data) <- temp_colnames
     rownames(outputs[[i]]$data) <- temp_rownames
     

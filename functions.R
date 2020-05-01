@@ -39,7 +39,8 @@ read_blockcurves <- function(files, extension = NULL,
                              sheet = NULL, metadata = NULL,
                              block_names = NULL,
                              infer_colnames = TRUE,
-                             infer_rownames = TRUE) {
+                             infer_rownames = TRUE,
+                             ...) {
   #A function that reads blockcurves into the R environment
   
   #Inputs:  a list of filepaths relative to the current working directory,
@@ -76,6 +77,8 @@ read_blockcurves <- function(files, extension = NULL,
   #           (by default blockcurve_name is inferred from the filename, but
   #           a list of blockcurve_names can be specifically provided if desired)
   #         
+  #         Note that the ... is just so that import_blockcurves can call
+  #         it with generic passing of arguments
   #Outputs: a list of blockcurves named by filename
   
   #Note if sheet is NULL defaults to first sheet
@@ -245,7 +248,7 @@ read_blockcurves <- function(files, extension = NULL,
   return(outputs)
 }
 
-uninterleave <- function(interleaved_list, n) {
+uninterleave <- function(interleaved_list, n, ...) {
   #Inputs: a list of R objects
   #        how many sub-lists there should be (i.e. how many groups should
   #          the interleaved list be divided into)
@@ -254,6 +257,8 @@ uninterleave <- function(interleaved_list, n) {
   #and separates them into separate sub-lists (e.g. where each sub-list
   # corresponds to all blockcurves for a single plate from a multi-plate 
   # set of blockcurves)
+  #         Note that the ... is just so that import_blockcurves can call
+  #         it with generic passing of arguments
   
   #Input checking
   if ((length(interleaved_list) %% n) != 0) {
@@ -270,10 +275,13 @@ uninterleave <- function(interleaved_list, n) {
 }
 
 widen_blockcurves <- function(blockcurves, wellnames_sep = "_", 
-                              nested_metadata = NULL) {
+                              nested_metadata = NULL, ...) {
   #Inputs: a [list of] blockcurve[s] (optionally, named)
   #         blockcurves should be data.frames
   #         nested_metadata can be TRUE, FALSE, or NULL (if null, will infer TRUE or FALSE)
+  #         Note that the ... is just so that import_blockcurves can call
+  #         it with generic passing of arguments
+  
   #Outputs: a single widecurve dataframe
   
   if(class(blockcurves) != "list") {
@@ -344,10 +352,9 @@ widen_blockcurves <- function(blockcurves, wellnames_sep = "_",
   return(output)
 }
 
-import_blockcurves <- function(files, num_plates = 1,
-                               wellnames_sep = "_", ...) {
+import_blockcurves <- function(files, num_plates = 1, ...) {
   blockcurves1 <- read_blockcurves(files = files, ...)
-  blockcurves2 <- uninterleave(blockcurves1, n = num_plates)
+  blockcurves2 <- uninterleave(blockcurves1, n = num_plates, ...)
   widecurves <- rep(list(NA), num_plates)
   for (i in 1:length(blockcurves2)) {
     widecurves[[i]] <- widen_blockcurves(blockcurves2[[i]],

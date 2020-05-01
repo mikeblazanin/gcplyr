@@ -225,7 +225,7 @@ read_blockcurves <- function(files, extension = NULL,
       #infer the names from filenames, stripping off the extension from end
       # and the dot at the beginning (if any)
       outputs[[i]]$metadata["block_name"] <- 
-        sub("^\\./(.*)\\.[[:alnum:]]+$", "\\1", files[i])
+        sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files[i])
     }
     #Add user-specified metadata (if any)
     if (!is.null(metadata)) {

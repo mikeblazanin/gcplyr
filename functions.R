@@ -360,7 +360,12 @@ import_blockcurves <- function(files, num_plates = 1, ...) {
                                          wellnames_sep = wellnames_sep)
   }
   names(widecurves) <- paste("plate_", 1:length(widecurves), sep = "")
-  return(widecurves)
+  
+  if (num_plates == 1) {
+    return(widecurves[[1]])
+  } else {
+    return(widecurves)
+  }
 }
 
 import_widecurves <- function(files, extension = NULL, 
@@ -497,22 +502,161 @@ import_widecurves <- function(files, extension = NULL,
     names(outputs) <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
   }
   
+  if (length(outputs) == 1) {
+    return(outputs[[1]])
+  } else {
+    return(outputs)
+  }
+}
+
+pivot_widecurves_longer <- function(widecurves, ...) {
+  #Basically just a wrapper for tidyr:pivot_longer
+  # so that we can pivot_longer a whole list of widecurves
+   
+  require(tidyr)
+  
+  if (!is.list(widecurves)) {
+    widecurves <- list(widecurves)
+  }
+  
+  outputs <- lapply(X = widecurves, FUN = tidyr::pivot_longer,
+                   ... = ...)
+  
   return(outputs)
 }
 
-pivot_widecurves_longer <- function(widecurves, timestamps = NULL) {
-  #If timestamps is not provided, it is assumed to be in the rownames
-  # of each widecurves dataframe
-  #If timestamps is a vector the same length as the number of rows
-  # in widecurves
+make_layout <- function(nrows = NULL, ncols = NULL,
+                        block_row_names = NULL, block_col_names = NULL,
+                        wellnames_sep = "_", wellnames_colname = "Well",
+                        ...) {
+  #we have an arbitary number of categories
+  #each well should have a state in each category
+  #the wells have to be identified uniquely
+  #the plates have to be identified uniquely
+  #the states of a given category could be laid out in any number of ways
+  # common ones might include alternating among the n states
+  # (e.g. a a a b b b c c c a a a b b b c c c)
+  # inputs should be allowed to specify ranges of cells
+  #   (in physical space, e.g. rows 2-4, cols 3-5) and patterns of cells
+  #   
+  #   
+  # Looking at analyze data, almost any pattern should be achievable with
+  #   a simple on (number) off (number) pattern
+  #     (assuming you can let it know which wells are empty)
+  #     so the specifications might be as simple as a vector?...
+  #       c(startwell, stopwell, onlength, offlength)
+  #       
+  #       
+  #       
+  #   One idea for inputs:
+  #     each input argument is a category (and therefore a list)
+  #     the list has named elements, each of which is a vector
+  #     The named elements are the values in that category
+  #       and the vector contains which wells (numbered) contain
+  #       that value for that category
+  #       Vectors can be formatted in several ways:
+  #         they can simply be numbers of the wells
+  #         they can be row-column based
+  #         they can be pattern based (within limits)
+  #   example:
+  #   make_layout("Treatment" = list("Local" = 1:5, "Global" = 6:10,
+  #                                   "Control" = 11:15),
+  #               "Isolate" = list("A" = c(1, 6, 11),
+  #                                 "B" = c(2, 7, 12), etc))
+  #               "Rep" = list("1" = 
+  #   what kind of inputs can make the vast majority of repeating
+  #     pattern-type data easily?
+  #     I suspect this may be sufficient:
+  #       List of wells being considered
+  #         best way to do this is probably w/ standard subsetting
+  #         i.e. [startrow:endrow, startcol:endcol]
+  #       Well to start pattern on
+  #       Length of "on" period
+  #       Length of "off" period
+  #       Well to end pattern on
+  #       bycolumn (by default goes byrow)
+  #     If we can somehow make it so patterns can be combined
+  #       I think this can be achieved because you can have the same
+  #       name for multiple elements in a list, so users could specify
+  #       patterns sequentially in the order they'll be executed
+  #       e.g. "Isolate" = list("A" = c( , , , , ),
+  #                             "A" = c( , , , , ))
+  #     perhaps we need another function, something like
+  #       make_pattern that has all these things as explicit
+  #       arguments that can then be passed
+  #       i.e. make_pattern <- function(startrow, endrow,
+  #       startcol, endcol, startwell, onlength, offlength, endwell,
+  #       bycolumn)
+  #       and then "Isolate" = list("A" = make_pattern( yada ),
+  #                                 "B" = make_pattern(yada ))
+  #     make_pattern could be helpful but not necessary at first
+  #     because we can have it be a vector:
+  #       "Isolate" = list("values" = c("A", "B", "C"),
+  #       rowstart:rowend, colstart:colend,
+  #               pattern = "111222333000", byrow = TRUE)
+  #             
   
-  require(tidyr)
+  #Check inputs
+  stopifnot(!(is.null(nrows) & is.null(row_names)),
+            !(is.null(ncols) & is.null(col_names)))
+  if (is.null(row_names)) {row_names <- paste("R", 1:nrows, sep = ".")}
+  if (is.null(col_names)) {col_names <- paste("C", 1:ncols, sep = ".")}
+  if (is.null(nrows)) {nrows <- length(row_names)}
+  if (is.null(ncols)) {ncols <- length(col_names)}
   
+  dot_args <- list(...)
   
+  #Make base output dataframe
+  output <- as.data.frame(matrix(NA, nrow = nrows*ncols, ncol = 1+length(dot_args)))
+  output[,1] <- paste(rep(row_names, each = ncols),
+                      col_names, sep = wellnames_sep)
+  colnames(output)[1] <- wellnames_colname
   
-  tidyr::pivot_longer()
+  #Note dot_args structure
+  #dot_args[[i]] = list(values = c("A", "B", "C"),
+  #                     rows = rowstart:rowend, cols = colstart:colend
+  #                     pattern = "111222333000", byrow = TRUE)
   
+  #Loop through input arguments & fill into output dataframe
+  for (i in 1:length(dot_args)) {
+    pattern_list <- as.numeric(strsplit(dot_args[[i]][[4]], split = ",")[[1]])
+    
+    if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
+         length(pattern_list)) != 0) {
+      warning(paste("Total number of wells is not a multiple of pattern length for",
+                    names(dot_args)[i]))
+    }
+    
+    #Byrow is optional, if not provided default is byrow = FALSE
+    if (length(dot_args[[i]]) < 5) {
+      dot_args[[i]][[5]] <- FALSE
+    }
+    
+    #0 in pattern is NA
+    pattern_list[pattern_list==0] <- NA
+    
+    #Create list of values following pattern (which is replicated as needed
+    # to reach the necessary length)
+    vals_list <- dot_args[[i]][[1]][
+      rep(pattern_list, length.out = (length(dot_args[[i]][[2]])*
+                                        length(dot_args[[i]][[3]])))]
+    
+    #Fill values into "blockcurve"
+    block_out <- matrix(NA, nrow = nrows, ncol = ncols)
+    block_out[dot_args[[i]][[2]], dot_args[[i]][[3]]] <-
+      matrix(vals_list, 
+             nrow = length(dot_args[[i]][[2]]), ncol = length(dot_args[[i]][[3]]),
+             byrow = dot_args[[i]][[5]])
+    #Put values into output dataframe
+    output[, i+1] <- c(t(block_out))
+    colnames(output)[i+1] <- names(dot_args)[i]
+  }
 }
+
+
+#Testing
+dot_args <- list("Isolate" = list(c("A", "B"), 2:7, 2:11, 
+                                 pattern = "1,1,2,2,0,0", TRUE))
 
 layout_cleanup <- function(layout) {
   #This function takes a layout dataframe with ...'s where info needs to be 

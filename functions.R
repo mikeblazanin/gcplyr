@@ -10,6 +10,9 @@
 #       add support for providing only startcol and startrow, with automatic
 #         inference that the rest of the dataframe is data
 #       Improve comments/documentation
+#       
+#       Widen_blockcurves calls t which calls as.matrix
+#       make_layout also does
 
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
@@ -326,6 +329,20 @@ widen_blockcurves <- function(blockcurves, wellnames_sep = "_",
   #(each column is a row-column combination from the blockcurve)
   #(each row is a single dataframe from blockcurves)
   #Adding the metadata as the first n columns
+  #
+  #
+  #At some point I may need to re-implement this avoiding use of
+  # t() (because t calls as.matrix which can add white space to numeric values
+  # See convert_plate_to_column in plater R package
+  # If so, this code may be useful
+  #   output <- sapply(blockcurves, simplify = TRUE,
+              # function(x) {c(x[[2]],
+              #                unlist(lapply(X = 1:nrow(x[[1]]),
+              #                              function(i) {unname(x[[1]][i, ])}))
+              # )
+              # }
+              # )
+  
   if (nested_metadata) { #There is nested metadata
     #Reshape
     output <- data.frame(t(sapply(blockcurves, simplify = TRUE, 
@@ -694,7 +711,7 @@ layout_cleanup <- function(layout) {
 }
 
 #Merge layout & data
-merge_lay_data <- function(layout, data) {
+layout_data_merge <- function(layout, data) {
   #Tidies (melts) the layout dataframe
   #Then merges the now-tidy layout & data dataframes
   layout_mlt <- reshape2::melt(layout, id.vars = 1, value.name = "Contents", 

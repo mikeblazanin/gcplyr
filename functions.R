@@ -670,10 +670,35 @@ make_layout <- function(nrows = NULL, ncols = NULL,
   }
 }
 
-
-#Testing
-dot_args <- list("Isolate" = list(c("A", "B"), 2:7, 2:11, 
-                                 pattern = "1,1,2,2,0,0", TRUE))
+import_layout <- function(files, fields, extension = NULL, 
+                          field_sep = "_",
+                          reps_name = "Rep",
+                          header = TRUE,
+                          sheet = NULL) {
+  
+  # extension = NULL, 
+  # startrow = NULL, endrow = NULL, 
+  # startcol = NULL, endcol = NULL,
+  # header = TRUE,
+  # sheet = NULL, 
+  # startrow = NULL, endrow = NULL, 
+  # startcol = NULL, endcol = NULL,
+  # sheet = NULL, metadata = NULL,
+  # block_names = NULL,
+  # infer_colnames = TRUE,
+  # infer_rownames = TRUE,
+  
+  #Takes in a list of files, each of which includes a layout in it
+  # then cleans up the layout information in those files
+  # by splitting it
+  #Outputs that layout information so it can be merged with the data
+  
+  #If you don't want reps numbered then set reps_name to NA
+  
+  
+  
+  
+}
 
 layout_cleanup <- function(layout) {
   #This function takes a layout dataframe with ...'s where info needs to be 

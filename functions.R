@@ -1,3 +1,5 @@
+#Info ----
+
 #TODO:  actually test & check that functions work
 #       Compare setup to other packages for similar analyses, eg growthcurver
 #       Get this in package form before the quarantine ends!!!
@@ -11,7 +13,7 @@
 #         inference that the rest of the dataframe is data
 #       Improve comments/documentation
 #       
-#       widen_blockmeasures calls t which calls as.matrix
+#       widen_blocks calls t which calls as.matrix
 #       make_layout also does
 
 #Change smoothing to include other functions
@@ -23,6 +25,19 @@
 #wide measures: dataframe with each column corresponding to a single well
 #block measures: dataframe where rows and columns match literally to a plate
 
+#General pipeline:
+# 1.  import_blockmeasures OR
+#       (read_blocks -> uninterleave (optional) -> widen_blocks)
+#     import_widemeasures
+# 2.  pivot_wide_longer
+# 3.  make_tidydesign OR
+#     import_blockdesign OR
+#     use plater::read_plate with ONLY the design elements
+# 4.  merge_tidydesign_tidymeasures
+# 5.  [pre-process: smoothing, normalization]
+# 6.  [process: derivs, peak-finding, curve fitting]
+
+
 checkdim_inputs <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
   #A function that adjusts inputs to be lists if they're not already
@@ -33,10 +48,14 @@ checkdim_inputs <- function(input, input_name, needed_len,
     } else {
       return(rep(input, needed_len))
     }
+  } else {
+    return(input)
   }
 }
 
-read_blockmeasures <- function(files, extension = NULL, 
+#Importing block-shaped ----
+
+read_blocks <- function(files, extension = NULL, 
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
                              sheet = NULL, metadata = NULL,
@@ -88,19 +107,19 @@ read_blockmeasures <- function(files, extension = NULL,
   #Note if sheet is NULL defaults to first sheet
   
   ##TODO
-  ##      change read_blockmeasures so it can handle an arbitrary number of additional
+  ##      change read_blocks so it can handle an arbitrary number of additional
   ##      pieces of information to extract from each blockcurve file
   ##      (we can call this metadata or something like that)
   ##      these pieces of information can be passed as a list of (named) vectors
   ##      where each vector is the c(row, column) where the information should be
-  ##      pulled from. Then have read_blockmeasures return this information
+  ##      pulled from. Then have read_blocks return this information
   ##      as additional (named) entries of each entry in the list
   ##      e.g. [[1]] [1] data #1 [2] time #1 [3] temp #1 [4] Abs #1
   ##           [[2]] [1] data #2 [2] time #2 [3] temp #2 [4] Abs #2
   ##           ...
   ##      Then uninterleave should still work the same, because it will rearrange
   ##      the sub-lists (leaving the meta-data intact)
-  ##      Then widen_blockmeasures will have to take this metadata out and
+  ##      Then widen_blocks will have to take this metadata out and
   ##      put it as the first, second, third, etc columns before the data columns
   ##      alternatively perhaps it should be:
   ##      [[1]] [1] data #1 [2] "meta-data" [2][1] name #1 
@@ -143,8 +162,8 @@ read_blockmeasures <- function(files, extension = NULL,
                         USE.NAMES = FALSE)
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
-    stopifnot(extension %in% c("csv", "xls", "xlsx"))
   }
+  stopifnot(extension %in% c("csv", "xls", "xlsx"))
   
   if (any(extension == "xls" | extension == "xlsx")) {require(readxl)}
   
@@ -280,7 +299,7 @@ uninterleave <- function(interleaved_list, n, ...) {
   return(output)
 }
 
-widen_blockmeasures <- function(blockmeasures, wellnames_sep = "_", 
+widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
                               nested_metadata = NULL, ...) {
   #Inputs: a [list of] blockmeasures[s] (optionally, named)
   #         blockmeasures should be data.frames
@@ -372,14 +391,16 @@ widen_blockmeasures <- function(blockmeasures, wellnames_sep = "_",
   return(output)
 }
 
+#Get blockmeasures ----
+
 import_blockmeasures <- function(files, num_plates = 1, 
                                  plate_names = NULL,
                                  ...) {
-  blockmeasures <- uninterleave(read_blockmeasures(files = files, ...),
-                                 n = num_plates, ...)
+  blockmeasures <- uninterleave(read_blocks(files = files, ...),
+                                n = num_plates, ...)
   widemeasures <- rep(list(NA), num_plates)
   for (i in 1:length(blockmeasures)) {
-    widemeasures[[i]] <- widen_blockmeasures(blockmeasures[[i]],
+    widemeasures[[i]] <- widen_blocks(blockmeasures[[i]],
                                          wellnames_sep = wellnames_sep)
   }
   if (is.null(plate_names)) { #no plate_names provided
@@ -394,6 +415,8 @@ import_blockmeasures <- function(files, num_plates = 1,
     return(widemeasures)
   }
 }
+
+#Get widemeasures ----
 
 import_widemeasures <- function(files, extension = NULL, 
                               startrow = NULL, endrow = NULL, 
@@ -536,18 +559,44 @@ import_widemeasures <- function(files, extension = NULL,
   }
 }
 
-pivot_widemeasures_longer <- function(widemeasures, ...) {
+#tidy widemeasures ----
+
+pivot_wide_longer <- function(widemeasures, 
+                                      data_cols = NULL,
+                                      id_cols = NULL,
+                                      names_to = "Well",
+                                      values_to = "Measurements",
+                                      ...) {
   #Basically just a wrapper for tidyr:pivot_longer
   # so that we can pivot_longer a whole list of widemeasures
+  # Note that if niether data_cols nor id_cols are provided, user must
+  #   provide arguments to pivot_longer via ... for at least cols argument
    
+  if (!is.null(data_cols) & !is.null(id_cols)) {
+    warning("Cannot provide both data_cols and id_cols, using data_cols specification")
+  }
+  
   require(tidyr)
   
-  if (!is.list(widemeasures)) {
+  if (is.data.frame(widemeasures)) {
     widemeasures <- list(widemeasures)
   }
   
-  outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
+  if (!is.null(data_cols)) { #user specified which columns are data columns
+    outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
+                      cols = data_cols, 
+                      names_to = names_to, values_to = values_to,
+                      ... = ...)
+  } else if (!is.null(id_cols)) { #user specified which columns are id columns
+    outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
+                      cols = -id_cols, 
+                      names_to = names_to, values_to = values_to,
+                      ... = ...)
+  } else { #User must be providing their own arguments to pivot_longer
+    outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
+                      names_to = names_to, values_to = values_to,
                    ... = ...)
+  }
   
   if (length(outputs) == 1) {
     return(outputs[[1]])
@@ -556,10 +605,12 @@ pivot_widemeasures_longer <- function(widemeasures, ...) {
   }
 }
 
-make_design <- function(nrows = NULL, ncols = NULL,
+#Get designs ----
+
+make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         wellnames_sep = "_", wellnames_colname = "Well",
-                        ...) {
+                        pattern_split = "", ...) {
   #we have an arbitary number of categories
   #each well should have a state in each category
   #the wells have to be identified uniquely
@@ -628,19 +679,19 @@ make_design <- function(nrows = NULL, ncols = NULL,
   #             
   
   #Check inputs
-  stopifnot(!(is.null(nrows) & is.null(row_names)),
-            !(is.null(ncols) & is.null(col_names)))
-  if (is.null(row_names)) {row_names <- paste("R", 1:nrows, sep = ".")}
-  if (is.null(col_names)) {col_names <- paste("C", 1:ncols, sep = ".")}
-  if (is.null(nrows)) {nrows <- length(row_names)}
-  if (is.null(ncols)) {ncols <- length(col_names)}
+  stopifnot(!(is.null(nrows) & is.null(block_row_names)),
+            !(is.null(ncols) & is.null(block_col_names)))
+  if (is.null(block_row_names)) {block_row_names <- paste("R", 1:nrows, sep = ".")}
+  if (is.null(block_col_names)) {block_col_names <- paste("C", 1:ncols, sep = ".")}
+  if (is.null(nrows)) {nrows <- length(block_row_names)}
+  if (is.null(ncols)) {ncols <- length(block_col_names)}
   
   dot_args <- list(...)
   
   #Make base output dataframe
   output <- as.data.frame(matrix(NA, nrow = nrows*ncols, ncol = 1+length(dot_args)))
-  output[,1] <- paste(rep(row_names, each = ncols),
-                      col_names, sep = wellnames_sep)
+  output[,1] <- paste(rep(block_row_names, each = ncols),
+                      block_col_names, sep = wellnames_sep)
   colnames(output)[1] <- wellnames_colname
   
   #Note dot_args structure
@@ -650,7 +701,8 @@ make_design <- function(nrows = NULL, ncols = NULL,
   
   #Loop through input arguments & fill into output dataframe
   for (i in 1:length(dot_args)) {
-    pattern_list <- as.numeric(strsplit(dot_args[[i]][[4]], split = ",")[[1]])
+    pattern_list <- as.numeric(strsplit(dot_args[[i]][[4]], 
+                                        split = pattern_split)[[1]])
     
     if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
          length(pattern_list)) != 0) {
@@ -658,9 +710,9 @@ make_design <- function(nrows = NULL, ncols = NULL,
                     names(dot_args)[i]))
     }
     
-    #Byrow is optional, if not provided default is byrow = FALSE
+    #Byrow is optional, if not provided default is byrow = TRUE
     if (length(dot_args[[i]]) < 5) {
-      dot_args[[i]][[5]] <- FALSE
+      dot_args[[i]][[5]] <- TRUE
     }
     
     #0 in pattern is NA
@@ -685,7 +737,19 @@ make_design <- function(nrows = NULL, ncols = NULL,
   return(output)
 }
 
-import_design <- function(files, fields, extension = NULL, 
+blockify_tidydesign <- function() {
+  #This function is primarily so that users can use make_tidydesign
+  # to make designs then output them to csv for inclusion in
+  # lab notebooks, etc.
+}
+
+split_blockdesign <- function() {
+  #This function will be called after read_blocks, widen_blocks,
+  # pivot_wide_longer to split up multiple fields that exist
+  # in the design when it's put in as a block in csv
+}
+
+import_blockdesign <- function(files, fields, extension = NULL, 
                           field_sep = "_",
                           reps_name = "Rep",
                           header = TRUE,
@@ -707,48 +771,69 @@ import_design <- function(files, fields, extension = NULL,
   # then cleans up the layout information in those files
   # by splitting it
   #Outputs that layout information so it can be merged with the data
+  # (in a tidy format)
   
   #If you don't want reps numbered then set reps_name to NA
   
+  ##steps
+  ##1. use read_blocks to get design into R
+  ##2. use widen_blocks to get design into wide format
+  ##3. use pivot wides longer to get design into tidy format
+  ##2. use split block to get design into tidy format
+  
+  #Note: probably need to adjust read_blocks to allow for putting the
+  #       design element in 1,1 cell and still infer colnames/rownames
+  #     nvm that can be achieved by explicitly providing startrow = 1
+  #       and startcol = 1 and putting metadata Design_element = c(1, 1)
+  
+  #For reference, old version (possibly)
+  layout_cleanup <- function(layout) {
+    #This function takes a layout dataframe with ...'s where info needs to be 
+    #iterated in and does so, while adding _A, _B etc for replicate wells
+    #with the same contents
+    #Wells labeled NA are not filled in (they are empty)
+    
+    #Define a matrix to track well contents we've seen before
+    #So that when they come up again the replicate number can resume
+    #where it left off
+    vals_and_cntr <- matrix(nrow = 0, ncol = 2)
+    for (i in 1:nrow(layout)) {
+      for (j in 2:ncol(layout)) {
+        if(!is.na(layout[i, j])) { #Non-empty well
+          if (nchar(layout[i, j]) > 1) { #Non ... well
+            current_val <- layout[i, j]
+            if (!(current_val %in% vals_and_cntr[, 1])) {
+              #This is the first time we've seen these well contents
+              #So we should start numbering replicates at the beginning
+              vals_and_cntr <- rbind(vals_and_cntr, c(current_val, 1))
+              row <- nrow(vals_and_cntr)
+            } else { 
+              #this isn't the first time we've seen these contents
+              #resume replicate numbering where we left off
+              row <- which(vals_and_cntr[, 1] == current_val)
+            }
+          }
+          layout[i, j] <- paste(current_val, 
+                                LETTERS[as.numeric(vals_and_cntr[row, 2])], sep = "_")
+          vals_and_cntr[row, 2] <- as.numeric(vals_and_cntr[row, 2]) + 1
+        }
+      }
+    }
+    return(layout)
+  }
   
   
   
 }
 
-layout_cleanup <- function(layout) {
-  #This function takes a layout dataframe with ...'s where info needs to be 
-  #iterated in and does so, while adding _A, _B etc for replicate wells
-  #with the same contents
-  #Wells labeled NA are not filled in (they are empty)
+
+merge_tidydesign_tidymeasures <- function() {
+  #This should also include the capability to merge multiple design
+  # objects (e.g. if dift design elements were written in block form
+  # in different csv files)
   
-  #Define a matrix to track well contents we've seen before
-  #So that when they come up again the replicate number can resume
-  #where it left off
-  vals_and_cntr <- matrix(nrow = 0, ncol = 2)
-  for (i in 1:nrow(layout)) {
-    for (j in 2:ncol(layout)) {
-      if(!is.na(layout[i, j])) { #Non-empty well
-        if (nchar(layout[i, j]) > 1) { #Non ... well
-          current_val <- layout[i, j]
-          if (!(current_val %in% vals_and_cntr[, 1])) {
-            #This is the first time we've seen these well contents
-            #So we should start numbering replicates at the beginning
-            vals_and_cntr <- rbind(vals_and_cntr, c(current_val, 1))
-            row <- nrow(vals_and_cntr)
-          } else { 
-            #this isn't the first time we've seen these contents
-            #resume replicate numbering where we left off
-            row <- which(vals_and_cntr[, 1] == current_val)
-          }
-        }
-        layout[i, j] <- paste(current_val, 
-                              LETTERS[as.numeric(vals_and_cntr[row, 2])], sep = "_")
-        vals_and_cntr[row, 2] <- as.numeric(vals_and_cntr[row, 2]) + 1
-      }
-    }
-  }
-  return(layout)
 }
+
 
 #Merge layout & data
 layout_data_merge <- function(layout, data) {
@@ -767,6 +852,8 @@ layout_data_merge <- function(layout, data) {
   data_mlt$format <- paste(colnames(layout)[1], "_Rep", sep = "")
   return(data_mlt)
 }
+
+#Preprocess ----
 
 # smooth_data <- function(algorithm = "loess", x, y,
 #                         formula = NULL, )

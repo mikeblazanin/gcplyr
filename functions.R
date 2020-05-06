@@ -151,7 +151,8 @@ read_blockmeasures <- function(files, extension = NULL,
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = c("block_name" = "NA"))), length(files))
+                             "metadata" = c("block_name" = "NA"))), 
+                   length(files))
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
     names(metadata_vector) <- c("block_name", names(metadata))
@@ -162,7 +163,8 @@ read_blockmeasures <- function(files, extension = NULL,
     #but users can specify other metadata they would like extracted 
     # (with a named list of c(row, column) combinations)
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = metadata_vector)), length(files))
+                             "metadata" = metadata_vector)), 
+                   length(files))
   }
 
   #Import data
@@ -370,15 +372,21 @@ widen_blockmeasures <- function(blockmeasures, wellnames_sep = "_",
   return(output)
 }
 
-import_blockmeasures <- function(files, num_plates = 1, ...) {
-  blockmeasures1 <- read_blockmeasures(files = files, ...)
-  blockmeasures2 <- uninterleave(blockmeasures1, n = num_plates, ...)
+import_blockmeasures <- function(files, num_plates = 1, 
+                                 plate_names = NULL,
+                                 ...) {
+  blockmeasures <- uninterleave(read_blockmeasures(files = files, ...),
+                                 n = num_plates, ...)
   widemeasures <- rep(list(NA), num_plates)
-  for (i in 1:length(blockmeasures2)) {
-    widemeasures[[i]] <- widen_blockmeasures(blockmeasures2[[i]],
+  for (i in 1:length(blockmeasures)) {
+    widemeasures[[i]] <- widen_blockmeasures(blockmeasures[[i]],
                                          wellnames_sep = wellnames_sep)
   }
-  names(widemeasures) <- paste("plate_", 1:length(widemeasures), sep = "")
+  if (is.null(plate_names)) { #no plate_names provided
+    names(widemeasures) <- paste("plate_", 1:length(widemeasures), sep = "")
+  } else { #plate_names are provided
+    names(widemeasures) <- plate_names
+  }
   
   if (num_plates == 1) {
     return(widemeasures[[1]])
@@ -541,7 +549,11 @@ pivot_widemeasures_longer <- function(widemeasures, ...) {
   outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
                    ... = ...)
   
-  return(outputs)
+  if (length(outputs) == 1) {
+    return(outputs[[1]])
+  } else {
+    return(outputs)
+  }
 }
 
 make_design <- function(nrows = NULL, ncols = NULL,

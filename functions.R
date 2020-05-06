@@ -11,7 +11,7 @@
 #         inference that the rest of the dataframe is data
 #       Improve comments/documentation
 #       
-#       Widen_blockcurves calls t which calls as.matrix
+#       widen_blockmeasures calls t which calls as.matrix
 #       make_layout also does
 
 #Change smoothing to include other functions
@@ -20,8 +20,8 @@
 #Spline models
 #General additive model
 
-#wide-curves: dataframe with each column corresponding to a single well
-#block-curves: dataframe where rows and columns match literally to a plate
+#wide measures: dataframe with each column corresponding to a single well
+#block measures: dataframe where rows and columns match literally to a plate
 
 check_diminputs <- function(diminput, dimname, files) {
   #A function that adjusts inputs to be lists if they're not already
@@ -35,7 +35,7 @@ check_diminputs <- function(diminput, dimname, files) {
   }
 }
 
-read_blockcurves <- function(files, extension = NULL, 
+read_blockmeasures <- function(files, extension = NULL, 
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
                              sheet = NULL, metadata = NULL,
@@ -43,13 +43,13 @@ read_blockcurves <- function(files, extension = NULL,
                              infer_colnames = TRUE,
                              infer_rownames = TRUE,
                              ...) {
-  #A function that reads blockcurves into the R environment
+  #A function that reads block measures into the R environment
   
   #Inputs:  a list of filepaths relative to the current working directory,
   #           where each one is a single plate read
   #         (optional) the extension of the files,"csv", "xls", or "xlsx"
   #           (will attempt to infer extension if none is provided)
-  #         (optional) the row & columns where the density data is located
+  #         (optional) the row & columns where the measures data is located
   #         startrow, endrow, startcol, endcol, sheet and extension can either
   #          be vectors or lists the same length as files, or a single value
   #          that applies for all files
@@ -71,34 +71,35 @@ read_blockcurves <- function(files, extension = NULL,
   #            columns will simply be numbered with a "C" prefix
   #            rows will simply be numbered with a "R" prefix
   #         metadata is a list where each item in the list is a vector of length 2
-  #           where each vector is a row,column pair for where in the blockcurve
-  #           input file the metadata information is located.
+  #           where each vector is a row,column pair for where in the block measures
+  #           input file(s) the metadata information is located.
   #           Metadata is returned in the 2nd element of the output nested list
-  #           with the first element of Metadata being the blockcurve_name and
+  #           with the first element of Metadata being the blockmeasure_name and
   #           subsequent elements being those specified by the metadata argument
-  #           (by default blockcurve_name is inferred from the filename, but
-  #           a list of blockcurve_names can be specifically provided if desired)
+  #           (by default block_name is inferred from the filename, but
+  #           a vector of block_names can be specifically provided if desired)
   #         
-  #         Note that the ... is just so that import_blockcurves can call
+  #         Note that the ... is just so that import_blockmeasures can call
   #         it with generic passing of arguments
-  #Outputs: a list of blockcurves named by filename
+  #           TODO: check if this is actually necessary
+  #Outputs: a list of block measures named by filename
   
   #Note if sheet is NULL defaults to first sheet
   
   ##TODO
-  ##      change read_blockcurves so it can handle an arbitrary number of additional
+  ##      change read_blockmeasures so it can handle an arbitrary number of additional
   ##      pieces of information to extract from each blockcurve file
   ##      (we can call this metadata or something like that)
   ##      these pieces of information can be passed as a list of (named) vectors
   ##      where each vector is the c(row, column) where the information should be
-  ##      pulled from. Then have read_blockcurves return this information
+  ##      pulled from. Then have read_blockmeasures return this information
   ##      as additional (named) entries of each entry in the list
   ##      e.g. [[1]] [1] data #1 [2] time #1 [3] temp #1 [4] Abs #1
   ##           [[2]] [1] data #2 [2] time #2 [3] temp #2 [4] Abs #2
   ##           ...
   ##      Then uninterleave should still work the same, because it will rearrange
   ##      the sub-lists (leaving the meta-data intact)
-  ##      Then widen_blockcurves will have to take this metadata out and
+  ##      Then widen_blockmeasures will have to take this metadata out and
   ##      put it as the first, second, third, etc columns before the data columns
   ##      alternatively perhaps it should be:
   ##      [[1]] [1] data #1 [2] "meta-data" [2][1] name #1 
@@ -146,17 +147,17 @@ read_blockcurves <- function(files, extension = NULL,
   
   if (any(extension == "xls" | extension == "xlsx")) {require(readxl)}
   
-  #Create empty list for read-in blockcurves
+  #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
                              "metadata" = c("block_name" = "NA"))), length(files))
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
     names(metadata_vector) <- c("block_name", names(metadata))
-    #Okay so the goal here is to have each blockcurve returned as an item in a big list
+    #Okay so the goal here is to have each block measures returned as an item in a big list
     #each item will itself be a named list with 2 things: "data" and "metadata"
     #data is just the dataframe (with colnames & rownames inferred or not)
-    #within metadata there will at least be "name" for the blockcurve filename
+    #within metadata there will at least be "name" for the block measures filename
     #but users can specify other metadata they would like extracted 
     # (with a named list of c(row, column) combinations)
     outputs <- rep(list(list("data" = NA, 
@@ -211,7 +212,7 @@ read_blockcurves <- function(files, extension = NULL,
     }
     if (is.null(temp_rownames)) {
       if (nrow(outputs[[i]]$data) > 26) {
-        stop("Automatic rownames for blockcurves with more than 26 rows is not supported")
+        stop("Automatic rownames for blockmeasures with more than 26 rows is not supported")
       }
       temp_rownames <- paste("R", LETTERS[1:nrow(outputs[[i]]$data)], sep = ".")
     }
@@ -240,11 +241,11 @@ read_blockcurves <- function(files, extension = NULL,
   ##Error checking for output dataframe dimensions
   if (var(sapply(outputs, simplify = TRUE, 
                  FUN = function(x) {dim(x$data)[1]})) != 0) {
-    warning("Not all blockcurves have the same number of rows of data")
+    warning("Not all blockmeasures have the same number of rows of data")
   }
   if (var(sapply(outputs, simplify = TRUE,
                  FUN = function(x) {dim(x$data)[2]})) != 0) {
-    warning("Not all blockcurves have the same number of columns of data")
+    warning("Not all blockmeasures have the same number of columns of data")
   }
   
   return(outputs)
@@ -255,11 +256,11 @@ uninterleave <- function(interleaved_list, n, ...) {
   #        how many sub-lists there should be (i.e. how many groups should
   #          the interleaved list be divided into)
   #Output: a list of lists of R objects
-  #This function takes a list of R objects (e.g. a list of blockcurves)
+  #This function takes a list of R objects (e.g. a list of blockmeasures)
   #and separates them into separate sub-lists (e.g. where each sub-list
-  # corresponds to all blockcurves for a single plate from a multi-plate 
-  # set of blockcurves)
-  #         Note that the ... is just so that import_blockcurves can call
+  # corresponds to all blockmeasures for a single plate from a multi-plate 
+  # set of blockmeasures)
+  #         Note that the ... is just so that import_blockmeasures can call
   #         it with generic passing of arguments
   
   #Input checking
@@ -276,58 +277,58 @@ uninterleave <- function(interleaved_list, n, ...) {
   return(output)
 }
 
-widen_blockcurves <- function(blockcurves, wellnames_sep = "_", 
+widen_blockmeasures <- function(blockmeasures, wellnames_sep = "_", 
                               nested_metadata = NULL, ...) {
-  #Inputs: a [list of] blockcurve[s] (optionally, named)
-  #         blockcurves should be data.frames
+  #Inputs: a [list of] blockmeasures[s] (optionally, named)
+  #         blockmeasures should be data.frames
   #         nested_metadata can be TRUE, FALSE, or NULL (if null, will infer TRUE or FALSE)
-  #         Note that the ... is just so that import_blockcurves can call
+  #         Note that the ... is just so that import_blockmeasures can call
   #         it with generic passing of arguments
   
   #Outputs: a single widecurve dataframe
   
-  if(class(blockcurves) != "list") {
-    blockcurves <- list(blockcurves)
+  if(class(blockmeasures) != "list") {
+    blockmeasures <- list(blockmeasures)
   }
   
   #Infer nestedness if nested_metadata is set to NULL
   if (is.null(nested_metadata)) {
-    if (all(sapply(blockcurves, simplify = TRUE, FUN = class) == "data.frame")) {
+    if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "data.frame")) {
       nested_metadata <- FALSE
       warning("Inferring nested_metadata to be FALSE")
-    } else if (all(sapply(blockcurves, simplify = TRUE, FUN = class) == "list")) {
+    } else if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "list")) {
       nested_metadata <- TRUE
       warning("Inferring nested_metadata to be TRUE")
     } else {
-      stop("Unable to infer nested_metadata, this may be because blockcurves vary in nestedness or are not data.frame's")
+      stop("Unable to infer nested_metadata, this may be because blockmeasures vary in nestedness or are not data.frame's")
     }
   }
   
-  #Check that all blockcurves have same dimensions
+  #Check that all blockmeasures have same dimensions
   if (nested_metadata) { #there is nested metadata
-    if (var(sapply(blockcurves, simplify = TRUE, 
+    if (var(sapply(blockmeasures, simplify = TRUE, 
                    FUN = function(x) {dim(x[[1]])[1]})) != 0) {
-      stop("Not all blockcurves have the same number of rows of data")
+      stop("Not all blockmeasures have the same number of rows of data")
     }
-    if (var(sapply(blockcurves, simplify = TRUE,
+    if (var(sapply(blockmeasures, simplify = TRUE,
                    FUN = function(x) {dim(x[[1]])[2]})) != 0) {
-      stop("Not all blockcurves have the same number of columns of data")
+      stop("Not all blockmeasures have the same number of columns of data")
     }
   } else { #there is not nested metadata
-    if (var(sapply(blockcurves, simplify = TRUE, 
+    if (var(sapply(blockmeasures, simplify = TRUE, 
                    FUN = function(x) {dim(x)[1]})) != 0) {
-      stop("Not all blockcurves have the same number of rows of data")
+      stop("Not all blockmeasures have the same number of rows of data")
     }
-    if (var(sapply(blockcurves, simplify = TRUE,
+    if (var(sapply(blockmeasures, simplify = TRUE,
                    FUN = function(x) {dim(x)[2]})) != 0) {
-      stop("Not all blockcurves have the same number of columns of data")
+      stop("Not all blockmeasures have the same number of columns of data")
     }
   }
     
   #convert list of dataframes to single dataframe
   #where each column is a well and each row is a plate read
   #(each column is a row-column combination from the blockcurve)
-  #(each row is a single dataframe from blockcurves)
+  #(each row is a single dataframe from blockmeasures)
   #Adding the metadata as the first n columns
   #
   #
@@ -335,7 +336,7 @@ widen_blockcurves <- function(blockcurves, wellnames_sep = "_",
   # t() (because t calls as.matrix which can add white space to numeric values
   # See convert_plate_to_column in plater R package
   # If so, this code may be useful
-  #   output <- sapply(blockcurves, simplify = TRUE,
+  #   output <- sapply(blockmeasures, simplify = TRUE,
               # function(x) {c(x[[2]],
               #                unlist(lapply(X = 1:nrow(x[[1]]),
               #                              function(i) {unname(x[[1]][i, ])}))
@@ -345,47 +346,47 @@ widen_blockcurves <- function(blockcurves, wellnames_sep = "_",
   
   if (nested_metadata) { #There is nested metadata
     #Reshape
-    output <- data.frame(t(sapply(blockcurves, simplify = TRUE, 
+    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
                                   function(x) {c(x[[2]],
                                                  t(x[[1]]))})))
     #Assign column names
-    colnames(output) <- c(names(blockcurves[[1]][[2]]),
-                          paste(rep(rownames(blockcurves[[1]][[1]]),
-                                    each = ncol(blockcurves[[1]][[1]])),
-                                colnames(blockcurves[[1]][[1]]),
+    colnames(output) <- c(names(blockmeasures[[1]][[2]]),
+                          paste(rep(rownames(blockmeasures[[1]][[1]]),
+                                    each = ncol(blockmeasures[[1]][[1]])),
+                                colnames(blockmeasures[[1]][[1]]),
                                 sep = wellnames_sep))
   } else { #There is not nested metadata
     #Reshape
-    output <- data.frame(t(sapply(blockcurves, simplify = TRUE, 
+    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
                                   function(x) {c(t(x))})))
     #Assign column names
-    colnames(output) <- paste(rep(rownames(blockcurves[[1]]),
-                                  each = ncol(blockcurves[[1]])),
-                              colnames(blockcurves[[1]]),
+    colnames(output) <- paste(rep(rownames(blockmeasures[[1]]),
+                                  each = ncol(blockmeasures[[1]])),
+                              colnames(blockmeasures[[1]]),
                               sep = wellnames_sep)
   }
 
   return(output)
 }
 
-import_blockcurves <- function(files, num_plates = 1, ...) {
-  blockcurves1 <- read_blockcurves(files = files, ...)
-  blockcurves2 <- uninterleave(blockcurves1, n = num_plates, ...)
-  widecurves <- rep(list(NA), num_plates)
-  for (i in 1:length(blockcurves2)) {
-    widecurves[[i]] <- widen_blockcurves(blockcurves2[[i]],
+import_blockmeasures <- function(files, num_plates = 1, ...) {
+  blockmeasures1 <- read_blockmeasures(files = files, ...)
+  blockmeasures2 <- uninterleave(blockmeasures1, n = num_plates, ...)
+  widemeasures <- rep(list(NA), num_plates)
+  for (i in 1:length(blockmeasures2)) {
+    widemeasures[[i]] <- widen_blockmeasures(blockmeasures2[[i]],
                                          wellnames_sep = wellnames_sep)
   }
-  names(widecurves) <- paste("plate_", 1:length(widecurves), sep = "")
+  names(widemeasures) <- paste("plate_", 1:length(widemeasures), sep = "")
   
   if (num_plates == 1) {
-    return(widecurves[[1]])
+    return(widemeasures[[1]])
   } else {
-    return(widecurves)
+    return(widemeasures)
   }
 }
 
-import_widecurves <- function(files, extension = NULL, 
+import_widemeasures <- function(files, extension = NULL, 
                               startrow = NULL, endrow = NULL, 
                               startcol = NULL, endcol = NULL,
                               header = TRUE,
@@ -416,7 +417,7 @@ import_widecurves <- function(files, extension = NULL,
   
   
   #Inputs:  a list of filepaths relative to the current working directory,
-  #           where each one is a widecurves set of data
+  #           where each one is a widemeasures set of data
   #         (optional) the extension of the files,"csv", "xls", or "xlsx"
   #           (will attempt to infer extension if none is provided)
   #         (optional) the row & columns where the data is located
@@ -429,7 +430,7 @@ import_widecurves <- function(files, extension = NULL,
   #           can either be vectors or lists the same length as files, 
   #           or a single value that applies for all files
   # 
-  #Outputs: a list of blockcurves named by filename
+  #Outputs: a list of blockmeasures named by filename
   
   if (!sum(is.null(startrow), is.null(endrow), 
            is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
@@ -509,7 +510,7 @@ import_widecurves <- function(files, extension = NULL,
     }
   }
   
-  #Add filenames to widecurves
+  #Add filenames to widemeasures
   if (!is.null(wide_names)) {
     stopifnot(length(wide_names) == length(files))
     names(outputs) <- wide_names
@@ -526,23 +527,23 @@ import_widecurves <- function(files, extension = NULL,
   }
 }
 
-pivot_widecurves_longer <- function(widecurves, ...) {
+pivot_widemeasures_longer <- function(widemeasures, ...) {
   #Basically just a wrapper for tidyr:pivot_longer
-  # so that we can pivot_longer a whole list of widecurves
+  # so that we can pivot_longer a whole list of widemeasures
    
   require(tidyr)
   
-  if (!is.list(widecurves)) {
-    widecurves <- list(widecurves)
+  if (!is.list(widemeasures)) {
+    widemeasures <- list(widemeasures)
   }
   
-  outputs <- lapply(X = widecurves, FUN = tidyr::pivot_longer,
+  outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
                    ... = ...)
   
   return(outputs)
 }
 
-make_layout <- function(nrows = NULL, ncols = NULL,
+make_design <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         wellnames_sep = "_", wellnames_colname = "Well",
                         ...) {
@@ -668,9 +669,10 @@ make_layout <- function(nrows = NULL, ncols = NULL,
     output[, i+1] <- c(t(block_out))
     colnames(output)[i+1] <- names(dot_args)[i]
   }
+  return(output)
 }
 
-import_layout <- function(files, fields, extension = NULL, 
+import_design <- function(files, fields, extension = NULL, 
                           field_sep = "_",
                           reps_name = "Rep",
                           header = TRUE,

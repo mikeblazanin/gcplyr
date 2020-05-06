@@ -611,31 +611,36 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         wellnames_sep = "_", wellnames_colname = "Well",
                         pattern_split = "", ...) {
-  #we have an arbitary number of categories
-  #each well should have a state in each category
-  #the wells have to be identified uniquely
-  #the plates have to be identified uniquely
-  #the states of a given category could be laid out in any number of ways
-  # common ones might include alternating among the n states
-  # (e.g. a a a b b b c c c a a a b b b c c c)
-  # inputs should be allowed to specify ranges of cells
-  #   (in physical space, e.g. rows 2-4, cols 3-5) and patterns of cells
-  #   
-  #   
-  # Looking at analyze data, almost any pattern should be achievable with
-  #   a simple on (number) off (number) pattern
-  #     (assuming you can let it know which wells are empty)
-  #     so the specifications might be as simple as a vector?...
-  #       c(startwell, stopwell, onlength, offlength)
-  #       
-  #       
-  #       
-  #   One idea for inputs:
-  #     each input argument is a category (and therefore a list)
-  #     the list has named elements, each of which is a vector
-  #     The named elements are the values in that category
-  #       and the vector contains which wells (numbered) contain
-  #       that value for that category
+  #This is a function to easily input experimental design elements
+  #Either nrows or block_row_names must be provided
+  #Either ncols or block_col_names must be provided
+  #For formatting ... arguments, each must be a list with four elements:
+  # the values, 
+  # the rows the pattern should be applied to,
+  # the columns the pattern should be applied to, 
+  # the pattern itself (in string)
+  #   numbers refer to the indexes in the values vector
+  #   0's refer to NA
+  #   the pattern will be split using pattern_split
+  #     (defaults to every character)
+  # whether the pattern should be filled by row (Boolean)
+  #For example:
+  # my_example <- make_tidydesign(nrows = 8, ncols = 12,
+  #         design_element_name = list(c("Value1", "Value2", "Value3"),
+  #                           rowstart:rowend, colstart:colend,
+  #                           "111222333000", TRUE)
+  #To make it easier to pass arguments, use make_pattern:
+  # my_example <- make_tidydesign(nrows = 8, ncols = 12,
+  #       design_element_name = make_pattern(values = c("L", "G", "C"),
+  #                                                 rows = 2:7, cols = 2:11,
+  #                                                 pattern = "11223300",
+  #                                                 byrow = TRUE))
+  
+  
+  #Do we need to include a plate_name argument?
+    #(old comment) the plates have to be identified uniquely
+  
+  #(old comment on other ways inputs could be taken)
   #       Vectors can be formatted in several ways:
   #         they can simply be numbers of the wells
   #         they can be row-column based
@@ -646,37 +651,6 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   #               "Isolate" = list("A" = c(1, 6, 11),
   #                                 "B" = c(2, 7, 12), etc))
   #               "Rep" = list("1" = 
-  #   what kind of inputs can make the vast majority of repeating
-  #     pattern-type data easily?
-  #     I suspect this may be sufficient:
-  #       List of wells being considered
-  #         best way to do this is probably w/ standard subsetting
-  #         i.e. [startrow:endrow, startcol:endcol]
-  #       Well to start pattern on
-  #       Length of "on" period
-  #       Length of "off" period
-  #       Well to end pattern on
-  #       bycolumn (by default goes byrow)
-  #     If we can somehow make it so patterns can be combined
-  #       I think this can be achieved because you can have the same
-  #       name for multiple elements in a list, so users could specify
-  #       patterns sequentially in the order they'll be executed
-  #       e.g. "Isolate" = list("A" = c( , , , , ),
-  #                             "A" = c( , , , , ))
-  #     perhaps we need another function, something like
-  #       make_pattern that has all these things as explicit
-  #       arguments that can then be passed
-  #       i.e. make_pattern <- function(startrow, endrow,
-  #       startcol, endcol, startwell, onlength, offlength, endwell,
-  #       bycolumn)
-  #       and then "Isolate" = list("A" = make_pattern( yada ),
-  #                                 "B" = make_pattern(yada ))
-  #     make_pattern could be helpful but not necessary at first
-  #     because we can have it be a vector:
-  #       "Isolate" = list("values" = c("A", "B", "C"),
-  #       rowstart:rowend, colstart:colend,
-  #               pattern = "111222333000", byrow = TRUE)
-  #             
   
   #Check inputs
   stopifnot(!(is.null(nrows) & is.null(block_row_names)),
@@ -736,6 +710,25 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   }
   return(output)
 }
+
+make_pattern <- function(values, rows, cols, pattern, byrow = TRUE) {
+  #This function simply makes it easier to use make_tidydesign
+  #For example:
+  # my_example <- make_tidydesign(nrows = 8, ncols = 12,
+  #       design_element_name = make_pattern(values = c("L", "G", "C"),
+  #                                                 rows = 2:7, cols = 2:11,
+  #                                                 pattern = "11223300",
+  #                                                 byrow = TRUE))
+  stopifnot(is.vector(values), is.vector(rows), is.vector(cols),
+            is.character(pattern), is.logical(byrow))
+  
+  return(list(values, rows, cols, pattern, byrow))
+}
+  
+  
+  #dot_args[[i]] = list(values = c("A", "B", "C"),
+  #                     rows = rowstart:rowend, cols = colstart:colend
+  #                     pattern = "111222333000", byrow = TRUE)
 
 blockify_tidydesign <- function() {
   #This function is primarily so that users can use make_tidydesign

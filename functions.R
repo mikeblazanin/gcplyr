@@ -23,14 +23,15 @@
 #wide measures: dataframe with each column corresponding to a single well
 #block measures: dataframe where rows and columns match literally to a plate
 
-check_diminputs <- function(diminput, dimname, files) {
+checkdim_inputs <- function(input, input_name, needed_len,
+                            needed_name = "the number of files") {
   #A function that adjusts inputs to be lists if they're not already
-  if (length(diminput) != length(files)) {
-    if(length(diminput) != 1) {
-      stop(paste("More than one", dimname, "value is supplied, but the number
-                   of", dimname, "values is not equal to the number of files"))
+  if (length(input) != needed_len) {
+    if(length(input) != 1) {
+      stop(paste("More than one", input_name, "value is supplied, but the number
+                   of", input_name, "values is not equal to", needed_name))
     } else {
-      return(rep(diminput, length(files)))
+      return(rep(input, needed_len))
     }
   }
 }
@@ -113,22 +114,22 @@ read_blockmeasures <- function(files, extension = NULL,
   }
   
   if (!is.null(startrow)) {
-    startrow <- check_diminputs(startrow, "startrow", files)
+    startrow <- checkdim_inputs(startrow, "startrow", length(files))
   }
   if (!is.null(endrow)) { 
-    endrow <- check_diminputs(endrow, "endrow", files)
+    endrow <- checkdim_inputs(endrow, "endrow", length(files))
   }
   if (!is.null(startcol)) {
-    startcol <- check_diminputs(startcol, "startcol", files)
+    startcol <- checkdim_inputs(startcol, "startcol", length(files))
   }
   if (!is.null(endcol)) {
-    endcol <- check_diminputs(endcol, "endcol", files)
+    endcol <- checkdim_inputs(endcol, "endcol", length(files))
   }
   if (!is.null(sheet)) {
-    sheet <- check_diminputs(sheet, "sheet", files)
+    sheet <- checkdim_inputs(sheet, "sheet", length(files))
   }
-  infer_colnames <- check_diminputs(infer_colnames, "infer_colnames", files)
-  infer_rownames <- check_diminputs(infer_rownames, "infer_rownames", files)
+  infer_colnames <- checkdim_inputs(infer_colnames, "infer_colnames", length(files))
+  infer_rownames <- checkdim_inputs(infer_rownames, "infer_rownames", length(files))
   
   if (!is.null(block_names)) {
     stopifnot(length(block_names) == length(files))
@@ -141,7 +142,7 @@ read_blockmeasures <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
   } else {
-    extension <- check_diminputs(extension, "extension", files)
+    extension <- checkdim_inputs(extension, "extension", length(files))
     stopifnot(extension %in% c("csv", "xls", "xlsx"))
   }
   
@@ -438,19 +439,19 @@ import_widemeasures <- function(files, extension = NULL,
   }
   
   if (!is.null(startrow)) {
-    startrow <- check_diminputs(startrow, "startrow", files)
+    startrow <- checkdim_inputs(startrow, "startrow", length(files))
   }
   if (!is.null(endrow)) { 
-    endrow <- check_diminputs(endrow, "endrow", files)
+    endrow <- checkdim_inputs(endrow, "endrow", length(files))
   }
   if (!is.null(startcol)) {
-    startcol <- check_diminputs(startcol, "startcol", files)
+    startcol <- checkdim_inputs(startcol, "startcol", length(files))
   }
   if (!is.null(endcol)) {
-    endcol <- check_diminputs(endcol, "endcol", files)
+    endcol <- checkdim_inputs(endcol, "endcol", length(files))
   }
   if (!is.null(sheet)) {
-    sheet <- check_diminputs(sheet, "sheet", files)
+    sheet <- checkdim_inputs(sheet, "sheet", length(files))
   }
   
   if (!is.null(startrow) & header == TRUE & startrow <= 1) {
@@ -465,7 +466,7 @@ import_widemeasures <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
   } else {
-    extension <- check_diminputs(extension, "extension", files)
+    extension <- checkdim_inputs(extension, "extension", length(files))
     stopifnot(all(extension %in% c("csv", "xls", "xlsx")))
   }
   

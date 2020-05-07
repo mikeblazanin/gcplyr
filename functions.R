@@ -786,9 +786,19 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
   return(output)
 }
 
-write_design <- function(design, format = NULL) {
-  #Format can be "tidy" or "block"
-  
+write_blockdesign <- function(designs, file, ...) {
+  #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
+  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
+  if (is.data.frame(designs)) {
+    write.csv(x = designs, file = file, ...)
+  } else if (is.list(designs)) {
+    for (i in 1:length(designs)) {
+      tmp <- cbind(data.frame(row.names(designs[[i]])),
+                        designs[[i]])
+      colnames(tmp)[1] <- names(designs)[i]
+      write.csv(x = tmp, file = file, row.names = FALSE, ...)
+    }   
+  }
 }
 
 split_blockdesign <- function() {

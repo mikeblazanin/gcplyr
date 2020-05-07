@@ -665,7 +665,8 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   dot_args <- list(...)
   
   #Make base output dataframe
-  output <- as.data.frame(matrix(NA, nrow = nrows*ncols, ncol = 1+length(dot_args)))
+  output <- as.data.frame(matrix(NA, nrow = nrows*ncols, 
+                                 ncol = 1+length(unique(names(dot_args)))))
   output[,1] <- paste(rep(block_row_names, each = ncols),
                       block_col_names, sep = wellnames_sep)
   colnames(output)[1] <- wellnames_colname
@@ -704,11 +705,14 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     block_out <- matrix(NA, nrow = nrows, ncol = ncols)
     block_out[dot_args[[i]][[2]], dot_args[[i]][[3]]] <-
       matrix(vals_list, 
-             nrow = length(dot_args[[i]][[2]]), ncol = length(dot_args[[i]][[3]]),
+             nrow = length(dot_args[[i]][[2]]), 
+             ncol = length(dot_args[[i]][[3]]),
              byrow = dot_args[[i]][[5]])
+    block_mlt <- c(t(block_out))
     #Put values into output dataframe
-    output[, i+1] <- c(t(block_out))
-    colnames(output)[i+1] <- names(dot_args)[i]
+    mycol <- match(names(dot_args)[i], unique(names(dot_args)))+1
+    output[which(!is.na(block_mlt)), mycol] <- block_mlt[which(!is.na(block_mlt))]
+    colnames(output)[mycol] <- names(dot_args)[i]
   }
   return(output)
 }
@@ -727,15 +731,23 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
   return(list(values, rows, cols, pattern, byrow))
 }
   
-  
-  #dot_args[[i]] = list(values = c("A", "B", "C"),
-  #                     rows = rowstart:rowend, cols = colstart:colend
-  #                     pattern = "111222333000", byrow = TRUE)
-
-blockify_tidydesign <- function() {
+blockify_tidydesign <- function(tidydesign, collapse = NULL,
+                                wellnames_sep = "_", wellnames_colname = "Well") {
   #This function is primarily so that users can use make_tidydesign
   # to make designs then output them to csv for inclusion in
   # lab notebooks, etc.
+  #If collapse = NULL, each design column will be put into it's own block
+  #If collapse = some character, all design columns will be put into one block
+  # with that character as the seperator
+  
+  
+  
+  
+}
+
+write_design <- function(design, format = NULL) {
+  #Format can be "tidy" or "block"
+  
 }
 
 split_blockdesign <- function() {
@@ -818,6 +830,11 @@ import_blockdesign <- function(files, fields, extension = NULL,
   }
   
   
+  
+}
+
+
+import_tidydesign <- function() {
   
 }
 

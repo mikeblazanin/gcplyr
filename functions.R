@@ -731,7 +731,7 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
   return(list(values, rows, cols, pattern, byrow))
 }
   
-blockify_tidydesign <- function(tidydesign, collapse = NULL,
+block_tidydesign <- function(tidydesign, collapse = NULL,
                                 wellnames_sep = "_", wellnames_colname = "Well") {
   #This function is primarily so that users can use make_tidydesign
   # to make designs then output them to csv for inclusion in
@@ -739,10 +739,51 @@ blockify_tidydesign <- function(tidydesign, collapse = NULL,
   #If collapse = NULL, each design column will be put into it's own block
   #If collapse = some character, all design columns will be put into one block
   # with that character as the seperator
+  #Either way the function returns a list of blockdesign matrices
+  # (although if collapse is not NULL, the list is of length 1)
   
+  #Get rownames & colnames from well column
+  rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
+                              split = wellnames_sep),
+                     simplify = TRUE,
+                     FUN = function(x) {x[1]})
+  colnames <- sapply(strsplit(tidydesign[, wellnames_colname],
+                              split = wellnames_sep),
+                     simplify = TRUE,
+                     FUN = function(x) {x[2]})
+  #Make empty output
+  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
+                            ncol = length(unique(colnames)))), 
+                length(which(colnames(tidydesign) != wellnames_colname)))
   
+  #Iterate through each design element
+  i <- 1
+  for (col in which(colnames(tidydesign) != wellnames_colname)) {
+    #Assign row and column names
+    rownames(output[[i]]) <- unique(rownames)
+    colnames(output[[i]]) <- unique(colnames)
+    #Fill data into appropriate row,column in output
+    # (spot is found by matching row/col name to row/col from well column
+    #  in tidydesign input)
+    output[[i]][match(rownames, rownames(output[[i]])) + 
+             (match(colnames, colnames(output[[i]]))-1)*nrow(output[[i]])] <-
+      tidydesign[, col]
+    i <- i+1
+  }
   
+  #Collapse (if requested)
+  if (!is.null(collapse)) {
+    output <- list(matrix(do.call("paste", c(output, sep = collapse)),
+                     nrow = length(unique(rownames)),
+                     ncol = length(unique(colnames))))
+    rownames(output[[1]]) <- unique(rownames)
+    colnames(output[[1]]) <- unique(colnames)
+    names(output) <- paste(
+      colnames(tidydesign)[which(colnames(tidydesign) != wellnames_colname)],
+      collapse = collapse)
+  }
   
+  return(output)
 }
 
 write_design <- function(design, format = NULL) {

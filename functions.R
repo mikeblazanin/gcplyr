@@ -219,18 +219,16 @@ read_blocks <- function(files, extension = NULL,
     if (is.na(endcol[i])) {endcol[i] <- ncol(temp)}
     
     #Inferring startrow/startcol & rownames/colnames is complex:
-    #to start we set them to 0 (if they're still 0 afterwards then we
-    # auto-generate the row & column names)
-    colnames_row <- 0
-    rownames_col <- 0
-    temp_startrow <- 0
+    
     temp_startcol <- 0
+    temp_startrow <- 0
     
     #If infer_colnames is true...
     if (infer_colnames[i] == TRUE) {
       #...and startrow is provided, colnames is the row before startrow
       if (!is.na(startrow[i])) {
         colnames_row <- startrow[i]-1
+        temp_startrow <- startrow[i]
       #...and startrow is not provided
       } else { 
         if (!is.na(startcol[i])) {
@@ -241,6 +239,7 @@ read_blocks <- function(files, extension = NULL,
             temp_startrow <- 2
           } else {
             #otherwise colnames will be auto
+            colnames_row <- 0
             temp_startrow <- 1
           }
         } else {
@@ -252,13 +251,20 @@ read_blocks <- function(files, extension = NULL,
             temp_startrow <- 2
           } else {
           #otherwise colnames will be auto
+            colnames_row <- 0
             temp_startrow <- 1
           }
         }
       }
     } else {
       #If infer_colnames is false then we auto-generate colnames
-      if (is.na(startrow[i])) {temp_startrow <- 1}
+      colnames_row <- 0
+      if (is.na(startrow[i])) {
+        #If startrow is not provided, start on row 1
+        temp_startrow <- 1
+      } else {
+        temp_startrow <- startrow[i]
+      }
     }
     
     #If infer_rownames is true...
@@ -266,6 +272,7 @@ read_blocks <- function(files, extension = NULL,
       #...and startcol is provided, rownames is the col before startcol
       if (!is.na(startcol[i])) {
         rownames_col <- startcol[i]-1
+        temp_startcol <- startcol[i]
       #...and startcol is not provided
       } else {
         if (!is.na(startrow[i])) {
@@ -277,6 +284,7 @@ read_blocks <- function(files, extension = NULL,
             temp_startcol <- 2
           } else {
           #otherwise rownames will be auto (no code needed)
+            rownames_col <- 0
             temp_startcol <- 1
           }
         } else {
@@ -287,13 +295,18 @@ read_blocks <- function(files, extension = NULL,
             rownames_col <- 1
             temp_startcol <- 2
           } else {
+            rownames_col <- 0
             temp_startcol <- 1
           }
         }
       }
     } else {
       #If infer_rownames is false then we auto-generate rownames
-      if(is.na(startcol[i])) {temp_startcol <- 1}
+      rownames_col <- 0
+      if(is.na(startcol[i])) {
+        #If startcol is not provided, start on col 1
+        temp_startcol <- 1
+      } else {temp_startcol <- startcol[i]}
     }
     
     ##For debugging
@@ -301,11 +314,9 @@ read_blocks <- function(files, extension = NULL,
     #       temp_startrow, temp_startcol, colnames_row, rownames_col, sep = "|")
     
     #Save inferred info about startrow and startcol
-    if (temp_startrow == 0) {
-      warning("temp_startrow = 0, this shouldn't happen")
-    } else {startrow[i] <- temp_startrow}
-    if (temp_startcol == 0) {
-      warning("temp_startcol = 0, this shouldn't happen")
+    if (temp_startrow == 0) {stop("temp_startrow = 0, this shouldn't happen")
+      } else {startrow[i] <- temp_startrow}
+    if (temp_startcol == 0) {stop("temp_startcol = 0, this shouldn't happen")
     } else {startcol[i] <- temp_startcol}
     
     #If temp_colnames or temp_rownames haven't been inferred, number them
@@ -349,11 +360,13 @@ read_blocks <- function(files, extension = NULL,
   }
   
   ##Error checking for output dataframe dimensions
-  if (var(sapply(outputs, simplify = TRUE, 
+  if (length(outputs) > 1 &
+      var(sapply(outputs, simplify = TRUE, 
                  FUN = function(x) {dim(x$data)[1]})) != 0) {
     warning("Not all blockmeasures have the same number of rows of data")
   }
-  if (var(sapply(outputs, simplify = TRUE,
+  if (length(outputs) > 1 &
+      var(sapply(outputs, simplify = TRUE,
                  FUN = function(x) {dim(x$data)[2]})) != 0) {
     warning("Not all blockmeasures have the same number of columns of data")
   }
@@ -415,23 +428,25 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
   }
   
   #Check that all blockmeasures have same dimensions
-  if (nested_metadata) { #there is nested metadata
-    if (var(sapply(blockmeasures, simplify = TRUE, 
-                   FUN = function(x) {dim(x[[1]])[1]})) != 0) {
-      stop("Not all blockmeasures have the same number of rows of data")
-    }
-    if (var(sapply(blockmeasures, simplify = TRUE,
-                   FUN = function(x) {dim(x[[1]])[2]})) != 0) {
-      stop("Not all blockmeasures have the same number of columns of data")
-    }
-  } else { #there is not nested metadata
-    if (var(sapply(blockmeasures, simplify = TRUE, 
-                   FUN = function(x) {dim(x)[1]})) != 0) {
-      stop("Not all blockmeasures have the same number of rows of data")
-    }
-    if (var(sapply(blockmeasures, simplify = TRUE,
-                   FUN = function(x) {dim(x)[2]})) != 0) {
-      stop("Not all blockmeasures have the same number of columns of data")
+  if (length(blockmeasures) > 1) {
+    if (nested_metadata) { #there is nested metadata
+      if (var(sapply(blockmeasures, simplify = TRUE, 
+                     FUN = function(x) {dim(x[[1]])[1]})) != 0) {
+        stop("Not all blockmeasures have the same number of rows of data")
+      }
+      if (var(sapply(blockmeasures, simplify = TRUE,
+                     FUN = function(x) {dim(x[[1]])[2]})) != 0) {
+        stop("Not all blockmeasures have the same number of columns of data")
+      }
+    } else { #there is not nested metadata
+      if (var(sapply(blockmeasures, simplify = TRUE, 
+                     FUN = function(x) {dim(x)[1]})) != 0) {
+        stop("Not all blockmeasures have the same number of rows of data")
+      }
+      if (var(sapply(blockmeasures, simplify = TRUE,
+                     FUN = function(x) {dim(x)[2]})) != 0) {
+        stop("Not all blockmeasures have the same number of columns of data")
+      }
     }
   }
     

@@ -75,6 +75,7 @@ read_blocks <- function(files, extension = NULL,
   #         startrow, endrow, startcol, endcol, sheet and extension can either
   #          be vectors or lists the same length as files, or a single value
   #          that applies for all files
+  #          If entry is NA then rows/columns will be inferred
   #         infer_colnames - a logical for whether a header should be inferred
   #           if TRUE
   #             if startrow is provided then the row immediately above it
@@ -101,9 +102,9 @@ read_blocks <- function(files, extension = NULL,
   #           (by default block_name is inferred from the filename, but
   #           a vector of block_names can be specifically provided if desired)
   #         
-  #         Note that the ... is just so that import_blockmeasures can call
-  #         it with generic passing of arguments
-  #           TODO: check if this is actually necessary
+  #         Note that the ... is just so that this function can be called
+  #          by other functions with generic passing of arguments
+  #         TODO: check if this is actually necessary
   #Outputs: a list of block measures named by filename
   
   #Note if sheet is NULL defaults to first sheet
@@ -129,21 +130,24 @@ read_blocks <- function(files, extension = NULL,
   ##                                        [2][3] temp #1 
   ##                                        etc...
   
-  if (!sum(is.null(startrow), is.null(endrow), 
-          is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
-    stop("either all or none of startrow, endrow, startcol, and endcol must be provided")
-  }
-  
-  if (!is.null(startrow)) {
+  if (is.null(startrow)) {
+    startrow <- rep(NA, length(files))
+  } else {
     startrow <- checkdim_inputs(startrow, "startrow", length(files))
   }
-  if (!is.null(endrow)) { 
+  if (is.null(endrow)) {
+    endrow <- rep(NA, length(files))
+  } else {
     endrow <- checkdim_inputs(endrow, "endrow", length(files))
   }
-  if (!is.null(startcol)) {
+  if (is.null(startcol)) {
+    startcol <- rep(NA, length(files))
+  } else {
     startcol <- checkdim_inputs(startcol, "startcol", length(files))
   }
-  if (!is.null(endcol)) {
+  if (is.null(endcol)) {
+    endcol <- rep(NA, length(files))
+  } else {
     endcol <- checkdim_inputs(endcol, "endcol", length(files))
   }
   if (!is.null(sheet)) {
@@ -190,8 +194,6 @@ read_blocks <- function(files, extension = NULL,
 
   #Import data
   for (i in 1:length(files)) {
-    temp_rownames <- NULL
-    temp_colnames <- NULL
     ##Read file & save in temp
     if (extension[i] == "csv") {
         temp <- read.csv(files[i], colClasses = "character", 
@@ -211,35 +213,119 @@ read_blocks <- function(files, extension = NULL,
     }
     
     ##Infer rownames & colnames/take subsets as needed
-    if (is.null(startrow[i])) { #startrow etc are not provided
-      if (infer_colnames[i] & infer_rownames[i] & temp[1, 1] == "") {
-        #we're inferring colnames & rownames as the first row & col
-        outputs[[i]]$data <- temp[2:nrow(temp), 2:ncol(temp)]
-        temp_rownames <- temp[2:nrow(temp), 1]
-        temp_colnames <- temp[1, 2:ncol(temp)]
+    
+    #Infer endrow/endcol if they're not provided to be the last row/col
+    if (is.na(endrow[i])) {endrow[i] <- nrow(temp)}
+    if (is.na(endcol[i])) {endcol[i] <- ncol(temp)}
+    
+    #Inferring startrow/startcol & rownames/colnames is complex:
+    #to start we set them to 0 (if they're still 0 afterwards then we
+    # auto-generate the row & column names)
+    colnames_row <- 0
+    rownames_col <- 0
+    temp_startrow <- 0
+    temp_startcol <- 0
+    
+    #If infer_colnames is true...
+    if (infer_colnames[i] == TRUE) {
+      #...and startrow is provided, colnames is the row before startrow
+      if (!is.na(startrow[i])) {
+        colnames_row <- startrow[i]-1
+      #...and startrow is not provided
+      } else { 
+        if (!is.na(startcol[i])) {
+          #if startcol is provided
+          if (temp[1, startcol[i]-1] == "") {
+            #colnames row is 1 if [1, startcol-1] is empty, 
+            colnames_row <- 1
+            temp_startrow <- 2
+          } else {
+            #otherwise colnames will be auto
+            temp_startrow <- 1
+          }
+        } else {
+          #if startcol is not provided 
+          # (AKA niether startrow nor startcol are provided)
+          # colnames row is 1 if [1,1] is empty
+          if (temp[1,1] == "") {
+            colnames_row <- 1
+            temp_startrow <- 2
+          } else {
+          #otherwise colnames will be auto
+            temp_startrow <- 1
+          }
+        }
+      }
+    } else {
+      #If infer_colnames is false then we auto-generate colnames
+      if (is.na(startrow[i])) {temp_startrow <- 1}
+    }
+    
+    #If infer_rownames is true...
+    if (infer_rownames[i] == TRUE) {
+      #...and startcol is provided, rownames is the col before startcol
+      if (!is.na(startcol[i])) {
+        rownames_col <- startcol[i]-1
+      #...and startcol is not provided
       } else {
-        #we're not inferring any rownames nor colnames
-        outputs[[i]]$data <- temp
+        if (!is.na(startrow[i])) {
+        #if startrow is provided
+          if (temp[startrow[i]-1, 1] == "") {
+            #rownames col is 1 if [startrow-1, 1] is empty, 
+            # otherwise rownames will be auto
+            rownames_col <- 1
+            temp_startcol <- 2
+          } else {
+          #otherwise rownames will be auto (no code needed)
+            temp_startcol <- 1
+          }
+        } else {
+        #if startrow is not provided
+        # (AKA niether startrow nor startcol are provided)
+        # colnames row is 1 if [1,1] is empty, otherwise colnames will be auto
+          if (temp[1,1] == "") {
+            rownames_col <- 1
+            temp_startcol <- 2
+          } else {
+            temp_startcol <- 1
+          }
+        }
       }
-    } else { #startrow etc are provided
-      outputs[[i]]$data <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-      if (infer_colnames[i] & startrow[i] > 1) {
-        temp_colnames <- temp[startrow[i]-1, startcol[i]:endcol[i]]
-      }
-      if (infer_rownames[i] & startcol[i] > 1) {
-        temp_rownames <- temp[startrow[i]:endrow[i], startcol[i]-1]
-      }
+    } else {
+      #If infer_rownames is false then we auto-generate rownames
+      if(is.na(startcol[i])) {temp_startcol <- 1}
     }
+    
+    ##For debugging
+    # paste(infer_rownames[i], infer_colnames[i], startrow[i], startcol[i],
+    #       temp_startrow, temp_startcol, colnames_row, rownames_col, sep = "|")
+    
+    #Save inferred info about startrow and startcol
+    if (temp_startrow == 0) {
+      warning("temp_startrow = 0, this shouldn't happen")
+    } else {startrow[i] <- temp_startrow}
+    if (temp_startcol == 0) {
+      warning("temp_startcol = 0, this shouldn't happen")
+    } else {startcol[i] <- temp_startcol}
+    
     #If temp_colnames or temp_rownames haven't been inferred, number them
-    if (is.null(temp_colnames)) {
+    if (colnames_row == 0) {
       temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = ".")
+    } else {
+      temp_colnames <- temp[colnames_row, startcol[i]:endcol[i]]
     }
-    if (is.null(temp_rownames)) {
-      if (nrow(outputs[[i]]$data) > 26) {
+    if (rownames_col == 0) {
+      if (length(startrow[i]:startcol[i]) > 26) {
         stop("Automatic rownames for blockmeasures with more than 26 rows is not supported")
       }
       temp_rownames <- paste("R", LETTERS[1:nrow(outputs[[i]]$data)], sep = ".")
+    } else {
+      temp_rownames <- temp[startrow[i]:endrow[i], rownames_col]
     }
+    
+    #Save information to outputs
+    outputs[[i]]$data <- temp[startrow[i]:endrow[i],startcol[i]:endcol[i]]
+    
     #Assign rownames and colnames from temp_variables
     colnames(outputs[[i]]$data) <- temp_colnames
     rownames(outputs[[i]]$data) <- temp_rownames
@@ -801,49 +887,52 @@ write_blockdesign <- function(designs, file, ...) {
   }
 }
 
-split_blockdesign <- function() {
-  #This function will be called after read_blocks, widen_blocks,
-  # pivot_wide_longer to split up multiple fields that exist
-  # in the design when it's put in as a block in csv
-}
-
-import_blockdesign <- function(files, fields, extension = NULL, 
-                          field_sep = "_",
-                          reps_name = "Rep",
-                          header = TRUE,
-                          sheet = NULL) {
-  
-  # extension = NULL, 
-  # startrow = NULL, endrow = NULL, 
-  # startcol = NULL, endcol = NULL,
-  # header = TRUE,
-  # sheet = NULL, 
-  # startrow = NULL, endrow = NULL, 
-  # startcol = NULL, endcol = NULL,
-  # sheet = NULL, metadata = NULL,
-  # block_names = NULL,
-  # infer_colnames = TRUE,
-  # infer_rownames = TRUE,
-  
+import_blockdesign <- function(files,
+                               startrow = 2, startcol = 2,
+                               metadata = list("Design_element" = c(1, 1)),
+                               field_sep = "_",
+                               ...) {
   #Takes in a list of files, each of which includes a layout in it
   # then cleans up the layout information in those files
   # by splitting it
-  #Outputs that layout information so it can be merged with the data
-  # (in a tidy format)
+  #Outputs that layout information in a tidy format
+  #
+  #By default assumes that the design element name is in row 1, column 1
+  #E.g. a design block file looks like this:
+  #     Treatment   1   2   3   4   5   6   7   ...
+  #     A           L   G   C   L   G   C   L   ...
+  #     B           L   G   C   L   G   C   L   ...
+  #     C           L   G   C   L   G   C   L   ...
+  #     ...
+  # Where A, B, C... are the row names; 1, 2, 3... are the column names
+  #   and L, G, and C are the values for the treatment element
+  # If this is not true, set metadata = NULL
   
-  #If you don't want reps numbered then set reps_name to NA
-  
-  ##steps
+  ##General steps
   ##1. use read_blocks to get design into R
   ##2. use widen_blocks to get design into wide format
   ##3. use pivot wides longer to get design into tidy format
-  ##2. use split block to get design into tidy format
+  ##2. use split block to split design elements
   
-  #Note: probably need to adjust read_blocks to allow for putting the
-  #       design element in 1,1 cell and still infer colnames/rownames
-  #     nvm that can be achieved by explicitly providing startrow = 1
-  #       and startcol = 1 and putting metadata Design_element = c(1, 1)
+  blockdesigns <- read_blocks(files = files,
+                              metadata = metadata,
+                              startrow = startrow, startcol = startcol,
+                              ...)
   
+  
+        widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
+                                                   nested_metadata = NULL, ...)
+       
+          
+          pivot_wide_longer <- function(widemeasures, 
+                                        data_cols = NULL,
+                                        id_cols = NULL,
+                                        names_to = "Well",
+                                        values_to = "Measurements",
+                                        
+                                        
+                                        
+        split_blockdesign()
   #For reference, old version (possibly)
   layout_cleanup <- function(layout) {
     #This function takes a layout dataframe with ...'s where info needs to be 
@@ -882,6 +971,12 @@ import_blockdesign <- function(files, fields, extension = NULL,
   
   
   
+}
+
+split_blockdesign <- function() {
+  #This function will be called after read_blocks, widen_blocks,
+  # pivot_wide_longer to split up multiple fields that exist
+  # in the design when it's put in as a block in csv
 }
 
 

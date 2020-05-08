@@ -88,6 +88,28 @@ tidydes <- make_tidydesign(nrows = 8, ncols = 12,
                 Treatment = list(values = c("L", "G", "C"),
                                  2:7, 2:11, "122333"))
 
+tidydes <- make_tidydesign(block_row_names = LETTERS[1:8],
+                           block_col_names = 1:12,
+                           Treatment = make_designpattern(values = c("A", "B"),
+                                                          rows = 1:7,
+                                                          cols = 3:12,
+                                                          pattern = "11122220",
+                                                          byrow = FALSE))
+
+tidydes <- make_tidydesign(block_row_names = LETTERS[1:8],
+                           block_col_names = 1:12,
+                           Treatment = make_designpattern(values = c("A", "B"),
+                                                          rows = 1:8,
+                                                          cols = 1:12,
+                                                          pattern = "12",
+                                                          byrow = TRUE),
+                           Treatment = make_designpattern(values = c("C"),
+                                                          rows = 4:5,
+                                                          cols = 6:7,
+                                                          pattern = "1"),
+                           Isol = make_designpattern(values = LETTERS[1:4],
+                                                     rows = 2:7, cols = 2:11,
+                                                     pattern = "111222333444"))
 
 
 #Testing make_layout

@@ -2,4 +2,8 @@
 
 #Hello this is Mike writing some code
 
+
 # How are you?
+
+#Hello this is a second comment
+

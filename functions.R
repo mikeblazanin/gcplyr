@@ -473,7 +473,8 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
     #Reshape
     output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
                                   function(x) {c(x[[2]],
-                                                 t(x[[1]]))})))
+                                                 t(x[[1]]))})),
+                         stringsAsFactors = FALSE)
     #Assign column names
     colnames(output) <- c(names(blockmeasures[[1]][[2]]),
                           paste(rep(rownames(blockmeasures[[1]][[1]]),
@@ -483,7 +484,8 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
   } else { #There is not nested metadata
     #Reshape
     output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
-                                  function(x) {c(t(x))})))
+                                  function(x) {c(t(x))})),
+                         stringsAsFactors = FALSE)
     #Assign column names
     colnames(output) <- paste(rep(rownames(blockmeasures[[1]]),
                                   each = ncol(blockmeasures[[1]])),
@@ -711,23 +713,24 @@ pivot_wide_longer <- function(widemeasures,
   outputs <- rep(list(NA), length(widemeasures))
   for (i in 1:length(widemeasures)) {
     if (!is.na(data_cols[i])) { #user specified which columns are data columns
-      outputs[[i]] <- tidyr::pivot_longer(widemeasures[[i]],
-                                          names_to = names_to[i],
-                                          values_to = values_to[i],
-                                          cols = data_cols[[i]],
-                                          ...)
+      outputs[[i]] <- as.data.frame(
+        tidyr::pivot_longer(widemeasures[[i]],
+                            names_to = names_to[i],
+                            values_to = values_to[i],
+                            cols = data_cols[[i]],
+                            ...))
     } else if (!is.na(id_cols[i])) { #user specified which columns are id columns
-      outputs[[i]] <- 
+      outputs[[i]] <- as.data.frame(
         tidyr::pivot_longer(widemeasures[[i]],
                             names_to = names_to[i],
                             values_to = values_to[i],
                             cols = which(!colnames(widemeasures[[i]]) %in% id_cols[[i]]),
-                            ...)
+                            ...))
     } else { #User must be providing their own arguments to pivot_longer
-      outputs[[i]] <- tidyr::pivot_longer(widemeasures[[i]],
-                                          names_to = names_to[i],
-                                          values_to = values_to[i],
-                                          ...)
+      outputs[[i]] <- as.data.frame(tidyr::pivot_longer(widemeasures[[i]],
+                                                        names_to = names_to[i],
+                                                        values_to = values_to[i],
+                                                        ...))
     }
   }
   

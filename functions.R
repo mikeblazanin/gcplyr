@@ -934,8 +934,9 @@ write_blockdesign <- function(designs, file, ...) {
 
 import_blockdesign <- function(files,
                                startrow = 2, startcol = 2,
-                               metadata = list("Design_element" = c(1, 1)),
+                               metadata = list("design_element" = c(1, 1)),
                                field_sep = "_",
+                               id_cols = c("block_name", "design_element"),
                                ...) {
   #Takes in a list of files, each of which includes a layout in it
   # then cleans up the layout information in those files
@@ -951,7 +952,7 @@ import_blockdesign <- function(files,
   #     ...
   # Where A, B, C... are the row names; 1, 2, 3... are the column names
   #   and L, G, and C are the values for the treatment element
-  # If this is not true, set metadata = NULL
+  # If this is not true, set metadata = NULL and adjust startrow/startcol
   
   ##General steps
   ##1. use read_blocks to get design into R
@@ -963,17 +964,14 @@ import_blockdesign <- function(files,
                               metadata = metadata,
                               startrow = startrow, startcol = startcol,
                               ...)
+  widedesigns <- widen_blocks(blockdesigns, ...)
   
   
-        widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
-                                                   nested_metadata = NULL, ...)
-       
-          
-          pivot_wide_longer <- function(widemeasures, 
-                                        data_cols = NULL,
-                                        id_cols = NULL,
-                                        names_to = "Well",
-                                        values_to = "Measurements",
+  #What to do if design_element is not supplied?
+  tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
+                                  values_to = widedesigns$design_element[1],
+                                  ...)
+  
                                         
                                         
                                         

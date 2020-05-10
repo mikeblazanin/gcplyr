@@ -665,18 +665,23 @@ import_widemeasures <- function(files, extension = NULL,
 #tidy widemeasures ----
 
 pivot_wide_longer <- function(widemeasures, 
-                                      data_cols = NULL,
-                                      id_cols = NULL,
-                                      names_to = "Well",
-                                      values_to = "Measurements",
-                                      ...) {
+                              data_cols = NA,
+                              id_cols = NA,
+                              names_to = "Well",
+                              values_to = "Measurements",
+                              ...) {
   #Basically just a wrapper for tidyr:pivot_longer
   # so that we can pivot_longer a whole list of widemeasures
-  # Note that if niether data_cols nor id_cols are provided, user must
+  #Data_cols or id_cols can be a list of vectors, with each vector
+  # corresponding to the same index widemeasure dataframe
+  #Or can just be a single vector (which will be used for all widemeasures)
+  #names_to and values_to can be vectors, same length as widemeasures
+  # Note that if neither data_cols nor id_cols are provided, user must
   #   provide arguments to pivot_longer via ... for at least cols argument
-   
-  if (!is.null(data_cols) & !is.null(id_cols)) {
-    warning("Cannot provide both data_cols and id_cols, using data_cols specification")
+  #   And if so, same rules are applied to all widemeasures
+  
+  if (any(!is.na(data_cols) & !is.na(id_cols))) {
+    warning("Cannot provide both data_cols and id_cols for a given widemeasures, using data_cols only")
   }
   
   require(tidyr)
@@ -684,21 +689,41 @@ pivot_wide_longer <- function(widemeasures,
   if (is.data.frame(widemeasures)) {
     widemeasures <- list(widemeasures)
   }
+  names_to <- checkdim_inputs(names_to, "names_to", length(widemeasures))
+  values_to <- checkdim_inputs(values_to, "values_to", length(widemeasures))
   
-  if (!is.null(data_cols)) { #user specified which columns are data columns
-    outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
-                      cols = data_cols, 
-                      names_to = names_to, values_to = values_to,
-                      ... = ...)
-  } else if (!is.null(id_cols)) { #user specified which columns are id columns
-    outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
-                      cols = -id_cols, 
-                      names_to = names_to, values_to = values_to,
-                      ... = ...)
-  } else { #User must be providing their own arguments to pivot_longer
-    outputs <- lapply(X = widemeasures, FUN = tidyr::pivot_longer,
-                      names_to = names_to, values_to = values_to,
-                   ... = ...)
+  
+  if (!is.list(data_cols)) {
+    data_cols <- list(data_cols)
+  }
+  data_cols <- checkdim_inputs(data_cols, "data_cols", length(widemeasures))
+  
+  if (!is.list(id_cols)) {
+    id_cols <- list(id_cols)
+  }
+  id_cols <- checkdim_inputs(id_cols, "id_cols", length(widemeasures))
+  
+  outputs <- rep(list(NA), length(widemeasures))
+  for (i in 1:length(widemeasures)) {
+    if (!is.na(data_cols[[i]])) { #user specified which columns are data columns
+      outputs[[i]] <- tidyr::pivot_longer(widemeasures[[i]],
+                                          names_to = names_to[i],
+                                          values_to = values_to[i],
+                                          cols = data_cols[[i]],
+                                          ...)
+    } else if (!is.na(id_cols[[i]])) { #user specified which columns are id columns
+      outputs[[i]] <- 
+        tidyr::pivot_longer(widemeasures[[i]],
+                            names_to = names_to[i],
+                            values_to = values_to[i],
+                            cols = which(!colnames(widemeasures[[i]]) %in% id_cols[[i]]),
+                            ...)
+    } else { #User must be providing their own arguments to pivot_longer
+      outputs[[i]] <- tidyr::pivot_longer(widemeasures[[i]],
+                                          names_to = names_to[i],
+                                          values_to = values_to[i],
+                                          ...)
+    }
   }
   
   if (length(outputs) == 1) {

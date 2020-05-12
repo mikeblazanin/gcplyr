@@ -22,6 +22,38 @@
 #2. Run the simulation with the following conditions:
 #       Starting bacterial density = 10**6
 #       Starting infected density = 0
+#       Starting phage density = 0
+#       r = 0.04
+#       b = 50
+#       a = 10**-10
+#       tau = 10
+#       c = 1
+#       K = 10**9  
+#     (hint: I've given you a skeleton code that you can just fill-in)   
+#   
+#3. Look at how yout is formatted. Use tidyr::pivot_longer to reshape it
+#   and ggplot to plot the density of the 3 populations over time
+#     hint: the population sizes are quite different, so you'll probably have
+#     to use a log10 y-axis to view them. That can be achieved by:
+#     + scale_y_continuous(trans = "log10")
+#   
+#4. Based on the model equations we talked about Tuesday, which parameters
+#   do you expect would change this curve?   
+#   
+#5. Play around with all the parameters and re-run the simulation a few times, 
+#   plotting the results each time (you can vary r,b,a,tau,c,K and the starting 
+#   bacterial density, but for now keep the starting infected density & 
+#   starting phage density at 0). Which parameters affect the density curve?
+#   How does each one affect it?
+#     note: if you want to simultaneously save the results of multiplt
+#     different parameter runs, simply change where you save the results 
+#     of dede() to
+#     e.g.  yout2 <- as.data.frame(dede(...
+#           yout3 <- as.data.frame(dede(...
+#   
+#6. Now run the simulation with the following conditions:
+#       Starting bacterial density = 10**6
+#       Starting infected density = 0
 #       Starting phage density = 10**4
 #       r = 0.04
 #       b = 50
@@ -29,21 +61,20 @@
 #       tau = 10
 #       c = 1
 #       K = 10**9
-#   (hint: I've given you a skeleton code that you can just fill-in)
-#   
-#3. Look at how yout is formatted. Use tidyr::pivot_longer to reshape it
-#   and ggplot to plot the density of the 3 populations over time
-#   (hint: the population sizes are quite different, so you'll probably have
-#   to use a log10 y-axis to view them. That can be achieved by:
-#   + scale_y_continuous(trans = "log10")
 #
-#4. Did both the susceptible and infected populations go extinct?
+#7. Did both the susceptible and infected populations go extinct?
 #   If not, increase the duration of the simulation until they both do go extinct
 #   and plot the densities over time.
 #   Why do we expect the susceptible and infected populations to always
 #   go extinct with this model?
-#   (Note that "extinct" can just mean the densities fall below 10**-5,
-#   since the model mathematically allows arbitrarily small population sizes)
+#   (Note that "extinct" can just mean the densities fall below some level,
+#   like 10**-5, since the model mathematically allows infinitely small 
+#   population sizes)
+#
+#8. Play around with all the parameters (easiest to leave the starting densities
+#   the same for now), plotting the results each time. Are there any
+#   parameter combinations that do something unexpected? How do the parameters
+#   affect the curve?
 
 
 ## Import libraries ----

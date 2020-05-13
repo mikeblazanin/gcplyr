@@ -38,8 +38,30 @@
 #     + scale_y_continuous(trans = "log10")
 #   
 #4. Based on the model equations we talked about Tuesday, which parameters
-#   do you expect would change this curve?   
-#   
+#   do you expect would change this curve?
+#
+#   ANSWER: Based on what we saw on Tuesday, I’d say that the parameter "a" could change
+#           this plot because the three populations depend on it. Plus, "a" is the probability
+#           by which the phage successfully infects the bacteria, which means that, if we 
+#           increase this parameter, S population will plateau or increase at some point.
+#           
+#           Then, we have "K", which is the carrying capacity (maximum population size at
+#           which the population can sustain itself). Therefore, this parameter will also
+#           change the shape of the plot. The curve will be able to grow more if we increase 
+#           K, but S population will shrink if we decrease K’s value.
+#
+#           Also, if we want to change the shape of the susceptible population curve, we could
+#           play with "c" (competition coefficient). It measures the strength of competition that
+#           does a different specie or, in this case, the infected population, over the susceptible
+#           population. Therefore, if "c" is high, the curve will shrink and vice versa.
+#    
+#           I also think that "r" has something to do with the curve shape. However, I think that
+#           "r" depends on the carrying capacity. What I mean is that, if we are in "K" (meaning c
+#           = maximum (1?)), "r" will be zero, because competition will be in its maximum, and if 
+#           we have no competition (meaning c = 0), "r" will increase. So, the shape of the cure 
+#           doesn’t depend on a direct way of "r"’s value. Thus, the value that "r" has is a 
+#           consequence of the value that "c" has.
+#
 #5. Play around with all the parameters and re-run the simulation a few times, 
 #   plotting the results each time (you can vary r,b,a,tau,c,K and the starting 
 #   bacterial density, but for now keep the starting infected density & 
@@ -142,15 +164,15 @@ derivs <- function(t, y, parms) {
 }
 
 ##Run simulation ----
-yinit <- c(S = fill_here,
-           I = fill_here,
-           P = fill_here)
-params <- c(r = fill_here, 
-            a = fill_here, 
-            b = fill_here, 
-            tau = fill_here,
-            K = fill_here,
-            c = fill_here,
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 0)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
             warnings = 0, 
             thresh_min_dens = 10**-100)
 times <- seq(from = 0, to = 50, by = 1)
@@ -158,3 +180,16 @@ yout <- as.data.frame(
   dede(y = yinit, times = times, func = derivs, parms = params))
 
 ##Plot results ----
+head(yout)
+tidyr::pivot_longer(yout, c(S, I, P), names_to = "Population", values_to = "Density")
+# Fisrt, I tried this command above, but R said that Population and Density didn't exist
+# when trying to plot. That's why I tried what's below and it worked.
+
+library(tidyr)
+yout_plot <- pivot_longer(yout, c(S, I, P), names_to = "Population", values_to = "Density")
+
+
+##We've reshaped the data. Now, we'll plot the density of the three populations over time
+ggplot(data = yout_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")

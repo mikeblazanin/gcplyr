@@ -1,3 +1,8 @@
+#Okabe and Ito 2008 colorblind-safe qualitative color scale
+my_cols <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+             "#D55E00", "#CC79A7", "#000000")
+scales::show_col(my_cols)
+
 ##Celia TODO List
 #1. Read code I've put below in derivs. This code should be sufficient to
 #   figure out what the model we're using is. Diagram and write out the

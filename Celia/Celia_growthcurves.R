@@ -759,3 +759,684 @@ yout21_plot <- pivot_longer(yout21, c(S, I, P), names_to = "Population", values_
 ggplot(data = yout21_plot, aes(x = time, y = Density, color = Population)) +
   geom_line(lwd = 1.5) +
   scale_y_continuous(trans = "log10")
+
+##Run simulation with b = 150
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 150, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout22 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 150
+library(tidyr)
+yout22_plot <- pivot_longer(yout22, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout22_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#9. Play with the parameters again but knowing the realistic values for each of them:
+#  
+#   r ranges from 0.04 (a 17-minute doubling time) to 0.007 (a 90-minute doubling time).
+#   K ranges from 10^6 to 10^10, although typically we focus on 10^8 to 10^9.
+#   a ranges from 10^-12 to 10^-18.
+#   tau ranges from 10 to 105 (mins).
+#   b ranges from 5 to 1000.
+#
+#   Also, we'll have to calculate the total bacteria densty by addinc S and I
+#   columns into a new one called B. We do thin in "yout", before we pivot_longer it.
+#
+##Run simulation with r = 0.03
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.03, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout1.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with r = 0.03
+library(tidyr)
+yout1.1_plot <- pivot_longer(yout1.1, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout1.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with r = 0.007
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.007, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 800, by = 1)
+yout1.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with r = 0.007
+library(tidyr)
+yout1.2_plot <- pivot_longer(yout1.2, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout1.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with K = 10**9
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout2.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with K = 10**9
+library(tidyr)
+yout2.1_plot <- pivot_longer(yout2.1, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout2.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with K = 10**8
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**8,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout2.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with K = 10**8
+library(tidyr)
+yout2.2_plot <- pivot_longer(yout2.2, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout2.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with a = 10**-13
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-13, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 11000, by = 1)
+yout3.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with a = 10**-13
+library(tidyr)
+yout3.1_plot <- pivot_longer(yout3.1, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout3.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with a = 10**-18
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-18, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 11000, by = 1)
+yout3.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params, hmax = 0.01))
+
+##Plot results with a = 10**-18
+library(tidyr)
+yout3.2_plot <- pivot_longer(yout3.2, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout3.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with tau = 65
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 65,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 600, by = 1)
+yout4.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with tau = 65
+library(tidyr)
+yout4.1_plot <- pivot_longer(yout4.1, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout4.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with tau = 120
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 120,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 800, by = 1)
+yout4.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with tau = 120
+library(tidyr)
+yout4.2_plot <- pivot_longer(yout4.2, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout4.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with b = 20
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 20, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout5.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 20
+library(tidyr)
+yout5.1_plot <- pivot_longer(yout5.1, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout5.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with b = 500
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 500, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout5.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 500
+library(tidyr)
+yout5.2_plot <- pivot_longer(yout5.2, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout5.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with b = 870
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 870, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+yout5.3 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 870
+library(tidyr)
+yout5.3_plot <- pivot_longer(yout5.3, c(S, I, P), names_to = "Population", values_to = "Density")
+
+ggplot(data = yout5.3_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+## INCORPORATE COLUMN B
+
+##Run simulation with the new column "B"
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with the new column "B"
+library(tidyr)
+youtB$B <- youtB$S+youtB$I
+youtB_plot <- pivot_longer(youtB, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with r = 0.03
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.03, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB1.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with r = 0.03
+library(tidyr)
+youtB1.1$B <- youtB1.1$S+youtB1.1$I
+youtB1.1_plot <- pivot_longer(youtB1.1, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB1.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with r = 0.007
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.007, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 800, by = 1)
+youtB1.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with r = 0.007
+library(tidyr)
+youtB1.2$B <- youtB1.2$S+youtB1.2$I
+youtB1.2_plot <- pivot_longer(youtB1.2, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB1.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with K = 10**9
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB2.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with K = 10**9
+library(tidyr)
+youtB2.1$B <- youtB2.1$S+youtB2.1$I
+youtB2.1_plot <- pivot_longer(youtB2.1, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB2.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with K = 10**8
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**8,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB2.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with K = 10**8
+library(tidyr)
+youtB2.2$B <- youtB2.2$S+youtB2.2$I
+youtB2.2_plot <- pivot_longer(youtB2.2, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB2.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with a = 10**-13
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-13, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 11000, by = 1)
+youtB3.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with a = 10**-13
+library(tidyr)
+youtB3.1$B <- youtB3.1$S+youtB3.1$I
+youtB3.1_plot <- pivot_longer(youtB3.1, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB3.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with a = 10**-18
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-18, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 11000, by = 1)
+youtB3.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params, hmax = 0.01))
+
+##Plot results with a = 10**-18
+library(tidyr)
+youtB3.2$B <- youtB3.2$S+youtB3.2$I
+youtB3.2_plot <- pivot_longer(youtB3.2, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB3.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with tau = 65
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 65,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 600, by = 1)
+youtB4.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with tau = 65
+library(tidyr)
+youtB4.1$B <- youtB4.1$S+youtB4.1$I
+youtB4.1_plot <- pivot_longer(youtB4.1, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB4.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with tau = 120
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 120,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 800, by = 1)
+youtB4.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with tau = 120
+library(tidyr)
+youtB4.2$B <- youtB4.2$S+youtB4.2$I
+youtB4.2_plot <- pivot_longer(youtB4.2, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB4.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with b = 20
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 20, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB5.1 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 20
+library(tidyr)
+youtB5.1$B <- youtB5.1$S+youtB5.1$I
+youtB5.1_plot <- pivot_longer(youtB5.1, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB5.1_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with b = 500
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 500, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB5.2 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 500
+library(tidyr)
+youtB5.2$B <- youtB5.2$S+youtB5.2$I
+youtB5.2_plot <- pivot_longer(youtB5.2, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB5.2_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with b = 850
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-10, 
+            b = 850, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtB5.3 <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with b = 500
+library(tidyr)
+youtB5.3$B <- youtB5.3$S+youtB5.3$I
+youtB5.3_plot <- pivot_longer(youtB5.3, c(S, I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtB5.3_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+## I've decided that I'd try to plot some of the graphs done before but without
+## populations S or I so I could proof the path that's followed by B.
+##
+## I'll try it with r and with a
+## 
+##Run simulation with r = 0.03 and without S curve
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.03, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtS <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with r = 0.03 without S curve
+library(tidyr)
+youtS$B <- youtS$S+youtS$I
+youtS_plot <- pivot_longer(youtS, c(I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtS_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+##Run simulation with r = 0.03 and without I curve
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.03, 
+            a = 10**-10, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 250, by = 1)
+youtI <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params))
+
+##Plot results with r = 0.03 without I curve
+library(tidyr)
+youtI$B <- youtI$S+youtI$I
+youtI_plot <- pivot_longer(youtI, c(S, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtI_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")
+
+#Run simulation with a = 10**-18 without S curve
+yinit <- c(S = 10**6,
+           I = 0,
+           P = 10**4)
+params <- c(r = 0.04, 
+            a = 10**-18, 
+            b = 50, 
+            tau = 10,
+            K = 10**9,
+            c = 1,
+            warnings = 0, 
+            thresh_min_dens = 10**-100)
+times <- seq(from = 0, to = 11000, by = 1)
+youtS <- as.data.frame(
+  dede(y = yinit, times = times, func = derivs, parms = params, hmax = 0.01))
+
+##Plot results with a = 10**-18 without S curve
+library(tidyr)
+youtS$B <- youtS$S+youtS$I
+youtS_plot <- pivot_longer(youtS, c(I, P, B), names_to = "Population", values_to = "Density")
+
+ggplot(data = youtS_plot, aes(x = time, y = Density, color = Population)) +
+  geom_line(lwd = 1.5) +
+  scale_y_continuous(trans = "log10")

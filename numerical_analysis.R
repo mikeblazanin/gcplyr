@@ -33,6 +33,7 @@
 # Plot B(t) for dift a, b, tau values. Use regression to predict which sets
 #   of a, b, tau values should give same max time & extin time then plot those
 #   values
+# Measure amount of time I is above S (and so I is more of B) – should be correlated w/ tau
 
 ## Import libraries ----
 

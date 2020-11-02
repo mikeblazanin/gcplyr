@@ -17,7 +17,9 @@
 #       make_layout also does
 #       
 #       add capability for make_tidydesign to accept simple wellnumbers
-
+#       
+#       'gcer' is available as a package name
+#       
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
 #LOWESS
@@ -970,6 +972,8 @@ import_blockdesign <- function(files,
   widedesigns <- widen_blocks(blockdesigns, ...)
   
   
+  
+  
   #What to do if design_element is not supplied?
   tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
                                   values_to = widedesigns$design_element[1],
@@ -1083,7 +1087,7 @@ moving_average <- function(my_data, window_width, subset_by) {
   return(out_list)
 }
 
-
+##TODO: this should really be renamed, possibly find_peaks
 #extraction function: to get OD peak height and time
 analyze_curves <- function(od_data, time_data, bandwidth = 10, return) {
   #Takes vectors of the od_data and time_data

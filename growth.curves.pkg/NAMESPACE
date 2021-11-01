@@ -1,0 +1,7 @@
+export("analyze_curves", "block_tidydesign", "calc_deriv",
+       "checkdim_inputs", "find_local_extrema", "import_blockdesign",
+       "import_blockmeasures", "import_tidydesign", "import_widemeasures",
+       "layout_data_merge", "make_designpattern", "make_tidydesign",
+       "merge_tidydesign_tidymeasures", "moving_average",
+       "pivot_wide_longer", "read_blocks", "split_blockdesign",
+       "uninterleave", "view_peaks", "widen_blocks", "write_blockdesign")

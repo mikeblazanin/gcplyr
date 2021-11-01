@@ -42,9 +42,16 @@
 # 6.  [process: derivs, peak-finding, curve fitting]
 
 
+#' Check if values are a vector of given length, if not coerce to be so
+#' Returns error messages using appropriate names
+#' 
+#' @param input Values to be used
+#' @param input_name Name of the input used for error messages
+#' @param needed_len Desired length of output vector
+#' @param needed_name What the desired length corresponds to (e.g. number of files)
+#' @return The values of \code{input} coerced to a vector of length \code{needed_len}
 checkdim_inputs <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
-  #A function that adjusts inputs to be lists if they're not already
   if (length(input) != needed_len) {
     if(length(input) != 1) {
       stop(paste("More than one", input_name, "value is supplied, but the number

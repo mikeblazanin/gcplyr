@@ -1,3 +1,5 @@
+#General utilities ----
+
 #' Check if values are a vector of given length, if not coerce to be so
 #' Returns error messages using appropriate names
 #' 
@@ -6,6 +8,7 @@
 #' @param needed_len Desired length of output vector
 #' @param needed_name What the desired length corresponds to (e.g. number of files)
 #' @return The values of \code{input} coerced to a vector of length \code{needed_len}
+#' 
 checkdim_inputs <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
   if (length(input) != needed_len) {
@@ -22,6 +25,46 @@ checkdim_inputs <- function(input, input_name, needed_len,
 
 #Importing block-shaped ----
 
+#' A function that reads block measures into the R environment
+#' 
+#' @param files A vector of filepaths relative to the current working directory
+#'              where each filepath is a single plate read
+#' @param extension (optional) the extension of the files:
+#'                  "csv", "xls", or "xlsx"
+#'                  If none provided, \code{read_blocks} will infer file extension from
+#'                  provided filenames
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
+#'                 the measures data are in \code{files},
+#'                 can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}
+#'                 If not provided \code{read_blocks} will try to infer it
+#' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
+#'                 is located on. Defaults to the first sheet if not specified
+#' @param metadata (optional) non-spectrophotometric data that should be associated
+#'                 with each read blockmeasures. A list where each item in the
+#'                 list is a vector of length 2. Each vector should provide the
+#'                 row and column where the metadata is located in the blockmeasures
+#'                 input file. If the list is named those names will be inherited
+#'                 to the output metadata.
+#' @param block_names (optional) vector of names corresponding to each plate
+#'                 in \code{files}. If not provided, block_names are inferred
+#'                 from the filenames
+#' @param infer_colnames,infer_rownames Booleans for whether column names
+#'                 and rownames should be inferred.
+#'                 If TRUE and startrow or startcol are specified, respectively, 
+#'                 column or row names will be inferred as the previous column
+#'                 or row, respectively.
+#'                 If both \code{infer_colnames} and \code{infer_rownames} are
+#'                 TRUE and startrow or startcol are not specified,
+#'                 the first row and first column will be taken as column names
+#'                 and row names, respectively, if the row 1 column 1 cell is 
+#'                 empty
+#'                 If FALSE, rows will be numbered with an "R" prefix and columns
+#'                 will be numbered with a "C" prefix
+#' @return A list where each entry is a list containing the block measures data
+#'         followed by the block_names (or filenames, if block_names is not 
+#'         provided) and any specified metadata.
+#'         
 read_blocks <- function(files, extension = NULL, 
                              startrow = NULL, endrow = NULL, 
                              startcol = NULL, endcol = NULL,
@@ -30,71 +73,33 @@ read_blocks <- function(files, extension = NULL,
                              infer_colnames = TRUE,
                              infer_rownames = TRUE,
                              ...) {
-  #A function that reads block measures into the R environment
-  
-  #Inputs:  a list of filepaths relative to the current working directory,
-  #           where each one is a single plate read
-  #         (optional) the extension of the files,"csv", "xls", or "xlsx"
-  #           (will attempt to infer extension if none is provided)
-  #         (optional) the row & columns where the measures data is located
-  #         startrow, endrow, startcol, endcol, sheet and extension can either
-  #          be vectors or lists the same length as files, or a single value
-  #          that applies for all files
-  #          If entry is NA then rows/columns will be inferred
-  #         infer_colnames - a logical for whether a header should be inferred
-  #           if TRUE
-  #             if startrow is provided then the row immediately above it
-  #               (assuming startrow > 1) is used as a header
-  #         infer_rownames - a logical for whether rownames should be inferred
-  #           if TRUE
-  #             if startcol is provided then the col immediately to its left
-  #               (assuming startcol > 1) is used as rownames
-  #         if both infer_colnames and infer_rownames are TRUE and if
-  #           the top leftmost element is blank (i.e. the first row has
-  #           one fewer non-blank entry than the number of columns and
-  #           the first column has one fewer non-blank entry than the
-  #           number of rows) then the first row will be used for colnames
-  #           and the first column will be used for rownames
-  #         if FALSE
-  #            columns will simply be numbered with a "C" prefix
-  #            rows will simply be numbered with a "R" prefix
-  #         metadata is a list where each item in the list is a vector of length 2
-  #           where each vector is a row,column pair for where in the block measures
-  #           input file(s) the metadata information is located.
-  #           Metadata is returned in the 2nd element of the output nested list
-  #           with the first element of Metadata being the blockmeasure_name and
-  #           subsequent elements being those specified by the metadata argument
-  #           (by default block_name is inferred from the filename, but
-  #           a vector of block_names can be specifically provided if desired)
-  #         
   #         Note that the ... is just so that this function can be called
   #          by other functions with generic passing of arguments
   #         TODO: check if this is actually necessary
-  #Outputs: a list of block measures named by filename
-  
-  #Note if sheet is NULL defaults to first sheet
-  
-  ##TODO
-  ##      change read_blocks so it can handle an arbitrary number of additional
-  ##      pieces of information to extract from each blockcurve file
-  ##      (we can call this metadata or something like that)
-  ##      these pieces of information can be passed as a list of (named) vectors
-  ##      where each vector is the c(row, column) where the information should be
-  ##      pulled from. Then have read_blocks return this information
-  ##      as additional (named) entries of each entry in the list
-  ##      e.g. [[1]] [1] data #1 [2] time #1 [3] temp #1 [4] Abs #1
-  ##           [[2]] [1] data #2 [2] time #2 [3] temp #2 [4] Abs #2
-  ##           ...
-  ##      Then uninterleave should still work the same, because it will rearrange
-  ##      the sub-lists (leaving the meta-data intact)
-  ##      Then widen_blocks will have to take this metadata out and
-  ##      put it as the first, second, third, etc columns before the data columns
-  ##      alternatively perhaps it should be:
-  ##      [[1]] [1] data #1 [2] "meta-data" [2][1] name #1 
-  ##                                        [2][2] time #1 
-  ##                                        [2][3] temp #1 
-  ##                                        etc...
-  
+  #         
+  #         For metadata, read_blocks  can handle an arbitrary number of additional
+  #         pieces of information to extract from each blockcurve file as metadata
+  #         These pieces of information are specified as a list of (named) vectors
+  #         where each vector is the c(row, column) where the information is to be
+  #         pulled from in the input files.
+  #         
+  #         This metadata is returned as the second list element of each 
+  #         blockcurve, e.g.:
+  #         [[1]] [1] "data" #1 [2] "metadata"  [2][1] name #1
+  #                                             [2][2] date-time #1
+  #                                             [2][3] temp #1
+  #         [[2]] [1] "data" #2 [2] "metadata"  [2][1] name #2
+  #                                             [2][2] date-time #2
+  #                                             [2][3] temp #2
+  #         ...
+  #         
+  #         Calling uninterleave on such an outputted list will still work
+  #         because it will operate on the highest level entries of the list
+  #         (the [[1]] [[2]] level items), leaving the meta-data intact
+  #         
+  #         Widen_blocks integrates this metadata into the dataframe during
+  #         the pivot_wider process
+
   if (is.null(startrow)) {
     startrow <- rep(NA, length(files))
   } else {

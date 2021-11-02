@@ -23,6 +23,35 @@ checkdim_inputs <- function(input, input_name, needed_len,
   }
 }
 
+#' Takes a list that is actually interleaved elements from multiple sources
+#' and uninterleaves them into the separate sources
+#' For instance, a list of blockmeasures that actually corresponds to two
+#' different plates can be split into two lists, each of the blockmeasures
+#' corresponding to a single plate
+#' 
+#' @param interleaved_list A list of R objects
+#' @param n How many output sub lists there should be (i.e. how many groups
+#'          the interleaved list should be divided into)
+#' @return A list of lists of R objects
+#' 
+uninterleave <- function(interleaved_list, n, ...) {
+  # Note that the ... is just so that import_blockmeasures can call
+  # it with generic passing of arguments
+  
+  #Input checking
+  if ((length(interleaved_list) %% n) != 0) {
+    stop("Length of list must be divisible by n")
+  }
+  
+  output <- rep(list(NA), n)
+  for (i in 1:n) {
+    output[[i]] <- interleaved_list[seq(from = i, to = length(interleaved_list), 
+                                        by = n)]
+  }
+  
+  return(output)
+}
+
 #Importing block-shaped ----
 
 #' A function that reads block measures into the R environment
@@ -344,31 +373,7 @@ read_blocks <- function(files, extension = NULL,
   return(outputs)
 }
 
-uninterleave <- function(interleaved_list, n, ...) {
-  #Inputs: a list of R objects
-  #        how many sub-lists there should be (i.e. how many groups should
-  #          the interleaved list be divided into)
-  #Output: a list of lists of R objects
-  #This function takes a list of R objects (e.g. a list of blockmeasures)
-  #and separates them into separate sub-lists (e.g. where each sub-list
-  # corresponds to all blockmeasures for a single plate from a multi-plate 
-  # set of blockmeasures)
-  #         Note that the ... is just so that import_blockmeasures can call
-  #         it with generic passing of arguments
-  
-  #Input checking
-  if ((length(interleaved_list) %% n) != 0) {
-    stop("Length of list must be divisible by n")
-  }
-  
-  output <- rep(list(NA), n)
-  for (i in 1:n) {
-    output[[i]] <- interleaved_list[seq(from = i, to = length(interleaved_list), 
-                                        by = n)]
-  }
-  
-  return(output)
-}
+
 
 widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
                               nested_metadata = NULL, ...) {

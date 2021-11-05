@@ -52,6 +52,15 @@ uninterleave <- function(interleaved_list, n, ...) {
   return(output)
 }
 
+#TODO: move name inference logic into this function to make testing easier
+infer_names <- function(startrow = NULL, endrow = NULL, 
+                        startcol = NULL, endcol = NULL,
+                        infer_colnames = TRUE,
+                        infer_rownames = TRUE) {
+  
+  #TODO
+}
+
 #Importing block-shaped ----
 
 #' A function that reads block measures into the R environment

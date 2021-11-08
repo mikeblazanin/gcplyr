@@ -694,23 +694,40 @@ import_widemeasures <- function(files, extension = NULL,
 
 #tidy widemeasures ----
 
+#' Pivot widemeasures longer
+#' 
+#' Essentially a wrapper for tidyr::pivot_longer that works on both a single
+#' widemeasures as well as a list of widemeasures
+#' 
+#' @param widemeares A single widemeasures data.frame, or a list of widemeasures
+#'                   data.frame's
+#' @param data_cols,id_cols Specifies which columns have data vs are ID's
+#'                          (in tidyr::pivot_longer parlance). Each can be
+#'                          a single vector (which will be applied for all
+#'                          widemeasures) or a list of vectors, with each
+#'                          vector corresponding to the same-index widemeasure
+#'                          in \code{widemeasures}
+#'                          Entries that are NA in the list will not be used
+#'                          If neither data_cols nor id_cols are specified,
+#'                          user must provide arguments to tidyr::pivot_longer
+#'                          via \code{...} for at least the \code{cols} argument
+#'                          and these arguments provided via \code{...} will
+#'                          be used for all \code{widemeasures} data.frame's
+#' @param names_to,values_to Specifies the output column names created by
+#'                           tidyr::pivot_longer. Each can be provided as vectors
+#'                           the same length as \code{widemeasures}
+#'                           Note that if neither data_cols nor id_cols
+#' @param ... Other functions to be passed to tidyr::pivot_longer
+#' @return Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)
+#'         or list of pivoted longer data.frame's (if \code{widemeasures} is
+#'         a list of data.frame's)
+#'         
 pivot_wide_longer <- function(widemeasures, 
                               data_cols = NA,
                               id_cols = NA,
                               names_to = "Well",
                               values_to = "Measurements",
                               ...) {
-  #Basically just a wrapper for tidyr:pivot_longer
-  # so that we can pivot_longer a whole list of widemeasures
-  #Data_cols or id_cols can be a single vector 
-  # (which will be used for all widemeasures)
-  # Or can be a list of vectors, with each vector
-  # corresponding to the same index widemeasure dataframe
-  # Entries that are NA in the list will be not used
-  #names_to and values_to can be vectors, same length as widemeasures
-  # Note that if neither data_cols nor id_cols are provided, user must
-  #   provide arguments to pivot_longer via ... for at least cols argument
-  #   And if so, same rules are applied to all widemeasures
   
   #Reformat cols inputs as needed
   if (!is.list(id_cols)) {

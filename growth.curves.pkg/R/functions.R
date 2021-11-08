@@ -487,6 +487,18 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
 
 #Get blockmeasures ----
 
+#' Function to import blockmeasures from files and return widemeasures
+#' This function acts as a wrapper to call read_blocks, uninterleave, 
+#' then widen_blocks in one go
+#' 
+#' @param files Vector of filenames (as strings), each of which is a blockmeasures
+#'              formatted file. Inputs can be .csv, .xls, or .xlsx
+#' @param num_plates Number of plates. If multiple plates uninterleave will be
+#'                   used to separate blockmeasures into those plates accordingly
+#' @param plate_names (optional) Names to put onto the plates when output
+#' @param ... Other arguments to pass to \code{read_blocks}, \code{uninterleave},
+#'            or \code{widen_blocks}
+#'            
 import_blockmeasures <- function(files, num_plates = 1, 
                                  plate_names = NULL,
                                  ...) {

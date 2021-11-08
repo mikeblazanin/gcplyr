@@ -382,17 +382,22 @@ read_blocks <- function(files, extension = NULL,
   return(outputs)
 }
 
-
-
+#' Takes blockmeasures and returns them in a widemeasure format
+#' 
+#' @param blockmeasures Blockmeasures, either a single data.frame or a list of
+#'                      data.frames
+#' @param wellnames_sep String to use as separator for well names between 
+#'                      rowname and column name
+#' @param nested_metadata A Boolean indicating the existence of nested metadata
+#'                        in the \code{blockmeasures} list, e.g. as is typically
+#'                        output by \code{read_blocks}. If NULL, will attempt to
+#'                        infer existence of nested metadata
+#' @return A single widemeasures data.frame
+#' 
 widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
                               nested_metadata = NULL, ...) {
-  #Inputs: a [list of] blockmeasures[s] (optionally, named)
-  #         blockmeasures should be data.frames
-  #         nested_metadata can be TRUE, FALSE, or NULL (if null, will infer TRUE or FALSE)
   #         Note that the ... is just so that import_blockmeasures can call
   #         it with generic passing of arguments
-  
-  #Outputs: a single widecurve dataframe
   
   if(class(blockmeasures) != "list") {
     blockmeasures <- list(blockmeasures)

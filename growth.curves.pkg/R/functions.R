@@ -1,5 +1,7 @@
 #General utilities ----
 
+#' Check dimension of inputs
+#' 
 #' Check if values are a vector of given length, if not coerce to be so
 #' Returns error messages using appropriate names
 #' 
@@ -23,6 +25,8 @@ checkdim_inputs <- function(input, input_name, needed_len,
   }
 }
 
+#' Uninterleave list
+#' 
 #' Takes a list that is actually interleaved elements from multiple sources
 #' and uninterleaves them into the separate sources
 #' For instance, a list of blockmeasures that actually corresponds to two
@@ -63,6 +67,8 @@ infer_names <- function(startrow = NULL, endrow = NULL,
 
 #Importing block-shaped ----
 
+#' Read blockmeasures
+#' 
 #' A function that reads block measures into the R environment
 #' 
 #' @param files A vector of filepaths relative to the current working directory
@@ -382,6 +388,8 @@ read_blocks <- function(files, extension = NULL,
   return(outputs)
 }
 
+#' Widen blockmeasures
+#' 
 #' Takes blockmeasures and returns them in a widemeasure format
 #' 
 #' @param blockmeasures Blockmeasures, either a single data.frame or a list of
@@ -487,6 +495,8 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
 
 #Get blockmeasures ----
 
+#' Import blockmeasures
+#' 
 #' Function to import blockmeasures from files and return widemeasures
 #' This function acts as a wrapper to call read_blocks, uninterleave, 
 #' then widen_blocks in one go
@@ -526,7 +536,6 @@ import_blockmeasures <- function(files, num_plates = 1,
 
 #' Import widemeasures
 #' 
-#' @description
 #' A function that imports widemeasures in files into the R environment
 #' 
 #' @details

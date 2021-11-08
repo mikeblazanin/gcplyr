@@ -788,35 +788,45 @@ pivot_wide_longer <- function(widemeasures,
 
 #Get designs ----
 
+#' Make tidy design data.frames
+#' 
+#' This is a function to easily input experimental design elements
+#' for later merging with the raw read data
+#' 
+#' @details 
+#' Note that either nrows or block_row_names must be provided
+#' and that either ncols or block_col_names must be provided
+#' 
+#' Examples:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'         design_element_name = list(c("Value1", "Value2", "Value3"),
+#'                           rowstart:rowend, colstart:colend,
+#'                           "111222333000", TRUE)
+#' To make it easier to pass arguments, use make_designpattern:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
+#'                                                 rows = 2:7, cols = 2:11,
+#'                                                 pattern = "11223300",
+#'                                                 byrow = TRUE))
+#' 
+#' @param nrows,ncols Number of rows and columns in the plate data
+#' @param block_row_names,block_col_names Names of the rows, columns
+#'                                     of the plate blockmeasures data
+#' @param ... Each \code{...} argument must be a list with five elements:
+#'              1. a vector of the values
+#'              2. a vector of the rows the pattern should be applied to
+#'              3. a vector of the columns the pattern should be applied to
+#'              4. a string of the pattern itself, where numbers refer to
+#'               the indices in the values vector
+#'               0's refer to NA
+#'               This pattern will be split using pattern_split, which
+#'               defaults to every character
+#'              5. a Boolean for whether this pattern should be filled byrow
+#'              
 make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         wellnames_sep = "_", wellnames_colname = "Well",
                         pattern_split = "", ...) {
-  #This is a function to easily input experimental design elements
-  #Either nrows or block_row_names must be provided
-  #Either ncols or block_col_names must be provided
-  #For formatting ... arguments, each must be a list with four elements:
-  # the values, 
-  # the rows the pattern should be applied to,
-  # the columns the pattern should be applied to, 
-  # the pattern itself (in string)
-  #   numbers refer to the indexes in the values vector
-  #   0's refer to NA
-  #   the pattern will be split using pattern_split
-  #     (defaults to every character)
-  # whether the pattern should be filled by row (Boolean)
-  #For example:
-  # my_example <- make_tidydesign(nrows = 8, ncols = 12,
-  #         design_element_name = list(c("Value1", "Value2", "Value3"),
-  #                           rowstart:rowend, colstart:colend,
-  #                           "111222333000", TRUE)
-  #To make it easier to pass arguments, use make_designpattern:
-  # my_example <- make_tidydesign(nrows = 8, ncols = 12,
-  #       design_element_name = make_designpattern(values = c("L", "G", "C"),
-  #                                                 rows = 2:7, cols = 2:11,
-  #                                                 pattern = "11223300",
-  #                                                 byrow = TRUE))
-  
   
   #Do we need to include a plate_name argument?
     #(old comment) the plates have to be identified uniquely

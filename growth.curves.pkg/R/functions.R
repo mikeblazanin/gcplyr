@@ -928,17 +928,23 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
             is.character(pattern), is.logical(byrow))
   return(list(values, rows, cols, pattern, byrow))
 }
-  
+ 
+#' Turn tidydesign into block format
+#' 
+#' This function allows users to convert designs created with tidydesign
+#'  into a block format for easy output to csv for inclusion in lab notebooks,
+#'  etc in a human-readable format
+#' @param tidydesign A tidydesign data.frame (e.g. as created by make_tidydesign)
+#' @param collapse NULL or a string to use for concatenating design elements
+#'                 together. If NULL each design column will be put into its
+#'                 own block. If a string, that string will be used to \code{paste}
+#'                 together all design elements and all design elements will
+#'                 be returned in a single block
+#' @return A list of blockdesign data.frames (if \code{collapse} is not 
+#'         \code{NULL} the list is of length 1
+#' 
 block_tidydesign <- function(tidydesign, collapse = NULL,
                                 wellnames_sep = "_", wellnames_colname = "Well") {
-  #This function is primarily so that users can use make_tidydesign
-  # to make designs then output them to csv for inclusion in
-  # lab notebooks, etc.
-  #If collapse = NULL, each design column will be put into it's own block
-  #If collapse = some character, all design columns will be put into one block
-  # with that character as the seperator
-  #Either way the function returns a list of blockdesign matrices
-  # (although if collapse is not NULL, the list is of length 1)
   
   #Get rownames & colnames from well column
   rownames <- sapply(strsplit(tidydesign[, wellnames_colname],

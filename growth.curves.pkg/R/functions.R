@@ -524,6 +524,34 @@ import_blockmeasures <- function(files, num_plates = 1,
 
 #Get widemeasures ----
 
+#' Import widemeasures
+#' 
+#' @description
+#' A function that imports widemeasures in files into the R environment
+#' 
+#' @details
+#' startrow, endrow, startcol, endcol, timecol, sheet and extension 
+#' can either be vectors or lists the same length as files, 
+#' or a single value that applies for all files
+#' 
+#' @param files A vector of filepaths (relative to current working directory)
+#'              where each one is a widemeasures set of data
+#' @param extension (optional) the extension of the files,"csv", "xls", or "xlsx"
+#'                  (will attempt to infer extension if none is provided)
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
+#'                  the data is located. If none provided assumes the entire
+#'                  file is data
+#' @param header Boolean for whether there is a header to the data. If FALSE
+#'               columns are simple numbered. If TRUE is the row above
+#'               \code{startrow} (if startrow is specified) or the first row
+#'               of the input files (if startrow is not specified)
+#' @param sheet The sheet of the input files where data is located (if input
+#'              files are .xls or .xlsx). If not specified defaults to the first
+#'              sheet
+#' @param wide_names Names to give the widemeasures read in. By default uses the
+#'                   file names if not specified
+#' @return A list of widemeasures named by filename
+#'
 import_widemeasures <- function(files, extension = NULL, 
                               startrow = NULL, endrow = NULL, 
                               startcol = NULL, endcol = NULL,
@@ -554,21 +582,11 @@ import_widemeasures <- function(files, extension = NULL,
  
   
   
-  #Inputs:  a list of filepaths relative to the current working directory,
-  #           where each one is a widemeasures set of data
-  #         (optional) the extension of the files,"csv", "xls", or "xlsx"
-  #           (will attempt to infer extension if none is provided)
-  #         (optional) the row & columns where the data is located
+  #Inputs:
   #         (optional) the column where timestamp info is located
   #           (if none provided by default the column immediately to the left 
   #           of startcol is assumed to be the time column)
-  #         (optional) the sheet where data is located (if xls or xlsx)
-  #           if none provided, defaults to first sheet
-  #         startrow, endrow, startcol, endcol, timecol, sheet and extension 
-  #           can either be vectors or lists the same length as files, 
-  #           or a single value that applies for all files
-  # 
-  #Outputs: a list of blockmeasures named by filename
+
   
   if (!sum(is.null(startrow), is.null(endrow), 
            is.null(startcol), is.null(endcol)) %in% c(0, 4)) {

@@ -906,17 +906,26 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   return(output)
 }
 
+#' Make design pattern
+#' 
+#' A helper function for use with make_tidydesign
+#' 
+#' @details 
+#' Example:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
+#'                                                 rows = 2:7, cols = 2:11,
+#'                                                 pattern = "11223300",
+#'                                                 byrow = TRUE))
+#' 
+#' @param values Vector of values to use
+#' @param rows Vector of rows where pattern applies
+#' @param cols Vector of cols where pattern applies
+#' @param byrow Boolean for whether pattern should be created by row
+#' 
 make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
-  #This function simply makes it easier to use make_tidydesign
-  #For example:
-  # my_example <- make_tidydesign(nrows = 8, ncols = 12,
-  #       design_element_name = make_designpattern(values = c("L", "G", "C"),
-  #                                                 rows = 2:7, cols = 2:11,
-  #                                                 pattern = "11223300",
-  #                                                 byrow = TRUE))
   stopifnot(is.vector(values), is.vector(rows), is.vector(cols),
             is.character(pattern), is.logical(byrow))
-  
   return(list(values, rows, cols, pattern, byrow))
 }
   

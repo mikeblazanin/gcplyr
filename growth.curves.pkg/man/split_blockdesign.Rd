@@ -9,5 +9,5 @@ split_blockdesign()
 \description{
 This function will be called to split block designs that have been read
 from a file, after they've been widened and pivot_longered
-[work in progress]
+(work in progress)
 }

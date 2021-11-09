@@ -3,11 +3,11 @@
 \name{import_tidydesign}
 \alias{import_tidydesign}
 \title{Import tidydesign from file
-[work in progress]}
+(work in progress)}
 \usage{
 import_tidydesign()
 }
 \description{
 Import tidydesign from file
-[work in progress]
+(work in progress)
 }

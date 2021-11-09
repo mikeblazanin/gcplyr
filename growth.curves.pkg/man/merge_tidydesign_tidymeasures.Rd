@@ -3,11 +3,11 @@
 \name{merge_tidydesign_tidymeasures}
 \alias{merge_tidydesign_tidymeasures}
 \title{Merge tidydesign with tidymeasures
-[work in progress]}
+(work in progress)}
 \usage{
 merge_tidydesign_tidymeasures()
 }
 \description{
 Merge tidydesign with tidymeasures
-[work in progress]
+(work in progress)
 }

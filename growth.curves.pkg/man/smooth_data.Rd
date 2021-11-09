@@ -8,5 +8,5 @@ smooth_data(algorithm = "loess", x, y, formula = NULL, ...)
 }
 \description{
 This function calls other functions to smooth growth curve data
-[work in progress]
+(work in progress)
 }

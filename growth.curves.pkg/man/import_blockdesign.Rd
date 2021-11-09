@@ -16,5 +16,5 @@ import_blockdesign(
 }
 \description{
 This function imports blockdesigns from file into the R environment
-[Work in progress]
+(work in progress)
 }

@@ -7,6 +7,7 @@ Author: Mike Blazanin
 Maintainer: Mike Blazanin <mikeblazanin@gmail.com>
 Description: [Description to be written later]
 License: MIT + file LICENSE
+Encoding: UTF-8
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

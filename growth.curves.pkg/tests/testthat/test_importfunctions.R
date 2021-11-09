@@ -46,14 +46,6 @@ test_that("blockcurves reads data correctly", {
   #infer rownames True & startcol specified
   #                    & startcol not specified
   
-  
-  
-          
+  unlink("./test_blockcurves_data_csv/", recursive = TRUE)
+  unlink("./test_blockcurves_data_xlsx/", recursive = TRUE)
 })
-
-
-
-
-
-
-

@@ -990,6 +990,19 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
   return(output)
 }
 
+#' Write block designs to csv
+#' 
+#' This function is basically just a wrapper for write.csv that also works
+#' when handed a list of matrices/dataframes
+#' If \code{designs} is a list, \code{names(designs)} will be placed in the
+#' 1,1 cell of each block
+#' 
+#' @param designs data.frame or matrix (if one design), or list of data.frames
+#'                or matrices, to be written to file
+#' @param file The filename (if a single design), or vector of file names
+#'             (if multiple designs)
+#' @return Nothing, but R objects are written to files
+#' 
 write_blockdesign <- function(designs, file, ...) {
   #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
   #Also puts the names of the designs in 1,1 cell (as is the case for block designs
@@ -1000,11 +1013,16 @@ write_blockdesign <- function(designs, file, ...) {
       tmp <- cbind(data.frame(row.names(designs[[i]])),
                         designs[[i]])
       colnames(tmp)[1] <- names(designs)[i]
-      write.csv(x = tmp, file = file, row.names = FALSE, ...)
+      write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
     }   
   }
 }
 
+#' Import blockdesigns from file
+#' 
+#' This function imports blockdesigns from file into the R environment
+#' [Work in progress]
+#' 
 import_blockdesign <- function(files,
                                startrow = 2, startcol = 2,
                                metadata = list("design_element" = c(1, 1)),
@@ -1091,43 +1109,48 @@ import_blockdesign <- function(files,
   
 }
 
+#' Split block designs
+#' 
+#' This function will be called to split block designs that have been read
+#' from a file, after they've been widened and pivot_longered
+#' [work in progress]
+#' 
 split_blockdesign <- function() {
-  #This function will be called after read_blocks, widen_blocks,
-  # pivot_wide_longer to split up multiple fields that exist
-  # in the design when it's put in as a block in csv
 }
 
-
+#' Import tidydesign from file
+#' [work in progress]
+#' 
 import_tidydesign <- function() {
-  
 }
 
-
+#' Merge tidydesign with tidymeasures
+#' [work in progress]
+#' 
 merge_tidydesign_tidymeasures <- function() {
   #This should also include the capability to merge multiple design
   # objects (e.g. if dift design elements were written in block form
   # in different csv files)
   
+  #Old code to merge layout & data
+  layout_data_merge <- function(layout, data) {
+    #Tidies (melts) the layout dataframe
+    #Then merges the now-tidy layout & data dataframes
+    layout_mlt <- reshape2::melt(layout, id.vars = 1, value.name = "Contents", 
+                                 variable.name = "column")
+    layout_mlt$Well <- paste(layout_mlt[, 1], substr(layout_mlt$column, 2, 
+                                                     nchar(as.character(layout_mlt$column))), 
+                             sep = "")
+    
+    data_mlt <- reshape2::melt(data, id.vars = c("Time", "Temperature"), 
+                               variable.name = "Well", value.name = "OD600")
+    data_mlt$Contents <- layout_mlt$Contents[match(as.character(data_mlt$Well), 
+                                                   as.character(layout_mlt$Well))]
+    data_mlt$format <- paste(colnames(layout)[1], "_Rep", sep = "")
+    return(data_mlt)
+  }
 }
 
-
-#Merge layout & data
-layout_data_merge <- function(layout, data) {
-  #Tidies (melts) the layout dataframe
-  #Then merges the now-tidy layout & data dataframes
-  layout_mlt <- reshape2::melt(layout, id.vars = 1, value.name = "Contents", 
-                               variable.name = "column")
-  layout_mlt$Well <- paste(layout_mlt[, 1], substr(layout_mlt$column, 2, 
-                                                nchar(as.character(layout_mlt$column))), 
-                           sep = "")
-  
-  data_mlt <- reshape2::melt(data, id.vars = c("Time", "Temperature"), 
-                             variable.name = "Well", value.name = "OD600")
-  data_mlt$Contents <- layout_mlt$Contents[match(as.character(data_mlt$Well), 
-                                                 as.character(layout_mlt$Well))]
-  data_mlt$format <- paste(colnames(layout)[1], "_Rep", sep = "")
-  return(data_mlt)
-}
 
 #Preprocess ----
 

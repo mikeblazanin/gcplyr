@@ -4,7 +4,13 @@
 \alias{import_blockmeasures}
 \title{Import blockmeasures}
 \usage{
-import_blockmeasures(files, num_plates = 1, plate_names = NULL, ...)
+import_blockmeasures(
+  files,
+  num_plates = 1,
+  plate_names = NULL,
+  wellnames_sep = "_",
+  ...
+)
 }
 \arguments{
 \item{files}{Vector of filenames (as strings), each of which is a blockmeasures

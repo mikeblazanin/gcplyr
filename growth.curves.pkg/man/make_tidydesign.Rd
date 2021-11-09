@@ -21,6 +21,15 @@ make_tidydesign(
 \item{block_row_names, block_col_names}{Names of the rows, columns
 of the plate blockmeasures data}
 
+\item{wellnames_sep}{A string used when concatenating rownames and column
+names to create well names}
+
+\item{wellnames_colname}{Header for newly-created column containing the
+well names}
+
+\item{pattern_split}{character to split pattern elements provided in
+\code{...} by}
+
 \item{...}{Each \code{...} argument must be a list with five elements:
 1. a vector of the values
 2. a vector of the rows the pattern should be applied to

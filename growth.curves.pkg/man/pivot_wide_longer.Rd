@@ -14,6 +14,9 @@ pivot_wide_longer(
 )
 }
 \arguments{
+\item{widemeasures}{A single widemeasures data.frame, or a list of widemeasures
+data.frame's}
+
 \item{data_cols, id_cols}{Specifies which columns have data vs are ID's
 (in tidyr::pivot_longer parlance). Each can be
 a single vector (which will be applied for all
@@ -33,9 +36,6 @@ the same length as \code{widemeasures}
 Note that if neither data_cols nor id_cols}
 
 \item{...}{Other functions to be passed to tidyr::pivot_longer}
-
-\item{widemeares}{A single widemeasures data.frame, or a list of widemeasures
-data.frame's}
 }
 \value{
 Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)

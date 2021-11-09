@@ -13,6 +13,9 @@ make_designpattern(values, rows, cols, pattern, byrow = TRUE)
 
 \item{cols}{Vector of cols where pattern applies}
 
+\item{pattern}{Numeric pattern itself, where numbers refer to entries
+in \code{values}}
+
 \item{byrow}{Boolean for whether pattern should be created by row}
 }
 \description{

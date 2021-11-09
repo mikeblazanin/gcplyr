@@ -19,6 +19,12 @@ together. If NULL each design column will be put into its
 own block. If a string, that string will be used to \code{paste}
 together all design elements and all design elements will
 be returned in a single block}
+
+\item{wellnames_sep}{A string used when concatenating rownames and column
+names to create well names}
+
+\item{wellnames_colname}{Header for newly-created column containing the
+well names}
 }
 \value{
 A list of blockdesign data.frames (if \code{collapse} is not 

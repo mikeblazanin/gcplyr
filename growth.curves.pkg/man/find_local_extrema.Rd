@@ -34,6 +34,8 @@ the function may return non-extrema}
 
 \item{remove_endpoints}{Should the first and last values in \code{values}
 be removed from the returned vector of extrema}
+
+\item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
 \value{
 A vector of indices of \code{values} corresponding to local extrema

@@ -213,7 +213,7 @@ read_blocks <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     ##Read file & save in temp
     if (extension[i] == "csv") {
-        temp <- read.csv(files[i], colClasses = "character", 
+        temp <- utils::read.csv(files[i], colClasses = "character", 
                          header = FALSE)
     } else if (extension[i] == "xls") {
       suppressMessages(
@@ -378,12 +378,12 @@ read_blocks <- function(files, extension = NULL,
   
   ##Error checking for output dataframe dimensions
   if (length(outputs) > 1 &
-      var(sapply(outputs, simplify = TRUE, 
+      stats::var(sapply(outputs, simplify = TRUE, 
                  FUN = function(x) {dim(x$data)[1]})) != 0) {
     warning("Not all blockmeasures have the same number of rows of data")
   }
   if (length(outputs) > 1 &
-      var(sapply(outputs, simplify = TRUE,
+      stats::var(sapply(outputs, simplify = TRUE,
                  FUN = function(x) {dim(x$data)[2]})) != 0) {
     warning("Not all blockmeasures have the same number of columns of data")
   }
@@ -431,20 +431,20 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
   #Check that all blockmeasures have same dimensions
   if (length(blockmeasures) > 1) {
     if (nested_metadata) { #there is nested metadata
-      if (var(sapply(blockmeasures, simplify = TRUE, 
+      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
                      FUN = function(x) {dim(x[[1]])[1]})) != 0) {
         stop("Not all blockmeasures have the same number of rows of data")
       }
-      if (var(sapply(blockmeasures, simplify = TRUE,
+      if (stats::var(sapply(blockmeasures, simplify = TRUE,
                      FUN = function(x) {dim(x[[1]])[2]})) != 0) {
         stop("Not all blockmeasures have the same number of columns of data")
       }
     } else { #there is not nested metadata
-      if (var(sapply(blockmeasures, simplify = TRUE, 
+      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
                      FUN = function(x) {dim(x)[1]})) != 0) {
         stop("Not all blockmeasures have the same number of rows of data")
       }
-      if (var(sapply(blockmeasures, simplify = TRUE,
+      if (stats::var(sapply(blockmeasures, simplify = TRUE,
                      FUN = function(x) {dim(x)[2]})) != 0) {
         stop("Not all blockmeasures have the same number of columns of data")
       }
@@ -516,6 +516,7 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
 #' @export       
 import_blockmeasures <- function(files, num_plates = 1, 
                                  plate_names = NULL,
+                                 wellnames_sep = "_",
                                  ...) {
   blockmeasures <- uninterleave(read_blocks(files = files, ...),
                                 n = num_plates, ...)
@@ -645,7 +646,7 @@ import_widemeasures <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     #Read file & save in temp
     if (extension[i] == "csv") {
-       temp <- read.csv(files[i], colClasses = "character", header = FALSE)
+       temp <- utils::read.csv(files[i], colClasses = "character", header = FALSE)
     } else if (extension[i] == "xls") {
       suppressMessages(temp <- 
                          as.data.frame(
@@ -1012,13 +1013,13 @@ write_blockdesign <- function(designs, file, ...) {
   #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
   #Also puts the names of the designs in 1,1 cell (as is the case for block designs
   if (is.data.frame(designs)) {
-    write.csv(x = designs, file = file, ...)
+    utils::write.csv(x = designs, file = file, ...)
   } else if (is.list(designs)) {
     for (i in 1:length(designs)) {
       tmp <- cbind(data.frame(row.names(designs[[i]])),
                         designs[[i]])
       colnames(tmp)[1] <- names(designs)[i]
-      write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
+      utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
     }   
   }
 }

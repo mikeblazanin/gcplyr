@@ -5,7 +5,15 @@ Version: 1.0
 Date: 2021-11-01
 Author: Mike Blazanin
 Maintainer: Mike Blazanin <mikeblazanin@gmail.com>
-Description: [Description to be written later]
+Description: 
+This is a package containing functions for use in importing, reshaping,
+processing, and analyzing growth curves data as output by plate readers.
+This package can handle importing data that is block-shaped as well as
+data that is "wide" shaped (where each column corresponds to a single well
+in the plate). It reshapes such data into a consistent format, which can
+then be processed and analyzed using the functions provided. This package
+also contains functions enabling the association of experimental design
+factors with the imported data, for ease of downstream analysis.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Suggests: 

@@ -1,12 +1,13 @@
 Package: growth.curves.pkg
 Type: Package
-Title: What the package does (short line)
+Title: Manages, processes, and analyzes growth curves data
 Version: 1.0
 Date: 2021-11-01
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Mike Blazanin
+Maintainer: Mike Blazanin <mikeblazanin@gmail.com>
+Description: [Description to be written later]
+License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+RoxygenNote: 7.1.2

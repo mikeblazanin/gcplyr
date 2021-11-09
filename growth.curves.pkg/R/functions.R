@@ -702,7 +702,7 @@ import_widemeasures <- function(files, extension = NULL,
 #' Essentially a wrapper for tidyr::pivot_longer that works on both a single
 #' widemeasures as well as a list of widemeasures
 #' 
-#' @param widemeares A single widemeasures data.frame, or a list of widemeasures
+#' @param widemeasures A single widemeasures data.frame, or a list of widemeasures
 #'                   data.frame's
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
 #'                          (in tidyr::pivot_longer parlance). Each can be
@@ -814,6 +814,12 @@ pivot_wide_longer <- function(widemeasures,
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
+#' @param wellnames_sep A string used when concatenating rownames and column
+#'                      names to create well names
+#' @param wellnames_colname Header for newly-created column containing the
+#'                          well names
+#' @param pattern_split character to split pattern elements provided in
+#'                      \code{...} by
 #' @param ... Each \code{...} argument must be a list with five elements:
 #'              1. a vector of the values
 #'              2. a vector of the rows the pattern should be applied to
@@ -924,6 +930,8 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 #' @param values Vector of values to use
 #' @param rows Vector of rows where pattern applies
 #' @param cols Vector of cols where pattern applies
+#' @param pattern Numeric pattern itself, where numbers refer to entries
+#'                in \code{values}
 #' @param byrow Boolean for whether pattern should be created by row
 #' 
 #' @export
@@ -944,6 +952,10 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #'                 own block. If a string, that string will be used to \code{paste}
 #'                 together all design elements and all design elements will
 #'                 be returned in a single block
+#' @param wellnames_sep A string used when concatenating rownames and column
+#'                      names to create well names
+#' @param wellnames_colname Header for newly-created column containing the
+#'                          well names
 #' @return A list of blockdesign data.frames (if \code{collapse} is not 
 #'         \code{NULL} the list is of length 1
 #' 
@@ -1293,6 +1305,7 @@ calc_deriv <- function(density, percapita = FALSE,
 #'                     the function may return non-extrema
 #' @param remove_endpoints Should the first and last values in \code{values}
 #'                         be removed from the returned vector of extrema
+#' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @return A vector of indices of \code{values} corresponding to local extrema
 #'         in the data  
 #' 

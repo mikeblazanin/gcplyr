@@ -183,16 +183,12 @@ read_blocks <- function(files, extension = NULL,
   
   #Determine file extension(s)
   if (is.null(extension)) {
-    require(tools)
-    #Note later we make a require call for readxl if needed
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
   }
   stopifnot(extension %in% c("csv", "xls", "xlsx"))
-  
-  if (any(extension == "xls" | extension == "xlsx")) {require(readxl)}
   
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
@@ -635,16 +631,12 @@ import_widemeasures <- function(files, extension = NULL,
   
   #Determine file extension(s)
   if (is.null(extension)) {
-    require(tools)
-    #Note later we make a require call for readxl if needed
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
     stopifnot(all(extension %in% c("csv", "xls", "xlsx")))
   }
-  
-  if (any(extension == "xls" | extension == "xlsx")) {require(readxl)}
   
   #Create empty recipient list
   outputs <- rep(list(NA), length(files))
@@ -756,8 +748,6 @@ pivot_wide_longer <- function(widemeasures,
   if (any(!is.na(data_cols) & !is.na(id_cols))) {
     warning("Cannot provide both data_cols and id_cols for a given widemeasures, using data_cols only")
   }
-  
-  require(tidyr)
   
   if (is.data.frame(widemeasures)) {
     widemeasures <- list(widemeasures)
@@ -1150,6 +1140,8 @@ merge_tidydesign_tidymeasures <- function() {
   #This should also include the capability to merge multiple design
   # objects (e.g. if dift design elements were written in block form
   # in different csv files)
+  
+  #WHEN WRITE THIS USE tidyr NOT reshape2
   
   #Old code to merge layout & data
   layout_data_merge <- function(layout, data) {

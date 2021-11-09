@@ -5,3 +5,5 @@
 *.png
 *.tiff
 test_*/
+growth.curves.pkg_*.tar.gz
+growth.curves.pkg.Rcheck/

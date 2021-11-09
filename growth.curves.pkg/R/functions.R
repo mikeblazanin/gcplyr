@@ -1,6 +1,7 @@
 #General utilities ----
 
 #' Check dimension of inputs
+#' @export
 #' 
 #' Check if values are a vector of given length, if not coerce to be so
 #' Returns error messages using appropriate names
@@ -26,6 +27,7 @@ checkdim_inputs <- function(input, input_name, needed_len,
 }
 
 #' Uninterleave list
+#' @export
 #' 
 #' Takes a list that is actually interleaved elements from multiple sources
 #' and uninterleaves them into the separate sources
@@ -56,7 +58,11 @@ uninterleave <- function(interleaved_list, n, ...) {
   return(output)
 }
 
-#TODO: move name inference logic into this function to make testing easier
+#' A function that handles name inference logic
+#' @export
+#' 
+#' TODO: move logic from read_blocks to here
+#' 
 infer_names <- function(startrow = NULL, endrow = NULL, 
                         startcol = NULL, endcol = NULL,
                         infer_colnames = TRUE,
@@ -68,6 +74,7 @@ infer_names <- function(startrow = NULL, endrow = NULL,
 #Importing block-shaped ----
 
 #' Read blockmeasures
+#' @export
 #' 
 #' A function that reads block measures into the R environment
 #' 
@@ -389,6 +396,7 @@ read_blocks <- function(files, extension = NULL,
 }
 
 #' Widen blockmeasures
+#' @export
 #' 
 #' Takes blockmeasures and returns them in a widemeasure format
 #' 
@@ -496,6 +504,7 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
 #Get blockmeasures ----
 
 #' Import blockmeasures
+#' @export
 #' 
 #' Function to import blockmeasures from files and return widemeasures
 #' This function acts as a wrapper to call read_blocks, uninterleave, 
@@ -535,6 +544,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 #Get widemeasures ----
 
 #' Import widemeasures
+#' @export
 #' 
 #' A function that imports widemeasures in files into the R environment
 #' 
@@ -695,6 +705,7 @@ import_widemeasures <- function(files, extension = NULL,
 #tidy widemeasures ----
 
 #' Pivot widemeasures longer
+#' @export
 #' 
 #' Essentially a wrapper for tidyr::pivot_longer that works on both a single
 #' widemeasures as well as a list of widemeasures
@@ -789,6 +800,7 @@ pivot_wide_longer <- function(widemeasures,
 #Get designs ----
 
 #' Make tidy design data.frames
+#' @export
 #' 
 #' This is a function to easily input experimental design elements
 #' for later merging with the raw read data
@@ -907,6 +919,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 }
 
 #' Make design pattern
+#' @export
 #' 
 #' A helper function for use with make_tidydesign
 #' 
@@ -930,6 +943,7 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 }
  
 #' Turn tidydesign into block format
+#' @export
 #' 
 #' This function allows users to convert designs created with tidydesign
 #'  into a block format for easy output to csv for inclusion in lab notebooks,
@@ -991,6 +1005,7 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
 }
 
 #' Write block designs to csv
+#' @export
 #' 
 #' This function is basically just a wrapper for write.csv that also works
 #' when handed a list of matrices/dataframes
@@ -1019,6 +1034,7 @@ write_blockdesign <- function(designs, file, ...) {
 }
 
 #' Import blockdesigns from file
+#' @export
 #' 
 #' This function imports blockdesigns from file into the R environment
 #' [Work in progress]
@@ -1110,6 +1126,7 @@ import_blockdesign <- function(files,
 }
 
 #' Split block designs
+#' @export
 #' 
 #' This function will be called to split block designs that have been read
 #' from a file, after they've been widened and pivot_longered
@@ -1119,12 +1136,14 @@ split_blockdesign <- function() {
 }
 
 #' Import tidydesign from file
+#' @export
 #' [work in progress]
 #' 
 import_tidydesign <- function() {
 }
 
 #' Merge tidydesign with tidymeasures
+#' @export
 #' [work in progress]
 #' 
 merge_tidydesign_tidymeasures <- function() {
@@ -1155,6 +1174,7 @@ merge_tidydesign_tidymeasures <- function() {
 #Preprocess ----
 
 #' Smooth data
+#' @export
 #' 
 #' This function calls other functions to smooth growth curve data
 #' [work in progress]
@@ -1163,6 +1183,7 @@ smooth_data <- function(algorithm = "loess", x, y,
 }
 
 #' Moving average smoothing
+#' @export
 #' 
 #' This function uses a moving average to smooth data
 #' 
@@ -1194,6 +1215,7 @@ moving_average <- function(my_data, window_width, subset_by) {
 ##Analyze ----
 
 #' Calculate derivatives of vector of density data
+#' @export
 #' 
 #' Provided a vector of density values, this function returns (by default) the
 #' difference between sequential values
@@ -1250,6 +1272,7 @@ calc_deriv <- function(density, percapita = FALSE,
 }
 
 #' find local extrema of numeric vector
+#' @export
 #' 
 #' This function takes a vector of \code{values} and returns a vector
 #' of the indices of all local value extrema (by default, this includes both

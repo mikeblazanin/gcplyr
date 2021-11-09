@@ -1144,22 +1144,22 @@ merge_tidydesign_tidymeasures <- function() {
   #WHEN WRITE THIS USE tidyr NOT reshape2
   
   #Old code to merge layout & data
-  layout_data_merge <- function(layout, data) {
-    #Tidies (melts) the layout dataframe
-    #Then merges the now-tidy layout & data dataframes
-    layout_mlt <- reshape2::melt(layout, id.vars = 1, value.name = "Contents", 
-                                 variable.name = "column")
-    layout_mlt$Well <- paste(layout_mlt[, 1], substr(layout_mlt$column, 2, 
-                                                     nchar(as.character(layout_mlt$column))), 
-                             sep = "")
-    
-    data_mlt <- reshape2::melt(data, id.vars = c("Time", "Temperature"), 
-                               variable.name = "Well", value.name = "OD600")
-    data_mlt$Contents <- layout_mlt$Contents[match(as.character(data_mlt$Well), 
-                                                   as.character(layout_mlt$Well))]
-    data_mlt$format <- paste(colnames(layout)[1], "_Rep", sep = "")
-    return(data_mlt)
-  }
+  # layout_data_merge <- function(layout, data) {
+  #   #Tidies (melts) the layout dataframe
+  #   #Then merges the now-tidy layout & data dataframes
+  #   layout_mlt <- reshape2::melt(layout, id.vars = 1, value.name = "Contents", 
+  #                                variable.name = "column")
+  #   layout_mlt$Well <- paste(layout_mlt[, 1], substr(layout_mlt$column, 2, 
+  #                                                    nchar(as.character(layout_mlt$column))), 
+  #                            sep = "")
+  #   
+  #   data_mlt <- reshape2::melt(data, id.vars = c("Time", "Temperature"), 
+  #                              variable.name = "Well", value.name = "OD600")
+  #   data_mlt$Contents <- layout_mlt$Contents[match(as.character(data_mlt$Well), 
+  #                                                  as.character(layout_mlt$Well))]
+  #   data_mlt$format <- paste(colnames(layout)[1], "_Rep", sep = "")
+  #   return(data_mlt)
+  # }
 }
 
 

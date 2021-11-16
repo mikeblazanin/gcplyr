@@ -1,4 +1,7 @@
-#TODO:  actually test & check that functions work
+#TODO:  
+#       Use letter-number naming for wells by default (bc it's what other
+#        software uses and we should be consistent at least)
+#       actually test & check that functions work
 #       Compare setup to other packages for similar analyses, eg growthcurver
 #       Get this in package form before the quarantine ends!!!
 #       in growthcurver they keep the timestamps in a column named "time",

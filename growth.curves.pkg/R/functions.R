@@ -1146,33 +1146,24 @@ import_tidydesign <- function() {
 }
 
 #' Merge tidydesign with tidymeasures
-#' (work in progress)
+#' 
+#' This function is essentially a wrapper for dplyr::full_join
+#' which is called for \code{tidydesign} and \code{tidymeasures},
+#' 
+#' @param tidydesign Data.frame of tidydesign elements
+#' @param tidymeasures Data.frame of tidymeasures data
+#' @param by A character vector of variables to join by, passed directly
+#'           to dplyr::full_join
+#' @param ... Other arguments to pass to dplyr::full_join
+#' 
+#' @return Data.frame containing merged output of \code{tidydesign} and
+#'         \code{tidymeasures}
 #' 
 #' @export
-merge_tidydesign_tidymeasures <- function() {
-  #This should also include the capability to merge multiple design
-  # objects (e.g. if dift design elements were written in block form
-  # in different csv files)
-  
-  #WHEN WRITE THIS USE tidyr NOT reshape2
-  
-  #Old code to merge layout & data
-  # layout_data_merge <- function(layout, data) {
-  #   #Tidies (melts) the layout dataframe
-  #   #Then merges the now-tidy layout & data dataframes
-  #   layout_mlt <- reshape2::melt(layout, id.vars = 1, value.name = "Contents", 
-  #                                variable.name = "column")
-  #   layout_mlt$Well <- paste(layout_mlt[, 1], substr(layout_mlt$column, 2, 
-  #                                                    nchar(as.character(layout_mlt$column))), 
-  #                            sep = "")
-  #   
-  #   data_mlt <- reshape2::melt(data, id.vars = c("Time", "Temperature"), 
-  #                              variable.name = "Well", value.name = "OD600")
-  #   data_mlt$Contents <- layout_mlt$Contents[match(as.character(data_mlt$Well), 
-  #                                                  as.character(layout_mlt$Well))]
-  #   data_mlt$format <- paste(colnames(layout)[1], "_Rep", sep = "")
-  #   return(data_mlt)
-  # }
+merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
+                                          by = NULL, ...) {
+  return(dplyr::full_join(tidydesign, tidymeasures,
+                   by = by, ... = ...))
 }
 
 

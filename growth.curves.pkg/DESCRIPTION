@@ -24,4 +24,5 @@ Imports:
   stats,
   readxl,
   tidyr,
-  tools
+  tools,
+  dplyr

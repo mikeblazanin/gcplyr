@@ -1154,6 +1154,8 @@ import_tidydesign <- function() {
 #' @param tidymeasures Data.frame of tidymeasures data
 #' @param by A character vector of variables to join by, passed directly
 #'           to dplyr::full_join
+#' @param drop Should only \code{complete_cases} of the resulting
+#'             data.frame be returned?
 #' @param ... Other arguments to pass to dplyr::full_join
 #' 
 #' @return Data.frame containing merged output of \code{tidydesign} and
@@ -1161,9 +1163,13 @@ import_tidydesign <- function() {
 #' 
 #' @export
 merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
-                                          by = NULL, ...) {
-  return(dplyr::full_join(tidydesign, tidymeasures,
-                   by = by, ... = ...))
+                                          by = NULL, drop = FALSE,
+                                          ...) {
+  temp <- dplyr::full_join(tidydesign, tidymeasures,
+                   by = by, ... = ...)
+  if (drop) {temp <- temp[complete.cases(temp), ]}
+  
+  return(temp)
 }
 
 

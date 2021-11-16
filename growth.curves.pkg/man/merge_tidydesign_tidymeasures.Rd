@@ -4,7 +4,13 @@
 \alias{merge_tidydesign_tidymeasures}
 \title{Merge tidydesign with tidymeasures}
 \usage{
-merge_tidydesign_tidymeasures(tidydesign, tidymeasures, by = NULL, ...)
+merge_tidydesign_tidymeasures(
+  tidydesign,
+  tidymeasures,
+  by = NULL,
+  drop = FALSE,
+  ...
+)
 }
 \arguments{
 \item{tidydesign}{Data.frame of tidydesign elements}
@@ -13,6 +19,9 @@ merge_tidydesign_tidymeasures(tidydesign, tidymeasures, by = NULL, ...)
 
 \item{by}{A character vector of variables to join by, passed directly
 to dplyr::full_join}
+
+\item{drop}{Should only \code{complete_cases} of the resulting
+data.frame be returned?}
 
 \item{...}{Other arguments to pass to dplyr::full_join}
 }

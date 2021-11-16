@@ -2,12 +2,25 @@
 % Please edit documentation in R/functions.R
 \name{merge_tidydesign_tidymeasures}
 \alias{merge_tidydesign_tidymeasures}
-\title{Merge tidydesign with tidymeasures
-(work in progress)}
+\title{Merge tidydesign with tidymeasures}
 \usage{
-merge_tidydesign_tidymeasures()
+merge_tidydesign_tidymeasures(tidydesign, tidymeasures, by = NULL, ...)
+}
+\arguments{
+\item{tidydesign}{Data.frame of tidydesign elements}
+
+\item{tidymeasures}{Data.frame of tidymeasures data}
+
+\item{by}{A character vector of variables to join by, passed directly
+to dplyr::full_join}
+
+\item{...}{Other arguments to pass to dplyr::full_join}
+}
+\value{
+Data.frame containing merged output of \code{tidydesign} and
+        \code{tidymeasures}
 }
 \description{
-Merge tidydesign with tidymeasures
-(work in progress)
+This function is essentially a wrapper for dplyr::full_join
+which is called for \code{tidydesign} and \code{tidymeasures},
 }

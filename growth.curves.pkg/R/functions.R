@@ -1180,18 +1180,105 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #' This function calls other functions to smooth growth curve data
 #' (work in progress)
 #' 
+#' @param algorithm Argument specifying which smoothing algorithm should
+#'                  be used to smooth data. Options include "loess",
+#'                  "moving-average", and "gam"
+#' @param data data frame containing the variables in the model
+#' @param formula a formula specifying the numeric response (typically density) 
+#'                and numeric predictors (typically just time)
+#'                For \code{gam} smoothing, typically of the format:
+#'                dens ~ s(time), which uses mgcv::s to smooth the data
+#' @param subset_by A vector. Each unique value of this vector will be smoothed
+#'                  independently of the others.
+#' @values_to If return_fitobject == FALSE, column name for the column containing
+#'            the smoothed values
+#' @param return_fitobject Boolean indicating whether entire object returned
+#'                         by fitting function should be returned. If FALSE,
+#'                         just fitted values are returned.
+#' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
+#'            or \code{moving_average}
+#' 
+#' @return If return_fitobject == FALSE:
+#'         A dataframe, the same as \code{data}, but with smoothed data
+#'         as an added column with column name \code{values_to}
+#'         If return_fitobject == TRUE:
+#'         A list the same length as unique(subset_by) where each element is
+#'         an object of the same class as returned by the smoothing algorithm
+#'         Varies by algorithm, but always with a first element named 'fitted'
+#'         containing the smoothed values of the response variable, and a 
+#'         second element named 'residuals' containing the residuals of the
+#'         fitted values and the input values
+#' 
 #' @export
-smooth_data <- function(algorithm = "loess", x, y,
-                        formula = NULL, ...) {
+smooth_data <- function(algorithm, data, formula, 
+                        subset_by = NA, values_to = "fitted",
+                        return_fitobject = FALSE,
+                        ...) {
+  if (substr(as.character(formula[3]), 1, 2) != "s(") {
+    warning("gam algorithm is called without 's()' to smooth")}
+  
+  #Prepare output list
+  if (is.na(subset_by)) {
+    temp <- list(NA)
+    subset_by <- rep("A", nrow(data))
+  } else {
+    temp <- list(rep(NA, length(unique(subset_by))))
+  }
+  
+  #Run smoothing algorithms
+  for (i in 1:length(unique(subset_by))) {
+    #Add column for output
+    if (return_fitobject == FALSE) {
+      data <- cbind(data, NA)
+      names(data)[ncol(data)] <- values_to
+    }
+    
+    #Calculate fitted values
+    if (algorithm == "moving-average") {
+      temp[[i]] <- 
+        moving_average(formula = formula, 
+                       data = data[subset_by == unique(subset_by)[i], ],
+                       ...)
+    } else {
+      if (algorithm == "loess") {
+        temp[[i]] <- 
+          stats::loess(formula = formula, 
+                       data = data[subset_by == unique(subset_by)[i], ], 
+                       ...)
+      } else if (algorithm == "gam") {
+        
+        temp[[i]] <- 
+          mgcv::gam(formula = formula, 
+                    data = data[subset_by == unique(subset_by)[i], ], 
+                    ...)
+        #Rename fitted.values to 'fitted'
+        names(temp[[i]])[match("fitted.values", names(temp[[i]]))] <- "fitted"
+      }
+      #Reorder elements to have 'fitted' be first, then 'residuals'
+      temp[[i]] <- 
+        temp[[i]][c("fitted", "residuals", 
+                    names(temp[[i]])[which(!names(temp[[i]]) %in% 
+                                             c("fitted", "residuals"))])]
+    }
+    #Fill in output column if needed
+    if (return_fitobject == FALSE) {
+      data[subset_by == unique(subset_by)[i], values_to] <- temp[[i]]$fitted
+    }
+  }
+  
+  #Return as requested
+  if (return_fitobject == TRUE) {return(temp)} else {return(data)}
 }
 
+
+  
 #' Moving average smoothing
 #' 
 #' This function uses a moving average to smooth data
 #' 
-#' @param my_data Vector of numeric data (typically density data)
-#'                Data is assumed to be in the correct order to be smoothed
-#'                sequentially
+#' @param formula Formula specifying the numeric response (typically density) 
+#'                and numeric predictors (typically just time)
+#' @param data Dataframe containing variables in \code{formula}
 #' @param window_width Number of data points wide the moving average window is
 #' @param subset_by Vector of strings or factors. Each unique value of the
 #'                  \code{subset_by} vector will be smoothed independently

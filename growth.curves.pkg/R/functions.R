@@ -1178,7 +1178,6 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #' Smooth data
 #' 
 #' This function calls other functions to smooth growth curve data
-#' (work in progress)
 #' 
 #' @param algorithm Argument specifying which smoothing algorithm should
 #'                  be used to smooth data. Options include "loess",
@@ -1188,7 +1187,8 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #'                and numeric predictors (typically just time)
 #'                For \code{gam} smoothing, typically of the format:
 #'                dens ~ s(time), which uses mgcv::s to smooth the data
-#' @param subset_by A vector. Each unique value of this vector will be smoothed
+#' @param subset_by A vector as long as the number of rows of data. 
+#'                  Each unique value of this vector will be smoothed
 #'                  independently of the others.
 #' @values_to If return_fitobject == FALSE, column name for the column containing
 #'            the smoothed values
@@ -1214,60 +1214,65 @@ smooth_data <- function(algorithm, data, formula,
                         subset_by = NA, values_to = "fitted",
                         return_fitobject = FALSE,
                         ...) {
-  if (substr(as.character(formula[3]), 1, 2) != "s(") {
+  if (algorithm == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
     warning("gam algorithm is called without 's()' to smooth")}
+  if (!is.na(subset_by) & length(subset_by) != nrow(data)) {
+    stop("subset_by is not the same length as the number of rows of data")
+  }
   
-  #Prepare output list
-  if (is.na(subset_by)) {
-    temp <- list(NA)
-    subset_by <- rep("A", nrow(data))
+  if(is.na(subset_by)) {subset_by <- rep("A", nrow(data))}
+  
+  #Prepare output containers
+  if (return_fitobject) {
+    fits_list <- list(rep(NA, length(unique(subset_by))))
   } else {
-    temp <- list(rep(NA, length(unique(subset_by))))
+    #Add column for output
+    data <- cbind(data, NA)
+    colnames(data)[ncol(data)] <- values_to
   }
   
   #Run smoothing algorithms
   for (i in 1:length(unique(subset_by))) {
-    #Add column for output
-    if (return_fitobject == FALSE) {
-      data <- cbind(data, NA)
-      names(data)[ncol(data)] <- values_to
-    }
-    
     #Calculate fitted values
     if (algorithm == "moving-average") {
-      temp[[i]] <- 
+      temp <- 
         moving_average(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ],
                        ...)
     } else {
       if (algorithm == "loess") {
-        temp[[i]] <- 
+        temp <- 
           stats::loess(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ], 
                        ...)
+        #Rename fitted to whatever values_to is
+        names(temp)[match("fitted", names(temp))] <- values_to
       } else if (algorithm == "gam") {
-        
-        temp[[i]] <- 
+        temp <- 
           mgcv::gam(formula = formula, 
                     data = data[subset_by == unique(subset_by)[i], ], 
                     ...)
-        #Rename fitted.values to 'fitted'
-        names(temp[[i]])[match("fitted.values", names(temp[[i]]))] <- "fitted"
+        #Rename fitted.values to whatever values_to is
+        names(temp)[match("fitted.values", names(temp))] <- values_to
       }
       #Reorder elements to have 'fitted' be first, then 'residuals'
-      temp[[i]] <- 
-        temp[[i]][c("fitted", "residuals", 
-                    names(temp[[i]])[which(!names(temp[[i]]) %in% 
+      temp <- 
+        temp[c(values_to, "residuals", 
+                    names(temp)[which(!names(temp) %in% 
                                              c("fitted", "residuals"))])]
     }
-    #Fill in output column if needed
-    if (return_fitobject == FALSE) {
-      data[subset_by == unique(subset_by)[i], values_to] <- temp[[i]]$fitted
+    
+    #Store results as requested
+    if (return_fitobject) {
+      fits_list[[i]] <- temp
+    } else {
+      #Fill in output column if needed
+      data[subset_by == unique(subset_by)[i], values_to] <- temp[[values_to]]
     }
   }
   
   #Return as requested
-  if (return_fitobject == TRUE) {return(temp)} else {return(data)}
+  if (return_fitobject == TRUE) {return(fits_list)} else {return(data)}
 }
 
 
@@ -1276,17 +1281,32 @@ smooth_data <- function(algorithm, data, formula,
 #' 
 #' This function uses a moving average to smooth data
 #' 
-#' @param formula Formula specifying the numeric response (typically density) 
-#'                and numeric predictors (typically just time)
+#' @param formula Formula specifying the numeric response (density) 
+#'                and numeric predictor (time).
 #' @param data Dataframe containing variables in \code{formula}
 #' @param window_width Number of data points wide the moving average window is
-#' @param subset_by Vector of strings or factors. Each unique value of the
-#'                  \code{subset_by} vector will be smoothed independently
 #' @return Vector of smoothed data, with NA's appended at the end
 #' 
 #' @export   
-moving_average <- function(my_data, window_width, subset_by) {
-  out_list <- rep(NA, length(my_data))
+moving_average <- function(formula, data, window_width) {
+  #Check formula formatting
+  if (length(formula) < 3) {stop("No response variable specified")}
+  if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
+  
+  #Parse formula
+  response_var <- as.character(formula[[2]])
+  predictor_var <- as.character(formula[[3]])
+  
+  data <- data[order(data[, predictor_var]), ]
+  
+  out_list <- rep(0, nrow(data))
+  
+  for (i in 1:window_width) {
+    out_list <- out_list + data[, response_var]
+  
+  out_list <- rep(NA, nrow(data))
+
+  
   cntr = 1
   for (my_uniq in unique(subset_by)) {
     my_sub <- as.numeric(subset(my_data, subset_by == my_uniq))

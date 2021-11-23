@@ -38,12 +38,31 @@ test_that("Moving average returns correctly", {
                    expected = manual_expect_win5)
 })
 
-# test_that("smooth_data returns properly", {
-#   set.seed(1)
-#   
-#   data <- data.frame("time" = 1:100,
-#                      "dens" = 10/(1+exp(-.1*((1:100) - 50))) + 
-#                        rnorm(100, sd = 0.5))
-# })
+test_that("smooth_data returns properly for moving-average", {
+  set.seed(1)
+  data <- data.frame("time" = 1:100,
+                     "dens" = 10/(1+exp(-.1*((1:100) - 50))) +
+                       rnorm(100, sd = 0.5))
+  manual_expect_win5 <- c(NA, NA, rep(0, (nrow(data)-4)), NA, NA)
+  for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
+  expect_equal(smooth_data(dens ~ time,
+                           data = data,
+                           algorithm = "moving-average",
+                           window_width = 5),
+               expected = data.frame("time" = 1:100, "dens" = data$dens,
+                                     "fitted" = manual_expect_win5))
+  data2 <- data.frame("time" = c(1:100, 1:100),
+                      "dens" = c(data$dens, data$dens + 10),
+                      "treat" = rep(c("A", "B"), each = 100))
+  expect_equal(smooth_data(dens ~ time, data = data2,
+                           algorithm = "moving-average",
+                           subset_by = data2$treat,
+                           window_width = 5),
+               expected = data.frame(
+                 "time" = c(1:100, 1:100),
+                 "dens" = c(data$dens, data$dens + 10),
+                 "treat" = rep(c("A", "B"), each = 100),
+                 "fitted" = c(manual_expect_win5, manual_expect_win5 + 10)))
+})
   
   

@@ -1241,7 +1241,7 @@ smooth_data <- function(formula, data, algorithm,
         moving_average(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ],
                        ...))
-      names(list) <- values_to
+      names(temp) <- values_to
     } else {
       if (algorithm == "loess") {
         temp <- 

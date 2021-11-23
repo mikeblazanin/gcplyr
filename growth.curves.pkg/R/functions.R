@@ -1212,16 +1212,16 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #' 
 #' @export
 smooth_data <- function(formula, data, algorithm,
-                        subset_by = NA, values_to = "fitted",
+                        subset_by = NULL, values_to = "fitted",
                         return_fitobject = FALSE,
                         ...) {
   if (algorithm == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
     warning("gam algorithm is called without 's()' to smooth")}
-  if (!is.na(subset_by) & length(subset_by) != nrow(data)) {
+  if (!is.null(subset_by) & length(subset_by) != nrow(data)) {
     stop("subset_by is not the same length as the number of rows of data")
   }
   
-  if(is.na(subset_by)) {subset_by <- rep("A", nrow(data))}
+  if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))}
   
   #Prepare output containers
   if (return_fitobject) {

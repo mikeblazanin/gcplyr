@@ -8,7 +8,7 @@ smooth_data(
   formula,
   data,
   algorithm,
-  subset_by = NA,
+  subset_by = NULL,
   values_to = "fitted",
   return_fitobject = FALSE,
   ...

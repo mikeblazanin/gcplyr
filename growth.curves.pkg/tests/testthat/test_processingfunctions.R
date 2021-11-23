@@ -37,3 +37,13 @@ test_that("Moving average returns correctly", {
                                   data = data, window_width = 5),
                    expected = manual_expect_win5)
 })
+
+# test_that("smooth_data returns properly", {
+#   set.seed(1)
+#   
+#   data <- data.frame("time" = 1:100,
+#                      "dens" = 10/(1+exp(-.1*((1:100) - 50))) + 
+#                        rnorm(100, sd = 0.5))
+# })
+  
+  

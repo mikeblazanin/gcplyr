@@ -1179,14 +1179,14 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #' 
 #' This function calls other functions to smooth growth curve data
 #' 
-#' @param algorithm Argument specifying which smoothing algorithm should
-#'                  be used to smooth data. Options include "loess",
-#'                  "moving-average", and "gam"
-#' @param data data frame containing the variables in the model
 #' @param formula a formula specifying the numeric response (typically density) 
 #'                and numeric predictors (typically just time)
 #'                For \code{gam} smoothing, typically of the format:
 #'                dens ~ s(time), which uses mgcv::s to smooth the data
+#' @param data data frame containing the variables in the model
+#' @param algorithm Argument specifying which smoothing algorithm should
+#'                  be used to smooth data. Options include "loess",
+#'                  "moving-average", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
 #'                  Each unique value of this vector will be smoothed
 #'                  independently of the others.
@@ -1204,13 +1204,14 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #'         If return_fitobject == TRUE:
 #'         A list the same length as unique(subset_by) where each element is
 #'         an object of the same class as returned by the smoothing algorithm
+#'         (typically a named list-like object)
 #'         Varies by algorithm, but always with a first element named 'fitted'
 #'         containing the smoothed values of the response variable, and a 
 #'         second element named 'residuals' containing the residuals of the
 #'         fitted values and the input values
 #' 
 #' @export
-smooth_data <- function(algorithm, data, formula, 
+smooth_data <- function(formula, data, algorithm,
                         subset_by = NA, values_to = "fitted",
                         return_fitobject = FALSE,
                         ...) {
@@ -1236,9 +1237,11 @@ smooth_data <- function(algorithm, data, formula,
     #Calculate fitted values
     if (algorithm == "moving-average") {
       temp <- 
+        list(
         moving_average(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ],
-                       ...)
+                       ...))
+      names(list) <- values_to
     } else {
       if (algorithm == "loess") {
         temp <- 

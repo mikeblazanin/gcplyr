@@ -25,4 +25,5 @@ Imports:
   readxl,
   tidyr,
   tools,
-  dplyr
+  dplyr,
+  mgcv

@@ -1167,7 +1167,7 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
                                           ...) {
   temp <- dplyr::full_join(tidydesign, tidymeasures,
                    by = by, ... = ...)
-  if (drop) {temp <- temp[complete.cases(temp), ]}
+  if (drop) {temp <- temp[stats::complete.cases(temp), ]}
   
   return(temp)
 }

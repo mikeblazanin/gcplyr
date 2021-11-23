@@ -18,9 +18,22 @@ test_that("Moving average returns correctly", {
                        rnorm(100, sd = 0.5))
   
   expect_error(moving_average(formula = dens ~ time + treat,
-                              data = data,
-                              window_width = 3))
+                              data = data, window_width = 3))
   expect_error(moving_average(formula = ~ time,
-                              data = data,
-                              window_width = 3))
+                              data = data, window_width = 3))
+  expect_error(moving_average(formula = dens ~ lime,
+                              data = data, window_width = 3))
+  expect_error(moving_average(formula = lens ~ time,
+                              data = data, window_width = 3))
+  expect_error(moving_average(formula = dens ~ time,
+                              data = data, window_width = 4))
+  expect_identical(moving_average(formula = dens ~ time,
+                                  data = data, window_width = 1),
+                   expected = data$dens)
+  
+  manual_expect_win5 <- c(NA, NA, rep(0, (nrow(data)-4)), NA, NA)
+  for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
+  expect_equal(moving_average(formula = dens ~ time,
+                                  data = data, window_width = 5),
+                   expected = manual_expect_win5)
 })

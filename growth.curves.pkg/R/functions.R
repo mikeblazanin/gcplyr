@@ -1190,7 +1190,7 @@ merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
 #' @param subset_by A vector as long as the number of rows of data. 
 #'                  Each unique value of this vector will be smoothed
 #'                  independently of the others.
-#' @values_to If return_fitobject == FALSE, column name for the column containing
+#' @param values_to If return_fitobject == FALSE, column name for the column containing
 #'            the smoothed values
 #' @param return_fitobject Boolean indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,

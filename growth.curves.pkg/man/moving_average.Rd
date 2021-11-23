@@ -4,20 +4,19 @@
 \alias{moving_average}
 \title{Moving average smoothing}
 \usage{
-moving_average(my_data, window_width, subset_by)
+moving_average(formula, data, window_width)
 }
 \arguments{
-\item{my_data}{Vector of numeric data (typically density data)
-Data is assumed to be in the correct order to be smoothed
-sequentially}
+\item{formula}{Formula specifying the numeric response (density) 
+and numeric predictor (time).}
 
-\item{window_width}{Number of data points wide the moving average window is}
+\item{data}{Dataframe containing variables in \code{formula}}
 
-\item{subset_by}{Vector of strings or factors. Each unique value of the
-\code{subset_by} vector will be smoothed independently}
+\item{window_width}{Number of data points wide the moving average window is
+(therefore, must be an odd number of points)}
 }
 \value{
-Vector of smoothed data, with NA's appended at the end
+Vector of smoothed data, with NA's appended at both ends
 }
 \description{
 This function uses a moving average to smooth data

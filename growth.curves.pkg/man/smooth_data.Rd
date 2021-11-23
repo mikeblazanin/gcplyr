@@ -4,9 +4,55 @@
 \alias{smooth_data}
 \title{Smooth data}
 \usage{
-smooth_data(algorithm = "loess", x, y, formula = NULL, ...)
+smooth_data(
+  formula,
+  data,
+  algorithm,
+  subset_by = NA,
+  values_to = "fitted",
+  return_fitobject = FALSE,
+  ...
+)
+}
+\arguments{
+\item{formula}{a formula specifying the numeric response (typically density) 
+and numeric predictors (typically just time)
+For \code{gam} smoothing, typically of the format:
+dens ~ s(time), which uses mgcv::s to smooth the data}
+
+\item{data}{data frame containing the variables in the model}
+
+\item{algorithm}{Argument specifying which smoothing algorithm should
+be used to smooth data. Options include "loess",
+"moving-average", and "gam"}
+
+\item{subset_by}{A vector as long as the number of rows of data. 
+Each unique value of this vector will be smoothed
+independently of the others.}
+
+\item{values_to}{If return_fitobject == FALSE, column name for the column containing
+the smoothed values}
+
+\item{return_fitobject}{Boolean indicating whether entire object returned
+by fitting function should be returned. If FALSE,
+just fitted values are returned.}
+
+\item{...}{Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
+or \code{moving_average}}
+}
+\value{
+If return_fitobject == FALSE:
+        A dataframe, the same as \code{data}, but with smoothed data
+        as an added column with column name \code{values_to}
+        If return_fitobject == TRUE:
+        A list the same length as unique(subset_by) where each element is
+        an object of the same class as returned by the smoothing algorithm
+        (typically a named list-like object)
+        Varies by algorithm, but always with a first element named 'fitted'
+        containing the smoothed values of the response variable, and a 
+        second element named 'residuals' containing the residuals of the
+        fitted values and the input values
 }
 \description{
 This function calls other functions to smooth growth curve data
-(work in progress)
 }

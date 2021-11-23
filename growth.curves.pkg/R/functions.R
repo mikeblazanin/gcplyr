@@ -1314,6 +1314,11 @@ moving_average <- function(formula, data, window_width) {
   }
   data <- data[order(data[, predictor_var]), ]
   
+  if(!is.numeric(data[, response_var]) ) {
+    warning(paste("Coercing", response_var, "to numeric"))
+    data[, response_var] <- as.numeric(data[, response_var])
+  }
+  
   #Calculate moving average
   window_radius <- (window_width - 1)/2
   results <- c(rep(NA, window_radius),

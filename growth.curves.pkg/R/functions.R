@@ -1285,10 +1285,14 @@ smooth_data <- function(algorithm, data, formula,
 #'                and numeric predictor (time).
 #' @param data Dataframe containing variables in \code{formula}
 #' @param window_width Number of data points wide the moving average window is
-#' @return Vector of smoothed data, with NA's appended at the end
+#'                     (therefore, must be an odd number of points)
+#' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
 moving_average <- function(formula, data, window_width) {
+  #Check window width
+  if(window_width %% 2 == 0) {stop("window_width must be an odd number")}
+  
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}
   if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
@@ -1297,30 +1301,37 @@ moving_average <- function(formula, data, window_width) {
   response_var <- as.character(formula[[2]])
   predictor_var <- as.character(formula[[3]])
   
+  #Check for vars in data
+  stopifnot(response_var %in% colnames(data),
+            predictor_var %in% colnames(data))
+  
+  if (!is.numeric(data[, predictor_var])) {
+    warning(paste("data is being sorted by order(", predictor_var,
+            "), but ", predictor_var, " is not numeric", sep = ""))
+  }
   data <- data[order(data[, predictor_var]), ]
   
-  out_list <- rep(0, nrow(data))
+  #Calculate moving average
+  window_radius <- (window_width - 1)/2
+  results <- c(rep(NA, window_radius),
+               rep(0, (nrow(data)-2*window_radius)),
+               rep(NA, window_radius))
   
   for (i in 1:window_width) {
-    out_list <- out_list + data[, response_var]
-  
-  out_list <- rep(NA, nrow(data))
-
-  
-  cntr = 1
-  for (my_uniq in unique(subset_by)) {
-    my_sub <- as.numeric(subset(my_data, subset_by == my_uniq))
-    out_list[cntr:(cntr+length(my_sub)-window_width)] <- 0
-    for (i in 1:window_width) {
-      out_list[(cntr):(cntr+length(my_sub)-window_width)] <-
-        out_list[(cntr):(cntr+length(my_sub)-window_width)] + 
-        my_sub[i:(length(my_sub)-window_width+i)]
-    }  
-    cntr <- cntr+length(my_sub)
+    offset <- i - 1 - window_radius
+    
+    results[(1 + window_radius):(length(results) - window_radius)] <-
+      results[(1 + window_radius):(length(results) - window_radius)] +
+      data[(1 + window_radius + offset):
+             (length(results) - window_radius + offset), 
+           response_var]
   }
-  out_list <- out_list/window_width
-  return(out_list)
+  results <- results/window_width
+
+  return(results)
 }
+
+
 
 ##Analyze ----
 

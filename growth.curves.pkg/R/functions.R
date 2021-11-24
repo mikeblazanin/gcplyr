@@ -1460,7 +1460,7 @@ find_local_extrema <- function(values,
                                width_limit = NULL,
                                height_limit = NULL,
                                remove_endpoints = TRUE,
-                               na.rm = FALSE) {
+                               na.rm = TRUE) {
   #Check inputs
   if (!return_maxima & !return_minima) {
     stop("Both return_maxima and return_minima are FALSE, at least one must be TRUE")
@@ -1477,15 +1477,16 @@ find_local_extrema <- function(values,
   if (is.null(width_limit) & !is.null(height_limit)) {
     warning("height_limit alone tends to be sensitive to height_limit parameter, use with caution")
   }
-  if (na.rm == TRUE & sum(is.na(values)) > 0) {
-    if (!all(is.na(values[(1+length(values)-sum(is.na(values))):length(values)]))) {
-      warning("Removing NAs found within values vector, returned indices will refer to non-NA values")
-      print(values)
+  
+  #Deal with NA's in values
+  if(any(is.na(values))) {
+    if(na.rm == TRUE) {
+      nas_removed_indices <- which(is.na(values))
+      values <- values[!is.na(values)]
+    } else {
+      stop("Some of values are NA but na.rm = FALSE")
     }
-    values <- values[!is.na(values)]
-  } else if(any(is.na(values))) {
-    stop("Some provided values are NA and na.rm = FALSE")
-  }
+  } else {nas_removed_indices <- NULL}
   
   #Define sub-function to find limits of the window
   get_window_limits <- function(cnt_pos,
@@ -1650,6 +1651,13 @@ find_local_extrema <- function(values,
   output <- unique(output)
   #Order
   output <- output[order(output)]
+  
+  #Adjust indices for NAs that were removed
+  if(na.rm & !is.null(nas_removed_indices)) {
+    for (index in nas_removed_indices) {
+      output[output >= index] <- (output[output >= index] + 1)
+    }
+  }
   
   return(output)
 }

@@ -11,7 +11,7 @@ find_local_extrema(
   width_limit = NULL,
   height_limit = NULL,
   remove_endpoints = TRUE,
-  na.rm = FALSE
+  na.rm = TRUE
 )
 }
 \arguments{

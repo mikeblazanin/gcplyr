@@ -10,6 +10,7 @@ pivot_wide_longer(
   id_cols = NA,
   names_to = "Well",
   values_to = "Measurements",
+  values_to_numeric = TRUE,
   ...
 )
 }
@@ -35,7 +36,13 @@ tidyr::pivot_longer. Each can be provided as vectors
 the same length as \code{widemeasures}
 Note that if neither data_cols nor id_cols}
 
-\item{...}{Other functions to be passed to tidyr::pivot_longer}
+\item{values_to_numeric}{Boolean indicating whether values will be coerced
+to numeric. See below for when this may be
+overridden by arguments passed in \code{...}}
+
+\item{...}{Other functions to be passed to tidyr::pivot_longer
+Note that including values_transform here will override the
+behavior of values_to_numeric}
 }
 \value{
 Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)

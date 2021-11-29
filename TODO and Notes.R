@@ -1,6 +1,9 @@
 #TODO:  
+#       Write shorthand functions with presets for find_local_extrema
 #       Use letter-number naming for wells by default (bc it's what other
 #        software uses and we should be consistent at least)
+#       Accept letter-number naming for rows/cols when reading in data
+#        (bc it's what users will see if they look in Excel for row/cols)
 #       actually test & check that functions work
 #       Compare setup to other packages for similar analyses, eg growthcurver
 #       Get this in package form before the quarantine ends!!!

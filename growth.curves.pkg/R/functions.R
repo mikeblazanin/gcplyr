@@ -803,6 +803,8 @@ pivot_wide_longer <- function(widemeasures,
     }
   }
   
+  names(outputs) <- names(widemeasures)
+  
   if (length(outputs) == 1) {
     return(outputs[[1]])
   } else {

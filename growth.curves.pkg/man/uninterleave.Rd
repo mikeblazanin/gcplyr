@@ -4,7 +4,7 @@
 \alias{uninterleave}
 \title{Uninterleave list}
 \usage{
-uninterleave(interleaved_list, n, ...)
+uninterleave(interleaved_list, n)
 }
 \arguments{
 \item{interleaved_list}{A list of R objects}

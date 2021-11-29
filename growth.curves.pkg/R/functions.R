@@ -40,7 +40,7 @@ checkdim_inputs <- function(input, input_name, needed_len,
 #' @return A list of lists of R objects
 #' 
 #' @export
-uninterleave <- function(interleaved_list, n, ...) {
+uninterleave <- function(interleaved_list, n) {
   # Note that the ... is just so that import_blockmeasures can call
   # it with generic passing of arguments
   
@@ -122,8 +122,7 @@ read_blocks <- function(files, extension = NULL,
                              sheet = NULL, metadata = NULL,
                              block_names = NULL,
                              infer_colnames = TRUE,
-                             infer_rownames = TRUE,
-                             ...) {
+                             infer_rownames = TRUE) {
   #         Note that the ... is just so that this function can be called
   #          by other functions with generic passing of arguments
   #         TODO: check if this is actually necessary
@@ -407,7 +406,7 @@ read_blocks <- function(files, extension = NULL,
 #' 
 #' @export
 widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
-                              nested_metadata = NULL, ...) {
+                              nested_metadata = NULL) {
   #         Note that the ... is just so that import_blockmeasures can call
   #         it with generic passing of arguments
   
@@ -1041,6 +1040,7 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
 #'                or matrices, to be written to file
 #' @param file The filename (if a single design), or vector of file names
 #'             (if multiple designs)
+#' @param ... Other arguments passed to \code{write.csv}
 #' @return Nothing, but R objects are written to files
 #' 
 #' @export

@@ -12,6 +12,8 @@ or matrices, to be written to file}
 
 \item{file}{The filename (if a single design), or vector of file names
 (if multiple designs)}
+
+\item{...}{Other arguments passed to \code{write.csv}}
 }
 \value{
 Nothing, but R objects are written to files

@@ -15,8 +15,7 @@ read_blocks(
   metadata = NULL,
   block_names = NULL,
   infer_colnames = TRUE,
-  infer_rownames = TRUE,
-  ...
+  infer_rownames = TRUE
 )
 }
 \arguments{

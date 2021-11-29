@@ -609,6 +609,11 @@ import_widemeasures <- function(files, extension = NULL,
     stop("either all or none of startrow, endrow, startcol, and endcol must be provided")
   }
   
+  if (!is.null(startrow) & header == TRUE & any(startrow <= 1)) {
+    warning("startrow <= 1 but header is TRUE, treating header as FALSE")
+    header <- FALSE
+  }
+  
   if (!is.null(startrow)) {
     startrow <- checkdim_inputs(startrow, "startrow", length(files))
   }
@@ -623,11 +628,6 @@ import_widemeasures <- function(files, extension = NULL,
   }
   if (!is.null(sheet)) {
     sheet <- checkdim_inputs(sheet, "sheet", length(files))
-  }
-  
-  if (!is.null(startrow) & header == TRUE & startrow <= 1) {
-    warning("startrow <= 1 but header is TRUE, treating header as FALSE")
-    header <- FALSE
   }
   
   #Determine file extension(s)
@@ -665,14 +665,14 @@ import_widemeasures <- function(files, extension = NULL,
         outputs[[i]] <- temp[2:nrow(temp), ]
         colnames(outputs[[i]]) <- temp[1, ]
       } else { #startrow etc is provided
-        outputs[[i]] <- temp[startrow:endrow, startcol:endcol]
-        colnames(outputs[[i]]) <- temp[startrow-1, startcol:endcol]
+        outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
+        colnames(outputs[[i]]) <- temp[(startrow[i]-1), startcol[i]:endcol[i]]
       }
     } else { #header is false
       if (is.null(startrow[i])) { #startrow etc is not provided
         outputs[[i]] <- temp
       } else { #startrow etc is provided
-        outputs[[i]] <- temp[startrow:endrow, startcol:endcol]
+        outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
       }
       colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
     }

@@ -738,6 +738,10 @@ pivot_wide_longer <- function(widemeasures,
                               values_to = "Measurements",
                               values_to_numeric = TRUE,
                               ...) {
+  #Reformat to list
+  if (is.data.frame(widemeasures)) {
+    widemeasures <- list(widemeasures)
+  }
   
   #Reformat cols inputs as needed
   if (!is.list(id_cols)) {
@@ -750,15 +754,11 @@ pivot_wide_longer <- function(widemeasures,
   }
   data_cols <- checkdim_inputs(data_cols, "data_cols", length(widemeasures))
   
-  
   #Check cols inputs
   if (any(!is.na(data_cols) & !is.na(id_cols))) {
     warning("Cannot provide both data_cols and id_cols for a given widemeasures, using data_cols only")
   }
   
-  if (is.data.frame(widemeasures)) {
-    widemeasures <- list(widemeasures)
-  }
   names_to <- checkdim_inputs(names_to, "names_to", length(widemeasures))
   values_to <- checkdim_inputs(values_to, "values_to", length(widemeasures))
   
@@ -769,9 +769,11 @@ pivot_wide_longer <- function(widemeasures,
               values_transform will override values_to_numeric")}
   } else {
     if(values_to_numeric) {
-      values_transform = list(temp = as.numeric)
-      names(values_transform) <- values_to
-    } else {values_transform = list()}
+      values_transform = rep(list(list(temp = as.numeric)), length(values_to))
+      for (i in 1:length(values_to)) {
+        names(values_transform[[i]]) <- values_to[i]
+      }
+    } else {values_transform = rep(list(list()), length(values_to))}
   }
   
   #Empty list for outputs
@@ -783,7 +785,7 @@ pivot_wide_longer <- function(widemeasures,
                             names_to = names_to[i],
                             values_to = values_to[i],
                             cols = data_cols[[i]],
-                            values_transform = values_transform,
+                            values_transform = values_transform[[i]],
                             ...))
     } else if (!is.na(id_cols[i])) { #user specified which columns are id columns
       outputs[[i]] <- as.data.frame(
@@ -791,13 +793,13 @@ pivot_wide_longer <- function(widemeasures,
                             names_to = names_to[i],
                             values_to = values_to[i],
                             cols = which(!colnames(widemeasures[[i]]) %in% id_cols[[i]]),
-                            values_transform = values_transform,
+                            values_transform = values_transform[[i]],
                             ...))
     } else { #User must be providing their own arguments to pivot_longer
       outputs[[i]] <- as.data.frame(tidyr::pivot_longer(widemeasures[[i]],
                                                         names_to = names_to[i],
                                                         values_to = values_to[i],
-                                                        values_transform = values_transform,
+                                                        values_transform = values_transform[[i]],
                                                         ...))
     }
   }

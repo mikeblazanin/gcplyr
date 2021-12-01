@@ -1194,7 +1194,7 @@ pivot_wide_longer <- function(widemeasures,
 #'         \code{y}
 #' 
 #' @export
-merge_dataframes <- function(x, y = NULL, by = NULL, drop = FALSE,
+merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
                              collapse = FALSE, names_to = "run",
                              ...) {
   if(collapse) {

@@ -48,3 +48,27 @@ test_that("Pivot_longer works on list of dataframes", {
                               Measurements = c(data_lst[[2]]$Pop3, 
                                                data_lst[[2]]$Pop4))))
 })
+
+test_that("Merge function collapses lists of dfs correctly", {
+  data_lst <- list("df1" = data.frame("time" = 1:100,
+                                      "Pop1" = 10/(1+exp(-.1*((1:100) - 50))) +
+                                        rnorm(100, sd = 0.5)),
+                   "df2" = data.frame("time" = 1:100,
+                                      "Pop1" = 20/(1+exp(-.1*((1:100) - 50))) +
+                                        rnorm(100, sd = 0.5)))
+  expect_equal(merge_dataframes(data_lst, collapse = TRUE),
+               data.frame(time = c(1:100, 1:100),
+                          Pop1 = c(data_lst[[1]]$Pop1, data_lst[[2]]$Pop1),
+                          run = rep(c("df1", "df2"), each = 100)))
+  
+  data_lst2 <- list("df1" = data.frame("time" = 1:100,
+                                      "fake_treat" = LETTERS[1:100]),
+                   "df2" = data.frame("time" = 1:100,
+                                      "fake_treat" = letters[1:100]))
+  expect_equal(merge_dataframes(data_lst, data_lst2, collapse = TRUE),
+               data.frame(time = c(1:100, 1:100),
+                          Pop1 = c(data_lst[[1]]$Pop1, data_lst[[2]]$Pop1),
+                          run = rep(c("df1", "df2"), each = 100),
+                          fake_treat = c(LETTERS, rep(NA, 74),
+                                         letters, rep(NA, 74))))
+})

@@ -1170,10 +1170,14 @@ pivot_wide_longer <- function(widemeasures,
   }
 }
 
-#' Merge tidydesign with tidymeasures
+#' Collapse a list of dataframes, or merge two dataframes together
 #' 
 #' This function is essentially a wrapper for dplyr::full_join
-#' which is called for \code{tidydesign} and \code{tidymeasures},
+#' The most typical use of this function is to merge \code{tidydesign} 
+#' with \code{tidymeasures}
+#' 
+#' The collapse functionality of this function also allows a list of 
+#' dataframes to be collapsed into a single dataframe for ease of analysis
 #' 
 #' @param x First data.frame to be joined
 #' @param y Second data.frame to be joined
@@ -1192,7 +1196,7 @@ pivot_wide_longer <- function(widemeasures,
 #'         \code{y}
 #' 
 #' @export
-merge_dataframes <- function(x, y, by = NULL, drop = FALSE,
+merge_dataframes <- function(x, y = NULL, by = NULL, drop = FALSE,
                              collapse = FALSE, names_to = "run",
                              ...) {
   if(collapse) {
@@ -1219,18 +1223,21 @@ merge_dataframes <- function(x, y, by = NULL, drop = FALSE,
         x <- collapse_list(x)
       }
       if (!is.data.frame(y)) {
-        if (!is.list(y)) {stop("y is neither a list nor a data.frame")}
+        if (!is.null(y) & !is.list(y)) {
+          stop("y is neither a list nor a data.frame")}
         y <- collapse_list(y)
       }
     }
   }
   
-  #Join x and y
-  temp <- dplyr::full_join(tidydesign, tidymeasures,
-                           by = by, ...)
-  if (drop) {temp <- temp[stats::complete.cases(temp), ]}
+  if (!is.null(y)) {
+    #Join x and y
+    output <- dplyr::full_join(tidydesign, tidymeasures,
+                             by = by, ...)
+    if (drop) {output <- output[stats::complete.cases(output), ]}
+  } else {output <- x}
   
-  return(temp)
+  return(output)
 }
 
 #Preprocess ----

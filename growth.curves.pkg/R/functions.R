@@ -694,124 +694,6 @@ import_widemeasures <- function(files, extension = NULL,
   }
 }
 
-#tidy widemeasures ----
-
-#' Pivot widemeasures longer
-#' 
-#' Essentially a wrapper for tidyr::pivot_longer that works on both a single
-#' widemeasures as well as a list of widemeasures
-#' 
-#' @param widemeasures A single widemeasures data.frame, or a list of widemeasures
-#'                   data.frame's
-#' @param data_cols,id_cols Specifies which columns have data vs are ID's
-#'                          (in tidyr::pivot_longer parlance). Each can be
-#'                          a single vector (which will be applied for all
-#'                          widemeasures) or a list of vectors, with each
-#'                          vector corresponding to the same-index widemeasure
-#'                          in \code{widemeasures}
-#'                          Entries that are NA in the list will not be used
-#'                          If neither data_cols nor id_cols are specified,
-#'                          user must provide arguments to tidyr::pivot_longer
-#'                          via \code{...} for at least the \code{cols} argument
-#'                          and these arguments provided via \code{...} will
-#'                          be used for all \code{widemeasures} data.frame's
-#' @param names_to,values_to Specifies the output column names created by
-#'                           tidyr::pivot_longer. Each can be provided as vectors
-#'                           the same length as \code{widemeasures}
-#'                           Note that if neither data_cols nor id_cols
-#' @param values_to_numeric Boolean indicating whether values will be coerced
-#'                          to numeric. See below for when this may be
-#'                          overridden by arguments passed in \code{...}
-#' @param ... Other functions to be passed to tidyr::pivot_longer
-#'            Note that including values_transform here will override the
-#'            behavior of values_to_numeric
-#' @return Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)
-#'         or list of pivoted longer data.frame's (if \code{widemeasures} is
-#'         a list of data.frame's)
-#' 
-#' @export  
-pivot_wide_longer <- function(widemeasures, 
-                              data_cols = NA,
-                              id_cols = NA,
-                              names_to = "Well",
-                              values_to = "Measurements",
-                              values_to_numeric = TRUE,
-                              ...) {
-  #Reformat to list
-  if (is.data.frame(widemeasures)) {
-    widemeasures <- list(widemeasures)
-  }
-  
-  #Reformat cols inputs as needed
-  if (!is.list(id_cols)) {
-    id_cols <- list(id_cols)
-  }
-  id_cols <- checkdim_inputs(id_cols, "id_cols", length(widemeasures))
-  
-  if (!is.list(data_cols)) {
-    data_cols <- list(data_cols)
-  }
-  data_cols <- checkdim_inputs(data_cols, "data_cols", length(widemeasures))
-  
-  #Check cols inputs
-  if (any(!is.na(data_cols) & !is.na(id_cols))) {
-    warning("Cannot provide both data_cols and id_cols for a given widemeasures, using data_cols only")
-  }
-  
-  names_to <- checkdim_inputs(names_to, "names_to", length(widemeasures))
-  values_to <- checkdim_inputs(values_to, "values_to", length(widemeasures))
-  
-  #Create values_transform list as appropriate
-  if("values_transform" %in% names(list(...))) {
-    if(values_to_numeric) {
-      warning("values_to_numeric is TRUE but values_transform is supplied in ..., 
-              values_transform will override values_to_numeric")}
-  } else {
-    if(values_to_numeric) {
-      values_transform = rep(list(list(temp = as.numeric)), length(values_to))
-      for (i in 1:length(values_to)) {
-        names(values_transform[[i]]) <- values_to[i]
-      }
-    } else {values_transform = rep(list(list()), length(values_to))}
-  }
-  
-  #Empty list for outputs
-  outputs <- rep(list(NA), length(widemeasures))
-  for (i in 1:length(widemeasures)) {
-    if (!is.na(data_cols[i])) { #user specified which columns are data columns
-      outputs[[i]] <- as.data.frame(
-        tidyr::pivot_longer(widemeasures[[i]],
-                            names_to = names_to[i],
-                            values_to = values_to[i],
-                            cols = data_cols[[i]],
-                            values_transform = values_transform[[i]],
-                            ...))
-    } else if (!is.na(id_cols[i])) { #user specified which columns are id columns
-      outputs[[i]] <- as.data.frame(
-        tidyr::pivot_longer(widemeasures[[i]],
-                            names_to = names_to[i],
-                            values_to = values_to[i],
-                            cols = which(!colnames(widemeasures[[i]]) %in% id_cols[[i]]),
-                            values_transform = values_transform[[i]],
-                            ...))
-    } else { #User must be providing their own arguments to pivot_longer
-      outputs[[i]] <- as.data.frame(tidyr::pivot_longer(widemeasures[[i]],
-                                                        names_to = names_to[i],
-                                                        values_to = values_to[i],
-                                                        values_transform = values_transform[[i]],
-                                                        ...))
-    }
-  }
-  
-  names(outputs) <- names(widemeasures)
-  
-  if (length(outputs) == 1) {
-    return(outputs[[1]])
-  } else {
-    return(outputs)
-  }
-}
-
 #Get designs ----
 
 #' Make tidy design data.frames
@@ -1170,7 +1052,123 @@ split_blockdesign <- function() {
 import_tidydesign <- function() {
 }
 
-#Merge ----
+#Reshape (including merge) ----
+
+#' Pivot widemeasures longer
+#' 
+#' Essentially a wrapper for tidyr::pivot_longer that works on both a single
+#' widemeasures as well as a list of widemeasures
+#' 
+#' @param widemeasures A single widemeasures data.frame, or a list of widemeasures
+#'                   data.frame's
+#' @param data_cols,id_cols Specifies which columns have data vs are ID's
+#'                          (in tidyr::pivot_longer parlance). Each can be
+#'                          a single vector (which will be applied for all
+#'                          widemeasures) or a list of vectors, with each
+#'                          vector corresponding to the same-index widemeasure
+#'                          in \code{widemeasures}
+#'                          Entries that are NA in the list will not be used
+#'                          If neither data_cols nor id_cols are specified,
+#'                          user must provide arguments to tidyr::pivot_longer
+#'                          via \code{...} for at least the \code{cols} argument
+#'                          and these arguments provided via \code{...} will
+#'                          be used for all \code{widemeasures} data.frame's
+#' @param names_to,values_to Specifies the output column names created by
+#'                           tidyr::pivot_longer. Each can be provided as vectors
+#'                           the same length as \code{widemeasures}
+#'                           Note that if neither data_cols nor id_cols
+#' @param values_to_numeric Boolean indicating whether values will be coerced
+#'                          to numeric. See below for when this may be
+#'                          overridden by arguments passed in \code{...}
+#' @param ... Other functions to be passed to tidyr::pivot_longer
+#'            Note that including values_transform here will override the
+#'            behavior of values_to_numeric
+#' @return Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)
+#'         or list of pivoted longer data.frame's (if \code{widemeasures} is
+#'         a list of data.frame's)
+#' 
+#' @export  
+pivot_wide_longer <- function(widemeasures, 
+                              data_cols = NA,
+                              id_cols = NA,
+                              names_to = "Well",
+                              values_to = "Measurements",
+                              values_to_numeric = TRUE,
+                              ...) {
+  #Reformat to list
+  if (is.data.frame(widemeasures)) {
+    widemeasures <- list(widemeasures)
+  }
+  
+  #Reformat cols inputs as needed
+  if (!is.list(id_cols)) {
+    id_cols <- list(id_cols)
+  }
+  id_cols <- checkdim_inputs(id_cols, "id_cols", length(widemeasures))
+  
+  if (!is.list(data_cols)) {
+    data_cols <- list(data_cols)
+  }
+  data_cols <- checkdim_inputs(data_cols, "data_cols", length(widemeasures))
+  
+  #Check cols inputs
+  if (any(!is.na(data_cols) & !is.na(id_cols))) {
+    warning("Cannot provide both data_cols and id_cols for a given widemeasures, using data_cols only")
+  }
+  
+  names_to <- checkdim_inputs(names_to, "names_to", length(widemeasures))
+  values_to <- checkdim_inputs(values_to, "values_to", length(widemeasures))
+  
+  #Create values_transform list as appropriate
+  if("values_transform" %in% names(list(...))) {
+    if(values_to_numeric) {
+      warning("values_to_numeric is TRUE but values_transform is supplied in ..., 
+              values_transform will override values_to_numeric")}
+  } else {
+    if(values_to_numeric) {
+      values_transform = rep(list(list(temp = as.numeric)), length(values_to))
+      for (i in 1:length(values_to)) {
+        names(values_transform[[i]]) <- values_to[i]
+      }
+    } else {values_transform = rep(list(list()), length(values_to))}
+  }
+  
+  #Empty list for outputs
+  outputs <- rep(list(NA), length(widemeasures))
+  for (i in 1:length(widemeasures)) {
+    if (!is.na(data_cols[i])) { #user specified which columns are data columns
+      outputs[[i]] <- as.data.frame(
+        tidyr::pivot_longer(widemeasures[[i]],
+                            names_to = names_to[i],
+                            values_to = values_to[i],
+                            cols = data_cols[[i]],
+                            values_transform = values_transform[[i]],
+                            ...))
+    } else if (!is.na(id_cols[i])) { #user specified which columns are id columns
+      outputs[[i]] <- as.data.frame(
+        tidyr::pivot_longer(widemeasures[[i]],
+                            names_to = names_to[i],
+                            values_to = values_to[i],
+                            cols = which(!colnames(widemeasures[[i]]) %in% id_cols[[i]]),
+                            values_transform = values_transform[[i]],
+                            ...))
+    } else { #User must be providing their own arguments to pivot_longer
+      outputs[[i]] <- as.data.frame(tidyr::pivot_longer(widemeasures[[i]],
+                                                        names_to = names_to[i],
+                                                        values_to = values_to[i],
+                                                        values_transform = values_transform[[i]],
+                                                        ...))
+    }
+  }
+  
+  names(outputs) <- names(widemeasures)
+  
+  if (length(outputs) == 1) {
+    return(outputs[[1]])
+  } else {
+    return(outputs)
+  }
+}
 
 #' Merge tidydesign with tidymeasures
 #' 
@@ -1196,7 +1194,7 @@ import_tidydesign <- function() {
 #' @export
 merge_dataframes <- function(x, y, by = NULL, drop = FALSE,
                              collapse = FALSE, names_to = "run",
-                                          ...) {
+                             ...) {
   if(collapse) {
     #First define the worker func that collapses the df's
     collapse_list <- function(listdfs) {
@@ -1226,15 +1224,14 @@ merge_dataframes <- function(x, y, by = NULL, drop = FALSE,
       }
     }
   }
-      
+  
   #Join x and y
   temp <- dplyr::full_join(tidydesign, tidymeasures,
-                   by = by, ...)
+                           by = by, ...)
   if (drop) {temp <- temp[stats::complete.cases(temp), ]}
   
   return(temp)
 }
-
 
 #Preprocess ----
 

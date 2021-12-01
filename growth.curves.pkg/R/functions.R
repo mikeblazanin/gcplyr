@@ -1170,26 +1170,64 @@ split_blockdesign <- function() {
 import_tidydesign <- function() {
 }
 
+#Merge ----
+
 #' Merge tidydesign with tidymeasures
 #' 
 #' This function is essentially a wrapper for dplyr::full_join
 #' which is called for \code{tidydesign} and \code{tidymeasures},
 #' 
-#' @param tidydesign Data.frame of tidydesign elements
-#' @param tidymeasures Data.frame of tidymeasures data
+#' @param x First data.frame to be joined
+#' @param y Second data.frame to be joined
 #' @param by A character vector of variables to join by, passed directly
-#'           to dplyr::full_join
+#'           to \code{dplyr::full_join}
 #' @param drop Should only \code{complete_cases} of the resulting
 #'             data.frame be returned?
-#' @param ... Other arguments to pass to dplyr::full_join
+#' @param collapse A Boolean indicating whether x or y is a list containing
+#'                 data frames that should be merged together before
+#'                 being merged with the other
+#' @param names_to Column name for where \code{names(x)} or \code{names(y)} 
+#'                 will be entered in if \code{collapse = TRUE}
+#' @param ... Other arguments to pass to \code{dplyr::full_join}
 #' 
-#' @return Data.frame containing merged output of \code{tidydesign} and
-#'         \code{tidymeasures}
+#' @return Data.frame containing merged output of \code{x} and
+#'         \code{y}
 #' 
 #' @export
-merge_tidydesign_tidymeasures <- function(tidydesign, tidymeasures,
-                                          by = NULL, drop = FALSE,
+merge_dataframes <- function(x, y, by = NULL, drop = FALSE,
+                             collapse = FALSE, names_to = "run",
                                           ...) {
+  if(collapse) {
+    #First define the worker func that collapses the df's
+    collapse_list <- function(listdfs) {
+      temp <- NULL
+      for (i in 1:length(listdfs)) {
+        #Put name of ea list element (ea df) into column
+        listdfs[[i]] <- cbind(listdfs[[i]], names(listdfs)[i])
+        colnames(listdfs[[i]])[ncol(listdfs[[i]])] <- names_to
+        #Collapse dfs together
+        if (is.null(temp)) {temp <- listdfs[[i]]
+        } else {temp <- dplyr::full_join(temp, listdfs[[i]])}
+      }
+      return(temp)
+    }
+    
+    #Then collapse x and collapse y into dfs as needed
+    if (is.data.frame(x) & is.data.frame(y)) {
+      warning("collapse = TRUE, but both x and y are data.frames already")
+    } else {
+      if (!is.data.frame(x)) {
+        if (!is.list(x)) {stop("x is neither a list nor a data.frame")}
+        x <- collapse_list(x)
+      }
+      if (!is.data.frame(y)) {
+        if (!is.list(y)) {stop("y is neither a list nor a data.frame")}
+        y <- collapse_list(y)
+      }
+    }
+  }
+      
+  #Join x and y
   temp <- dplyr::full_join(tidydesign, tidymeasures,
                    by = by, ...)
   if (drop) {temp <- temp[stats::complete.cases(temp), ]}

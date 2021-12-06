@@ -77,28 +77,6 @@ infer_names <- function(startrow = NULL, endrow = NULL,
 #' 
 #' @return A vector of converted names in base-26 letter format
 to_excel <- function(x) {
-  convert_base <- function(x, base) {
-    #x specified here must be a single number
-    #Returns a vector where each entry corresponds to the base-th place
-    #Source: https://stackoverflow.com/questions/64378066/how-can-i-convert-between-numeral-systems-in-r
-    n <- ceiling(log(x, base))
-    vec <- numeric()
-    val <- x
-    
-    #Conversion math
-    while (n >= 0) {
-      rem <- val %/% base**n
-      val <- val - rem * base**n
-      vec <- c(vec, rem)
-      n <- n - 1
-    }
-    
-    #Drop leading zeroes
-    while(vec[1] == 0 & length(vec) > 1) {vec <- vec[-1]}
-    
-    return(vec)
-  }
-  
   divisor_modulo_excel <- function(x) {
     #This function is just a way to return %/% and %% modified as Excel uses them
     #see Python inspiration: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
@@ -112,14 +90,11 @@ to_excel <- function(x) {
   out <- c()
   for (i in 1:length(x)) {
     val <- x[i]
-    
     chars <- c()
-    
     while(val > 0) {
       temp <- divisor_modulo_excel(val)
       val <- temp[1]
       rem <- temp[2]
-      
       chars <- c(LETTERS[rem], chars)
     }
     out <- c(out, paste(chars, collapse = ""))

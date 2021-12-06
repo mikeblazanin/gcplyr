@@ -23,5 +23,15 @@ test_that("uninterleave returns correct output", {
 test_that("uninterleave returns error when appropriate", {
   expect_error(uninterleave(list("A", "B", "C", "D"), n = 3))
 })
-  
-               
+
+test_that("to_excel returns as expected", {
+  expect_identical(to_excel(c(5, 338, 688, 702)), c("E", "LZ", "ZL", "ZZ"))
+})
+
+test_that("from_excel returns as expected", {
+  expect_identical(from_excel(c("E", "LZ", "ZL", "ZZ"), c(5, 338, 688, 702)))
+})
+
+test_that("to_excel and from_excel values match each other", {
+  expect_equal(from_excel(to_excel(1:10000)), 1:10000)
+})

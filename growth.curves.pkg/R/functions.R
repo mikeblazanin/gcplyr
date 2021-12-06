@@ -613,15 +613,25 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              sheet
 #' @param run_names Names to give the widemeasures read in. By default uses the
 #'                   file names if not specified
-#' @param names_to_col Boolean, should the run names (provided in \code{run_names}
-#'                     or inferred from \code{files} be added as a column to the
-#'                     widemeasures
+#' @param names_to_col Should the run names (provided in \code{run_names}
+#'                     or inferred from \code{files}) be added as a column to the
+#'                     widemeasures? If \code{names_to_col} is NULL, they will not be.
+#'                     If \code{names_to_col} is a string, that string will be
+#'                     the column header for the column where the names will be
+#'                     stored
 #' @param metadata (optional) non-spectrophotometric data that should be associated
 #'                 with each widemeasures. A list where each item in the
 #'                 list is a vector of length 2. Each vector should provide the
-#'                 row and column where the metadata is located in the blockmeasures
+#'                 row and column where the metadata is located in the widemeasures
 #'                 input file. If the list is named those names will be inherited
 #'                 to the output metadata.
+#' @param metadata_Excel_names Boolean. If metadata do not have names, names
+#'                             will be generated. If \code{metadata_Excel_names}
+#'                             is TRUE, names will be in Excel format
+#'                             (e.g. D7 is the 4th column, 7th row).
+#'                             If FALSE, names will be numbered with "R" and "C"
+#'                             prefixes for row and column.
+#'                             (e.g. R4C7 is the 4th column, 7th row)
 #' @return A dataframe containing a single widemeasures, or
 #'         A list of widemeasures named by filename
 #' 
@@ -632,8 +642,9 @@ import_widemeasures <- function(files, extension = NULL,
                               header = TRUE,
                               sheet = NULL, 
                               run_names = NULL,
-                              names_to_col = TRUE,
-                              metadata = NULL) {
+                              names_to_col = "file",
+                              metadata = NULL, 
+                              metadata_Excel_names = TRUE) {
   #CLEAN THIS UP LATER
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow-1
@@ -655,14 +666,11 @@ import_widemeasures <- function(files, extension = NULL,
   #             if startcol is NULL, timecol is col 1
   #           if infer_timecol FALSE
   #             rows are numbered timepoint_1, timepoint_2, etc
- 
-  
   
   #Inputs:
   #         (optional) the column where timestamp info is located
   #           (if none provided by default the column immediately to the left 
   #           of startcol is assumed to be the time column)
-
   
   if (!sum(is.null(startrow), is.null(endrow), 
            is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
@@ -709,6 +717,20 @@ import_widemeasures <- function(files, extension = NULL,
     run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
   }
   
+  #If metadata unnamed, assign names
+  if (is.null(names(metadata))) {names(metadata) <- rep("", length(metadata))}
+  for (i in 1:length(metadata)) {
+    if (names(metadata)[i] == "") {
+      if (metadata_Excel_names) {
+        names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
+                                  metadata[[i]][2], sep = "")
+      } else {
+        names(metadata)[i] <- paste("R", metadata[[i]][1], 
+                                    "C", metadata[[i]][2], sep = "")
+      }
+    }
+  }
+  
   #Create empty recipient list
   outputs <- rep(list(NA), length(files))
   
@@ -747,60 +769,34 @@ import_widemeasures <- function(files, extension = NULL,
       colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
     }
     
-    #If metadata unnamed, assign names
-    if (is.null(names(metadata))) {names(metadata) <- rep("", length(metadata))}
-    for (j in 1:length(metadata)) {
-      if (names(metadata)[j] == "") {
-        names(metadata)[j] <- paste("R", metadata[[j]][1], 
-                                    "C", metadata[[j]][2], sep = "")
+    #Get metadata
+    if (!is.null(metadata)) {
+      metadata_vector <- rep(NA, times = length(metadata))
+      names(metadata_vector) <- names(metadata)
+      for (j in 1:length(metdata)) {
+        metadata_vector[j] <- temp[metadata[[j]][1], metadata[[j]][2]]
       }
     }
-    
-    #Get metadata and add metadata on LHS in same order as specified
-      
-    if(names_to_col) {
-      
-      #add names here on LHS
+    #Add run_names if requested as column
+    if(!is.null(names_to_col)) {
+      metadata_vector <- c(run_names[i], metadata_vector)
+      names(metadata_vector)[1] <- names_to_col
     }
+    #Add metadata (incl run names) on LHS of df in same order as specified
+    outputs[[i]] <- cbind(
+        as.data.frame(
+          sapply(metadata_vector, function(x, nreps) {rep(x, times = nreps)}, 
+               nreps = nrow(outputs[[i]]))),
+        outputs[[i]])
   }
   
+  #Put names onto list elements
   names(outputs) <- run_names
-  
   
   if (length(outputs) == 1) {
     return(outputs[[1]])
   } else {
     return(outputs)
-  }
-  
-  
-  
-  
-  #Create empty list for read-in block measures
-  if (is.null(metadata)) { #there is no user-specified metadata
-    outputs <- rep(list(list("data" = NA, 
-                             "metadata" = c("block_name" = "NA"))), 
-                   length(files))
-  } else { #there is user-specified metadata
-    metadata_vector <- rep(NA, times = length(metadata)+1)
-    names(metadata_vector) <- c("block_name", names(metadata))
-    #Okay so the goal here is to have each block measures returned as an item in a big list
-    #each item will itself be a named list with 2 things: "data" and "metadata"
-    #data is just the dataframe (with colnames & rownames inferred or not)
-    #within metadata there will at least be "name" for the block measures filename
-    #but users can specify other metadata they would like extracted 
-    # (with a named list of c(row, column) combinations)
-    outputs <- rep(list(list("data" = NA, 
-                             "metadata" = metadata_vector)), 
-                   length(files))
-  }
-  
-  
-  #Add user-specified metadata (if any)
-  if (!is.null(metadata)) {
-    for (j in 1:length(metadata)) {
-      outputs[[i]]$metadata[j+1] <- temp[metadata[[j]][1], metadata[[j]][2]]
-    }
   }
 }
 

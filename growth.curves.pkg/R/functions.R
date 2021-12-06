@@ -73,9 +73,9 @@ infer_names <- function(startrow = NULL, endrow = NULL,
 
 #' A function that converts numbers into base-26 Excel-style letters
 #' 
-#' @param x A vector of numbers
+#' @param x A vector of numbers in base-10
 #' 
-#' @return A vector of converted names in base-26 letter format
+#' @return A vector of letters in Excel-style base-26 format
 to_excel <- function(x) {
   divisor_modulo_excel <- function(x) {
     #This function is just a way to return %/% and %% modified as Excel uses them
@@ -104,10 +104,9 @@ to_excel <- function(x) {
 
 #' A function that converts base-26 Excel-style letters to numbers
 #' 
-#' @param x A vector of numbers
+#' @param x A vector of numbers in Excel-style base-26 letter format
 #' 
-#' @return A vector of converted names in base-26 letter format
-
+#' @return A vector of numbers in base-10
 from_excel <- function(x) {
   #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
   out <- rep(NA, length(x))
@@ -612,9 +611,19 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' @param sheet The sheet of the input files where data is located (if input
 #'              files are .xls or .xlsx). If not specified defaults to the first
 #'              sheet
-#' @param wide_names Names to give the widemeasures read in. By default uses the
+#' @param run_names Names to give the widemeasures read in. By default uses the
 #'                   file names if not specified
-#' @return A list of widemeasures named by filename
+#' @param names_to_col Boolean, should the run names (provided in \code{run_names}
+#'                     or inferred from \code{files} be added as a column to the
+#'                     widemeasures
+#' @param metadata (optional) non-spectrophotometric data that should be associated
+#'                 with each widemeasures. A list where each item in the
+#'                 list is a vector of length 2. Each vector should provide the
+#'                 row and column where the metadata is located in the blockmeasures
+#'                 input file. If the list is named those names will be inherited
+#'                 to the output metadata.
+#' @return A dataframe containing a single widemeasures, or
+#'         A list of widemeasures named by filename
 #' 
 #' @export
 import_widemeasures <- function(files, extension = NULL, 
@@ -622,7 +631,9 @@ import_widemeasures <- function(files, extension = NULL,
                               startcol = NULL, endcol = NULL,
                               header = TRUE,
                               sheet = NULL, 
-                              wide_names = NULL) {
+                              run_names = NULL,
+                              names_to_col = TRUE,
+                              metadata = NULL) {
   #CLEAN THIS UP LATER
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow-1
@@ -688,6 +699,16 @@ import_widemeasures <- function(files, extension = NULL,
     stopifnot(all(extension %in% c("csv", "xls", "xlsx")))
   }
   
+  #Check for names error
+  if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}
+  
+  #If run_names not provided, infer from filenames
+  if (is.null(run_names)) {
+    #infer the names from filenames, stripping off the extension from end
+    # and the dot at the beginning (if any)
+    run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
+  }
+  
   #Create empty recipient list
   outputs <- rep(list(NA), length(files))
   
@@ -725,22 +746,61 @@ import_widemeasures <- function(files, extension = NULL,
       }
       colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
     }
+    
+    #If metadata unnamed, assign names
+    if (is.null(names(metadata))) {names(metadata) <- rep("", length(metadata))}
+    for (j in 1:length(metadata)) {
+      if (names(metadata)[j] == "") {
+        names(metadata)[j] <- paste("R", metadata[[j]][1], 
+                                    "C", metadata[[j]][2], sep = "")
+      }
+    }
+    
+    #Get metadata and add metadata on LHS in same order as specified
+      
+    if(names_to_col) {
+      
+      #add names here on LHS
+    }
   }
   
-  #Add filenames to widemeasures
-  if (!is.null(wide_names)) {
-    stopifnot(length(wide_names) == length(files))
-    names(outputs) <- wide_names
-  } else {
-    #infer the names from filenames, stripping off the extension from end
-    # and the dot at the beginning (if any)
-    names(outputs) <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
-  }
+  names(outputs) <- run_names
+  
   
   if (length(outputs) == 1) {
     return(outputs[[1]])
   } else {
     return(outputs)
+  }
+  
+  
+  
+  
+  #Create empty list for read-in block measures
+  if (is.null(metadata)) { #there is no user-specified metadata
+    outputs <- rep(list(list("data" = NA, 
+                             "metadata" = c("block_name" = "NA"))), 
+                   length(files))
+  } else { #there is user-specified metadata
+    metadata_vector <- rep(NA, times = length(metadata)+1)
+    names(metadata_vector) <- c("block_name", names(metadata))
+    #Okay so the goal here is to have each block measures returned as an item in a big list
+    #each item will itself be a named list with 2 things: "data" and "metadata"
+    #data is just the dataframe (with colnames & rownames inferred or not)
+    #within metadata there will at least be "name" for the block measures filename
+    #but users can specify other metadata they would like extracted 
+    # (with a named list of c(row, column) combinations)
+    outputs <- rep(list(list("data" = NA, 
+                             "metadata" = metadata_vector)), 
+                   length(files))
+  }
+  
+  
+  #Add user-specified metadata (if any)
+  if (!is.null(metadata)) {
+    for (j in 1:length(metadata)) {
+      outputs[[i]]$metadata[j+1] <- temp[metadata[[j]][1], metadata[[j]][2]]
+    }
   }
 }
 

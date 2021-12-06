@@ -71,6 +71,81 @@ infer_names <- function(startrow = NULL, endrow = NULL,
   #TODO
 }
 
+#' A function that converts numbers into base-26 Excel-style letters
+#' 
+#' @param x A vector of numbers
+#' 
+#' @return A vector of converted names in base-26 letter format
+to_excel <- function(x) {
+  convert_base <- function(x, base) {
+    #x specified here must be a single number
+    #Returns a vector where each entry corresponds to the base-th place
+    #Source: https://stackoverflow.com/questions/64378066/how-can-i-convert-between-numeral-systems-in-r
+    n <- ceiling(log(x, base))
+    vec <- numeric()
+    val <- x
+    
+    #Conversion math
+    while (n >= 0) {
+      rem <- val %/% base**n
+      val <- val - rem * base**n
+      vec <- c(vec, rem)
+      n <- n - 1
+    }
+    
+    #Drop leading zeroes
+    while(vec[1] == 0 & length(vec) > 1) {vec <- vec[-1]}
+    
+    return(vec)
+  }
+  
+  divisor_modulo_excel <- function(x) {
+    #This function is just a way to return %/% and %% modified as Excel uses them
+    #see Python inspiration: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
+    div <- x %/% 26
+    rem <- x %% 26
+    if (rem == 0) {return(c(div-1, rem + 26))
+    } else {return(c(div, rem))}
+  }
+  
+  #Carry out conversion to Excel letters
+  out <- c()
+  for (i in 1:length(x)) {
+    val <- x[i]
+    
+    chars <- c()
+    
+    while(val > 0) {
+      temp <- divisor_modulo_excel(val)
+      val <- temp[1]
+      rem <- temp[2]
+      
+      chars <- c(LETTERS[rem], chars)
+    }
+    out <- c(out, paste(chars, collapse = ""))
+  }
+  return(out)
+}
+
+#' A function that converts base-26 Excel-style letters to numbers
+#' 
+#' @param x A vector of numbers
+#' 
+#' @return A vector of converted names in base-26 letter format
+
+from_excel <- function(x) {
+  #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
+  out <- rep(NA, length(x))
+  x_splt <- strsplit(x, "")
+  for (i in 1:length(x_splt)) {
+    #Get indices of letters
+    temp <- match(x_splt[[i]], LETTERS)
+    #Multiply indices by powers of 26
+    out[i] <- sum(temp*26**((length(temp)-1):0))
+  }
+  return(out)
+}
+
 #Importing block-shaped ----
 
 #' Read blockmeasures

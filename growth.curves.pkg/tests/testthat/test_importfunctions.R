@@ -10,11 +10,13 @@ test_that("read_blocks reads data correctly", {
   dir.create("./test_blockcurves_data_csv/", showWarnings = F)
   dir.create("./test_blockcurves_data_xlsx/", showWarnings = F)
   for (i in 1:length(example_dfs_list)) {
-    example_dfs_list[[i]] <- as.data.frame(matrix(i*(1:96), nrow = 8, byrow = T))
+    example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
+                                                  nrow = 8, byrow = T))
     
     write.csv(example_dfs_list[[i]],
               paste("./test_blockcurves_data_csv/", 
-                    formatC(i, width = 3, flag = "0"), ".csv", sep = ""))
+                    formatC(i, width = 3, flag = "0"), ".csv", sep = ""),
+              row.names = TRUE)
     write.xlsx(example_dfs_list[[i]], 
                file = paste("./test_blockcurves_data_xlsx/", 
                             formatC(i, width = 3, flag = "0"), 
@@ -23,31 +25,49 @@ test_that("read_blocks reads data correctly", {
                col.names = TRUE, row.names = TRUE, append = FALSE)
   }
   
+  #Read csv with all rows/cols specified, metadata included
   my_blockcurves1 <- read_blocks(
     files = paste("./test_blockcurves_data_csv/",
                   list.files("./test_blockcurves_data_csv/"), sep = ""),
     startrow = 2, startcol = 2, endrow = 9, endcol = 13,
     metadata = list("type1" = c(9, 9), "type2" = c(5, 8)))
+  
+  my_blockcurves1_expected <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves1_expected)) {
+    my_blockcurves1_expected[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste("test_blockcurves_data_csv/",
+                                             formatC(i, width = 3, flag = "0"),
+                                             sep = ""),
+                        type1 = example_dfs_list[[i]][8, 8],
+                        type2 = example_dfs_list[[i]][4, 7]))
+    row.names(my_blockcurves1_expected[[i]]$data) <-
+      as.character(row.names(my_blockcurves1_expected[[i]]$data))
+  }
+  expect_equal(my_blockcurves1, my_blockcurves1_expected)
+  
+  #Read xlsx with all rows/cols specified, metadata included
   my_blockcurves2 <- read_blocks(
     files = paste("./test_blockcurves_data_xlsx/",
                   list.files("./test_blockcurves_data_xlsx/"), sep = ""),
-    startrow = 2, startcol = 2, endrow = 9, endcol = 13)
-  my_blockcurves3 <- read_blocks(
-    files = paste("./test_blockcurves_data_csv/",
-                  list.files("./test_blockcurves_data_csv/"), sep = ""))
+    startrow = 2, startcol = 2, endrow = 9, endcol = 13,
+    metadata = list("type1" = c(9, 9), "type2" = c(5, 8)))
+  my_blockcurves2_expected <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves2_expected)) {
+    my_blockcurves2_expected[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste("test_blockcurves_data_xlsx/",
+                                           formatC(i, width = 3, flag = "0"),
+                                           sep = ""),
+                        type1 = example_dfs_list[[i]][8, 8],
+                        type2 = example_dfs_list[[i]][4, 7]))
+    row.names(my_blockcurves2_expected[[i]]$data) <-
+      as.character(row.names(my_blockcurves2_expected[[i]]$data))
+  }
+  expect_equal(my_blockcurves2, my_blockcurves2_expected)
   
-  #TODO:
-  #expect_identical(my_blockcurves1[[1]]$data, example_dfs_list[[1]]
-  
-  
-  #Cases to test:
-  #infer colnames True & startrow specified
-  #                    & startrow not specified
-  #infer rownames True & startcol specified
-  #                    & startcol not specified
-  
-  unlink("./test_blockcurves_data_csv/", recursive = TRUE)
-  unlink("./test_blockcurves_data_xlsx/", recursive = TRUE)
+  unlink("./test_blockcurves_data_csv", recursive = TRUE)
+  unlink("./test_blockcurves_data_xlsx", recursive = TRUE)
 })
 
 test_that("import_widemeasures works correctly", {
@@ -104,6 +124,6 @@ test_that("import_widemeasures works correctly", {
                list("test_widecurves_data/test" = data3,
                     "test_widecurves_data/test" = data3))
   
-  unlink("./test_widecurves_data/", recursive = TRUE)
+  unlink("./test_widecurves_data", recursive = TRUE)
 })
 

@@ -437,8 +437,6 @@ read_blocks <- function(files, extension = NULL,
 #' @export
 widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
                               nested_metadata = NULL) {
-  #         Note that the ... is just so that import_blockmeasures can call
-  #         it with generic passing of arguments
   
   if(class(blockmeasures) != "list") {
     blockmeasures <- list(blockmeasures)

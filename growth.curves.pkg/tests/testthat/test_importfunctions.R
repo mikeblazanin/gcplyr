@@ -2,7 +2,7 @@ context("Import functions")
 library(testthat)
 library(growth.curves.pkg)
 
-test_that("blockcurves reads data correctly", {
+test_that("read_blocks reads data correctly", {
   example_dfs_list <- rep(list(NA), 100)
 
   #Make test blockcurves data
@@ -49,3 +49,59 @@ test_that("blockcurves reads data correctly", {
   unlink("./test_blockcurves_data_csv/", recursive = TRUE)
   unlink("./test_blockcurves_data_xlsx/", recursive = TRUE)
 })
+
+test_that("import_widecurves works correctly", {
+  #Make test data
+  library(xlsx)
+  dir.create("./test_widecurves_data/", showWarnings = F)
+
+  set.seed(1)
+  data <- data.frame("time" = as.character(1:100),
+                     "dens1" = as.character(1/(1+exp(-.1*((1:100) - 50))) + 
+                       rnorm(100, sd = 0.5)),
+                     "dens2" = as.character(2/(1+exp(-.1*((1:100) - 50))) + 
+                       rnorm(100, sd = 0.5)),
+                     "dens3" = as.character(3/(1+exp(-.1*((1:100) - 50))) + 
+                       rnorm(100, sd = 0.5)),
+                     "dens4" = as.character(4/(1+exp(-.1*((1:100) - 50))) + 
+                       rnorm(100, sd = 0.5)))
+  row.names(data) <- 2:101
+  write.csv(data, "./test_widecurves_data/test.csv", row.names = FALSE)
+  write.xlsx(data, "./test_widecurves_data/test.xlsx",
+             sheetName = "Sheet1", col.names = TRUE, row.names = FALSE, 
+             append = FALSE)
+  
+  #No names to col, no other settings specified
+  data_in <- import_widemeasures(
+    files = c("./test_widecurves_data/test.csv",
+              "./test_widecurves_data/test.xlsx"),
+    names_to_col = NULL)
+  expect_equal(data_in,
+               list("test_widecurves_data/test" = data,
+                    "test_widecurves_data/test" = data))
+  
+  
+  data_in2 <- import_widemeasures(
+    files = c("./test_widecurves_data/test.csv",
+              "./test_widecurves_data/test.xlsx"),
+    names_to_col = "file")
+  data2 <- cbind(data.frame(file = rep("test_widecurves_data/test", nrow(data))),
+                           data)
+  expect_equal(data_in2,
+               list("test_widecurves_data/test" = data2,
+                    "test_widecurves_data/test" = data2))
+  
+  data_in3 <- import_widemeasures(
+    files = c("./test_widecurves_data/test.csv",
+              "./test_widecurves_data/test.xlsx"),
+    metadata = list(c(5, 5), "row12col2" = c(12, 2)))
+  data3 <- cbind(file = data2[, 1],
+                 #The row-col numbers are off bc of headers 
+                 data.frame("E5" = rep(data[4, 5], nrow(data2)),
+                            "row12col2" = rep(data[11, 2], nrow(data2))),
+                              data2[, -1])
+  expect_equal(data_in3,
+               list("test_widecurves_data/test" = data3,
+                    "test_widecurves_data/test" = data3))
+})
+

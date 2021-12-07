@@ -65,7 +65,7 @@ uninterleave <- function(interleaved_list, n) {
 #' and colnames should be inferred.
 #' 
 #' None of the specified arguments should be a vector, they should
-#' all be single values
+#' all be single values or NA's
 #' 
 #' It returns a list:
 #' list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
@@ -78,8 +78,9 @@ infer_names <- function(df,
   if (is.na(endrow)) {endrow <- nrow(df)}
   if (is.na(endcol)) {endcol <- ncol(df)}
   
-  output <- list(startrow = NA, startcol = NA, endrow = endrow, endcol = endcol,
-              rownames_col = NA, colnames_row = NA)
+  output <- list(startrow = startrow, startcol = startcol, 
+                 endrow = endrow, endcol = endcol,
+                 rownames_col = NA, colnames_row = NA)
   
   #Inferring startrow/startcol & rownames/colnames is complex:
   if (is.na(startrow) & is.na(startcol)) {
@@ -98,34 +99,35 @@ infer_names <- function(df,
       output$startcol <- 1
     }
   } else if (is.na(startrow) & !is.na(startcol)) {
-    if (infer_colnames) {
-      if (startcol > 1 & df[1, (startcol - 1)] == "") {
-        output$colnames_row <- 1
-        output$startrow <- 2
-      } else {
-        output$colnames_row <- 0
-        output$startrow <- 1
-      }
+    if (infer_colnames & startcol > 1 & df[1, (startcol - 1)] == "") {
+      output$colnames_row <- 1
+      output$startrow <- 2
+    } else {
+      output$colnames_row <- 0
+      output$startrow <- 1
     }
-    if (infer_rownames) {output$rownames_col <- startcol - 1}
+    if (infer_rownames) {output$rownames_col <- startcol - 1
+    } else {output$rownames_col <- 0}
   } else if (!is.na(startrow) & is.na(startcol)) {
-    if (infer_colnames) {output$colnames_row <- startrow - 1}
-    if (infer_rownames) {
-      if (startrow > 1 & df[(startrow-1), 1] == "") {
-        output$rownames_col <- 1
-        output$startcol <- 2
-      } else {
-        output$rownames_col <- 0
-        output$startcol <- 1
-      }
+    if (infer_colnames) {output$colnames_row <- startrow - 1
+    } else {output$colnames_row <- 0}
+    if (infer_rownames & startrow > 1 & df[(startrow-1), 1] == "") {
+      output$rownames_col <- 1
+      output$startcol <- 2
+    } else {
+      output$rownames_col <- 0
+      output$startcol <- 1
     }
   } else if (!is.na(startrow) & !is.na(startcol)) {
-    if (infer_colnames) {output$colnames_row <- startrow - 1}
-    if (infer_rownames) {output$rownames_col <- startcol - 1}
+    if (infer_colnames) {output$colnames_row <- startrow - 1
+    } else {output$colnames_row <- 0}
+    if (infer_rownames) {output$rownames_col <- startcol - 1
+    } else {output$rownames_col <- 0}
   } else {stop("Startrow/startcol combo not expected")}
   
-  if (any(is.na(output))) {stop("infer_names failed to infer rows/cols")}
+  if(any(is.na(output))) {stop("infer_names failed to infer rows/cols")}
   
+  #0's should be replaced with NA's
   output[output == 0] <- NA
   
   return(output)

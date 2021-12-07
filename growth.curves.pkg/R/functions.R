@@ -384,6 +384,9 @@ read_blocks <- function(files, extension = NULL,
     if (temp_startcol == 0) {stop("temp_startcol = 0, this shouldn't happen")
     } else {startcol[i] <- temp_startcol}
     
+    #Save information to outputs
+    outputs[[i]]$data <- temp[startrow[i]:endrow[i],startcol[i]:endcol[i]]
+    
     #If temp_colnames or temp_rownames haven't been inferred, number them
     if (colnames_row == 0) {
       temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = ".")
@@ -398,9 +401,6 @@ read_blocks <- function(files, extension = NULL,
     } else {
       temp_rownames <- temp[startrow[i]:endrow[i], rownames_col]
     }
-    
-    #Save information to outputs
-    outputs[[i]]$data <- temp[startrow[i]:endrow[i],startcol[i]:endcol[i]]
     
     #Assign rownames and colnames from temp_variables
     colnames(outputs[[i]]$data) <- temp_colnames

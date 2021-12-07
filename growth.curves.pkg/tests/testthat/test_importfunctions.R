@@ -103,5 +103,7 @@ test_that("import_widecurves works correctly", {
   expect_equal(data_in3,
                list("test_widecurves_data/test" = data3,
                     "test_widecurves_data/test" = data3))
+  
+  unlink("./test_widecurves_data/", recursive = TRUE)
 })
 

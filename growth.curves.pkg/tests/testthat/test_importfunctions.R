@@ -50,7 +50,7 @@ test_that("read_blocks reads data correctly", {
   unlink("./test_blockcurves_data_xlsx/", recursive = TRUE)
 })
 
-test_that("import_widecurves works correctly", {
+test_that("import_widemeasures works correctly", {
   #Make test data
   library(xlsx)
   dir.create("./test_widecurves_data/", showWarnings = F)

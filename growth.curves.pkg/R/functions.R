@@ -160,18 +160,28 @@ from_excel <- function(x) {
 #'                 empty
 #'                 If FALSE, rows will be numbered with an "R" prefix and columns
 #'                 will be numbered with a "C" prefix
+#' @param wellnames_Excel If row names and column names are not provided in the
+#'                        input dataframe as specified by \code{infer_colnames}
+#'                        and \code{infer_rownames}, then names will be generated
+#'                        automatically.
+#'                        If \code{wellnames_Excel} is TRUE, generated names
+#'                        will use Excel-style base-26 lettering for columns
+#'                        and numbers for rows. 
+#'                        If \code{wellnames_Excel} is FALSE, rows and columns
+#'                        will be numbered with "R" and "C" prefixes.
 #' @return A list where each entry is a list containing the block measures data
 #'         followed by the block_names (or filenames, if block_names is not 
 #'         provided) and any specified metadata.
 #'
 #' @export     
 read_blocks <- function(files, extension = NULL, 
-                             startrow = NULL, endrow = NULL, 
-                             startcol = NULL, endcol = NULL,
-                             sheet = NULL, metadata = NULL,
-                             block_names = NULL,
-                             infer_colnames = TRUE,
-                             infer_rownames = TRUE) {
+                        startrow = NULL, endrow = NULL, 
+                        startcol = NULL, endcol = NULL,
+                        sheet = NULL, metadata = NULL,
+                        block_names = NULL,
+                        infer_colnames = TRUE,
+                        infer_rownames = TRUE,
+                        wellnames_Excel = TRUE) {
   #         Note that the ... is just so that this function can be called
   #          by other functions with generic passing of arguments
   #         TODO: check if this is actually necessary
@@ -389,15 +399,17 @@ read_blocks <- function(files, extension = NULL,
     
     #If temp_colnames or temp_rownames haven't been inferred, number them
     if (colnames_row == 0) {
-      temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = ".")
+      if (wellnames_Excel) {
+        temp_colnames <- to_excel(1:ncol(outputs[[i]]$data))
+      } else {temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = "")}
     } else {
       temp_colnames <- temp[colnames_row, startcol[i]:endcol[i]]
     }
     if (rownames_col == 0) {
-      if (length(startrow[i]:startcol[i]) > 26) {
-        stop("Automatic rownames for blockmeasures with more than 26 rows is not supported")
-      }
-      temp_rownames <- paste("R", LETTERS[1:nrow(outputs[[i]]$data)], sep = ".")
+      if (wellnames_Excel) {
+        temp_rownames <- as.character(1:nrow(outputs[[i]]$data))
+      } else {
+        temp_rownames <- paste("R", 1:nrow(outputs[[i]]$data), sep = "")}
     } else {
       temp_rownames <- temp[startrow[i]:endrow[i], rownames_col]
     }

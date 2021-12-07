@@ -669,15 +669,17 @@ import_widemeasures <- function(files, extension = NULL,
   #           if infer_timecol FALSE
   #             rows are numbered timepoint_1, timepoint_2, etc
   
-  if (!is.numeric(startrow)) {startrow <- from_excel(startrow)}
-  if (!is.numeric(endrow)) {endrow <- from_excel(endrow)}
-  if (!is.numeric(startcol)) {startcol <- from_excel(startcol)}
-  if (!is.numeric(endcol)) {endcol <- from_excel(endcol)}
-  
   if (!sum(is.null(startrow), is.null(endrow), 
            is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
     stop("either all or none of startrow, endrow, startcol, and endcol must be provided")
   }
+  
+  if (!is.null(startrow) & !is.numeric(startrow)) {
+    startrow <- from_excel(startrow)}
+  if (!is.null(endrow) & !is.numeric(endrow)) {endrow <- from_excel(endrow)}
+  if (!is.null(startcol) & !is.numeric(startcol)) {
+    startcol <- from_excel(startcol)}
+  if (!is.null(endcol) & !is.numeric(endcol)) {endcol <- from_excel(endcol)}
   
   if (!is.null(startrow) & header == TRUE & any(startrow <= 1)) {
     warning("startrow <= 1 but header is TRUE, treating header as FALSE")

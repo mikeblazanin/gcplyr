@@ -64,11 +64,15 @@ uninterleave <- function(interleaved_list, n) {
 #' about whether rows and columns have been specified, and whether rownames
 #' and colnames should be inferred.
 #' 
-#' None of the specified arguments should be a vector, they should
-#' all be single values or NA's
+#' @param df The dataframe
+#' @param startrow,endrow,startcol,endcol The rows & columns specified by user
+#' @param infer_colnames,infer_rownames Whether column and row names should be
+#'                                      inferred
 #' 
-#' It returns a list:
-#' list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
+#' @details None of the specified arguments should be a vector, they should
+#'          all be single values or NA's
+#' 
+#' @return a list: list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
 #' 
 infer_names <- function(df,
                         startrow, endrow, startcol, endcol,

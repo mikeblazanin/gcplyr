@@ -349,27 +349,34 @@ read_blocks <- function(files, extension = NULL,
                               sheet = sheet[i])))
     }
     
-    ##Infer rows, cols, rownames, colnames
-    ################################HERE
+    #Infer rows, cols, rownames, colnames
+    inferred_rc <- 
+      infer_names(temp, startrow = startrow[i], endrow = endrow[i],
+                  startcol = startcol[i], endcol = endcol[i],
+                  infer_colnames = infer_rownames,
+                  infer_rownames = infer_rownames)
     
     #Save information to outputs
-    outputs[[i]]$data <- temp[startrow[i]:endrow[i],startcol[i]:endcol[i]]
+    outputs[[i]]$data <- temp[inferred_rc$startrow:inferred_rc$endrow,
+                              inferred_rc$startcol:inferred_rc$endcol]
     
     #If temp_colnames or temp_rownames haven't been inferred, number them
-    if (colnames_row == 0) {
+    if (is.na(inferred_rc$colnames_row)) {
       if (wellnames_Excel) {
         temp_colnames <- to_excel(1:ncol(outputs[[i]]$data))
       } else {temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = "")}
     } else {
-      temp_colnames <- temp[colnames_row, startcol[i]:endcol[i]]
+      temp_colnames <- temp[inferred_rc$colnames_row, 
+                            inferred_rc$startcol:inferred_rc$endcol]
     }
-    if (rownames_col == 0) {
+    if (is.na(inferred_rc$rownames_col)) {
       if (wellnames_Excel) {
         temp_rownames <- as.character(1:nrow(outputs[[i]]$data))
       } else {
         temp_rownames <- paste("R", 1:nrow(outputs[[i]]$data), sep = "")}
     } else {
-      temp_rownames <- temp[startrow[i]:endrow[i], rownames_col]
+      temp_rownames <- temp[inferred_rc$startrow:inferred_rc$endrow, 
+                            inferred_rc$rownames_col]
     }
     
     #Assign rownames and colnames from temp_variables

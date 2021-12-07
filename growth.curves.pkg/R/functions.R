@@ -71,10 +71,8 @@ uninterleave <- function(interleaved_list, n) {
 #' list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
 #' 
 infer_names <- function(df,
-                        startrow, endrow, 
-                        startcol, endcol,
-                        infer_colnames,
-                        infer_rownames) {
+                        startrow, endrow, startcol, endcol,
+                        infer_colnames, infer_rownames) {
 
   #Infer endrow/endcol if they're not provided to be the last row/col
   if (is.na(endrow)) {endrow <- nrow(df)}
@@ -85,7 +83,7 @@ infer_names <- function(df,
   
   #Inferring startrow/startcol & rownames/colnames is complex:
   if (is.na(startrow) & is.na(startcol)) {
-    if (infer_colnames & if df[1, 1] == "") {
+    if (infer_colnames & df[1, 1] == "") {
       output$colnames_row <- 1
       output$startrow <- 2
     } else {
@@ -108,6 +106,7 @@ infer_names <- function(df,
         output$colnames_row <- 0
         output$startrow <- 1
       }
+    }
     if (infer_rownames) {output$rownames_col <- startcol - 1}
   } else if (!is.na(startrow) & is.na(startcol)) {
     if (infer_colnames) {output$colnames_row <- startrow - 1}
@@ -119,6 +118,7 @@ infer_names <- function(df,
         output$rownames_col <- 0
         output$startcol <- 1
       }
+    }
   } else if (!is.na(startrow) & !is.na(startcol)) {
     if (infer_colnames) {output$colnames_row <- startrow - 1}
     if (infer_rownames) {output$rownames_col <- startcol - 1}

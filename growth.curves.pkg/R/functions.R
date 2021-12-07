@@ -713,15 +713,18 @@ import_widemeasures <- function(files, extension = NULL,
   }
   
   #If metadata unnamed, assign names
-  if (is.null(names(metadata))) {names(metadata) <- rep("", length(metadata))}
-  for (i in 1:length(metadata)) {
-    if (names(metadata)[i] == "") {
-      if (metadata_Excel_names) {
-        names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
-                                  metadata[[i]][2], sep = "")
-      } else {
-        names(metadata)[i] <- paste("R", metadata[[i]][1], 
-                                    "C", metadata[[i]][2], sep = "")
+  if (!is.null(metadata)) {
+    if (is.null(names(metadata))) {
+      names(metadata) <- rep("", length(metadata))}
+    for (i in 1:length(metadata)) {
+      if (names(metadata)[i] == "") {
+        if (metadata_Excel_names) {
+          names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
+                                      metadata[[i]][2], sep = "")
+        } else {
+          names(metadata)[i] <- paste("R", metadata[[i]][1], 
+                                      "C", metadata[[i]][2], sep = "")
+        }
       }
     }
   }
@@ -771,18 +774,20 @@ import_widemeasures <- function(files, extension = NULL,
       for (j in 1:length(metdata)) {
         metadata_vector[j] <- temp[metadata[[j]][1], metadata[[j]][2]]
       }
-    }
+    } else {metadata_vector <- NULL}
     #Add run_names if requested as column
     if(!is.null(names_to_col)) {
       metadata_vector <- c(run_names[i], metadata_vector)
       names(metadata_vector)[1] <- names_to_col
     }
     #Add metadata (incl run names) on LHS of df in same order as specified
-    outputs[[i]] <- cbind(
+    if (!is.null(metadata_vector)) {
+      outputs[[i]] <- cbind(
         as.data.frame(
           sapply(metadata_vector, function(x, nreps) {rep(x, times = nreps)}, 
-               nreps = nrow(outputs[[i]]))),
+                 nreps = nrow(outputs[[i]]))),
         outputs[[i]])
+    }
   }
   
   #Put names onto list elements

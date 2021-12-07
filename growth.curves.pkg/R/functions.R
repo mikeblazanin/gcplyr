@@ -67,8 +67,8 @@ uninterleave <- function(interleaved_list, n) {
 #' None of the specified arguments should be a vector, they should
 #' all be single values
 #' 
-#' It returns a vector:
-#' c(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
+#' It returns a list:
+#' list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
 #' 
 infer_names <- function(df,
                         startrow, endrow, 
@@ -80,10 +80,10 @@ infer_names <- function(df,
   if (is.na(endrow)) {endrow <- nrow(df)}
   if (is.na(endcol)) {endcol <- ncol(df)}
   
-  #Inferring startrow/startcol & rownames/colnames is complex:
-  output <- list(startrow = NA, startcol = NA, endrow = NA, endcol = NA,
+  output <- list(startrow = NA, startcol = NA, endrow = endrow, endcol = endcol,
               rownames_col = NA, colnames_row = NA)
   
+  #Inferring startrow/startcol & rownames/colnames is complex:
   if (is.na(startrow) & is.na(startcol)) {
     if (infer_colnames & if df[1, 1] == "") {
       output$colnames_row <- 1

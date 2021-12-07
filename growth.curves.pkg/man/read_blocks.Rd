@@ -15,7 +15,8 @@ read_blocks(
   metadata = NULL,
   block_names = NULL,
   infer_colnames = TRUE,
-  infer_rownames = TRUE
+  infer_rownames = TRUE,
+  wellnames_Excel = TRUE
 )
 }
 \arguments{
@@ -59,6 +60,16 @@ and row names, respectively, if the row 1 column 1 cell is
 empty
 If FALSE, rows will be numbered with an "R" prefix and columns
 will be numbered with a "C" prefix}
+
+\item{wellnames_Excel}{If row names and column names are not provided in the
+input dataframe as specified by \code{infer_colnames}
+and \code{infer_rownames}, then names will be generated
+automatically.
+If \code{wellnames_Excel} is TRUE, generated names
+will use Excel-style base-26 lettering for columns
+and numbers for rows. 
+If \code{wellnames_Excel} is FALSE, rows and columns
+will be numbered with "R" and "C" prefixes.}
 }
 \value{
 A list where each entry is a list containing the block measures data

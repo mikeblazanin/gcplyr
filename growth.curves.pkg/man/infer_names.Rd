@@ -5,14 +5,32 @@
 \title{A function that handles name inference logic}
 \usage{
 infer_names(
-  startrow = NULL,
-  endrow = NULL,
-  startcol = NULL,
-  endcol = NULL,
-  infer_colnames = TRUE,
-  infer_rownames = TRUE
+  df,
+  startrow,
+  endrow,
+  startcol,
+  endcol,
+  infer_colnames,
+  infer_rownames
 )
 }
+\arguments{
+\item{df}{The dataframe}
+
+\item{startrow, endrow, startcol, endcol}{The rows & columns specified by user}
+
+\item{infer_colnames, infer_rownames}{Whether column and row names should be
+inferred}
+}
+\value{
+a list: list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
+}
 \description{
-TODO: move logic from read_blocks to here
+This function takes in the fully-read dataframe alongside information
+about whether rows and columns have been specified, and whether rownames
+and colnames should be inferred.
+}
+\details{
+None of the specified arguments should be a vector, they should
+         all be single values or NA's
 }

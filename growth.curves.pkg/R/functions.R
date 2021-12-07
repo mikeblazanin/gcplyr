@@ -837,6 +837,11 @@ import_widemeasures <- function(files, extension = NULL,
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
 #'                          well names
+#' @param wellnames_Excel If \code{block_row_names} or \code{block_col_names}
+#'                        are not specified, should rows and columns be named
+#'                        using Excel-style base-26 lettering for columns
+#'                        and numbering for rows? If FALSE, rows and columns
+#'                        will be numbered with "R" and "C" prefix.
 #' @param pattern_split character to split pattern elements provided in
 #'                      \code{...} by
 #' @param ... Each \code{...} argument must be a list with five elements:
@@ -853,7 +858,8 @@ import_widemeasures <- function(files, extension = NULL,
 #' @export         
 make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
-                        wellnames_sep = "_", wellnames_colname = "Well",
+                        wellnames_sep = "", wellnames_colname = "Well",
+                        wellnames_Excel = TRUE,
                         pattern_split = "", ...) {
   
   #Do we need to include a plate_name argument?
@@ -874,8 +880,12 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   #Check inputs
   stopifnot(!(is.null(nrows) & is.null(block_row_names)),
             !(is.null(ncols) & is.null(block_col_names)))
-  if (is.null(block_row_names)) {block_row_names <- paste("R", 1:nrows, sep = ".")}
-  if (is.null(block_col_names)) {block_col_names <- paste("C", 1:ncols, sep = ".")}
+  if (is.null(block_row_names)) {
+    if (wellnames_Excel) {block_row_names <- 1:nrows
+    } else {block_row_names <- paste("R", 1:nrows, sep = "")}
+  if (is.null(block_col_names)) {
+    if (wellnames_Excel) {block_col_names <- to_excel(1:ncols)
+    } else {block_col_names <- paste("C", 1:ncols, sep = "")}
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}
   

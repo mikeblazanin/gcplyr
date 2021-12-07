@@ -29,7 +29,7 @@ test_that("to_excel returns as expected", {
 })
 
 test_that("from_excel returns as expected", {
-  expect_identical(from_excel(c("E", "LZ", "ZL", "ZZ"), c(5, 338, 688, 702)))
+  expect_identical(from_excel(c("E", "LZ", "ZL", "ZZ")), c(5, 338, 688, 702))
 })
 
 test_that("to_excel and from_excel values match each other", {

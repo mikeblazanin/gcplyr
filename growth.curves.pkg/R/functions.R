@@ -1,4 +1,4 @@
-#General utilities ----
+# General utilities ----
 
 #' Check dimension of inputs
 #' 
@@ -120,7 +120,7 @@ from_excel <- function(x) {
   return(out)
 }
 
-#Importing block-shaped ----
+# Importing block-shaped ----
 
 #' Read blockmeasures
 #' 
@@ -545,7 +545,7 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
   return(output)
 }
 
-#Get blockmeasures ----
+# Get blockmeasures ----
 
 #' Import blockmeasures
 #' 
@@ -586,7 +586,7 @@ import_blockmeasures <- function(files, num_plates = 1,
   }
 }
 
-#Get widemeasures ----
+# Get widemeasures ----
 
 #' Import widemeasures
 #' 
@@ -807,7 +807,7 @@ import_widemeasures <- function(files, extension = NULL,
   }
 }
 
-#Get designs ----
+# Get designs ----
 
 #' Make tidy design data.frames
 #' 
@@ -883,9 +883,11 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   if (is.null(block_row_names)) {
     if (wellnames_Excel) {block_row_names <- 1:nrows
     } else {block_row_names <- paste("R", 1:nrows, sep = "")}
+  }
   if (is.null(block_col_names)) {
     if (wellnames_Excel) {block_col_names <- to_excel(1:ncols)
     } else {block_col_names <- paste("C", 1:ncols, sep = "")}
+  }
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}
   
@@ -1175,7 +1177,7 @@ split_blockdesign <- function() {
 import_tidydesign <- function() {
 }
 
-#Reshape (including merge) ----
+# Reshape (including merge) ----
 
 #' Pivot widemeasures longer
 #' 
@@ -1361,7 +1363,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   return(output)
 }
 
-#Preprocess ----
+# Preprocess ----
 
 #' Smooth data
 #' 
@@ -1529,7 +1531,7 @@ moving_average <- function(formula, data, window_width) {
 
 
 
-##Analyze ----
+# Analyze ----
 
 #' Calculate derivatives of vector of density data
 #' 

@@ -603,7 +603,9 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'                  (will attempt to infer extension if none is provided)
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
 #'                  the data is located. If none provided assumes the entire
-#'                  file is data
+#'                  file is data.
+#'                  Can be specified as a numeric or using base-26 Excel letter
+#'                  notation
 #' @param header Boolean for whether there is a header to the data. If FALSE
 #'               columns are simple numbered. If TRUE is the row above
 #'               \code{startrow} (if startrow is specified) or the first row
@@ -666,6 +668,11 @@ import_widemeasures <- function(files, extension = NULL,
   #             if startcol is NULL, timecol is col 1
   #           if infer_timecol FALSE
   #             rows are numbered timepoint_1, timepoint_2, etc
+  
+  if (!is.numeric(startrow)) {startrow <- from_excel(startrow)}
+  if (!is.numeric(endrow)) {endrow <- from_excel(endrow)}
+  if (!is.numeric(startcol)) {startcol <- from_excel(startcol)}
+  if (!is.numeric(endcol)) {endcol <- from_excel(endcol)}
   
   if (!sum(is.null(startrow), is.null(endrow), 
            is.null(startcol), is.null(endcol)) %in% c(0, 4)) {

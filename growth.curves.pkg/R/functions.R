@@ -771,7 +771,7 @@ import_widemeasures <- function(files, extension = NULL,
     if (!is.null(metadata)) {
       metadata_vector <- rep(NA, times = length(metadata))
       names(metadata_vector) <- names(metadata)
-      for (j in 1:length(metdata)) {
+      for (j in 1:length(metadata)) {
         metadata_vector[j] <- temp[metadata[[j]][1], metadata[[j]][2]]
       }
     } else {metadata_vector <- NULL}

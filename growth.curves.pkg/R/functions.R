@@ -594,8 +594,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' 
 #' @details
 #' startrow, endrow, startcol, endcol, timecol, sheet and extension 
-#' can either be vectors or lists the same length as files, 
-#' or a single value that applies for all files
+#' can either be a single value that applies for all files or
+#' vectors or lists the same length as \code{files}, 
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a widemeasures set of data
@@ -651,7 +651,7 @@ import_widemeasures <- function(files, extension = NULL,
   #             if startrow not provided, header is 1
   #           if header FALSE
   #             columns numbered V1...Vn
-  #
+  
   #Logic:   if infer_header TRUE
   #           if startrow is provided, header is startrow-1
   #           if startrow NULL header is row 1
@@ -666,11 +666,6 @@ import_widemeasures <- function(files, extension = NULL,
   #             if startcol is NULL, timecol is col 1
   #           if infer_timecol FALSE
   #             rows are numbered timepoint_1, timepoint_2, etc
-  
-  #Inputs:
-  #         (optional) the column where timestamp info is located
-  #           (if none provided by default the column immediately to the left 
-  #           of startcol is assumed to be the time column)
   
   if (!sum(is.null(startrow), is.null(endrow), 
            is.null(startcol), is.null(endcol)) %in% c(0, 4)) {

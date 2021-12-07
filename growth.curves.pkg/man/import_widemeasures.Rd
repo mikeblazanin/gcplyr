@@ -13,7 +13,10 @@ import_widemeasures(
   endcol = NULL,
   header = TRUE,
   sheet = NULL,
-  wide_names = NULL
+  run_names = NULL,
+  names_to_col = "file",
+  metadata = NULL,
+  metadata_Excel_names = TRUE
 )
 }
 \arguments{
@@ -25,7 +28,9 @@ where each one is a widemeasures set of data}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data is located. If none provided assumes the entire
-file is data}
+file is data.
+Can be specified as a numeric or using base-26 Excel letter
+notation}
 
 \item{header}{Boolean for whether there is a header to the data. If FALSE
 columns are simple numbered. If TRUE is the row above
@@ -36,17 +41,40 @@ of the input files (if startrow is not specified)}
 files are .xls or .xlsx). If not specified defaults to the first
 sheet}
 
-\item{wide_names}{Names to give the widemeasures read in. By default uses the
+\item{run_names}{Names to give the widemeasures read in. By default uses the
 file names if not specified}
+
+\item{names_to_col}{Should the run names (provided in \code{run_names}
+or inferred from \code{files}) be added as a column to the
+widemeasures? If \code{names_to_col} is NULL, they will not be.
+If \code{names_to_col} is a string, that string will be
+the column header for the column where the names will be
+stored}
+
+\item{metadata}{(optional) non-spectrophotometric data that should be associated
+with each widemeasures. A list where each item in the
+list is a vector of length 2. Each vector should provide the
+row and column where the metadata is located in the widemeasures
+input file. If the list is named those names will be inherited
+to the output metadata.}
+
+\item{metadata_Excel_names}{Boolean. If metadata do not have names, names
+will be generated. If \code{metadata_Excel_names}
+is TRUE, names will be in Excel format
+(e.g. D7 is the 4th column, 7th row).
+If FALSE, names will be numbered with "R" and "C"
+prefixes for row and column.
+(e.g. R4C7 is the 4th column, 7th row)}
 }
 \value{
-A list of widemeasures named by filename
+A dataframe containing a single widemeasures, or
+        A list of widemeasures named by filename
 }
 \description{
 A function that imports widemeasures in files into the R environment
 }
 \details{
 startrow, endrow, startcol, endcol, timecol, sheet and extension 
-can either be vectors or lists the same length as files, 
-or a single value that applies for all files
+can either be a single value that applies for all files or
+vectors or lists the same length as \code{files},
 }

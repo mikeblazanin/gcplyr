@@ -60,15 +60,180 @@ uninterleave <- function(interleaved_list, n) {
 
 #' A function that handles name inference logic
 #' 
-#' TODO: move logic from read_blocks to here
+#' This function takes in the fully-read dataframe alongside information
+#' about whether rows and columns have been specified, and whether rownames
+#' and colnames should be inferred.
 #' 
-#' @export
-infer_names <- function(startrow = NULL, endrow = NULL, 
-                        startcol = NULL, endcol = NULL,
-                        infer_colnames = TRUE,
-                        infer_rownames = TRUE) {
+#' None of the specified arguments should be a vector, they should
+#' all be single values
+#' 
+#' It returns a vector:
+#' c(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
+#' 
+infer_names <- function(df,
+                        startrow, endrow, 
+                        startcol, endcol,
+                        infer_colnames,
+                        infer_rownames) {
+
+  #Infer endrow/endcol if they're not provided to be the last row/col
+  if (is.na(endrow)) {endrow <- nrow(df)}
+  if (is.na(endcol)) {endcol <- ncol(df)}
   
-  #TODO
+  #Inferring startrow/startcol & rownames/colnames is complex:
+  output <- list(startrow = NA, startcol = NA, endrow = NA, endcol = NA,
+              rownames_col = NA, colnames_row = NA)
+  
+  if (is.na(startrow) & is.na(startcol)) {
+    if (infer_colnames & if df[1, 1] == "") {
+      output$colnames_row <- 1
+      output$startrow <- 2
+    } else {
+      output$colnames_row <- 0
+      output$startrow <- 1
+    }
+    if (infer_rownames & df[1, 1] == "") {
+      output$rownames_col <- 1
+      output$startcol <- 2
+    } else {
+      output$rownames_col <- 0
+      output$startcol <- 1
+    }
+  } else if (is.na(startrow) & !is.na(startcol)) {
+    if (infer_colnames) {
+      if (startcol > 1 & df[1, (startcol - 1)] == "") {
+        output$colnames_row <- 1
+        output$startrow <- 2
+      } else {
+        output$colnames_row <- 0
+        output$startrow <- 1
+      }
+    if (infer_rownames) {output$rownames_col <- startcol - 1}
+  } else if (!is.na(startrow) & is.na(startcol)) {
+    if (infer_colnames) {output$colnames_row <- startrow - 1}
+    if (infer_rownames) {
+      if (startrow > 1 & df[(startrow-1), 1] == "") {
+        output$rownames_col <- 1
+        output$startcol <- 2
+      } else {
+        output$rownames_col <- 0
+        output$startcol <- 1
+      }
+  } else if (!is.na(startrow) & !is.na(startcol)) {
+    if (infer_colnames) {output$colnames_row <- startrow - 1}
+    if (infer_rownames) {output$rownames_col <- startcol - 1}
+  } else {stop("Startrow/startcol combo not expected")}
+  
+  if (any(is.na(output))) {stop("infer_names failed to infer rows/cols")}
+  
+  output[output == 0] <- NA
+  
+  return(output)
+  
+  #Old code down here: ----
+  
+  temp_startcol <- 0
+  temp_startrow <- 0
+  
+  #If infer_colnames is true...
+  if (infer_colnames == TRUE) {
+    #...and startrow is provided, colnames is the row before startrow
+    if (!is.na(startrow)) {
+      colnames_row <- startrow-1
+      temp_startrow <- startrow
+    #...and startrow is not provided
+    } else {
+      #if startcol is provided
+      if (!is.na(startcol)) {
+        #if startcol == 1 or the top left cell is not empty
+        if (startcol == 1 | (df[1, startcol-1] != "")) {
+          #colnames will be auto
+          colnames_row <- 0
+          temp_startrow <- 1
+        #otherwise, startcol is more than 1 and the top left cell is empty
+        } else {
+          #colnames row is 1 if [1, startcol-1] is empty, 
+          colnames_row <- 1
+          temp_startrow <- 2
+        }
+      } else {
+        #if startcol is not provided 
+        # (AKA niether startrow nor startcol are provided)
+        # colnames row is 1 if [1,1] is empty
+        if (df[1,1] == "") {
+          colnames_row <- 1
+          temp_startrow <- 2
+        } else {
+          #otherwise colnames will be auto
+          colnames_row <- 0
+          temp_startrow <- 1
+        }
+      }
+    }
+  } else {
+    #If infer_colnames is false then we auto-generate colnames
+    colnames_row <- 0
+    if (is.na(startrow)) {
+      #If startrow is not provided, start on row 1
+      temp_startrow <- 1
+    } else {
+      temp_startrow <- startrow
+    }
+  }
+  
+  #If infer_rownames is true...
+  if (infer_rownames == TRUE) {
+    #...and startcol is provided, rownames is the col before startcol
+    if (!is.na(startcol)) {
+      rownames_col <- startcol-1
+      temp_startcol <- startcol
+    #...and startcol is not provided
+    } else {
+      if (!is.na(startrow)) {
+        #if startrow is provided
+        if (df[startrow-1, 1] == "") {
+          #rownames col is 1 if [startrow-1, 1] is empty, 
+          # otherwise rownames will be auto
+          rownames_col <- 1
+          temp_startcol <- 2
+        } else {
+          #otherwise rownames will be auto (no code needed)
+          rownames_col <- 0
+          temp_startcol <- 1
+        }
+      } else {
+        #if startrow is not provided
+        # (AKA niether startrow nor startcol are provided)
+        # colnames row is 1 if [1,1] is empty, otherwise colnames will be auto
+        if (df[1,1] == "") {
+          rownames_col <- 1
+          temp_startcol <- 2
+        } else {
+          rownames_col <- 0
+          temp_startcol <- 1
+        }
+      }
+    }
+  } else {
+    #If infer_rownames is false then we auto-generate rownames
+    rownames_col <- 0
+    if(is.na(startcol)) {
+      #If startcol is not provided, start on col 1
+      temp_startcol <- 1
+    } else {temp_startcol <- startcol}
+  }
+  
+  ##For debugging
+  # paste(infer_rownames, infer_colnames, startrow, startcol,
+  #       temp_startrow, temp_startcol, colnames_row, rownames_col, sep = "|")
+  
+  #Save inferred info about startrow and startcol
+  if (temp_startrow == 0) {stop("temp_startrow = 0, this shouldn't happen")
+  } else {startrow <- temp_startrow}
+  if (temp_startcol == 0) {stop("temp_startcol = 0, this shouldn't happen")
+  } else {startcol <- temp_startcol}
+  
+  
 }
 
 #' A function that converts numbers into base-26 Excel-style letters
@@ -287,112 +452,8 @@ read_blocks <- function(files, extension = NULL,
                               sheet = sheet[i])))
     }
     
-    ##Infer rownames & colnames/take subsets as needed
-    
-    #Infer endrow/endcol if they're not provided to be the last row/col
-    if (is.na(endrow[i])) {endrow[i] <- nrow(temp)}
-    if (is.na(endcol[i])) {endcol[i] <- ncol(temp)}
-    
-    #Inferring startrow/startcol & rownames/colnames is complex:
-    
-    temp_startcol <- 0
-    temp_startrow <- 0
-    
-    #If infer_colnames is true...
-    if (infer_colnames[i] == TRUE) {
-      #...and startrow is provided, colnames is the row before startrow
-      if (!is.na(startrow[i])) {
-        colnames_row <- startrow[i]-1
-        temp_startrow <- startrow[i]
-      #...and startrow is not provided
-      } else { 
-        if (!is.na(startcol[i])) {
-          #if startcol is provided
-          if (temp[1, startcol[i]-1] == "") {
-            #colnames row is 1 if [1, startcol-1] is empty, 
-            colnames_row <- 1
-            temp_startrow <- 2
-          } else {
-            #otherwise colnames will be auto
-            colnames_row <- 0
-            temp_startrow <- 1
-          }
-        } else {
-          #if startcol is not provided 
-          # (AKA niether startrow nor startcol are provided)
-          # colnames row is 1 if [1,1] is empty
-          if (temp[1,1] == "") {
-            colnames_row <- 1
-            temp_startrow <- 2
-          } else {
-          #otherwise colnames will be auto
-            colnames_row <- 0
-            temp_startrow <- 1
-          }
-        }
-      }
-    } else {
-      #If infer_colnames is false then we auto-generate colnames
-      colnames_row <- 0
-      if (is.na(startrow[i])) {
-        #If startrow is not provided, start on row 1
-        temp_startrow <- 1
-      } else {
-        temp_startrow <- startrow[i]
-      }
-    }
-    
-    #If infer_rownames is true...
-    if (infer_rownames[i] == TRUE) {
-      #...and startcol is provided, rownames is the col before startcol
-      if (!is.na(startcol[i])) {
-        rownames_col <- startcol[i]-1
-        temp_startcol <- startcol[i]
-      #...and startcol is not provided
-      } else {
-        if (!is.na(startrow[i])) {
-        #if startrow is provided
-          if (temp[startrow[i]-1, 1] == "") {
-            #rownames col is 1 if [startrow-1, 1] is empty, 
-            # otherwise rownames will be auto
-            rownames_col <- 1
-            temp_startcol <- 2
-          } else {
-          #otherwise rownames will be auto (no code needed)
-            rownames_col <- 0
-            temp_startcol <- 1
-          }
-        } else {
-        #if startrow is not provided
-        # (AKA niether startrow nor startcol are provided)
-        # colnames row is 1 if [1,1] is empty, otherwise colnames will be auto
-          if (temp[1,1] == "") {
-            rownames_col <- 1
-            temp_startcol <- 2
-          } else {
-            rownames_col <- 0
-            temp_startcol <- 1
-          }
-        }
-      }
-    } else {
-      #If infer_rownames is false then we auto-generate rownames
-      rownames_col <- 0
-      if(is.na(startcol[i])) {
-        #If startcol is not provided, start on col 1
-        temp_startcol <- 1
-      } else {temp_startcol <- startcol[i]}
-    }
-    
-    ##For debugging
-    # paste(infer_rownames[i], infer_colnames[i], startrow[i], startcol[i],
-    #       temp_startrow, temp_startcol, colnames_row, rownames_col, sep = "|")
-    
-    #Save inferred info about startrow and startcol
-    if (temp_startrow == 0) {stop("temp_startrow = 0, this shouldn't happen")
-      } else {startrow[i] <- temp_startrow}
-    if (temp_startcol == 0) {stop("temp_startcol = 0, this shouldn't happen")
-    } else {startcol[i] <- temp_startcol}
+    ##Infer rows, cols, rownames, colnames
+    ################################HERE
     
     #Save information to outputs
     outputs[[i]]$data <- temp[startrow[i]:endrow[i],startcol[i]:endcol[i]]

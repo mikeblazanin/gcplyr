@@ -9,8 +9,9 @@ make_tidydesign(
   ncols = NULL,
   block_row_names = NULL,
   block_col_names = NULL,
-  wellnames_sep = "_",
+  wellnames_sep = "",
   wellnames_colname = "Well",
+  wellnames_Excel = TRUE,
   pattern_split = "",
   ...
 )
@@ -26,6 +27,12 @@ names to create well names}
 
 \item{wellnames_colname}{Header for newly-created column containing the
 well names}
+
+\item{wellnames_Excel}{If \code{block_row_names} or \code{block_col_names}
+are not specified, should rows and columns be named
+using Excel-style base-26 lettering for columns
+and numbering for rows? If FALSE, rows and columns
+will be numbered with "R" and "C" prefix.}
 
 \item{pattern_split}{character to split pattern elements provided in
 \code{...} by}

@@ -10,7 +10,7 @@ merge_dfs(
   by = NULL,
   drop = FALSE,
   collapse = FALSE,
-  names_to = "run",
+  names_to = NA,
   ...
 )
 }
@@ -30,7 +30,10 @@ data frames that should be merged together before
 being merged with the other}
 
 \item{names_to}{Column name for where \code{names(x)} or \code{names(y)} 
-will be entered in if \code{collapse = TRUE}}
+will be entered in if \code{collapse = TRUE}
+If a value of \code{NA} then \code{names(x)} or 
+\code{names(y)} will not be put into a column in the
+returned data.frame}
 
 \item{...}{Other arguments to pass to \code{dplyr::full_join}}
 }

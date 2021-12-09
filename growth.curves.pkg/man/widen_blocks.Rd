@@ -4,7 +4,12 @@
 \alias{widen_blocks}
 \title{Widen blockmeasures}
 \usage{
-widen_blocks(blockmeasures, wellnames_sep = "_", nested_metadata = NULL)
+widen_blocks(
+  blockmeasures,
+  wellnames_sep = "_",
+  nested_metadata = NULL,
+  colnames_first = TRUE
+)
 }
 \arguments{
 \item{blockmeasures}{Blockmeasures, either a single data.frame or a list of

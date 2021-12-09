@@ -1294,6 +1294,9 @@ pivot_wide_longer <- function(widemeasures,
 #'                 being merged with the other
 #' @param names_to Column name for where \code{names(x)} or \code{names(y)} 
 #'                 will be entered in if \code{collapse = TRUE}
+#'                 If a value of \code{NA} then \code{names(x)} or 
+#'                 \code{names(y)} will not be put into a column in the
+#'                 returned data.frame
 #' @param ... Other arguments to pass to \code{dplyr::full_join}
 #' 
 #' @return Data.frame containing merged output of \code{x} and
@@ -1301,16 +1304,18 @@ pivot_wide_longer <- function(widemeasures,
 #' 
 #' @export
 merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
-                             collapse = FALSE, names_to = "run",
+                             collapse = FALSE, names_to = NA,
                              ...) {
   if(collapse) {
     #First define the worker func that collapses the df's
-    collapse_list <- function(listdfs) {
+    collapse_list <- function(listdfs, names_to) {
       temp <- NULL
       for (i in 1:length(listdfs)) {
-        #Put name of ea list element (ea df) into column
-        listdfs[[i]] <- cbind(listdfs[[i]], names(listdfs)[i])
-        colnames(listdfs[[i]])[ncol(listdfs[[i]])] <- names_to
+        if(!is.null(names_to) & !is.na(names_to)) {
+          #Put name of ea list element (ea df) into column
+          listdfs[[i]] <- cbind(listdfs[[i]], names(listdfs)[i])
+          colnames(listdfs[[i]])[ncol(listdfs[[i]])] <- names_to
+        }
         #Collapse dfs together
         if (is.null(temp)) {temp <- listdfs[[i]]
         } else {temp <- dplyr::full_join(temp, listdfs[[i]])}
@@ -1324,12 +1329,12 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     } else {
       if (!is.data.frame(x)) {
         if (!is.list(x)) {stop("x is neither a list nor a data.frame")}
-        x <- collapse_list(x)
+        x <- collapse_list(x, names_to = names_to)
       }
       if (!is.null(y) & !is.data.frame(y)) {
         if (!is.list(y)) {
           stop("y is neither a list nor a data.frame")}
-        y <- collapse_list(y)
+        y <- collapse_list(y, names_to = names_to)
       }
     }
   }

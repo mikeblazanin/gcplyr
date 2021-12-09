@@ -3,12 +3,12 @@ library(testthat)
 library(growth.curves.pkg)
 
 test_that("read_blocks reads data correctly", {
-  example_dfs_list <- rep(list(NA), 100)
-
   #Make test blockcurves data
   library(xlsx)
   dir.create("./test_blockcurves_data_csv/", showWarnings = F)
   dir.create("./test_blockcurves_data_xlsx/", showWarnings = F)
+  
+  example_dfs_list <- rep(list(NA), 100)
   for (i in 1:length(example_dfs_list)) {
     example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
                                                   nrow = 8, byrow = T))

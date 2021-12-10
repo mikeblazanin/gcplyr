@@ -420,8 +420,6 @@ read_blocks <- function(files, extension = NULL,
   return(outputs)
 }
 
-# Get blockmeasures ----
-
 #' Import blockmeasures
 #' 
 #' Function to import blockmeasures from files and return widemeasures
@@ -461,7 +459,7 @@ import_blockmeasures <- function(files, num_plates = 1,
   }
 }
 
-# Get widemeasures ----
+# Importing wide-shaped ----
 
 #' Import widemeasures
 #' 
@@ -684,7 +682,7 @@ import_widemeasures <- function(files, extension = NULL,
   }
 }
 
-# Get designs ----
+# Get/make designs ----
 
 #' Make tidy design data.frames
 #' 
@@ -1119,36 +1117,35 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
   #(each column is a row-column combination from the blockcurve)
   #(each row is a single dataframe from blockmeasures)
   #Adding the metadata as the first n columns
-  #
-  #
-  #At some point I may need to re-implement this avoiding use of
-  # t() (because t calls as.matrix which can add white space to numeric values
-  # See convert_plate_to_column in plater R package
-  # If so, this code may be useful
-  #   output <- sapply(blockmeasures, simplify = TRUE,
-  # function(x) {c(x[[2]],
-  #                unlist(lapply(X = 1:nrow(x[[1]]),
-  #                              function(i) {unname(x[[1]][i, ])}))
-  # )
-  # }
-  # )
-  #Also TODO: fix so that columns are ordered depending on which,
-  #           rows vs columns, are first in the wellnames output
-  
+
   if (nested_metadata) { #There is nested metadata
-    #Reshape
-    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
-                                  function(x) {c(x[[2]],
-                                                 t(x[[1]]))})),
-                         stringsAsFactors = FALSE)
-    #Assign column names
-    if(colnames_first) {
+    if (colnames_first) {
+      #Reshape
+      output <- 
+        as.data.frame(
+          do.call(rbind,
+                  lapply(
+                    blockmeasures, 
+                    FUN = function(x) {c(x[[2]],
+                                         apply(x[[1]], MARGIN = 2, unlist))})),
+          stringsAsFactors = FALSE)
+      #Assign column names
       colnames(output) <- c(names(blockmeasures[[1]][[2]]),
-                            paste(colnames(blockmeasures[[1]][[1]]),
-                                  rep(rownames(blockmeasures[[1]][[1]]),
-                                      each = ncol(blockmeasures[[1]][[1]])),
+                            paste(rep(colnames(blockmeasures[[1]][[1]]),
+                                      each = nrow(blockmeasures[[1]][[1]])),
+                                  rownames(blockmeasures[[1]][[1]]),
                                   sep = wellnames_sep))
-    } else {
+    } else { #rownames first
+      #Reshape
+      output <- 
+        as.data.frame(
+          do.call(rbind,
+                  lapply(
+                    blockmeasures, 
+                    FUN = function(x) {c(x[[2]],
+                                         apply(x[[1]], MARGIN = 1, unlist))})),
+          stringsAsFactors = FALSE)
+      #Assign column names
       colnames(output) <- c(names(blockmeasures[[1]][[2]]),
                             paste(rep(rownames(blockmeasures[[1]][[1]]),
                                       each = ncol(blockmeasures[[1]][[1]])),
@@ -1156,17 +1153,28 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
                                   sep = wellnames_sep))
     }
   } else { #There is not nested metadata
-    #Reshape
-    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
-                                  function(x) {c(t(x))})),
-                         stringsAsFactors = FALSE)
-    #Assign column names
-    if(colnames_first) {
-      colnames(output) <- paste(colnames(blockmeasures[[1]]),
-                                rep(rownames(blockmeasures[[1]]),
-                                    each = ncol(blockmeasures[[1]])),
+    if (colnames_first) {
+      #Reshape
+      output <- 
+        as.data.frame(
+          do.call(rbind,
+                  lapply(blockmeasures, 
+                         FUN = function(x) {c(apply(x, MARGIN = 2, unlist))})),
+          stringsAsFactors = FALSE)
+      #Assign column names
+      colnames(output) <- paste(rep(colnames(blockmeasures[[1]]),
+                                    each = nrow(blockmeasures[[1]])),
+                                rownames(blockmeasures[[1]]),
                                 sep = wellnames_sep)
-    } else {
+    } else { #rownames first
+      #Reshape
+      output <- 
+        as.data.frame(
+          do.call(rbind,
+                  lapply(blockmeasures, 
+                         FUN = function(x) {c(apply(x, MARGIN = 1, unlist))})),
+          stringsAsFactors = FALSE)
+      #Assign column names
       colnames(output) <- paste(rep(rownames(blockmeasures[[1]]),
                                     each = ncol(blockmeasures[[1]])),
                                 colnames(blockmeasures[[1]]),

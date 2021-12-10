@@ -2,6 +2,41 @@ context("Reshaping functions")
 library(testthat)
 library(growth.curves.pkg)
 
+test_that("widen_blocks works on a single dataframe", {
+  example_dfs_list <- rep(list(NA), 100)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
+                                                  nrow = 8, byrow = T))
+  }
+  
+  expect_equal(
+    widen_blocks(example_dfs_list[[1]], colnames_first = TRUE),
+    data.frame(matrix(as.character(1:96), nrow = 1,
+                      dimnames = list(NULL,
+                                      paste(rep(paste("V", 1:12, sep = ""), 8),
+                                            rep(1:8, each = 12), 
+                                            sep = "_")))))
+  
+})
+
+test_that("widen_blocks works on a list of dataframes", {
+  wide2_expected <- data.frame(matrix(NA, nrow = 100, ncol = 96,
+                                      dimnames = list(NULL,
+                                                      paste(rep(paste("V", 1:12, sep = ""), 8),
+                                                            rep(1:8, each = 12), 
+                                                            sep = "_"))))
+  for (i in 1:nrow(wide2_expected)) {
+    for (j in 1:ncol(wide2_expected)) {
+      wide2_expected[i, j] <- as.character(as.numeric(i)*as.numeric(j))
+    }
+  }
+  
+  expect_equal(
+    widen_blocks(example_dfs_list, colnames_first = TRUE),
+    wide2_expected)
+})
+
+
 test_that("Pivot_longer works on single dataframe", {
   data <- data.frame("time" = 1:100,
                      "Pop1" = 10/(1+exp(-.1*((1:100) - 50))) + 

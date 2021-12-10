@@ -420,127 +420,6 @@ read_blocks <- function(files, extension = NULL,
   return(outputs)
 }
 
-#' Widen blockmeasures
-#' 
-#' Takes blockmeasures and returns them in a widemeasure format
-#' 
-#' @param blockmeasures Blockmeasures, either a single data.frame or a list of
-#'                      data.frames
-#' @param wellnames_sep String to use as separator for well names between 
-#'                      rowname and column name
-#' @param nested_metadata A Boolean indicating the existence of nested metadata
-#'                        in the \code{blockmeasures} list, e.g. as is typically
-#'                        output by \code{read_blocks}. If NULL, will attempt to
-#'                        infer existence of nested metadata
-#' @return A single widemeasures data.frame
-#' 
-#' @export
-widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
-                         nested_metadata = NULL, colnames_first = TRUE) {
-  
-  if(class(blockmeasures) != "list") {
-    blockmeasures <- list(blockmeasures)
-  }
-  
-  #Infer nestedness if nested_metadata is set to NULL
-  if (is.null(nested_metadata)) {
-    if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "data.frame")) {
-      nested_metadata <- FALSE
-      warning("Inferring nested_metadata to be FALSE")
-    } else if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "list")) {
-      nested_metadata <- TRUE
-      warning("Inferring nested_metadata to be TRUE")
-    } else {
-      stop("Unable to infer nested_metadata, this may be because blockmeasures vary in nestedness or are not data.frame's")
-    }
-  }
-  
-  #Check that all blockmeasures have same dimensions
-  if (length(blockmeasures) > 1) {
-    if (nested_metadata) { #there is nested metadata
-      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
-                     FUN = function(x) {dim(x[[1]])[1]})) != 0) {
-        stop("Not all blockmeasures have the same number of rows of data")
-      }
-      if (stats::var(sapply(blockmeasures, simplify = TRUE,
-                     FUN = function(x) {dim(x[[1]])[2]})) != 0) {
-        stop("Not all blockmeasures have the same number of columns of data")
-      }
-    } else { #there is not nested metadata
-      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
-                     FUN = function(x) {dim(x)[1]})) != 0) {
-        stop("Not all blockmeasures have the same number of rows of data")
-      }
-      if (stats::var(sapply(blockmeasures, simplify = TRUE,
-                     FUN = function(x) {dim(x)[2]})) != 0) {
-        stop("Not all blockmeasures have the same number of columns of data")
-      }
-    }
-  }
-    
-  #convert list of dataframes to single dataframe
-  #where each column is a well and each row is a plate read
-  #(each column is a row-column combination from the blockcurve)
-  #(each row is a single dataframe from blockmeasures)
-  #Adding the metadata as the first n columns
-  #
-  #
-  #At some point I may need to re-implement this avoiding use of
-  # t() (because t calls as.matrix which can add white space to numeric values
-  # See convert_plate_to_column in plater R package
-  # If so, this code may be useful
-  #   output <- sapply(blockmeasures, simplify = TRUE,
-              # function(x) {c(x[[2]],
-              #                unlist(lapply(X = 1:nrow(x[[1]]),
-              #                              function(i) {unname(x[[1]][i, ])}))
-              # )
-              # }
-              # )
-  #Also TODO: fix so that columns are ordered depending on which,
-  #           rows vs columns, are first in the wellnames output
-  
-  if (nested_metadata) { #There is nested metadata
-    #Reshape
-    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
-                                  function(x) {c(x[[2]],
-                                                 t(x[[1]]))})),
-                         stringsAsFactors = FALSE)
-    #Assign column names
-    if(colnames_first) {
-      colnames(output) <- c(names(blockmeasures[[1]][[2]]),
-                            paste(colnames(blockmeasures[[1]][[1]]),
-                                  rep(rownames(blockmeasures[[1]][[1]]),
-                                      each = ncol(blockmeasures[[1]][[1]])),
-                                  sep = wellnames_sep))
-    } else {
-      colnames(output) <- c(names(blockmeasures[[1]][[2]]),
-                            paste(rep(rownames(blockmeasures[[1]][[1]]),
-                                      each = ncol(blockmeasures[[1]][[1]])),
-                                  colnames(blockmeasures[[1]][[1]]),
-                                  sep = wellnames_sep))
-    }
-  } else { #There is not nested metadata
-    #Reshape
-    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
-                                  function(x) {c(t(x))})),
-                         stringsAsFactors = FALSE)
-    #Assign column names
-    if(colnames_first) {
-      colnames(output) <- paste(colnames(blockmeasures[[1]]),
-                                rep(rownames(blockmeasures[[1]]),
-                                    each = ncol(blockmeasures[[1]])),
-                                sep = wellnames_sep)
-    } else {
-      colnames(output) <- paste(rep(rownames(blockmeasures[[1]]),
-                                    each = ncol(blockmeasures[[1]])),
-                                colnames(blockmeasures[[1]]),
-                                sep = wellnames_sep)
-    }
-  }
-
-  return(output)
-}
-
 # Get blockmeasures ----
 
 #' Import blockmeasures
@@ -1176,6 +1055,128 @@ import_tidydesign <- function() {
 }
 
 # Reshape (including merge) ----
+
+#' Widen blockmeasures
+#' 
+#' Takes blockmeasures and returns them in a widemeasure format
+#' 
+#' @param blockmeasures Blockmeasures, either a single data.frame or a list of
+#'                      data.frames
+#' @param wellnames_sep String to use as separator for well names between 
+#'                      rowname and column name
+#' @param nested_metadata A Boolean indicating the existence of nested metadata
+#'                        in the \code{blockmeasures} list, e.g. as is typically
+#'                        output by \code{read_blocks}. If NULL, will attempt to
+#'                        infer existence of nested metadata
+#' @return A single widemeasures data.frame
+#' 
+#' @export
+widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
+                         nested_metadata = NULL, colnames_first = TRUE) {
+  
+  if(class(blockmeasures) != "list") {
+    blockmeasures <- list(blockmeasures)
+  }
+  
+  #Infer nestedness if nested_metadata is set to NULL
+  if (is.null(nested_metadata)) {
+    if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "data.frame")) {
+      nested_metadata <- FALSE
+      warning("Inferring nested_metadata to be FALSE")
+    } else if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "list")) {
+      nested_metadata <- TRUE
+      warning("Inferring nested_metadata to be TRUE")
+    } else {
+      stop("Unable to infer nested_metadata, this may be because blockmeasures vary in nestedness or are not data.frame's")
+    }
+  }
+  
+  #Check that all blockmeasures have same dimensions
+  if (length(blockmeasures) > 1) {
+    if (nested_metadata) { #there is nested metadata
+      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
+                            FUN = function(x) {dim(x[[1]])[1]})) != 0) {
+        stop("Not all blockmeasures have the same number of rows of data")
+      }
+      if (stats::var(sapply(blockmeasures, simplify = TRUE,
+                            FUN = function(x) {dim(x[[1]])[2]})) != 0) {
+        stop("Not all blockmeasures have the same number of columns of data")
+      }
+    } else { #there is not nested metadata
+      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
+                            FUN = function(x) {dim(x)[1]})) != 0) {
+        stop("Not all blockmeasures have the same number of rows of data")
+      }
+      if (stats::var(sapply(blockmeasures, simplify = TRUE,
+                            FUN = function(x) {dim(x)[2]})) != 0) {
+        stop("Not all blockmeasures have the same number of columns of data")
+      }
+    }
+  }
+  
+  #convert list of dataframes to single dataframe
+  #where each column is a well and each row is a plate read
+  #(each column is a row-column combination from the blockcurve)
+  #(each row is a single dataframe from blockmeasures)
+  #Adding the metadata as the first n columns
+  #
+  #
+  #At some point I may need to re-implement this avoiding use of
+  # t() (because t calls as.matrix which can add white space to numeric values
+  # See convert_plate_to_column in plater R package
+  # If so, this code may be useful
+  #   output <- sapply(blockmeasures, simplify = TRUE,
+  # function(x) {c(x[[2]],
+  #                unlist(lapply(X = 1:nrow(x[[1]]),
+  #                              function(i) {unname(x[[1]][i, ])}))
+  # )
+  # }
+  # )
+  #Also TODO: fix so that columns are ordered depending on which,
+  #           rows vs columns, are first in the wellnames output
+  
+  if (nested_metadata) { #There is nested metadata
+    #Reshape
+    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
+                                  function(x) {c(x[[2]],
+                                                 t(x[[1]]))})),
+                         stringsAsFactors = FALSE)
+    #Assign column names
+    if(colnames_first) {
+      colnames(output) <- c(names(blockmeasures[[1]][[2]]),
+                            paste(colnames(blockmeasures[[1]][[1]]),
+                                  rep(rownames(blockmeasures[[1]][[1]]),
+                                      each = ncol(blockmeasures[[1]][[1]])),
+                                  sep = wellnames_sep))
+    } else {
+      colnames(output) <- c(names(blockmeasures[[1]][[2]]),
+                            paste(rep(rownames(blockmeasures[[1]][[1]]),
+                                      each = ncol(blockmeasures[[1]][[1]])),
+                                  colnames(blockmeasures[[1]][[1]]),
+                                  sep = wellnames_sep))
+    }
+  } else { #There is not nested metadata
+    #Reshape
+    output <- data.frame(t(sapply(blockmeasures, simplify = TRUE, 
+                                  function(x) {c(t(x))})),
+                         stringsAsFactors = FALSE)
+    #Assign column names
+    if(colnames_first) {
+      colnames(output) <- paste(colnames(blockmeasures[[1]]),
+                                rep(rownames(blockmeasures[[1]]),
+                                    each = ncol(blockmeasures[[1]])),
+                                sep = wellnames_sep)
+    } else {
+      colnames(output) <- paste(rep(rownames(blockmeasures[[1]]),
+                                    each = ncol(blockmeasures[[1]])),
+                                colnames(blockmeasures[[1]]),
+                                sep = wellnames_sep)
+    }
+  }
+  
+  return(output)
+}
+
 
 #' Pivot widemeasures longer
 #' 

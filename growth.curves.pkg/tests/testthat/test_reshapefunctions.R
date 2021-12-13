@@ -9,24 +9,8 @@ test_that("widen_blocks works on a single dataframe", {
                                                   nrow = 8, byrow = T))
   }
   
-  #Test colnames_first = FALSE
-  expected_df <- 
-    data.frame(matrix(as.character(1:96), nrow = 1,
-                      dimnames = list(NULL,
-                                      paste(as.character(rep(1:8, each = 12)),
-                                            rep(paste("V", 1:12, sep = ""), 8),
-                                            sep = "_"))))
-  for (i in 1:ncol(expected_df)) {
-    colnames(expected_df)[i] <- 
-      as.character(substr(colnames(expected_df)[i], 
-                          2, nchar(colnames(expected_df)[i])))
-  }
-  expect_equal(
-    widen_blocks(example_dfs_list[[1]], colnames_first = FALSE),
-    expected_df)
-  
   #Test colnames_first = TRUE
-  expected_df2 <- 
+  expected_df <- 
     data.frame(matrix(as.character(rep(1:12, each = 8) + (12 * 0:7)), nrow = 1,
                       dimnames = list(NULL,
                                       paste(rep(paste("V", 1:12, sep = ""), each = 8),
@@ -34,32 +18,69 @@ test_that("widen_blocks works on a single dataframe", {
                                             sep = "_"))))
   expect_equal(
     widen_blocks(example_dfs_list[[1]], colnames_first = TRUE),
+    expected_df)
+  
+  #Test colnames_first = FALSE
+  expected_df2 <- 
+    data.frame(matrix(as.character(1:96), nrow = 1,
+                      dimnames = list(NULL,
+                                      paste(as.character(rep(1:8, each = 12)),
+                                            rep(paste("V", 1:12, sep = ""), 8),
+                                            sep = "_"))))
+  for (i in 1:ncol(expected_df2)) {
+    colnames(expected_df2)[i] <- 
+      as.character(substr(colnames(expected_df2)[i], 
+                          2, nchar(colnames(expected_df2)[i])))
+  }
+  expect_equal(
+    widen_blocks(example_dfs_list[[1]], colnames_first = FALSE),
     expected_df2)
 })
 
-##TODO fix this test too!
 test_that("widen_blocks works on a list of dataframes", {
-  #With no metadata
+  #With no metadata, colnames_first
   example_dfs_list <- rep(list(NA), 100)
   for (i in 1:length(example_dfs_list)) {
     example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
                                                   nrow = 8, byrow = T))
   }
-  wide2_expected <- data.frame(matrix(NA, nrow = 100, ncol = 96,
+  wide_expected <- data.frame(matrix(NA, nrow = 100, ncol = 96,
                                       dimnames = list(NULL,
-                                                      paste(rep(paste("V", 1:12, sep = ""), 8),
-                                                            rep(1:8, each = 12), 
+                                                      paste(rep(paste("V", 1:12, sep = ""), each = 8),
+                                                            as.character(rep(1:8, 12)),
                                                             sep = "_"))))
-  for (i in 1:nrow(wide2_expected)) {
-    for (j in 1:ncol(wide2_expected)) {
-      wide2_expected[i, j] <- as.character(as.numeric(i)*as.numeric(j))
+  for (i in 1:nrow(wide_expected)) {
+    for (j in 1:ncol(wide_expected)) {
+      wide_expected[i, j] <-
+        as.character(as.numeric(i)*(rep(1:12, each = 8) + (12 * 0:7))[j])
     }
   }
   expect_equal(
     widen_blocks(example_dfs_list, colnames_first = TRUE),
-    wide2_expected)
+    wide_expected)
   
-  #With metadata
+  #with no metadata, colnames_first = FALSE
+  expected_df2 <- 
+    data.frame(matrix(NA, nrow = 100, ncol = 96,
+                      dimnames = list(NULL,
+                                      paste(as.character(rep(1:8, each = 12)),
+                                            rep(paste("V", 1:12, sep = ""), 8),
+                                            sep = "_"))))
+  for (i in 1:nrow(expected_df2)) {
+    for (j in 1:ncol(expected_df2)) {
+      expected_df2[i, j] <- as.character(as.numeric(i)*as.numeric(j))
+    }
+  }
+  for (i in 1:ncol(expected_df2)) {
+    colnames(expected_df2)[i] <- 
+      as.character(substr(colnames(expected_df2)[i], 
+                          2, nchar(colnames(expected_df2)[i])))
+  }
+  expect_equal(
+    widen_blocks(example_dfs_list, colnames_first = FALSE),
+    expected_df2)
+  
+  #With metadata, colnames_first = FALSE
   example_dfs_list2 <- rep(list(NA), 100)
   for (i in 1:length(example_dfs_list2)) {
     example_dfs_list2[[i]] <- 
@@ -67,7 +88,15 @@ test_that("widen_blocks works on a list of dataframes", {
                                          nrow = 8, byrow = T)),
            "metadata" = c("temp1" = i*15, "temp2" = i*30))
   }
+  expected_df3 <- 
+    cbind(data.frame("temp1" = as.character(15*(1:100)), 
+                     "temp2" = as.character(30*(1:100))),
+          expected_df2)
+  
   #read blocks with metadata in row2 col 3, row 3 col 6
+  expect_equal(
+    widen_blocks(example_dfs_list2, colnames_first = FALSE),
+    expected_df3)
 })
 
 

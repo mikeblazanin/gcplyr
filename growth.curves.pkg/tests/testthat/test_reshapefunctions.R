@@ -9,17 +9,42 @@ test_that("widen_blocks works on a single dataframe", {
                                                   nrow = 8, byrow = T))
   }
   
-  expect_equal(
-    widen_blocks(example_dfs_list[[1]], colnames_first = TRUE),
+  #Test colnames_first = FALSE
+  expected_df <- 
     data.frame(matrix(as.character(1:96), nrow = 1,
                       dimnames = list(NULL,
-                                      paste(rep(paste("V", 1:12, sep = ""), 8),
-                                            rep(1:8, each = 12), 
-                                            sep = "_")))))
+                                      paste(as.character(rep(1:8, each = 12)),
+                                            rep(paste("V", 1:12, sep = ""), 8),
+                                            sep = "_"))))
+  for (i in 1:ncol(expected_df)) {
+    colnames(expected_df)[i] <- 
+      as.character(substr(colnames(expected_df)[i], 
+                          2, nchar(colnames(expected_df)[i])))
+  }
+  expect_equal(
+    widen_blocks(example_dfs_list[[1]], colnames_first = FALSE),
+    expected_df)
   
+  #Test colnames_first = TRUE
+  expected_df2 <- 
+    data.frame(matrix(as.character(rep(1:12, each = 8) + (12 * 0:7)), nrow = 1,
+                      dimnames = list(NULL,
+                                      paste(rep(paste("V", 1:12, sep = ""), each = 8),
+                                            as.character(rep(1:8, 12)),
+                                            sep = "_"))))
+  expect_equal(
+    widen_blocks(example_dfs_list[[1]], colnames_first = TRUE),
+    expected_df2)
 })
 
+##TODO fix this test too!
 test_that("widen_blocks works on a list of dataframes", {
+  #With no metadata
+  example_dfs_list <- rep(list(NA), 100)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
+                                                  nrow = 8, byrow = T))
+  }
   wide2_expected <- data.frame(matrix(NA, nrow = 100, ncol = 96,
                                       dimnames = list(NULL,
                                                       paste(rep(paste("V", 1:12, sep = ""), 8),
@@ -30,10 +55,19 @@ test_that("widen_blocks works on a list of dataframes", {
       wide2_expected[i, j] <- as.character(as.numeric(i)*as.numeric(j))
     }
   }
-  
   expect_equal(
     widen_blocks(example_dfs_list, colnames_first = TRUE),
     wide2_expected)
+  
+  #With metadata
+  example_dfs_list2 <- rep(list(NA), 100)
+  for (i in 1:length(example_dfs_list2)) {
+    example_dfs_list2[[i]] <- 
+      list("data" = as.data.frame(matrix(as.character(i*(1:96)), 
+                                         nrow = 8, byrow = T)),
+           "metadata" = c("temp1" = i*15, "temp2" = i*30))
+  }
+  #read blocks with metadata in row2 col 3, row 3 col 6
 })
 
 

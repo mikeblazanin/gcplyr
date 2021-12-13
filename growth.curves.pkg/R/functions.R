@@ -278,21 +278,33 @@ read_blocks <- function(files, extension = NULL,
   if (is.null(startrow)) {
     startrow <- rep(NA, length(files))
   } else {
+    if (!all(is.numeric(startrow))) {
+      startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
+    }
     startrow <- checkdim_inputs(startrow, "startrow", length(files))
   }
   if (is.null(endrow)) {
     endrow <- rep(NA, length(files))
   } else {
+    if (!all(is.numeric(endrow))) {
+      endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
+    }
     endrow <- checkdim_inputs(endrow, "endrow", length(files))
   }
   if (is.null(startcol)) {
     startcol <- rep(NA, length(files))
   } else {
+    if (!all(is.numeric(startcol))) {
+      startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
+    }
     startcol <- checkdim_inputs(startcol, "startcol", length(files))
   }
   if (is.null(endcol)) {
     endcol <- rep(NA, length(files))
   } else {
+    if (!all(is.numeric(endcol))) {
+      endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
+    }
     endcol <- checkdim_inputs(endcol, "endcol", length(files))
   }
   if (!is.null(sheet)) {

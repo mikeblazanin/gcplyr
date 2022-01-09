@@ -1,3 +1,8 @@
+##Name options:
+#gcplyr
+#growthcurvalyzer
+#gcanalyzer
+
 #TODO:  
 #       Write shorthand functions with presets for find_local_extrema
 #       Use letter-number naming for wells by default (bc it's what other

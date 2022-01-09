@@ -699,11 +699,11 @@ import_widemeasures <- function(files, extension = NULL,
 #' Make tidy design data.frames
 #' 
 #' This is a function to easily input experimental design elements
-#' for later merging with the raw read data
+#' for later merging with read data
 #' 
 #' @details 
-#' Note that either nrows or block_row_names must be provided
-#' and that either ncols or block_col_names must be provided
+#' Note that either \code{nrows} or \code{block_row_names} must be provided
+#' and that either \code{ncols} or \code{block_col_names} must be provided
 #' 
 #' Examples:
 #' my_example <- make_tidydesign(nrows = 8, ncols = 12,
@@ -1192,6 +1192,72 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
                                 colnames(blockmeasures[[1]]),
                                 sep = wellnames_sep)
     }
+  }
+  
+  return(output)
+}
+
+#' Turn tidydesign into block format
+#' 
+#' This function allows users to convert designs created with tidydesign
+#'  into a block format for easy output to csv for inclusion in lab notebooks,
+#'  etc in a human-readable format
+#' @param tidydesign A tidydesign data.frame (e.g. as created by make_tidydesign)
+#' @param collapse NULL or a string to use for concatenating design elements
+#'                 together. If NULL each design column will be put into its
+#'                 own block. If a string, that string will be used to \code{paste}
+#'                 together all design elements and all design elements will
+#'                 be returned in a single block
+#' @param wellnames_sep A string used when concatenating rownames and column
+#'                      names to create well names
+#' @param wellnames_colname Header for newly-created column containing the
+#'                          well names
+#' @return A list of blockdesign data.frames (if \code{collapse} is not 
+#'         \code{NULL} the list is of length 1
+#' 
+#' @export
+blocken_wides <- function(wides, collapse = NULL,
+                             wellnames_sep = "_", wellnames_colname = "Well") {
+  
+  #Get rownames & colnames from well column
+  rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
+                              split = wellnames_sep),
+                     simplify = TRUE,
+                     FUN = function(x) {x[1]})
+  colnames <- sapply(strsplit(tidydesign[, wellnames_colname],
+                              split = wellnames_sep),
+                     simplify = TRUE,
+                     FUN = function(x) {x[2]})
+  #Make empty output
+  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
+                            ncol = length(unique(colnames)))), 
+                length(which(colnames(tidydesign) != wellnames_colname)))
+  
+  #Iterate through each design element
+  i <- 1
+  for (col in which(colnames(tidydesign) != wellnames_colname)) {
+    #Assign row and column names
+    rownames(output[[i]]) <- unique(rownames)
+    colnames(output[[i]]) <- unique(colnames)
+    #Fill data into appropriate row,column in output
+    # (spot is found by matching row/col name to row/col from well column
+    #  in tidydesign input)
+    output[[i]][match(rownames, rownames(output[[i]])) + 
+                  (match(colnames, colnames(output[[i]]))-1)*nrow(output[[i]])] <-
+      tidydesign[, col]
+    i <- i+1
+  }
+  
+  #Collapse (if requested)
+  if (!is.null(collapse)) {
+    output <- list(matrix(do.call("paste", c(output, sep = collapse)),
+                          nrow = length(unique(rownames)),
+                          ncol = length(unique(colnames))))
+    rownames(output[[1]]) <- unique(rownames)
+    colnames(output[[1]]) <- unique(colnames)
+    names(output) <- paste(
+      colnames(tidydesign)[which(colnames(tidydesign) != wellnames_colname)],
+      collapse = collapse)
   }
   
   return(output)

@@ -2,7 +2,7 @@ context("Reshaping functions")
 library(testthat)
 library(growth.curves.pkg)
 
-test_that("widen_blocks works on a single dataframe", {
+test_that("trans_block_to_wide works on a single dataframe", {
   example_dfs_list <- rep(list(NA), 100)
   for (i in 1:length(example_dfs_list)) {
     example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
@@ -17,7 +17,7 @@ test_that("widen_blocks works on a single dataframe", {
                                             as.character(rep(1:8, 12)),
                                             sep = "_"))))
   expect_equal(
-    widen_blocks(example_dfs_list[[1]], colnames_first = TRUE),
+    trans_block_to_wide(example_dfs_list[[1]], colnames_first = TRUE),
     expected_df)
   
   #Test colnames_first = FALSE
@@ -33,11 +33,11 @@ test_that("widen_blocks works on a single dataframe", {
                           2, nchar(colnames(expected_df2)[i])))
   }
   expect_equal(
-    widen_blocks(example_dfs_list[[1]], colnames_first = FALSE),
+    trans_block_to_wide(example_dfs_list[[1]], colnames_first = FALSE),
     expected_df2)
 })
 
-test_that("widen_blocks works on a list of dataframes", {
+test_that("trans_block_to_wide works on a list of dataframes", {
   #With no metadata, colnames_first
   example_dfs_list <- rep(list(NA), 100)
   for (i in 1:length(example_dfs_list)) {
@@ -56,7 +56,7 @@ test_that("widen_blocks works on a list of dataframes", {
     }
   }
   expect_equal(
-    widen_blocks(example_dfs_list, colnames_first = TRUE),
+    trans_block_to_wide(example_dfs_list, colnames_first = TRUE),
     wide_expected)
   
   #with no metadata, colnames_first = FALSE
@@ -77,7 +77,7 @@ test_that("widen_blocks works on a list of dataframes", {
                           2, nchar(colnames(expected_df2)[i])))
   }
   expect_equal(
-    widen_blocks(example_dfs_list, colnames_first = FALSE),
+    trans_block_to_wide(example_dfs_list, colnames_first = FALSE),
     expected_df2)
   
   #With metadata, colnames_first = FALSE
@@ -95,18 +95,18 @@ test_that("widen_blocks works on a list of dataframes", {
   
   #read blocks with metadata in row2 col 3, row 3 col 6
   expect_equal(
-    widen_blocks(example_dfs_list2, colnames_first = FALSE),
+    trans_block_to_wide(example_dfs_list2, colnames_first = FALSE),
     expected_df3)
 })
 
 
-test_that("Pivot_longer works on single dataframe", {
+test_that("trans_wide_to_tidy works on single dataframe", {
   data <- data.frame("time" = 1:100,
                      "Pop1" = 10/(1+exp(-.1*((1:100) - 50))) + 
                        rnorm(100, sd = 0.5),
                      "Pop2" = 20/(1+exp(-.1*((1:100) - 50))) + 
                        rnorm(100, sd = 0.5))
-  data_lng <- pivot_wide_longer(data,
+  data_lng <- trans_wide_to_tidy(data,
                     data_cols = c("Pop1", "Pop2"))
   data_lng <- data_lng[order(data_lng$Well, data_lng$time), ]
   row.names(data_lng) <- 1:200
@@ -116,7 +116,7 @@ test_that("Pivot_longer works on single dataframe", {
                                      Measurements = c(data$Pop1, data$Pop2)))
 })
 
-test_that("Pivot_longer works on list of dataframes", {
+test_that("trans_wide_to_tidy works on list of dataframes", {
   data_lst <- list("df1" = data.frame("time" = 1:100,
                      "Pop1" = 10/(1+exp(-.1*((1:100) - 50))) +
                        rnorm(100, sd = 0.5),
@@ -127,7 +127,7 @@ test_that("Pivot_longer works on list of dataframes", {
                                 rnorm(100, sd = 0.5),
                               "Pop4" = 20/(1+exp(-.1*((1:100) - 50))) +
                                 rnorm(100, sd = 0.5)))
-  data_lst_lng <- pivot_wide_longer(data_lst,
+  data_lst_lng <- trans_wide_to_tidy(data_lst,
                                 id_cols = "time")
   for (i in 1:length(data_lst_lng)) {
     data_lst_lng[[i]] <- data_lst_lng[[i]][order(data_lst_lng[[i]]$Well, 

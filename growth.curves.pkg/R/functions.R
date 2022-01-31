@@ -1,4 +1,4 @@
-# General utilities ----
+# Utility functions ----
 
 #' Check dimension of inputs
 #' 
@@ -11,7 +11,6 @@
 #' @param needed_name What the desired length corresponds to (e.g. number of files)
 #' @return The values of \code{input} coerced to a vector of length \code{needed_len}
 #' 
-#' @export
 checkdim_inputs <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
   if (length(input) != needed_len) {
@@ -1066,7 +1065,7 @@ import_tidydesign <- function() {
 
 # Reshape (including merge) ----
 
-#' Widen blockmeasures
+#' Transform blockmeasures to widemeasures
 #' 
 #' Takes blockmeasures and returns them in a widemeasure format
 #' 
@@ -1081,7 +1080,7 @@ import_tidydesign <- function() {
 #' @return A single widemeasures data.frame
 #' 
 #' @export
-widen_blocks <- function(blockmeasures, wellnames_sep = "_", 
+trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_", 
                          nested_metadata = NULL, colnames_first = TRUE) {
   
   if(class(blockmeasures) != "list") {
@@ -1216,7 +1215,7 @@ widen_blocks <- function(blockmeasures, wellnames_sep = "_",
 #'         \code{NULL} the list is of length 1
 #' 
 #' @export
-blocken_wides <- function(wides, collapse = NULL,
+trans_wide_to_block <- function(wides, collapse = NULL,
                              wellnames_sep = "_", wellnames_colname = "Well") {
   
   #Get rownames & colnames from well column
@@ -1298,7 +1297,7 @@ blocken_wides <- function(wides, collapse = NULL,
 #'         a list of data.frame's)
 #' 
 #' @export  
-pivot_wide_longer <- function(widemeasures, 
+trans_wide_to_tidy <- function(widemeasures, 
                               data_cols = NA,
                               id_cols = NA,
                               names_to = "Well",
@@ -1379,6 +1378,12 @@ pivot_wide_longer <- function(widemeasures,
     return(outputs)
   }
 }
+
+trans_tidy_to_wide <- function() {
+  
+}
+
+
 
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 

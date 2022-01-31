@@ -2,16 +2,17 @@
 #gcplyr
 #growthcurvalyzer
 #gcanalyzer
+#gcer
 
-#TODO:  
+#TODO: 
+#       Write tests for blocken_wides 
+#       Finish import_blockdesign functions
 #       Write shorthand functions with presets for find_local_extrema
 #       Use letter-number naming for wells by default (bc it's what other
 #        software uses and we should be consistent at least)
 #       Accept letter-number naming for rows/cols when reading in data
 #        (bc it's what users will see if they look in Excel for row/cols)
-#       actually test & check that functions work
 #       Compare setup to other packages for similar analyses, eg growthcurver
-#       Get this in package form before the quarantine ends!!!
 #       in growthcurver they keep the timestamps in a column named "time",
 #         I should follow a similar convention
 #         This is especially useful if there are multiple "variable" type
@@ -22,12 +23,9 @@
 #         inference that the rest of the dataframe is data
 #       Improve comments/documentation
 #       
-#       widen_blocks calls t which calls as.matrix
-#       make_layout also does
+#       make_tidydesign calls t which calls as.matrix
 #       
 #       add capability for make_tidydesign to accept simple wellnumbers
-#       
-#       'gcer' is available as a package name
 #       
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)

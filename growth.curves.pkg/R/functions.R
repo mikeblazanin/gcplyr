@@ -652,6 +652,7 @@ read_wides <- function(files, extension = NULL,
   }
 }
 
+#' Read tidy-formatted dfs (in progress)
 read_tidys <- function() {
   
 }
@@ -794,9 +795,6 @@ import_blockdesign <- function(files,
 split_blockdesign <- function() {
   
 }
-
-
-
 
 
 # Make designs ----
@@ -1854,7 +1852,6 @@ find_local_extrema <- function(values,
 #' @return A list of blockdesign data.frames (if \code{collapse} is not
 #'         \code{NULL} the list is of length 1
 #'
-#' @export
 block_tidydesign <- function(tidydesign, collapse = NULL,
                              wellnames_sep = "_", wellnames_colname = "Well") {
   
@@ -1917,7 +1914,6 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
 #' @param ... Other arguments passed to \code{write.csv}
 #' @return Nothing, but R objects are written to files
 #' 
-#' @export
 write_blockdesign <- function(designs, file, ...) {
   #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
   #Also puts the names of the designs in 1,1 cell (as is the case for block designs

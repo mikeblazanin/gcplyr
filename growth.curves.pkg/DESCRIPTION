@@ -30,3 +30,4 @@ Imports:
   dplyr,
   mgcv
 VignetteBuilder: knitr
+LazyData: true

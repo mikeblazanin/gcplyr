@@ -70,7 +70,7 @@ test_that("read_blocks reads data correctly", {
   unlink("./test_blockcurves_data_xlsx", recursive = TRUE)
 })
 
-test_that("import_widemeasures works correctly", {
+test_that("read_wides works correctly", {
   #Make test data
   library(xlsx)
   dir.create("./test_widecurves_data/", showWarnings = F)
@@ -92,7 +92,7 @@ test_that("import_widemeasures works correctly", {
              append = FALSE)
   
   #No names to col, no other settings specified
-  data_in <- import_widemeasures(
+  data_in <- read_wides(
     files = c("./test_widecurves_data/test.csv",
               "./test_widecurves_data/test.xlsx"),
     names_to_col = NULL)
@@ -101,7 +101,7 @@ test_that("import_widemeasures works correctly", {
                     "test_widecurves_data/test" = data))
   
   
-  data_in2 <- import_widemeasures(
+  data_in2 <- read_wides(
     files = c("./test_widecurves_data/test.csv",
               "./test_widecurves_data/test.xlsx"),
     names_to_col = "file")
@@ -111,7 +111,7 @@ test_that("import_widemeasures works correctly", {
                list("test_widecurves_data/test" = data2,
                     "test_widecurves_data/test" = data2))
   
-  data_in3 <- import_widemeasures(
+  data_in3 <- read_wides(
     files = c("./test_widecurves_data/test.csv",
               "./test_widecurves_data/test.xlsx"),
     metadata = list(c(5, 5), "row12col2" = c(12, 2)))

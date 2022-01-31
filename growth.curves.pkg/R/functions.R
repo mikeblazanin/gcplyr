@@ -185,7 +185,7 @@ from_excel <- function(x) {
   return(out)
 }
 
-# Importing block-shaped ----
+# Read files ----
 
 #' Read blockmeasures
 #' 
@@ -431,48 +431,7 @@ read_blocks <- function(files, extension = NULL,
   return(outputs)
 }
 
-#' Import blockmeasures
-#' 
-#' Function to import blockmeasures from files and return widemeasures
-#' This function acts as a wrapper to call read_blocks, uninterleave, 
-#' then widen_blocks in one go
-#' 
-#' @param files Vector of filenames (as strings), each of which is a blockmeasures
-#'              formatted file. Inputs can be .csv, .xls, or .xlsx
-#' @param num_plates Number of plates. If multiple plates uninterleave will be
-#'                   used to separate blockmeasures into those plates accordingly
-#' @param plate_names (optional) Names to put onto the plates when output
-#' @param ... Other arguments to pass to \code{read_blocks}, \code{uninterleave},
-#'            or \code{widen_blocks}
-#' 
-#' @export       
-import_blockmeasures <- function(files, num_plates = 1, 
-                                 plate_names = NULL,
-                                 wellnames_sep = "_",
-                                 ...) {
-  blockmeasures <- uninterleave(read_blocks(files = files, ...),
-                                n = num_plates, ...)
-  widemeasures <- rep(list(NA), num_plates)
-  for (i in 1:length(blockmeasures)) {
-    widemeasures[[i]] <- widen_blocks(blockmeasures[[i]],
-                                         wellnames_sep = wellnames_sep)
-  }
-  if (is.null(plate_names)) { #no plate_names provided
-    names(widemeasures) <- paste("plate_", 1:length(widemeasures), sep = "")
-  } else { #plate_names are provided
-    names(widemeasures) <- plate_names
-  }
-  
-  if (num_plates == 1) {
-    return(widemeasures[[1]])
-  } else {
-    return(widemeasures)
-  }
-}
-
-# Importing wide-shaped ----
-
-#' Import widemeasures
+#' Read wides
 #' 
 #' A function that imports widemeasures in files into the R environment
 #' 
@@ -522,15 +481,15 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'         A list of widemeasures named by filename
 #' 
 #' @export
-import_widemeasures <- function(files, extension = NULL, 
-                              startrow = NULL, endrow = NULL, 
-                              startcol = NULL, endcol = NULL,
-                              header = TRUE,
-                              sheet = NULL, 
-                              run_names = NULL,
-                              names_to_col = "file",
-                              metadata = NULL, 
-                              metadata_Excel_names = TRUE) {
+read_wides <- function(files, extension = NULL, 
+                       startrow = NULL, endrow = NULL, 
+                       startcol = NULL, endcol = NULL,
+                       header = TRUE,
+                       sheet = NULL, 
+                       run_names = NULL,
+                       names_to_col = "file",
+                       metadata = NULL, 
+                       metadata_Excel_names = TRUE) {
   #CLEAN THIS UP LATER
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow-1
@@ -629,17 +588,17 @@ import_widemeasures <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     #Read file & save in temp
     if (extension[i] == "csv") {
-       temp <- utils::read.csv(files[i], colClasses = "character", header = FALSE)
+      temp <- utils::read.csv(files[i], colClasses = "character", header = FALSE)
     } else if (extension[i] == "xls") {
       suppressMessages(temp <- 
                          as.data.frame(
                            readxl::read_xls(files[i], col_names = FALSE, 
-                                           col_types = "text", sheet = sheet[i])))
+                                            col_types = "text", sheet = sheet[i])))
     } else if (extension[i] == "xlsx") {
       suppressMessages(temp <- 
                          as.data.frame(
-                         readxl::read_xlsx(files[i], col_names = FALSE, 
-                                           col_types = "text", sheet = sheet[i])))
+                           readxl::read_xlsx(files[i], col_names = FALSE, 
+                                             col_types = "text", sheet = sheet[i])))
     }
     
     #Infer colnames/take subsets as needed
@@ -693,7 +652,154 @@ import_widemeasures <- function(files, extension = NULL,
   }
 }
 
-# Get/make designs ----
+read_tidys <- function() {
+  
+}
+
+
+## Import block-shaped (read, uninterleave, transform to wide) ----
+
+#' Import blockmeasures
+#' 
+#' Function to import blockmeasures from files and return widemeasures
+#' This function acts as a wrapper to call read_blocks, uninterleave, 
+#' then widen_blocks in one go
+#' 
+#' @param files Vector of filenames (as strings), each of which is a blockmeasures
+#'              formatted file. Inputs can be .csv, .xls, or .xlsx
+#' @param num_plates Number of plates. If multiple plates uninterleave will be
+#'                   used to separate blockmeasures into those plates accordingly
+#' @param plate_names (optional) Names to put onto the plates when output
+#' @param ... Other arguments to pass to \code{read_blocks}, \code{uninterleave},
+#'            or \code{widen_blocks}
+#' 
+#' @export       
+import_blockmeasures <- function(files, num_plates = 1, 
+                                 plate_names = NULL,
+                                 wellnames_sep = "_",
+                                 ...) {
+  blockmeasures <- uninterleave(read_blocks(files = files, ...),
+                                n = num_plates, ...)
+  widemeasures <- rep(list(NA), num_plates)
+  for (i in 1:length(blockmeasures)) {
+    widemeasures[[i]] <- widen_blocks(blockmeasures[[i]],
+                                         wellnames_sep = wellnames_sep)
+  }
+  if (is.null(plate_names)) { #no plate_names provided
+    names(widemeasures) <- paste("plate_", 1:length(widemeasures), sep = "")
+  } else { #plate_names are provided
+    names(widemeasures) <- plate_names
+  }
+  
+  if (num_plates == 1) {
+    return(widemeasures[[1]])
+  } else {
+    return(widemeasures)
+  }
+}
+
+
+#' Import blockdesigns from file (work-in-progress)
+#' 
+#' This function imports blockdesigns from file into the R environment
+#' 
+import_blockdesign <- function(files,
+                               startrow = 2, startcol = 2,
+                               metadata = list("design_element" = c(1, 1)),
+                               field_sep = "_",
+                               id_cols = c("block_name", "design_element"),
+                               ...) {
+  #Takes in a list of files, each of which includes a layout in it
+  # then cleans up the layout information in those files
+  # by splitting it
+  #Outputs that layout information in a tidy format
+  #
+  #By default assumes that the design element name is in row 1, column 1
+  #E.g. a design block file looks like this:
+  #     Treatment   1   2   3   4   5   6   7   ...
+  #     A           L   G   C   L   G   C   L   ...
+  #     B           L   G   C   L   G   C   L   ...
+  #     C           L   G   C   L   G   C   L   ...
+  #     ...
+  # Where A, B, C... are the row names; 1, 2, 3... are the column names
+  #   and L, G, and C are the values for the treatment element
+  # If this is not true, set metadata = NULL and adjust startrow/startcol
+  
+  ##General steps
+  ##1. use read_blocks to get design into R
+  ##2. use widen_blocks to get design into wide format
+  ##3. use pivot wides longer to get design into tidy format
+  ##2. use split block to split design elements
+  
+  blockdesigns <- read_blocks(files = files,
+                              metadata = metadata,
+                              startrow = startrow, startcol = startcol,
+                              ...)
+  widedesigns <- widen_blocks(blockdesigns, ...)
+  
+  
+  
+  
+  #What to do if design_element is not supplied?
+  tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
+                                   values_to = widedesigns$design_element[1],
+                                   ...)
+  
+  
+  
+  
+  split_blockdesign()
+  #For reference, old version (possibly)
+  layout_cleanup <- function(layout) {
+    #This function takes a layout dataframe with ...'s where info needs to be 
+    #iterated in and does so, while adding _A, _B etc for replicate wells
+    #with the same contents
+    #Wells labeled NA are not filled in (they are empty)
+    
+    #Define a matrix to track well contents we've seen before
+    #So that when they come up again the replicate number can resume
+    #where it left off
+    vals_and_cntr <- matrix(nrow = 0, ncol = 2)
+    for (i in 1:nrow(layout)) {
+      for (j in 2:ncol(layout)) {
+        if(!is.na(layout[i, j])) { #Non-empty well
+          if (nchar(layout[i, j]) > 1) { #Non ... well
+            current_val <- layout[i, j]
+            if (!(current_val %in% vals_and_cntr[, 1])) {
+              #This is the first time we've seen these well contents
+              #So we should start numbering replicates at the beginning
+              vals_and_cntr <- rbind(vals_and_cntr, c(current_val, 1))
+              row <- nrow(vals_and_cntr)
+            } else { 
+              #this isn't the first time we've seen these contents
+              #resume replicate numbering where we left off
+              row <- which(vals_and_cntr[, 1] == current_val)
+            }
+          }
+          layout[i, j] <- paste(current_val, 
+                                LETTERS[as.numeric(vals_and_cntr[row, 2])], sep = "_")
+          vals_and_cntr[row, 2] <- as.numeric(vals_and_cntr[row, 2]) + 1
+        }
+      }
+    }
+    return(layout)
+  }
+}
+
+#' Split block designs (work in progress)
+#' 
+#' This function will be called to split block designs that have been read
+#' from a file, after they've been widened and pivot_longered
+#' 
+split_blockdesign <- function() {
+  
+}
+
+
+
+
+
+# Make designs ----
 
 #' Make tidy design data.frames
 #' 
@@ -857,219 +963,14 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
             is.character(pattern), is.logical(byrow))
   return(list(values, rows, cols, pattern, byrow))
 }
- 
-#' Turn tidydesign into block format
-#' 
-#' This function allows users to convert designs created with tidydesign
-#'  into a block format for easy output to csv for inclusion in lab notebooks,
-#'  etc in a human-readable format
-#' @param tidydesign A tidydesign data.frame (e.g. as created by make_tidydesign)
-#' @param collapse NULL or a string to use for concatenating design elements
-#'                 together. If NULL each design column will be put into its
-#'                 own block. If a string, that string will be used to \code{paste}
-#'                 together all design elements and all design elements will
-#'                 be returned in a single block
-#' @param wellnames_sep A string used when concatenating rownames and column
-#'                      names to create well names
-#' @param wellnames_colname Header for newly-created column containing the
-#'                          well names
-#' @return A list of blockdesign data.frames (if \code{collapse} is not 
-#'         \code{NULL} the list is of length 1
-#' 
-#' @export
-block_tidydesign <- function(tidydesign, collapse = NULL,
-                                wellnames_sep = "_", wellnames_colname = "Well") {
-  
-  #Get rownames & colnames from well column
-  rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
-                              split = wellnames_sep),
-                     simplify = TRUE,
-                     FUN = function(x) {x[1]})
-  colnames <- sapply(strsplit(tidydesign[, wellnames_colname],
-                              split = wellnames_sep),
-                     simplify = TRUE,
-                     FUN = function(x) {x[2]})
-  #Make empty output
-  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
-                            ncol = length(unique(colnames)))), 
-                length(which(colnames(tidydesign) != wellnames_colname)))
-  
-  #Iterate through each design element
-  i <- 1
-  for (col in which(colnames(tidydesign) != wellnames_colname)) {
-    #Assign row and column names
-    rownames(output[[i]]) <- unique(rownames)
-    colnames(output[[i]]) <- unique(colnames)
-    #Fill data into appropriate row,column in output
-    # (spot is found by matching row/col name to row/col from well column
-    #  in tidydesign input)
-    output[[i]][match(rownames, rownames(output[[i]])) + 
-             (match(colnames, colnames(output[[i]]))-1)*nrow(output[[i]])] <-
-      tidydesign[, col]
-    i <- i+1
-  }
-  
-  #Collapse (if requested)
-  if (!is.null(collapse)) {
-    output <- list(matrix(do.call("paste", c(output, sep = collapse)),
-                     nrow = length(unique(rownames)),
-                     ncol = length(unique(colnames))))
-    rownames(output[[1]]) <- unique(rownames)
-    colnames(output[[1]]) <- unique(colnames)
-    names(output) <- paste(
-      colnames(tidydesign)[which(colnames(tidydesign) != wellnames_colname)],
-      collapse = collapse)
-  }
-  
-  return(output)
-}
-
-#' Write block designs to csv
-#' 
-#' This function is basically just a wrapper for write.csv that also works
-#' when handed a list of matrices/dataframes
-#' If \code{designs} is a list, \code{names(designs)} will be placed in the
-#' 1,1 cell of each block
-#' 
-#' @param designs data.frame or matrix (if one design), or list of data.frames
-#'                or matrices, to be written to file
-#' @param file The filename (if a single design), or vector of file names
-#'             (if multiple designs)
-#' @param ... Other arguments passed to \code{write.csv}
-#' @return Nothing, but R objects are written to files
-#' 
-#' @export
-write_blockdesign <- function(designs, file, ...) {
-  #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
-  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
-  if (is.data.frame(designs)) {
-    utils::write.csv(x = designs, file = file, ...)
-  } else if (is.list(designs)) {
-    for (i in 1:length(designs)) {
-      tmp <- cbind(data.frame(row.names(designs[[i]])),
-                        designs[[i]])
-      colnames(tmp)[1] <- names(designs)[i]
-      utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
-    }   
-  }
-}
-
-#' Import blockdesigns from file
-#' 
-#' This function imports blockdesigns from file into the R environment
-#' (work in progress)
-#' 
-#' @export
-import_blockdesign <- function(files,
-                               startrow = 2, startcol = 2,
-                               metadata = list("design_element" = c(1, 1)),
-                               field_sep = "_",
-                               id_cols = c("block_name", "design_element"),
-                               ...) {
-  #Takes in a list of files, each of which includes a layout in it
-  # then cleans up the layout information in those files
-  # by splitting it
-  #Outputs that layout information in a tidy format
-  #
-  #By default assumes that the design element name is in row 1, column 1
-  #E.g. a design block file looks like this:
-  #     Treatment   1   2   3   4   5   6   7   ...
-  #     A           L   G   C   L   G   C   L   ...
-  #     B           L   G   C   L   G   C   L   ...
-  #     C           L   G   C   L   G   C   L   ...
-  #     ...
-  # Where A, B, C... are the row names; 1, 2, 3... are the column names
-  #   and L, G, and C are the values for the treatment element
-  # If this is not true, set metadata = NULL and adjust startrow/startcol
-  
-  ##General steps
-  ##1. use read_blocks to get design into R
-  ##2. use widen_blocks to get design into wide format
-  ##3. use pivot wides longer to get design into tidy format
-  ##2. use split block to split design elements
-  
-  blockdesigns <- read_blocks(files = files,
-                              metadata = metadata,
-                              startrow = startrow, startcol = startcol,
-                              ...)
-  widedesigns <- widen_blocks(blockdesigns, ...)
-  
-  
-  
-  
-  #What to do if design_element is not supplied?
-  tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
-                                  values_to = widedesigns$design_element[1],
-                                  ...)
-  
-                                        
-                                        
-                                        
-        split_blockdesign()
-  #For reference, old version (possibly)
-  layout_cleanup <- function(layout) {
-    #This function takes a layout dataframe with ...'s where info needs to be 
-    #iterated in and does so, while adding _A, _B etc for replicate wells
-    #with the same contents
-    #Wells labeled NA are not filled in (they are empty)
-    
-    #Define a matrix to track well contents we've seen before
-    #So that when they come up again the replicate number can resume
-    #where it left off
-    vals_and_cntr <- matrix(nrow = 0, ncol = 2)
-    for (i in 1:nrow(layout)) {
-      for (j in 2:ncol(layout)) {
-        if(!is.na(layout[i, j])) { #Non-empty well
-          if (nchar(layout[i, j]) > 1) { #Non ... well
-            current_val <- layout[i, j]
-            if (!(current_val %in% vals_and_cntr[, 1])) {
-              #This is the first time we've seen these well contents
-              #So we should start numbering replicates at the beginning
-              vals_and_cntr <- rbind(vals_and_cntr, c(current_val, 1))
-              row <- nrow(vals_and_cntr)
-            } else { 
-              #this isn't the first time we've seen these contents
-              #resume replicate numbering where we left off
-              row <- which(vals_and_cntr[, 1] == current_val)
-            }
-          }
-          layout[i, j] <- paste(current_val, 
-                                LETTERS[as.numeric(vals_and_cntr[row, 2])], sep = "_")
-          vals_and_cntr[row, 2] <- as.numeric(vals_and_cntr[row, 2]) + 1
-        }
-      }
-    }
-    return(layout)
-  }
-  
-  
-  
-}
-
-#' Split block designs
-#' 
-#' This function will be called to split block designs that have been read
-#' from a file, after they've been widened and pivot_longered
-#' (work in progress)
-#' 
-#' @export
-split_blockdesign <- function() {
-}
-
-#' Import tidydesign from file
-#' (work in progress)
-#' 
-#' @export
-import_tidydesign <- function() {
-}
 
 # Reshape (including merge) ----
 
-#' Transform blockmeasures to widemeasures
+#' Transform blocks to wides
 #' 
-#' Takes blockmeasures and returns them in a widemeasure format
+#' Takes blocks and returns them in a wide format
 #' 
-#' @param blockmeasures Blockmeasures, either a single data.frame or a list of
+#' @param blocks Blockmeasures, either a single data.frame or a list of
 #'                      data.frames
 #' @param wellnames_sep String to use as separator for well names between 
 #'                      rowname and column name
@@ -1080,45 +981,45 @@ import_tidydesign <- function() {
 #' @return A single widemeasures data.frame
 #' 
 #' @export
-trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_", 
+trans_block_to_wide <- function(blocks, wellnames_sep = "_", 
                          nested_metadata = NULL, colnames_first = TRUE) {
   
-  if(class(blockmeasures) != "list") {
-    blockmeasures <- list(blockmeasures)
+  if(class(blocks) != "list") {
+    blocks <- list(blocks)
   }
   
   #Infer nestedness if nested_metadata is set to NULL
   if (is.null(nested_metadata)) {
-    if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "data.frame")) {
+    if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
       nested_metadata <- FALSE
       warning("Inferring nested_metadata to be FALSE")
-    } else if (all(sapply(blockmeasures, simplify = TRUE, FUN = class) == "list")) {
+    } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
       nested_metadata <- TRUE
       warning("Inferring nested_metadata to be TRUE")
     } else {
-      stop("Unable to infer nested_metadata, this may be because blockmeasures vary in nestedness or are not data.frame's")
+      stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
     }
   }
   
-  #Check that all blockmeasures have same dimensions
-  if (length(blockmeasures) > 1) {
+  #Check that all blocks have same dimensions
+  if (length(blocks) > 1) {
     if (nested_metadata) { #there is nested metadata
-      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
+      if (stats::var(sapply(blocks, simplify = TRUE, 
                             FUN = function(x) {dim(x[[1]])[1]})) != 0) {
-        stop("Not all blockmeasures have the same number of rows of data")
+        stop("Not all blocks have the same number of rows of data")
       }
-      if (stats::var(sapply(blockmeasures, simplify = TRUE,
+      if (stats::var(sapply(blocks, simplify = TRUE,
                             FUN = function(x) {dim(x[[1]])[2]})) != 0) {
-        stop("Not all blockmeasures have the same number of columns of data")
+        stop("Not all blocks have the same number of columns of data")
       }
     } else { #there is not nested metadata
-      if (stats::var(sapply(blockmeasures, simplify = TRUE, 
+      if (stats::var(sapply(blocks, simplify = TRUE, 
                             FUN = function(x) {dim(x)[1]})) != 0) {
-        stop("Not all blockmeasures have the same number of rows of data")
+        stop("Not all blocks have the same number of rows of data")
       }
-      if (stats::var(sapply(blockmeasures, simplify = TRUE,
+      if (stats::var(sapply(blocks, simplify = TRUE,
                             FUN = function(x) {dim(x)[2]})) != 0) {
-        stop("Not all blockmeasures have the same number of columns of data")
+        stop("Not all blocks have the same number of columns of data")
       }
     }
   }
@@ -1126,7 +1027,7 @@ trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_",
   #convert list of dataframes to single dataframe
   #where each column is a well and each row is a plate read
   #(each column is a row-column combination from the blockcurve)
-  #(each row is a single dataframe from blockmeasures)
+  #(each row is a single dataframe from blocks)
   #Adding the metadata as the first n columns
 
   if (nested_metadata) { #There is nested metadata
@@ -1136,15 +1037,15 @@ trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_",
         as.data.frame(
           do.call(rbind,
                   lapply(
-                    blockmeasures, 
+                    blocks, 
                     FUN = function(x) {c(x[[2]],
                                          apply(x[[1]], MARGIN = 2, unlist))})),
           stringsAsFactors = FALSE)
       #Assign column names
-      colnames(output) <- c(names(blockmeasures[[1]][[2]]),
-                            paste(rep(colnames(blockmeasures[[1]][[1]]),
-                                      each = nrow(blockmeasures[[1]][[1]])),
-                                  rownames(blockmeasures[[1]][[1]]),
+      colnames(output) <- c(names(blocks[[1]][[2]]),
+                            paste(rep(colnames(blocks[[1]][[1]]),
+                                      each = nrow(blocks[[1]][[1]])),
+                                  rownames(blocks[[1]][[1]]),
                                   sep = wellnames_sep))
     } else { #rownames first
       #Reshape
@@ -1152,15 +1053,15 @@ trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_",
         as.data.frame(
           do.call(rbind,
                   lapply(
-                    blockmeasures, 
+                    blocks, 
                     FUN = function(x) {c(x[[2]],
                                          apply(x[[1]], MARGIN = 1, unlist))})),
           stringsAsFactors = FALSE)
       #Assign column names
-      colnames(output) <- c(names(blockmeasures[[1]][[2]]),
-                            paste(rep(rownames(blockmeasures[[1]][[1]]),
-                                      each = ncol(blockmeasures[[1]][[1]])),
-                                  colnames(blockmeasures[[1]][[1]]),
+      colnames(output) <- c(names(blocks[[1]][[2]]),
+                            paste(rep(rownames(blocks[[1]][[1]]),
+                                      each = ncol(blocks[[1]][[1]])),
+                                  colnames(blocks[[1]][[1]]),
                                   sep = wellnames_sep))
     }
   } else { #There is not nested metadata
@@ -1169,26 +1070,26 @@ trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_",
       output <- 
         as.data.frame(
           do.call(rbind,
-                  lapply(blockmeasures, 
+                  lapply(blocks, 
                          FUN = function(x) {c(apply(x, MARGIN = 2, unlist))})),
           stringsAsFactors = FALSE)
       #Assign column names
-      colnames(output) <- paste(rep(colnames(blockmeasures[[1]]),
-                                    each = nrow(blockmeasures[[1]])),
-                                rownames(blockmeasures[[1]]),
+      colnames(output) <- paste(rep(colnames(blocks[[1]]),
+                                    each = nrow(blocks[[1]])),
+                                rownames(blocks[[1]]),
                                 sep = wellnames_sep)
     } else { #rownames first
       #Reshape
       output <- 
         as.data.frame(
           do.call(rbind,
-                  lapply(blockmeasures, 
+                  lapply(blocks, 
                          FUN = function(x) {c(apply(x, MARGIN = 1, unlist))})),
           stringsAsFactors = FALSE)
       #Assign column names
-      colnames(output) <- paste(rep(rownames(blockmeasures[[1]]),
-                                    each = ncol(blockmeasures[[1]])),
-                                colnames(blockmeasures[[1]]),
+      colnames(output) <- paste(rep(rownames(blocks[[1]]),
+                                    each = ncol(blocks[[1]])),
+                                colnames(blocks[[1]]),
                                 sep = wellnames_sep)
     }
   }
@@ -1196,27 +1097,36 @@ trans_block_to_wide <- function(blockmeasures, wellnames_sep = "_",
   return(output)
 }
 
-#' Turn tidydesign into block format
+#' Transform wides into block format (in progress)
 #' 
-#' This function allows users to convert designs created with tidydesign
-#'  into a block format for easy output to csv for inclusion in lab notebooks,
-#'  etc in a human-readable format
-#' @param tidydesign A tidydesign data.frame (e.g. as created by make_tidydesign)
-#' @param collapse NULL or a string to use for concatenating design elements
-#'                 together. If NULL each design column will be put into its
-#'                 own block. If a string, that string will be used to \code{paste}
-#'                 together all design elements and all design elements will
+#' Takes wides and returns them in a block format
+#'
+#' @param wides Wide dataframe(s) (either widemeasures or widedesign)
+#' @param collapse NULL or a string to use for concatenating contents
+#'                 together. If NULL each row in \code{wides} will be put into 
+#'                 its own block. If a string, that string will be used to 
+#'                 \code{paste} together all elements and all elements will
 #'                 be returned in a single block
-#' @param wellnames_sep A string used when concatenating rownames and column
-#'                      names to create well names
-#' @param wellnames_colname Header for newly-created column containing the
-#'                          well names
-#' @return A list of blockdesign data.frames (if \code{collapse} is not 
-#'         \code{NULL} the list is of length 1
+#' @param wellnames_sep A string used to identify the rownames and column
+#'                      names
+#' @return A list of block data.frames (if \code{collapse} is not 
+#'         \code{NULL} the list is of length 1)
 #' 
-#' @export
 trans_wide_to_block <- function(wides, collapse = NULL,
-                             wellnames_sep = "_", wellnames_colname = "Well") {
+                             wellnames_sep = "_") {
+  
+  
+  
+  ##Old code below:
+  
+  
+  #Make empty output
+  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
+                            ncol = length(unique(colnames)))), 
+                length(which(colnames(tidydesign) != wellnames_colname)))
+  
+  
+  
   
   #Get rownames & colnames from well column
   rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
@@ -1227,10 +1137,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
                               split = wellnames_sep),
                      simplify = TRUE,
                      FUN = function(x) {x[2]})
-  #Make empty output
-  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
-                            ncol = length(unique(colnames)))), 
-                length(which(colnames(tidydesign) != wellnames_colname)))
+  
   
   #Iterate through each design element
   i <- 1
@@ -1379,11 +1286,11 @@ trans_wide_to_tidy <- function(widemeasures,
   }
 }
 
+#' Transform tidy dfs into wide (in progress)
+#' 
 trans_tidy_to_wide <- function() {
   
 }
-
-
 
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 
@@ -1924,4 +1831,104 @@ find_local_extrema <- function(values,
   }
   
   return(output)
+}
+
+
+##Legacy Code ----
+
+#' Turn tidydesign into block format
+#'
+#' This function allows users to convert designs created with tidydesign
+#'  into a block format for easy output to csv for inclusion in lab notebooks,
+#'  etc in a human-readable format
+#' @param tidydesign A tidydesign data.frame (e.g. as created by make_tidydesign)
+#' @param collapse NULL or a string to use for concatenating design elements
+#'                 together. If NULL each design column will be put into its
+#'                 own block. If a string, that string will be used to \code{paste}
+#'                 together all design elements and all design elements will
+#'                 be returned in a single block
+#' @param wellnames_sep A string used when concatenating rownames and column
+#'                      names to create well names
+#' @param wellnames_colname Header for newly-created column containing the
+#'                          well names
+#' @return A list of blockdesign data.frames (if \code{collapse} is not
+#'         \code{NULL} the list is of length 1
+#'
+#' @export
+block_tidydesign <- function(tidydesign, collapse = NULL,
+                             wellnames_sep = "_", wellnames_colname = "Well") {
+  
+  #Get rownames & colnames from well column
+  rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
+                              split = wellnames_sep),
+                     simplify = TRUE,
+                     FUN = function(x) {x[1]})
+  colnames <- sapply(strsplit(tidydesign[, wellnames_colname],
+                              split = wellnames_sep),
+                     simplify = TRUE,
+                     FUN = function(x) {x[2]})
+  #Make empty output
+  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
+                            ncol = length(unique(colnames)))),
+                length(which(colnames(tidydesign) != wellnames_colname)))
+  
+  #Iterate through each design element
+  i <- 1
+  for (col in which(colnames(tidydesign) != wellnames_colname)) {
+    #Assign row and column names
+    rownames(output[[i]]) <- unique(rownames)
+    colnames(output[[i]]) <- unique(colnames)
+    #Fill data into appropriate row,column in output
+    # (spot is found by matching row/col name to row/col from well column
+    #  in tidydesign input)
+    output[[i]][match(rownames, rownames(output[[i]])) +
+                  (match(colnames, colnames(output[[i]]))-1)*nrow(output[[i]])] <-
+      tidydesign[, col]
+    i <- i+1
+  }
+  
+  #Collapse (if requested)
+  if (!is.null(collapse)) {
+    output <- list(matrix(do.call("paste", c(output, sep = collapse)),
+                          nrow = length(unique(rownames)),
+                          ncol = length(unique(colnames))))
+    rownames(output[[1]]) <- unique(rownames)
+    colnames(output[[1]]) <- unique(colnames)
+    names(output) <- paste(
+      colnames(tidydesign)[which(colnames(tidydesign) != wellnames_colname)],
+      collapse = collapse)
+  }
+  
+  return(output)
+}
+
+
+#' Write block designs to csv
+#' 
+#' This function is basically just a wrapper for write.csv that also works
+#' when handed a list of matrices/dataframes
+#' If \code{designs} is a list, \code{names(designs)} will be placed in the
+#' 1,1 cell of each block
+#' 
+#' @param designs data.frame or matrix (if one design), or list of data.frames
+#'                or matrices, to be written to file
+#' @param file The filename (if a single design), or vector of file names
+#'             (if multiple designs)
+#' @param ... Other arguments passed to \code{write.csv}
+#' @return Nothing, but R objects are written to files
+#' 
+#' @export
+write_blockdesign <- function(designs, file, ...) {
+  #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
+  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
+  if (is.data.frame(designs)) {
+    utils::write.csv(x = designs, file = file, ...)
+  } else if (is.list(designs)) {
+    for (i in 1:length(designs)) {
+      tmp <- cbind(data.frame(row.names(designs[[i]])),
+                   designs[[i]])
+      colnames(tmp)[1] <- names(designs)[i]
+      utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
+    }   
+  }
 }

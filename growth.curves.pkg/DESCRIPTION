@@ -16,6 +16,8 @@ Description: This is a package containing functions for use in importing,
 License: MIT + file LICENSE
 Encoding: UTF-8
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
@@ -27,3 +29,4 @@ Imports:
   tools,
   dplyr,
   mgcv
+VignetteBuilder: knitr

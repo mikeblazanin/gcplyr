@@ -1,0 +1,19 @@
+---
+title: "gcplyr-workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{gcplyr-workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(growth.curves.pkg)
+```

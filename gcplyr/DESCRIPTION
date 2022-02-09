@@ -31,3 +31,6 @@ Imports:
   mgcv
 VignetteBuilder: knitr
 LazyData: true
+Depends: 
+    R (>= 2.10)
+

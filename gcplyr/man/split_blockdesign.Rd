@@ -2,12 +2,11 @@
 % Please edit documentation in R/functions.R
 \name{split_blockdesign}
 \alias{split_blockdesign}
-\title{Split block designs}
+\title{Split block designs (work in progress)}
 \usage{
 split_blockdesign()
 }
 \description{
 This function will be called to split block designs that have been read
 from a file, after they've been widened and pivot_longered
-(work in progress)
 }

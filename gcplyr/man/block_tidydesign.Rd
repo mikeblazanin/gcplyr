@@ -27,7 +27,7 @@ names to create well names}
 well names}
 }
 \value{
-A list of blockdesign data.frames (if \code{collapse} is not 
+A list of blockdesign data.frames (if \code{collapse} is not
         \code{NULL} the list is of length 1
 }
 \description{

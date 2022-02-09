@@ -50,11 +50,11 @@ will be numbered with "R" and "C" prefix.}
 }
 \description{
 This is a function to easily input experimental design elements
-for later merging with the raw read data
+for later merging with read data
 }
 \details{
-Note that either nrows or block_row_names must be provided
-and that either ncols or block_col_names must be provided
+Note that either \code{nrows} or \code{block_row_names} must be provided
+and that either \code{ncols} or \code{block_col_names} must be provided
 
 Examples:
 my_example <- make_tidydesign(nrows = 8, ncols = 12,

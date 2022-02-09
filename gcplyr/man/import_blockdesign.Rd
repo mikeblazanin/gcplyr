@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{import_blockdesign}
 \alias{import_blockdesign}
-\title{Import blockdesigns from file}
+\title{Import blockdesigns from file (work-in-progress)}
 \usage{
 import_blockdesign(
   files,
@@ -16,5 +16,4 @@ import_blockdesign(
 }
 \description{
 This function imports blockdesigns from file into the R environment
-(work in progress)
 }

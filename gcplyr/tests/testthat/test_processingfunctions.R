@@ -1,6 +1,6 @@
 context("Processing functions")
 library(testthat)
-library(growth.curves.pkg)
+library(gcplyr)
 
 #For testing smooth_data
 

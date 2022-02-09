@@ -1,4 +1,4 @@
 library(testthat)
-library(growth.curves.pkg)
+library(gcplyr)
 
-test_check("growth.curves.pkg")
+test_check("gcplyr")

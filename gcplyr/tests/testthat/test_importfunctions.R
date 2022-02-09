@@ -1,6 +1,6 @@
 context("Import functions")
 library(testthat)
-library(growth.curves.pkg)
+library(gcplyr)
 
 test_that("read_blocks reads data correctly", {
   #Make test blockcurves data

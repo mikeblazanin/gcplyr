@@ -1,6 +1,6 @@
 context("Utility functions")
 library(testthat)
-library(growth.curves.pkg)
+library(gcplyr)
 
 test_that("checkdim_inputs returns correct length", {
   expect_equal(checkdim_inputs("A", "test_name", needed_len = 5), 

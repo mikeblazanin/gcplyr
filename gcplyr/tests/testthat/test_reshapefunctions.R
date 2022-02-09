@@ -1,6 +1,6 @@
 context("Reshaping functions")
 library(testthat)
-library(growth.curves.pkg)
+library(gcplyr)
 
 test_that("trans_block_to_wide works on a single dataframe", {
   example_dfs_list <- rep(list(NA), 100)

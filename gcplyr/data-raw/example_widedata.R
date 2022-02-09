@@ -45,5 +45,6 @@ ggplot2::ggplot(ex_lng, ggplot2::aes(x = Time, y = value, color = name)) +
   ggplot2::geom_line() +
   ggplot2::guides(color = FALSE) +
   ggplot2::scale_y_continuous(trans = "log10")
+
 #Save
-save(example_widedata, file="data/example_widedata.RData")
+usethis::use_data(example_widedata, overwrite = TRUE)

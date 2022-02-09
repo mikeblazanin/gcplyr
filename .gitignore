@@ -5,5 +5,8 @@
 *.png
 *.tiff
 test_*/
-growth.curves.pkg_*.tar.gz
-growth.curves.pkg.Rcheck/
+gcplyr_*.tar.gz
+gcplyr.Rcheck/
+gcplyr/vignettes/*.R
+gcplyr/vignettes/*.html
+gcplyr/inst/doc

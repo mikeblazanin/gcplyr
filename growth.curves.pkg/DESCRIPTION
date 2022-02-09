@@ -1,4 +1,4 @@
-Package: growth.curves.pkg
+Package: gcplyr
 Type: Package
 Title: Manages, processes, and analyzes growth curves data
 Version: 1.0

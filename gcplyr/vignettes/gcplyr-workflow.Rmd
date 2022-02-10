@@ -126,7 +126,7 @@ Each design element has the following structure
 
 ```{r}
 my_design <- make_tidydesign(
-  nrows = 8, ncols = 12,
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Media = list(c("Media 1", "Media 2", "Media 3",
                  "Media 4", "Media 5", "Media 6",
                  "Media 7", "Media 8", "Media 9",
@@ -165,7 +165,7 @@ We can generate that design by adding an additional argument to our make_tidydes
 
 ```{r}
 my_design <- make_tidydesign(
-  nrows = 8, ncols = 12,
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Media = list(c("Media 1", "Media 2", "Media 3",
                  "Media 4", "Media 5", "Media 6",
                  "Media 7", "Media 8", "Media 9",
@@ -177,30 +177,69 @@ my_design <- make_tidydesign(
                     "Strain 4", "Strain 5", "Strain 6"),
                   2:7,
                   2:11,
-                  "123456",
+                  "abcdef",
                   FALSE))
 head(my_design, 20)
 ```
+
 Finally, let's imagine that we later discover that Bacterial Strain 4 and Media #6 were contaminated, and we'd like to exclude them from our analyses by marking them as `NA` in the design. We can simply modify our pattern string, placing a 0 anywhere we would like an `NA` to be filled in.
 
 ```{r}
-# my_design <- make_tidydesign(
-#   nrows = 8, ncols = 12,
-#   Media = list(c("Media 1", "Media 2", "Media 3",
-#                  "Media 4", "Media 5", "Media 6",
-#                  "Media 7", "Media 8", "Media 9",
-#                  "Media 10", "Media 11", "Media 12"),
-#                2:7,
-#                2:11,
-#                "abcde0ghij"),
-#   Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
-#                     "Strain 4", "Strain 5", "Strain 6"),
-#                   2:7,
-#                   2:11,
-#                   "123056",
-#                   FALSE))
-# head(my_design, 20)
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Media = list(c("Media 1", "Media 2", "Media 3",
+                 "Media 4", "Media 5", "Media 6",
+                 "Media 7", "Media 8", "Media 9",
+                 "Media 10", "Media 11", "Media 12"),
+               2:7,
+               2:11,
+               "abcde0ghij"),
+  Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
+                    "Strain 4", "Strain 5", "Strain 6"),
+                  2:7,
+                  2:11,
+                  "abc0ef",
+                  FALSE))
+head(my_design, 20)
 ```
+
+Note that `make_tidydesign` is not limited to simple alternating patterns. The pattern string specified can be any pattern, which `make_tidydesign` will replicate sufficient times to cover the entire set of listed wells.
+
+```{r}
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Media = list(c("Media 1", "Media 2", "Media 3"),
+               2:7,
+               2:11,
+               "aabbbc000abc"),
+  Bacteria = list(c("Strain 1", "Strain 2"),
+                  2:7,
+                  2:11,
+                  "abaaabbbab",
+                  FALSE))
+head(my_design, 20)
+```
+
+`gcplyr` also includes a helper function, `make_designpattern`, which simply facilitates the specification of the design elements by formatting them into a list and reminding users of the essential components that must be provided. For example, the following code produces the exact same design output as the earlier example:
+
+```{r}
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Media = make_designpattern(
+    values = c("Media 1", "Media 2", "Media 3",
+               "Media 4", "Media 5", "Media 6",
+               "Media 7", "Media 8", "Media 9",
+               "Media 10", "Media 11", "Media 12"),
+    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"),
+  Bacteria = make_designpattern(
+    values = c("Strain 1", "Strain 2", "Strain 3",
+               "Strain 4", "Strain 5", "Strain 6"),
+    rows = 2:7, cols = 2:11, pattern = "abc0ef",
+    FALSE))
+head(my_design, 20)
+```
+
+
 
 # Merging spectrophotometric and design data
 Design and spectrophotometric data can be combined using `merge_dfs`, from which point they can be pre-processed and analyzed using additional functions.

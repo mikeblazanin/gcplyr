@@ -12,6 +12,7 @@ make_tidydesign(
   wellnames_sep = "",
   wellnames_colname = "Well",
   wellnames_Excel = TRUE,
+  lookup_tbl_start = 1,
   pattern_split = "",
   ...
 )
@@ -33,6 +34,14 @@ are not specified, should rows and columns be named
 using Excel-style base-26 lettering for columns
 and numbering for rows? If FALSE, rows and columns
 will be numbered with "R" and "C" prefix.}
+
+\item{lookup_tbl_start}{Value in the lookup table for the split pattern values
+that corresponds to the first value in the vector.
+
+Lookup table by default is 
+c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
+for example, lookup_tbl_start = "A", then the lookup
+table will now be c(A,B,...Y,Z,a,b,...,y,z)}
 
 \item{pattern_split}{character to split pattern elements provided in
 \code{...} by}

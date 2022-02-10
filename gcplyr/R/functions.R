@@ -839,14 +839,21 @@ split_blockdesign <- function() {
 #' @param pattern_split character to split pattern elements provided in
 #'                      \code{...} by
 #' @param ... Each \code{...} argument must be a list with five elements:
+#' 
 #'              1. a vector of the values
+#'              
 #'              2. a vector of the rows the pattern should be applied to
+#'              
 #'              3. a vector of the columns the pattern should be applied to
+#'              
 #'              4. a string of the pattern itself, where numbers refer to
 #'               the indices in the values vector
+#'               
 #'               0's refer to NA
+#'               
 #'               This pattern will be split using pattern_split, which
 #'               defaults to every character
+#'               
 #'              5. a Boolean for whether this pattern should be filled byrow
 #' 
 #' @export         
@@ -901,8 +908,30 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   
   #Loop through input arguments & fill into output dataframe
   for (i in 1:length(dot_args)) {
-    pattern_list <- as.numeric(strsplit(dot_args[[i]][[4]], 
-                                        split = pattern_split)[[1]])
+    pattern_list <- strsplit(dot_args[[i]][[4]],
+                             split = pattern_split)[[1]]
+    if (any(nchar(pattern_list) > 1)) {
+      if (any(is.na(as.numeric(pattern_list)))) {
+        stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
+      } else { #they're all numeric
+        pattern_list <- as.numeric(pattern_list)
+      }
+    } else { #they're all single-character pattern values
+      lookup_table <- c(0:9, LETTERS, letters)
+      #Check whether we're going to be dropping non-consecutive values from the
+      # lookup table. If so, issue a warning
+      num_keep <- sum(lookup_table %in% pattern_list)
+      warn_needed <- TRUE
+      for (start_index in 1:(length(lookup_table) - num_keep)) {
+        if (all(
+          lookup_table[start_index:(start_index+num_keep-1)] %in% pattern_list)) {
+          warn_needed <- FALSE
+        }
+      }
+      if (warn_needed) {warning("Dropping non-consecutive values from pattern lookup table")
+      lookup_table <- lookup_table[lookup_table %in% pattern_list]
+      pattern_list <- match(pattern_list, lookup_table)
+    }
     
     if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
          length(pattern_list)) != 0) {

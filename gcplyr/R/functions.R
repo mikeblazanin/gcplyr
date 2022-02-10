@@ -922,9 +922,10 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
       } else { #they're all numeric
         pattern_list <- as.numeric(pattern_list)
+        pattern_list[pattern_list==0] <- NA
       }
     } else { #they're all single-character pattern values
-      lookup_table <- c(1:9, LETTERS, letters)
+      lookup_table <- c(1:9, LETTERS, letters) #Note since 0 not included, 0's become NA
       lookup_table <- lookup_table[match(lookup_tbl_start, lookup_table):
                                    length(lookup_table)]
       if (any(!pattern_list[pattern_list != "0"] %in% lookup_table)) {
@@ -945,9 +946,6 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     if (length(dot_args[[i]]) < 5) {
       dot_args[[i]][[5]] <- TRUE
     }
-    
-    #0 in pattern is NA
-    pattern_list[pattern_list==0] <- NA
     
     #Create list of values following pattern (which is replicated as needed
     # to reach the necessary length)

@@ -917,7 +917,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
         pattern_list <- as.numeric(pattern_list)
       }
     } else { #they're all single-character pattern values
-      lookup_table <- c(0:9, LETTERS, letters)
+      lookup_table <- c(1:9, LETTERS, letters)
       #Check whether we're going to be dropping non-consecutive values from the
       # lookup table. If so, issue a warning
       num_keep <- sum(lookup_table %in% pattern_list)

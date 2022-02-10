@@ -4,7 +4,7 @@
 example_widedata <- as.data.frame(matrix(NA, nrow = 24*4+1, ncol = 97))
 colnames(example_widedata) <- c("Time", 
                                 paste(
-                                  rep(to_excel(1:8), 12),
+                                  rep(gcplyr::to_excel(1:8), 12),
                                   rep(1:12, each = 8), sep = ""))
 example_widedata$Time <- seq(from = 0, to = 24*60*60,
                              by = 15*60)

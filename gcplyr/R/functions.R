@@ -141,6 +141,8 @@ infer_names <- function(df,
 #' @param x A vector of numbers in base-10
 #' 
 #' @return A vector of letters in Excel-style base-26 format
+#' 
+#' @export
 to_excel <- function(x) {
   divisor_modulo_excel <- function(x) {
     #This function is just a way to return %/% and %% modified as Excel uses them
@@ -172,6 +174,8 @@ to_excel <- function(x) {
 #' @param x A vector of numbers in Excel-style base-26 letter format
 #' 
 #' @return A vector of numbers in base-10
+#' 
+#' @export
 from_excel <- function(x) {
   #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
   out <- rep(NA, length(x))

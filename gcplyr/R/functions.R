@@ -838,6 +838,13 @@ split_blockdesign <- function() {
 #'                        will be numbered with "R" and "C" prefix.
 #' @param pattern_split character to split pattern elements provided in
 #'                      \code{...} by
+#' @param lookup_tbl_start Value in the lookup table for the split pattern values
+#'                         that corresponds to the first value in the vector.
+#'                         
+#'                         Lookup table by default is 
+#'                         c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
+#'                         for example, lookup_tbl_start = "A", then the lookup
+#'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
 #' @param ... Each \code{...} argument must be a list with five elements:
 #' 
 #'              1. a vector of the values
@@ -860,7 +867,7 @@ split_blockdesign <- function() {
 make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         wellnames_sep = "", wellnames_colname = "Well",
-                        wellnames_Excel = TRUE,
+                        wellnames_Excel = TRUE, lookup_tbl_start = 1,
                         pattern_split = "", ...) {
   
   #Do we need to include a plate_name argument?
@@ -918,18 +925,13 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
       }
     } else { #they're all single-character pattern values
       lookup_table <- c(1:9, LETTERS, letters)
-      #Check whether we're going to be dropping non-consecutive values from the
-      # lookup table. If so, issue a warning
-      num_keep <- sum(lookup_table %in% pattern_list)
-      warn_needed <- TRUE
-      for (start_index in 1:(length(lookup_table) - num_keep)) {
-        if (all(
-          lookup_table[start_index:(start_index+num_keep-1)] %in% pattern_list)) {
-          warn_needed <- FALSE
-        }
+      lookup_table <- lookup_table[match(lookup_tbl_start, lookup_table):
+                                   length(lookup_table)]
+      if (any(!pattern_list[pattern_list != "0"] %in% lookup_table)) {
+        stop("Some values in pattern are not in lookup table. Check that you 
+             have lookup_tbl_start correct and that you're only using 
+             alphanumeric values")
       }
-      if (warn_needed) {warning("Dropping non-consecutive values from pattern lookup table")}
-      lookup_table <- lookup_table[lookup_table %in% pattern_list]
       pattern_list <- match(pattern_list, lookup_table)
     }
     

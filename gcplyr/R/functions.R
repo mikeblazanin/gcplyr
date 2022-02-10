@@ -928,7 +928,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
           warn_needed <- FALSE
         }
       }
-      if (warn_needed) {warning("Dropping non-consecutive values from pattern lookup table")
+      if (warn_needed) {warning("Dropping non-consecutive values from pattern lookup table")}
       lookup_table <- lookup_table[lookup_table %in% pattern_list]
       pattern_list <- match(pattern_list, lookup_table)
     }

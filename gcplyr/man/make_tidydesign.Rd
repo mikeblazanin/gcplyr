@@ -38,15 +38,22 @@ will be numbered with "R" and "C" prefix.}
 \code{...} by}
 
 \item{...}{Each \code{...} argument must be a list with five elements:
-1. a vector of the values
-2. a vector of the rows the pattern should be applied to
-3. a vector of the columns the pattern should be applied to
-4. a string of the pattern itself, where numbers refer to
- the indices in the values vector
- 0's refer to NA
- This pattern will be split using pattern_split, which
- defaults to every character
-5. a Boolean for whether this pattern should be filled byrow}
+
+             1. a vector of the values
+             
+             2. a vector of the rows the pattern should be applied to
+             
+             3. a vector of the columns the pattern should be applied to
+             
+             4. a string of the pattern itself, where numbers refer to
+              the indices in the values vector
+              
+              0's refer to NA
+              
+              This pattern will be split using pattern_split, which
+              defaults to every character
+              
+             5. a Boolean for whether this pattern should be filled byrow}
 }
 \description{
 This is a function to easily input experimental design elements

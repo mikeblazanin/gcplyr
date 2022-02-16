@@ -516,17 +516,14 @@ read_wides <- function(files, extension = NULL,
   #           if infer_timecol FALSE
   #             rows are numbered timepoint_1, timepoint_2, etc
   
-  if (!sum(is.null(startrow), is.null(endrow), 
-           is.null(startcol), is.null(endcol)) %in% c(0, 4)) {
-    stop("either all or none of startrow, endrow, startcol, and endcol must be provided")
-  }
-  
   if (!is.null(startrow) & !is.numeric(startrow)) {
     startrow <- from_excel(startrow)}
-  if (!is.null(endrow) & !is.numeric(endrow)) {endrow <- from_excel(endrow)}
+  if (!is.null(endrow) & !is.numeric(endrow)) {
+    endrow <- from_excel(endrow)}
   if (!is.null(startcol) & !is.numeric(startcol)) {
     startcol <- from_excel(startcol)}
-  if (!is.null(endcol) & !is.numeric(endcol)) {endcol <- from_excel(endcol)}
+  if (!is.null(endcol) & !is.numeric(endcol)) {
+    endcol <- from_excel(endcol)}
   
   if (!is.null(startrow) & header == TRUE & any(startrow <= 1)) {
     warning("startrow <= 1 but header is TRUE, treating header as FALSE")
@@ -606,20 +603,16 @@ read_wides <- function(files, extension = NULL,
     }
     
     #Infer colnames/take subsets as needed
-    if (header == TRUE) {
-      if (is.null(startrow[i])) { #startrow etc is not provided
-        outputs[[i]] <- temp[2:nrow(temp), ]
-        colnames(outputs[[i]]) <- temp[1, ]
-      } else { #startrow etc is provided
-        outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-        colnames(outputs[[i]]) <- temp[(startrow[i]-1), startcol[i]:endcol[i]]
-      }
-    } else { #header is false
-      if (is.null(startrow[i])) { #startrow etc is not provided
-        outputs[[i]] <- temp
-      } else { #startrow etc is provided
-        outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-      }
+    if(is.null(endrow[i])) {endrow[i] <- nrow(temp)}
+    if(is.null(endcol[i])) {endcol[i] <- ncol(temp)}
+    if(is.null(startcol[i])) {startcol[i] <- 1}
+    if (header == TRUE) { #so colnames taken from file
+      if (is.null(startrow[i])) {startrow[i] <- 2}
+      outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
+      colnames(outputs[[i]]) <- temp[(startrow[i]-1), startcol[i]:endcol[i]]
+    } else { #so colnames should be numbered
+      if (is.null(startrow[i])) {startrow[i] <- 1}
+      outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
       colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
     }
     

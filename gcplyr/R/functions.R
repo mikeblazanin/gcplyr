@@ -283,6 +283,7 @@ read_blocks <- function(files, extension = NULL,
   } else {
     if (!all(is.numeric(startrow))) {
       startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
+      startrow <- as.numeric(startrow)
     }
     startrow <- checkdim_inputs(startrow, "startrow", length(files))
   }
@@ -291,6 +292,7 @@ read_blocks <- function(files, extension = NULL,
   } else {
     if (!all(is.numeric(endrow))) {
       endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
+      endrow <- as.numeric(endrow)
     }
     endrow <- checkdim_inputs(endrow, "endrow", length(files))
   }
@@ -299,6 +301,7 @@ read_blocks <- function(files, extension = NULL,
   } else {
     if (!all(is.numeric(startcol))) {
       startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
+      startcol <- as.numeric(startcol)
     }
     startcol <- checkdim_inputs(startcol, "startcol", length(files))
   }
@@ -307,6 +310,7 @@ read_blocks <- function(files, extension = NULL,
   } else {
     if (!all(is.numeric(endcol))) {
       endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
+      endcol <- as.numeric(endcol)
     }
     endcol <- checkdim_inputs(endcol, "endcol", length(files))
   }

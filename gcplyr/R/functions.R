@@ -530,18 +530,18 @@ read_wides <- function(files, extension = NULL,
     header <- FALSE
   }
   
-  if (!is.null(startrow)) {
-    startrow <- checkdim_inputs(startrow, "startrow", length(files))
-  }
-  if (!is.null(endrow)) { 
-    endrow <- checkdim_inputs(endrow, "endrow", length(files))
-  }
-  if (!is.null(startcol)) {
-    startcol <- checkdim_inputs(startcol, "startcol", length(files))
-  }
-  if (!is.null(endcol)) {
-    endcol <- checkdim_inputs(endcol, "endcol", length(files))
-  }
+  if(is.null(startrow)) {startrow <- NA}
+  startrow <- checkdim_inputs(startrow, "startrow", length(files))
+  
+  if (is.null(endrow)) {endrow <- NA}
+  endrow <- checkdim_inputs(endrow, "endrow", length(files))
+
+  if (is.null(startcol)) {startcol <- NA}
+  startcol <- checkdim_inputs(startcol, "startcol", length(files))
+  
+  if (is.null(endcol)) {endcol <- NA}
+  endcol <- checkdim_inputs(endcol, "endcol", length(files))
+  
   if (!is.null(sheet)) {
     sheet <- checkdim_inputs(sheet, "sheet", length(files))
   }
@@ -603,15 +603,15 @@ read_wides <- function(files, extension = NULL,
     }
     
     #Infer colnames/take subsets as needed
-    if(is.null(endrow[i])) {endrow[i] <- nrow(temp)}
-    if(is.null(endcol[i])) {endcol[i] <- ncol(temp)}
-    if(is.null(startcol[i])) {startcol[i] <- 1}
+    if(is.na(endrow[i])) {endrow[i] <- nrow(temp)}
+    if(is.na(endcol[i])) {endcol[i] <- ncol(temp)}
+    if(is.na(startcol[i])) {startcol[i] <- 1}
     if (header == TRUE) { #so colnames taken from file
-      if (is.null(startrow[i])) {startrow[i] <- 2}
+      if (is.na(startrow[i])) {startrow[i] <- 2}
       outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
       colnames(outputs[[i]]) <- temp[(startrow[i]-1), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
-      if (is.null(startrow[i])) {startrow[i] <- 1}
+      if (is.na(startrow[i])) {startrow[i] <- 1}
       outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
       colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
     }

@@ -5,6 +5,9 @@
 #gcer
 
 #TODO: 
+#       Figure out what's wrong with my local Latex installation
+#       Change header results so first row becomes header (not row before)
+#       There's still a use of t() in make_tidydesign
 #       Write tests for blocken_wides 
 #       Finish import_blockdesign functions
 #       Write shorthand functions with presets for find_local_extrema

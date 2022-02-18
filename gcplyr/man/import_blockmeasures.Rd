@@ -21,6 +21,9 @@ used to separate blockmeasures into those plates accordingly}
 
 \item{plate_names}{(optional) Names to put onto the plates when output}
 
+\item{wellnames_sep}{String to use as separator for well names between 
+rowname and column name}
+
 \item{...}{Other arguments to pass to \code{read_blocks}, \code{uninterleave},
 or \code{widen_blocks}}
 }

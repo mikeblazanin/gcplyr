@@ -22,6 +22,10 @@ rowname and column name}
 in the \code{blockmeasures} list, e.g. as is typically
 output by \code{read_blocks}. If NULL, will attempt to
 infer existence of nested metadata}
+
+\item{colnames_first}{In the wellnames created by \code{paste}-ing the
+rownames and column names, should the column names
+come first}
 }
 \value{
 A single widemeasures data.frame

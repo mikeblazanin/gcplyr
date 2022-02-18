@@ -14,6 +14,21 @@ import_blockdesign(
   ...
 )
 }
+\arguments{
+\item{files}{tbd}
+
+\item{startrow}{tbd}
+
+\item{startcol}{tbd}
+
+\item{metadata}{tbd}
+
+\item{field_sep}{tbd}
+
+\item{id_cols}{tbd}
+
+\item{...}{tbd}
+}
 \description{
 This function imports blockdesigns from file into the R environment
 }

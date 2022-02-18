@@ -672,6 +672,8 @@ read_tidys <- function() {
 #' @param num_plates Number of plates. If multiple plates uninterleave will be
 #'                   used to separate blockmeasures into those plates accordingly
 #' @param plate_names (optional) Names to put onto the plates when output
+#' @param wellnames_sep String to use as separator for well names between 
+#'                      rowname and column name
 #' @param ... Other arguments to pass to \code{read_blocks}, \code{uninterleave},
 #'            or \code{widen_blocks}
 #' 
@@ -704,7 +706,14 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' Import blockdesigns from file (work-in-progress)
 #' 
 #' This function imports blockdesigns from file into the R environment
-#' 
+#'
+#' @param files tbd
+#' @param startrow tbd
+#' @param startcol tbd
+#' @param metadata tbd
+#' @param field_sep tbd
+#' @param id_cols tbd
+#' @param ... tbd
 import_blockdesign <- function(files,
                                startrow = 2, startcol = 2,
                                metadata = list("design_element" = c(1, 1)),
@@ -733,24 +742,24 @@ import_blockdesign <- function(files,
   ##3. use pivot wides longer to get design into tidy format
   ##2. use split block to split design elements
   
-  blockdesigns <- read_blocks(files = files,
-                              metadata = metadata,
-                              startrow = startrow, startcol = startcol,
-                              ...)
-  widedesigns <- widen_blocks(blockdesigns, ...)
+  # blockdesigns <- read_blocks(files = files,
+  #                             metadata = metadata,
+  #                             startrow = startrow, startcol = startcol,
+  #                             ...)
+  # widedesigns <- widen_blocks(blockdesigns, ...)
   
   
   
   
   #What to do if design_element is not supplied?
-  tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
-                                   values_to = widedesigns$design_element[1],
-                                   ...)
+  # tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
+  #                                  values_to = widedesigns$design_element[1],
+  #                                  ...)
   
   
   
   
-  split_blockdesign()
+  # split_blockdesign()
   #For reference, old version (possibly)
   layout_cleanup <- function(layout) {
     #This function takes a layout dataframe with ...'s where info needs to be 
@@ -1036,6 +1045,10 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #'                        in the \code{blockmeasures} list, e.g. as is typically
 #'                        output by \code{read_blocks}. If NULL, will attempt to
 #'                        infer existence of nested metadata
+#' @param colnames_first  In the wellnames created by \code{paste}-ing the
+#'                        rownames and column names, should the column names
+#'                        come first
+#'
 #' @return A single widemeasures data.frame
 #' 
 #' @export
@@ -1178,53 +1191,53 @@ trans_wide_to_block <- function(wides, collapse = NULL,
   ##Old code below:
   
   
-  #Make empty output
-  output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
-                            ncol = length(unique(colnames)))), 
-                length(which(colnames(tidydesign) != wellnames_colname)))
-  
-  
-  
-  
-  #Get rownames & colnames from well column
-  rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
-                              split = wellnames_sep),
-                     simplify = TRUE,
-                     FUN = function(x) {x[1]})
-  colnames <- sapply(strsplit(tidydesign[, wellnames_colname],
-                              split = wellnames_sep),
-                     simplify = TRUE,
-                     FUN = function(x) {x[2]})
-  
-  
-  #Iterate through each design element
-  i <- 1
-  for (col in which(colnames(tidydesign) != wellnames_colname)) {
-    #Assign row and column names
-    rownames(output[[i]]) <- unique(rownames)
-    colnames(output[[i]]) <- unique(colnames)
-    #Fill data into appropriate row,column in output
-    # (spot is found by matching row/col name to row/col from well column
-    #  in tidydesign input)
-    output[[i]][match(rownames, rownames(output[[i]])) + 
-                  (match(colnames, colnames(output[[i]]))-1)*nrow(output[[i]])] <-
-      tidydesign[, col]
-    i <- i+1
-  }
-  
-  #Collapse (if requested)
-  if (!is.null(collapse)) {
-    output <- list(matrix(do.call("paste", c(output, sep = collapse)),
-                          nrow = length(unique(rownames)),
-                          ncol = length(unique(colnames))))
-    rownames(output[[1]]) <- unique(rownames)
-    colnames(output[[1]]) <- unique(colnames)
-    names(output) <- paste(
-      colnames(tidydesign)[which(colnames(tidydesign) != wellnames_colname)],
-      collapse = collapse)
-  }
-  
-  return(output)
+  # #Make empty output
+  # output <- rep(list(matrix(NA, nrow = length(unique(rownames)),
+  #                           ncol = length(unique(colnames)))), 
+  #               length(which(colnames(tidydesign) != wellnames_colname)))
+  # 
+  # 
+  # 
+  # 
+  # #Get rownames & colnames from well column
+  # rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
+  #                             split = wellnames_sep),
+  #                    simplify = TRUE,
+  #                    FUN = function(x) {x[1]})
+  # colnames <- sapply(strsplit(tidydesign[, wellnames_colname],
+  #                             split = wellnames_sep),
+  #                    simplify = TRUE,
+  #                    FUN = function(x) {x[2]})
+  # 
+  # 
+  # #Iterate through each design element
+  # i <- 1
+  # for (col in which(colnames(tidydesign) != wellnames_colname)) {
+  #   #Assign row and column names
+  #   rownames(output[[i]]) <- unique(rownames)
+  #   colnames(output[[i]]) <- unique(colnames)
+  #   #Fill data into appropriate row,column in output
+  #   # (spot is found by matching row/col name to row/col from well column
+  #   #  in tidydesign input)
+  #   output[[i]][match(rownames, rownames(output[[i]])) + 
+  #                 (match(colnames, colnames(output[[i]]))-1)*nrow(output[[i]])] <-
+  #     tidydesign[, col]
+  #   i <- i+1
+  # }
+  # 
+  # #Collapse (if requested)
+  # if (!is.null(collapse)) {
+  #   output <- list(matrix(do.call("paste", c(output, sep = collapse)),
+  #                         nrow = length(unique(rownames)),
+  #                         ncol = length(unique(colnames))))
+  #   rownames(output[[1]]) <- unique(rownames)
+  #   colnames(output[[1]]) <- unique(colnames)
+  #   names(output) <- paste(
+  #     colnames(tidydesign)[which(colnames(tidydesign) != wellnames_colname)],
+  #     collapse = collapse)
+  # }
+  # 
+  # return(output)
 }
 
 

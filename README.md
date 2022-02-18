@@ -36,16 +36,16 @@ curves data.
 You can install gcplyr from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("mikeblazanin/gcplyr")
 ```
 
 ## Getting Started
 
-The best way to get started is to check out the `gcplyr` workflow
+The best way to get started is to check out the `gcplyr-workflow`
 vignette, which included examples of all of the most common `gcplyr`
 functions and walks through how to import, manipulate, and analyze
-growth curves data using `gcplyr` from start to end.
+growth curves data using `gcplyr` from start to finish.
 
 After installing `gcplyr` (instructions above), run:
 

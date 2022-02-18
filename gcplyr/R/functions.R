@@ -376,8 +376,8 @@ read_blocks <- function(files, extension = NULL,
     inferred_rc <- 
       infer_names(temp, startrow = startrow[i], endrow = endrow[i],
                   startcol = startcol[i], endcol = endcol[i],
-                  infer_colnames = infer_rownames,
-                  infer_rownames = infer_rownames)
+                  infer_colnames = infer_rownames[i],
+                  infer_rownames = infer_rownames[i])
     
     #Save information to outputs
     outputs[[i]]$data <- temp[inferred_rc$startrow:inferred_rc$endrow,

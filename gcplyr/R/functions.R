@@ -686,7 +686,7 @@ import_blockmeasures <- function(files, num_plates = 1,
                                 n = num_plates, ...)
   widemeasures <- rep(list(NA), num_plates)
   for (i in 1:length(blockmeasures)) {
-    widemeasures[[i]] <- widen_blocks(blockmeasures[[i]],
+    widemeasures[[i]] <- trans_block_to_wide(blockmeasures[[i]],
                                          wellnames_sep = wellnames_sep)
   }
   if (is.null(plate_names)) { #no plate_names provided

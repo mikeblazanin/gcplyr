@@ -37,7 +37,7 @@ So, what are these three data layouts, and how can you tell which of them your d
 
 ### Block-shaped
 
-In block-shaped data, the organization of the data corresponds literally to the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the data.frame will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
+In block-shaped data, the organization of the data corresponds directly with the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the data.frame will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
 
 For example, here is a block-shaped data.frame of a 96-well plate (with ... indicating the additional columns in the middle that are not printed). In this example, all the data shown would be from a single timepoint.
 
@@ -72,7 +72,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 ### Tidy-shaped
 
-In tidy-shaped data, each unique measurement has its own row, such that the number of rows equals the number of wells times the number of timepoints. In tidy-shaped data, additional columns specify the timepoint, well information, and any other design elements. Tidy-shaped data is the best format for downstream analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
+In tidy-shaped data, each unique measurement has its own row, such that the number of rows equals the number of wells times the number of timepoints. In tidy-shaped data, additional columns specify the timepoint, well information, and any other design elements. Tidy-shaped data is the best format for downstream analyses, and users may be familiar with this format from the `tidyverse` R packages, like `ggplot`. For more details, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
 
 
 Timepoint | Well | Measurement | 

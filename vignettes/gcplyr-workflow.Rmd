@@ -9,6 +9,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gcplyr)
+```
+
 # Table of Contents
 1. Introduction
 2. Overview
@@ -30,20 +41,22 @@ vignette: >
 easier to import, manipulate, and analyze bacterial growth curves data. This vignette serves as the main walkthrough of how to use `gcplyr`'s most common functions.
 
 # Getting started
-So you want to use `gcplyr` to analyze some growth curves data. What do you need? Most simply, all you need is the data file with the growth curves measures in it. This has to be saved in a tabular format (.csv, .xls, or .xlsx).
+If you want to use `gcplyr` to analyze some growth curves data, all you need is the data file with the growth curves measures in it saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
-Additionally, it's often best to combine your measures data with some information on the experimental design of your growth curves plate. For instance, information on which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
+Additionally, users will often want to combine their measures data with some information on the experimental design of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
 
-## Data layouts
-Before we dive into actually using `gcplyr`, we need to establish a background on how `gcplyr` approaches different ways growth curves data can be organized. Generally, when dealing with both growth curves measures and design files, there are three common layouts that these files are organized in: block-shaped, wide-shaped, and tidy-shaped.
+# Data layouts
+Growth curves data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped. 
 
-Unfortunately, while tidy-shaped is the ideal layout for analyses, it is not common for plate readers to output data in tidy-shaped layouts. Instead, most plate readers output data in block-shaped or wide-shaped format. Similarly, users will typically write design information in a block-shaped format. Thus, `gcplyr` has a number of functions to transform from block-shaped and wide-shaped layouts into tidy-shaped layouts for downstream analyses.
+Tidy-shaped data is the best layout for analyses, but most lab equipment outputs block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped into wide-shaped data, and wide-shaped data into tidy-shaped data, then running any analyses.
+
+So, what are these three data layouts, and how can you tell which of them your data is in?
 
 ### Block-shaped
 
-In block-shaped data, the organization of the data corresponds literally to the layout of the physical multi-well plate it was generated from. For instance, a data point from the first row and first column of the dataframe will be from the topmost and leftmost well in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped dataframes, each corresponding to a single timepoint.
+In block-shaped data, the organization of the data corresponds literally to the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the data.frame will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
 
-For example, here is a block-shaped dataframe of a 96-well plate. All the data here is from a single timepoint.
+For example, here is a block-shaped data.frame of a 96-well plate (with ... indicating the additional columns in the middle that are not printed). In this example, all the data shown would be from a single timepoint.
 
 |         | Column 1 | Column 2  | Column 3  | ... | Column 11 | Column 12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -61,7 +74,7 @@ For example, here is a block-shaped dataframe of a 96-well plate. All the data h
 
 In wide-shaped data, each column of the dataframe corresponds to a single well from the plate, and each row of the dataframe corresponds to a single timepoint. Typically, headers contain the well names.
 
-For example, here is a wide-shaped dataframe of a 96-well plate. Each row of this dataframe corresponds to a single timepoint.
+For example, here is a wide-shaped dataframe of a 96-well plate (again, ... denotes columns not printed). Each row of this dataframe corresponds to a single timepoint.
 
 Time      | A1 | A2 | A3  | ... | H11 | H12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -89,69 +102,101 @@ Timepoint | Well | Measurement |
 7         | H11      | 1.234   | 
 7         | H12      | 1.394   | 
 
-
-
-
-
-
-
-Additionally, there are broadly two classes of growth curves-related information to be manipulated: numerical spectrophotometric data, and experimental design elements. If reading from files, `gcplyr` can read both classes of information, transform them, and merge them for subsequent analyses. `gcplyr` also contains the capability of specifying design elements programmatically, which can then be merged with imported spectrophotometric data.
-
-Once spectrophotometric data and design elements have been combined, this merged measures-designs tidy-shaped dataframe can be used for subsequent pre-processing and analyses.
-
-![General overview of gcplyr workflow](pkg-workflow.png){#id .class width=7in height=2.45in}
-
-Note that `gcplyr` can handle multiple plates throughout this process, using lists which contain the corresponding single-plate data.frames as elements. Once design elements have been merged with these data.frames so that independent plates can be distinguished, multiple-plate lists can be collapsed together into a single tidy-shaped measures-designs dataframe using `merge_dfs`.
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
-```{r setup}
-library(gcplyr)
-```
-
 # Importing data
-One of the first tasks of any growth curves analysis project is to import the data into the R environment. `gcplyr` contains a number of functions to handle data import, depending on how your data is formatted. Broadly speaking, importing data uses the `read_\*` functions.
+Once you've determined what format your data is in, you can begin importing it using the `read_` functions of `gcplyr`. If your data is block-shaped, you'll use `read_blocks`. If your data is wide-shaped, you'll use `read_wides`. In the unlikely event your data is already tidy, you can simply read it using the built-in R function `read.table`.
 
 ## Importing block-shaped data
-To import block-shaped data, use the `read_blocks` function. `read_blocks` needs only a list of filenames (or file paths relative to the current working directory), and returns a dataframe (if only one file is specified) or list of dataframes (if multiple files are specified, where each dataframe corresponds to a single file). 
+To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames, with each data.frame corresponding to a single block. 
 
-```{r}
-#Let's create a set of example files
-temp_filenames <- tempfile(pattern = as.character(example_widedata$Time),
+```{r, include = FALSE}
+#This code just creates a set of example files with no time added
+temp_filenames <- 
+  tempfile(pattern = paste(as.character(example_widedata$Time), "_", sep = ""),
                            fileext = ".csv")
 for (i in 1:length(temp_filenames)) {
   write.table(
-    cbind(matrix(c("", "", "A", "B", "C", "D", "E", "F", "G", "H"), nrow = 10),
+    cbind(matrix(c("", "A", "B", "C", "D", "E", "F", "G", "H"), nrow = 9),
           rbind(
-            matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
             matrix(1:12, ncol = 12),
             matrix(example_widedata[i, 2:ncol(example_widedata)], ncol = 12))), 
-    file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",")
+    file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
+    col.names = FALSE)
 }
 
-#Here's what one of the files looks like
-print(read.csv(temp_filenames[1]))
+#This code just creates a set of example files with time added in the first row
+temp_filenames2 <- 
+  tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
+                           fileext = ".csv")
+for (i in 1:length(temp_filenames2)) {
+  write.table(
+    cbind(matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
+                 nrow = 12),
+          rbind(
+            rep("", 12),
+            matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
+            rep("", 12),
+            matrix(1:12, ncol = 12),
+            matrix(example_widedata[i, 2:ncol(example_widedata)], ncol = 12))), 
+    file = temp_filenames2[i], quote = FALSE, row.names = FALSE, sep = ",",
+    col.names = FALSE)
+}
+```
 
+### The simplest example
+
+Here's a simple example. We've created a series of example block-shaped .csv files (under the hood, so you don't have to worry about it), and stored the file names in `temp_filenames`. Here's what one of the files looks like (where the values are bacterial density):
+
+```{r}
+print(read.csv(temp_filenames[1]))
+```
+
+This would correspond to all the reads for a single plate taken at the very first timepoint. For instance, we can see that the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
+
+If we want to read these files into R, we simply provide `read_blocks` with the vector of file names.
+
+```{r}
+imported_blockdata <- read_blocks(files = temp_filenames)
+```
+
+### Specifying the location of your block-shaped data
+
+However, this only works if the data in your block-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file:
+
+```{r}
+print(read.csv(temp_filenames2[1]))
+```
+
+Thus, we can see the data header is in row 4, and the data begins in row 5. To specify that to `read_blocks`, we simply do:
+
+```{r}
 #Now let's read it with read_blocks
 imported_blockdata <- read_blocks(
   files = temp_filenames,
-  startrow = 4, startcol = "B", endrow = 11, endcol = "M")
+  startrow = 5, startcol = 2)
 ```
 
-Note that `read_blocks` has a number of arguments to specify further details about the arrangement of your data, like the rows and columns where your data resides in the input files. If these arguments are not specified, `read_blocks` will attempt to infer the correct location of the data within the file.
+If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_blocks` will translate that to a number for you!
 
-Additionally, it is often necessary to specify metadata located in the input files. For block-shaped data, this typically includes at least the date-time when the data was gathered, but could also include other information generated by the spectrophotometer. In our example data, the time information is located in the 2nd row and 3rd column of the .csv file.
+```{r}
+#Now let's read it with read_blocks
+imported_blockdata <- read_blocks(
+  files = temp_filenames,
+  startrow = 5, startcol = "B")
+```
+
+### Specifying metadata
+
+Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `read_blocks` can include that information as well via the `metadata` argument. 
+
+The metadata argument should be a list of named vectors. Each vector should be of length 2, with the first entry specifying the row and the second entry specifying the column where the metadata is located.
+
+For example, in our previous example files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata:
 
 ```{r}
 #Reading the blockcurves files with metadata included
 imported_blockdata <- read_blocks(
-  files = temp_filenames,
-  startrow = 4, startcol = "B", endrow = 11, endcol = "M",
+  files = temp_filenames2,
+  startrow = 4, startcol = "B",
   metadata = list("time" = c(2, 3)))
 ```
 
@@ -386,3 +431,18 @@ Design and spectrophotometric data can be combined using `merge_dfs`, from which
 # Pre-processing data
 
 # Analyzing data
+
+
+
+# Overview of gcplyr functions
+
+![General overview of gcplyr workflow](pkg-workflow.png){#id .class width=7in height=2.45in}
+
+# Text graveyard
+Additionally, there are broadly two classes of growth curves-related information to be manipulated: numerical spectrophotometric data, and experimental design elements. If reading from files, `gcplyr` can read both classes of information, transform them, and merge them for subsequent analyses. `gcplyr` also contains the capability of specifying design elements programmatically, which can then be merged with imported spectrophotometric data.
+
+Once spectrophotometric data and design elements have been combined, this merged measures-designs tidy-shaped dataframe can be used for subsequent pre-processing and analyses.
+
+
+
+Note that `gcplyr` can handle multiple plates throughout this process, using lists which contain the corresponding single-plate data.frames as elements. Once design elements have been merged with these data.frames so that independent plates can be distinguished, multiple-plate lists can be collapsed together into a single tidy-shaped measures-designs dataframe using `merge_dfs`.

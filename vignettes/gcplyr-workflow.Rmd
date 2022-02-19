@@ -2,7 +2,8 @@
 title: "gcplyr-workflow"
 author: "Mike Blazanin"
 output: 
-  rmarkdown::html_vignette
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{gcplyr-workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,27 +21,9 @@ knitr::opts_chunk$set(
 library(gcplyr)
 ```
 
-# Table of Contents
-1. Introduction
-2. Overview
-3. Importing data
-    + Block-shaped data
-    + Wide-shaped data
-4. Transforming data
-    + Transforming from block-shaped to wide-shaped
-    + Transforming from wide-shaped to tidy-shaped
-5. Including design elements
-    + Reading design elements from files
-    + Creating design elements programmatically
-6. Merging measures and designs
-7. Pre-processing data
-8. Analyzing data
-
-# Introduction
-`gcplyr` is a package that implements a number of functions to make it
-easier to import, manipulate, and analyze bacterial growth curves data. This vignette serves as the main walkthrough of how to use `gcplyr`'s most common functions.
-
 # Getting started
+`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth curves data. This vignette serves as the main walkthrough of how to use `gcplyr`'s most common functions.
+
 If you want to use `gcplyr` to analyze some growth curves data, all you need is the data file with the growth curves measures in it saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
 Additionally, users will often want to combine their measures data with some information on the experimental design of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
@@ -108,6 +91,8 @@ Once you've determined what format your data is in, you can begin importing it u
 ## Importing block-shaped data
 To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames, with each data.frame corresponding to a single block. 
 
+### The simplest example
+
 ```{r, include = FALSE}
 #This code just creates a set of example files with no time added
 temp_filenames <- 
@@ -122,7 +107,25 @@ for (i in 1:length(temp_filenames)) {
     file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
     col.names = FALSE)
 }
+```
 
+Here's a simple example. We've created a series of example block-shaped .csv files (under the hood, so you don't have to worry about it), and stored the file names in `temp_filenames`. Here's what one of the files looks like (where the values are bacterial density):
+
+```{r}
+print(read.csv(temp_filenames[1], header = FALSE))
+```
+
+This would correspond to all the reads for a single plate taken at the very first timepoint. For instance, we can see that the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
+
+If we want to read these files into R, we simply provide `read_blocks` with the vector of file names.
+
+```{r}
+imported_blockdata <- read_blocks(files = temp_filenames)
+```
+
+### Specifying the location of your block-shaped data
+
+```{r, include = FALSE}
 #This code just creates a set of example files with time added in the first row
 temp_filenames2 <- 
   tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
@@ -142,28 +145,10 @@ for (i in 1:length(temp_filenames2)) {
 }
 ```
 
-### The simplest example
-
-Here's a simple example. We've created a series of example block-shaped .csv files (under the hood, so you don't have to worry about it), and stored the file names in `temp_filenames`. Here's what one of the files looks like (where the values are bacterial density):
-
-```{r}
-print(read.csv(temp_filenames[1]))
-```
-
-This would correspond to all the reads for a single plate taken at the very first timepoint. For instance, we can see that the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
-
-If we want to read these files into R, we simply provide `read_blocks` with the vector of file names.
-
-```{r}
-imported_blockdata <- read_blocks(files = temp_filenames)
-```
-
-### Specifying the location of your block-shaped data
-
 However, this only works if the data in your block-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file:
 
 ```{r}
-print(read.csv(temp_filenames2[1]))
+print(read.csv(temp_filenames2[1], header = FALSE))
 ```
 
 Thus, we can see the data header is in row 4, and the data begins in row 5. To specify that to `read_blocks`, we simply do:
@@ -188,7 +173,7 @@ imported_blockdata <- read_blocks(
 
 Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `read_blocks` can include that information as well via the `metadata` argument. 
 
-The metadata argument should be a list of named vectors. Each vector should be of length 2, with the first entry specifying the row and the second entry specifying the column where the metadata is located.
+The `metadata` argument should be a list of named vectors. Each vector should be of length 2, with the first entry specifying the row and the second entry specifying the column where the metadata is located.
 
 For example, in our previous example files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata:
 
@@ -202,25 +187,43 @@ imported_blockdata <- read_blocks(
 
 
 ## Importing wide-shaped data
-To import wide-shaped data, use the `read_wides` function. `read_wides` needs only a list of filenames (or file paths relative to the current working directory), and returns a dataframe (if only one file is specified) or a list of dataframes (if multiple files are specified, where each dataframe corresponds to a single file).
+To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a data.frame (or list of data.frames). 
 
-```{r}
+### The simplest example
+```{r, include = FALSE}
 #Let's create an example file
 temp_filename <- paste(tempfile(), ".csv", sep = "")
 write.csv(example_widedata, file = temp_filename, row.names = FALSE)
+```
 
+Here's a simple example. We've created a wide-shaped .csv file (under the hood, so you don't have to worry about it), and stored the file name in `temp_filename`. Here's what the start of the file looks like (where the values are bacterial density):
+
+```{r}
+head(read.csv(temp_filename, header = FALSE),
+     c(10, 4), row.names = FALSE)
+```
+
+This would correspond to all the reads for a single plate taken across all timepoints. For instance, we can see that the first column contains the timepoint information, and each subsequent column corresponds to a well in the plate.
+
+If we want to read these files into R, we simply provide `read_wides` with the file name.
+
+```{r}
 #Now let's use read_wides to import our wide-shaped data
 imported_widedata <- read_wides(files = temp_filename)
+```
 
+This also works if we have multiple files we'd like to read in. In this case, read_wides will return a list containing all the data.frames:
+
+```{r}
 #If we had multiple wide-shaped data files to import
 imported_widedata <- read_wides(files = c(temp_filename, temp_filename))
 ```
 
-Note that `read_wides` has a number of arguments to specify further details about the arrangement of your data, like the rows and columns where your data resides in the input files. If these arguments are not specified, `read_wides` will attempt to infer the correct location of the data within the file.
+### Specifying the location of your wide-shaped data
 
-```{r}
+```{r, include = FALSE}
 #Let's save an example file where the data doesn't start right away
-temp_filename <- tempfile(fileext = ".csv")
+temp_filename2 <- tempfile(fileext = ".csv")
 temp_example_widedata <- example_widedata
 colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
                                          sep = "")
@@ -232,24 +235,43 @@ modified_example_widedata <-
 modified_example_widedata[1:2, 1:2] <- 
   c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))
 
-write.csv(modified_example_widedata, file = temp_filename, 
-          row.names = FALSE)
-
-#Let's take a peek at what this file looks like
-head(read.csv(temp_filename), c(10, 4), row.names = FALSE)
-
-#Now let's use read_wides to import our wide-shaped data
-imported_widedata <- read_wides(files = temp_filename,
-                                startrow = 7, header = TRUE)
+write.table(modified_example_widedata, file = temp_filename2, 
+          row.names = FALSE, col.names = FALSE, sep = ",")
 ```
 
-Additionally, `read_wides` has the option to specify additional metadata located in the input files that will be added to the resulting dataframes. For instance, a common piece of metadata is the date and time the file was generated, or an experiment name generated by the spectrophotometer. Each piece of metadata can be specified with a vector containing the row and column where the metadata is located in the input file.
+However, this only works if the data in your wide-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). For instance, in this set of example files, some other information is output by the equipment in the first few rows:
 
 ```{r}
-#We'll use the same example file as the previous chunk, but this time
-# specifying the metadata included in the first two rows of the file
+#Let's take a peek at what this file looks like
+head(read.csv(temp_filename2, header = FALSE), 
+     c(10, 4), row.names = FALSE)
+```
+
+Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do:
+
+```{r}
 imported_widedata <- read_wides(files = temp_filename,
-                                startrow = 7, header = TRUE,
+                                startrow = 6)
+```
+
+If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_wides` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but we do so just to show this letter-style functionality).
+
+```{r}
+imported_widedata <- read_wides(files = temp_filename,
+                                startrow = 6, startcol = "A")
+```
+
+### Specifying metadata
+
+Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, many readers will output information like the experiment name and date into a header in the file. `read_wides` can include that information as well via the `metadata` argument.
+
+The `metadata` argument should be a list of named vectors. Each vector should be of length 2, with the first entry specifying the row and the second entry specifying the column where the metadata is located.
+
+For example, in our previous example files, the experiment name was located in the 2nd row, 2nd column, and the start date was located in the 3rd row, 2nd column. Here's how we could specify that metadata:
+
+```{r}
+imported_widedata <- read_wides(files = temp_filename,
+                                startrow = 7,
                                 metadata = list("experiment_name" = c(2, 2),
                                                 "start_date" = c(3, 2)))
 ```

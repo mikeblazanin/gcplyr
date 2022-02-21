@@ -1925,7 +1925,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   to_keep <- which(!(is.na(x) | is.na(y)))
   x <- x[to_keep]
   y <- y[to_keep]
-  stopifnot(order(x) == 1:length(x), order(y) == 1:length(y),
+  stopifnot(order(x) == 1:length(x),
             length(x) > 1, length(y) > 1)
   
   #Check if xlim has been specified

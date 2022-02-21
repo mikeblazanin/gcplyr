@@ -5,6 +5,8 @@
 #gcer
 
 #TODO: 
+#       Ensure that metadata in read_blocks and read_wides can be specified
+#             with excel-style letters
 #       Figure out how to call xlsx in remote building
 #             (e.g. like that of devtools::check_win_devel(),
 #             see: https://community.rstudio.com/t/error-regarding-manual-from-devtools-check-r-cmd-check/14227/2)

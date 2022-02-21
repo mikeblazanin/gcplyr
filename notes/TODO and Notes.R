@@ -35,6 +35,9 @@
 #       
 #       add capability for make_tidydesign to accept simple wellnumbers
 #       
+#       add plot shortcut for blockcurves that shows curves like the plate
+#          reader software does
+#       
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
 #LOWESS

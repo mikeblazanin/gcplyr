@@ -13,6 +13,8 @@ auc(x, y, xlim = NULL, na.rm = TRUE)
 
 \item{xlim}{Vector, of length 2, delimiting the x range over which the
 area under the curve should be calculated}
+
+\item{na.rm}{a logical indicating whether missing values should be removed}
 }
 \description{
 This function takes a vector of \code{x} and \code{y} values and returns

@@ -1914,6 +1914,7 @@ find_local_extrema <- function(values,
 #' @param y Numeric vector of y values
 #' @param xlim Vector, of length 2, delimiting the x range over which the
 #'             area under the curve should be calculated
+#' @param na.rm a logical indicating whether missing values should be removed
 #'             
 #' @export
 auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
@@ -1921,8 +1922,9 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     stop("na.rm = FALSE but x or y contain NA's")
   }
   stopifnot(is.vector(x), is.vector(y))
-  x <- x[!is.na(x)]
-  y <- y[!is.na(y)]
+  to_keep <- which(!(is.na(x) | is.na(y)))
+  x <- x[to_keep]
+  y <- y[to_keep]
   stopifnot(order(x) == 1:length(x), order(y) == 1:length(y),
             length(x) > 1, length(y) > 1)
   

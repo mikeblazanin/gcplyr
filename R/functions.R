@@ -1930,7 +1930,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   
   #Check if xlim has been specified
   if(!is.null(xlim)) {
-    stopifnot(is.vector(xlim), length(xlim) == 2)
+    stopifnot(is.vector(xlim), length(xlim) == 2, any(!is.na(xlim)))
     if(is.na(xlim[1])) {xlim[1] <- x[1]}
     if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
     if(xlim[1] < x[1]) {
@@ -1945,7 +1945,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
         #   m = (y_1 - y_2)/(x_1 - x_2)
         #   b = y_1 - x_1 * m
         y <- c(y, xlim[1]*slp + y[xndx] - x[xndx]*slp)
-        #(reordering is later in code)
+        y <- y[order(x)]
+        x <- x[order(x)]
       }
     }
        
@@ -1961,11 +1962,10 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
         #   m = (y_1 - y_2)/(x_1 - x_2)
         #   b = y_1 - x_1 * m
         y <- c(y, xlim[2]*slp + y[xndx] - x[xndx]*slp)
-        #(reordering is later in code)
+        y <- y[order(x)]
+        x <- x[order(x)]
       }
     }
-    y <- y[order(x)]
-    x <- x[order(x)]
     y <- y[(x >= xlim[1]) & (x <= xlim[2])]
     x <- x[(x >= xlim[1]) & (x <= xlim[2])]
   }

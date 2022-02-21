@@ -1904,6 +1904,76 @@ find_local_extrema <- function(values,
   return(output)
 }
 
+#' calculate area under the curve
+#' 
+#' This function takes a vector of \code{x} and \code{y} values and returns
+#' a scalar for the area under the curve, calculated using the trapezoid
+#' rule
+#'  
+#' @param x Numeric vector of x values
+#' @param y Numeric vector of y values
+#' @param xlim Vector, of length 2, delimiting the x range over which the
+#'             area under the curve should be calculated
+#'             
+#' @export
+auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
+  if(!na.rm & any(c(is.na(x), is.na(y)))) {
+    stop("na.rm = FALSE but x or y contain NA's")
+  }
+  stopifnot(is.vector(x), is.vector(y)
+  x <- x[!is.na(x)]
+  y <- y[!is.na(y)]
+  stopifnot(order(x) == 1:length(x), order(y) == 1:length(y),
+            length(x) > 1, length(y) > 1)
+  
+  #Check if xlim has been specified
+  if(!is.null(xlim)) {
+    stopifnot(is.vector(xlim), length(xlim) == 2)
+    if(xlim[1] < min(x)) {
+      warning("xlim specifies lower limit below the range of x")
+      xlim[1] <- min(x)
+    } else { #add lower xlim to the x vector and the interpolated y to y vector
+      if (!(xlim[1] %in% x)) {
+        xndx <- max(which(xlim[1] > x))
+        slp <- (y[xndx] - y[xndx+1])/(x[xndx] - x[xndx+1])
+        x <- c(x, xlim[1])
+        #interpolated_y = m * interpolation_x + b
+        #   m = (y_1 - y_2)/(x_1 - x_2)
+        #   b = y_1 - x_1 * m
+        y <- c(y, xlim[1]*slp + y[xndx] - x[xndx]*slp)
+        #(reordering is later in code)
+      }
+    }
+       
+    if(xlim[2] > max(x) {
+      warning("xlim specifies upper limit above the range of x")
+      xlim[2] <- max(x)
+    } else { #add upper xlim to the x vector and the interpolated y to y vector
+      if (!(xlim[2] %in% x)) {
+        xndx <- max(which(xlim[2] > x))
+        slp <- (y[xndx] - y[xndx+1])/(x[xndx] - x[xndx+1])
+        x <- c(x, xlim[2])
+        #interpolated_y = m * interpolation_x + b
+        #   m = (y_1 - y_2)/(x_1 - x_2)
+        #   b = y_1 - x_1 * m
+        y <- c(y, xlim[2]*slp + y[xndx] - x[xndx]*slp)
+        #(reordering is later in code)
+      }
+    }
+    y <- y[order(x)]
+    x <- x[order(x)]
+    y <- y[(x >= xlim[1]) & (x <= xlim[2])]
+    x <- x[(x >= xlim[1]) & (x <= xlim[2])]
+  }
+  
+  #Calculate auc
+  # area = 0.5 * (y1 + y2) * (x2 - x1)
+  return(sum(0.5 * 
+               (y[1:(length(y)-1)] + y[2:length(y)]) *
+               (x[2:length(x)] - x[1:(length(x)-1)])))
+}
+
+
 
 ##Legacy Code ----
 

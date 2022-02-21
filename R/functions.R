@@ -1920,7 +1920,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   if(!na.rm & any(c(is.na(x), is.na(y)))) {
     stop("na.rm = FALSE but x or y contain NA's")
   }
-  stopifnot(is.vector(x), is.vector(y)
+  stopifnot(is.vector(x), is.vector(y))
   x <- x[!is.na(x)]
   y <- y[!is.na(y)]
   stopifnot(order(x) == 1:length(x), order(y) == 1:length(y),

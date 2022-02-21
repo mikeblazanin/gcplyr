@@ -1931,9 +1931,11 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   #Check if xlim has been specified
   if(!is.null(xlim)) {
     stopifnot(is.vector(xlim), length(xlim) == 2)
-    if(xlim[1] < min(x)) {
+    if(is.na(xlim[1])) {xlim[1] <- x[1]}
+    if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
+    if(xlim[1] < x[1]) {
       warning("xlim specifies lower limit below the range of x")
-      xlim[1] <- min(x)
+      xlim[1] <- x[1]
     } else { #add lower xlim to the x vector and the interpolated y to y vector
       if (!(xlim[1] %in% x)) {
         xndx <- max(which(xlim[1] > x))
@@ -1947,9 +1949,9 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
       }
     }
        
-    if(xlim[2] > max(x)) {
+    if(xlim[2] > x[length(x)]) {
       warning("xlim specifies upper limit above the range of x")
-      xlim[2] <- max(x)
+      xlim[2] <- x[length(x)]
     } else { #add upper xlim to the x vector and the interpolated y to y vector
       if (!(xlim[2] %in% x)) {
         xndx <- max(which(xlim[2] > x))

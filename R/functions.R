@@ -1945,7 +1945,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
       }
     }
        
-    if(xlim[2] > max(x) {
+    if(xlim[2] > max(x)) {
       warning("xlim specifies upper limit above the range of x")
       xlim[2] <- max(x)
     } else { #add upper xlim to the x vector and the interpolated y to y vector

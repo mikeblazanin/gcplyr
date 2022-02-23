@@ -60,13 +60,13 @@ uninterleave <- function(interleaved_list, n) {
 #' A function that handles name inference logic
 #' 
 #' This function takes in the fully-read dataframe alongside information
-#' about whether rows and columns have been specified, and whether rownames
-#' and colnames should be inferred.
+#' about whether rows and columns have been specified, and whether header
+#' and sider have been specified.
 #' 
 #' @param df The dataframe
 #' @param startrow,endrow,startcol,endcol The rows & columns specified by user
-#' @param infer_colnames,infer_rownames Whether column and row names should be
-#'                                      inferred
+#' @param header,sider Whether the file contains a header or sider
+#'                     (can be TRUE, FALSE, or NA)
 #' 
 #' @details None of the specified arguments should be a vector, they should
 #'          all be single values or NA's
@@ -86,47 +86,65 @@ infer_names <- function(df,
                  rownames_col = NA, colnames_row = NA)
   
   #Inferring startrow/startcol & rownames/colnames is complex:
-  if (is.na(startrow) & is.na(startcol)) {
-    if (infer_colnames & df[1, 1] == "") {
+  if (isFALSE(header) | (is.na(header) & isFALSE(sider))) {output$colnames_row <- 0}
+  if (isFALSE(sider) | (is.na(sider) & isFALSE(header))) {output$rownames_col <- 0}
+  if (isTRUE(header)) {
+    if (!is.na(startrow)) {
+      output$colnames_row <- startrow
+      output$startrow <- startrow + 1
+    } else {
       output$colnames_row <- 1
       output$startrow <- 2
-    } else {
-      output$colnames_row <- 0
-      output$startrow <- 1
     }
-    if (infer_rownames & df[1, 1] == "") {
+    
+    if (is.na(sider)) {
+      temp <- c(startrow, startcol)
+      temp[is.na(temp)] <- 1
+      if (df[temp[1], temp[2]] == "") {
+        output$rownames_col <- temp[2]
+        output$startcol <- temp[2] + 1
+      } else {
+        output$rownames_col <- 0
+        output$startcol <- temp[2]
+      }
+    }
+  }
+  if (isTRUE(sider)) {
+    if (!is.na(startcol)) {
+      output$rownames_col <- startcol
+      output$startcol <- startcol + 1
+    } else {
       output$rownames_col <- 1
       output$startcol <- 2
-    } else {
-      output$rownames_col <- 0
-      output$startcol <- 1
     }
-  } else if (is.na(startrow) & !is.na(startcol)) {
-    if (infer_colnames & startcol > 1 & df[1, (startcol - 1)] == "") {
-      output$colnames_row <- 1
-      output$startrow <- 2
+    
+    if (is.na(header)) {
+      temp <- c(startrow, startcol)
+      temp[is.na(temp)] <- 1
+      if (df[temp[1], temp[2]] == "") {
+        output$colnames_row <- temp[1]
+        output$startrow <- temp[1] + 1
+      } else {
+        output$colnames_row <- 0
+        output$startrow <- temp[1]
+      }
+    }
+  }
+  if (is.na(header) & is.na(sider)) {
+    temp <- c(startrow, startcol)
+    temp[is.na(temp)] <- 1
+    if (df[temp[1], temp[2]] == "") {
+      output$colnames_row <- temp[1]
+      output$startrow <- temp[1] + 1
+      output$rownames_col <- temp[2]
+      output$startcol <- temp[2] + 1
     } else {
       output$colnames_row <- 0
-      output$startrow <- 1
-    }
-    if (infer_rownames) {output$rownames_col <- startcol - 1
-    } else {output$rownames_col <- 0}
-  } else if (!is.na(startrow) & is.na(startcol)) {
-    if (infer_colnames) {output$colnames_row <- startrow - 1
-    } else {output$colnames_row <- 0}
-    if (infer_rownames & startrow > 1 & df[(startrow-1), 1] == "") {
-      output$rownames_col <- 1
-      output$startcol <- 2
-    } else {
+      output$startrow <- temp[1]
       output$rownames_col <- 0
-      output$startcol <- 1
+      output$startcol <- temp[2]
     }
-  } else if (!is.na(startrow) & !is.na(startcol)) {
-    if (infer_colnames) {output$colnames_row <- startrow - 1
-    } else {output$colnames_row <- 0}
-    if (infer_rownames) {output$rownames_col <- startcol - 1
-    } else {output$rownames_col <- 0}
-  } else {stop("Startrow/startcol combo not expected")}
+  }
   
   if(any(is.na(output))) {stop("infer_names failed to infer rows/cols")}
   
@@ -204,8 +222,9 @@ from_excel <- function(x) {
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the measures data are in \code{files},
 #'                 can be a vector or list the same length as \code{files}, or
-#'                 a single value that applies to all \code{files}
-#'                 If not provided \code{read_blocks} will try to infer it
+#'                 a single value that applies to all \code{files}.
+#'                 If not provided data is presumed to begin on the first
+#'                 row and column of the files.
 #' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
 #'                 is located on. Defaults to the first sheet if not specified
 #' @param metadata (optional) non-spectrophotometric data that should be associated
@@ -217,27 +236,29 @@ from_excel <- function(x) {
 #' @param block_names (optional) vector of names corresponding to each plate
 #'                 in \code{files}. If not provided, block_names are inferred
 #'                 from the filenames
-#' @param infer_colnames,infer_rownames Booleans for whether column names
-#'                 and rownames should be inferred.
-#'                 If TRUE and startrow or startcol are specified, respectively, 
-#'                 column or row names will be inferred as the previous column
-#'                 or row, respectively.
-#'                 If both \code{infer_colnames} and \code{infer_rownames} are
-#'                 TRUE and startrow or startcol are not specified,
-#'                 the first row and first column will be taken as column names
-#'                 and row names, respectively, if the row 1 column 1 cell is 
-#'                 empty
-#'                 If FALSE, rows will be numbered with an "R" prefix and columns
-#'                 will be numbered with a "C" prefix
+#' @param header   \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+#'                 such values, indicating whether the file(s) contains the
+#'                 column names as its first line. If \code{header = NA}
+#'                 will attempt to infer the presence of column names. If
+#'                 \code{header = FALSE} or no column names are inferred when 
+#'                 \code{header = NA}, column names will be generated
+#'                 automatically according to \code{wellnames_Excel}
+#' @param sider    \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+#'                 such values, indicating whether the file(s) contains the
+#'                 row names as its first line. If \code{sider = NA}
+#'                 will attempt to infer the presence of row names. If
+#'                 \code{sider = FALSE} or no row names are inferred when 
+#'                 \code{sider = NA}, row names will be generated
+#'                 automatically according to \code{wellnames_Excel}
 #' @param wellnames_Excel If row names and column names are not provided in the
-#'                        input dataframe as specified by \code{infer_colnames}
-#'                        and \code{infer_rownames}, then names will be generated
+#'                        input dataframe as specified by \code{header}
+#'                        and \code{sider}, then names will be generated
 #'                        automatically.
 #'                        If \code{wellnames_Excel} is TRUE, generated names
 #'                        will use Excel-style base-26 lettering for columns
 #'                        and numbers for rows. 
 #'                        If \code{wellnames_Excel} is FALSE, rows and columns
-#'                        will be numbered with "R" and "C" prefixes.
+#'                        will be numbered with "R" and "C" prefixes, respectively.
 #' @return A list where each entry is a list containing the block measures data
 #'         followed by the block_names (or filenames, if block_names is not 
 #'         provided) and any specified metadata.
@@ -248,8 +269,7 @@ read_blocks <- function(files, extension = NULL,
                         startcol = NULL, endcol = NULL,
                         sheet = NULL, metadata = NULL,
                         block_names = NULL,
-                        infer_colnames = TRUE,
-                        infer_rownames = TRUE,
+                        header = NA, sider = NA,
                         wellnames_Excel = TRUE) {
   #         Note that the ... is just so that this function can be called
   #          by other functions with generic passing of arguments
@@ -317,8 +337,8 @@ read_blocks <- function(files, extension = NULL,
   if (!is.null(sheet)) {
     sheet <- checkdim_inputs(sheet, "sheet", length(files))
   }
-  infer_colnames <- checkdim_inputs(infer_colnames, "infer_colnames", length(files))
-  infer_rownames <- checkdim_inputs(infer_rownames, "infer_rownames", length(files))
+  header <- checkdim_inputs(header, "infer_colnames", length(files))
+  sider <- checkdim_inputs(sider, "infer_rownames", length(files))
   
   if (!is.null(block_names)) {
     stopifnot(length(block_names) == length(files))
@@ -376,8 +396,7 @@ read_blocks <- function(files, extension = NULL,
     inferred_rc <- 
       infer_names(temp, startrow = startrow[i], endrow = endrow[i],
                   startcol = startcol[i], endcol = endcol[i],
-                  infer_colnames = infer_rownames[i],
-                  infer_rownames = infer_rownames[i])
+                  header = header[i], sider = sider[i])
     
     #Save information to outputs
     outputs[[i]]$data <- temp[inferred_rc$startrow:inferred_rc$endrow,

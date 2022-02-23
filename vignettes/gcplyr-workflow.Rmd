@@ -17,16 +17,18 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(gcplyr)
-```
-
 # Getting started
 `gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth curves data. This vignette serves as the main walkthrough of how to use `gcplyr`'s most common functions.
 
 If you want to use `gcplyr` to analyze some growth curves data, all you need is the data file with the growth curves measures in it saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
 Additionally, users will often want to combine their measures data with some information on the experimental design of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
+
+Let's get started by loading `gcplyr`
+
+```{r setup}
+library(gcplyr)
+```
 
 # Data layouts
 Growth curves data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped. 
@@ -115,7 +117,7 @@ Here's a simple example. We've created a series of example block-shaped .csv fil
 print(read.csv(temp_filenames[1], header = FALSE))
 ```
 
-This would correspond to all the reads for a single plate taken at the very first timepoint. For instance, we can see that the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
+This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. Moreover, we can see that at this timepoint the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
 
 If we want to read these files into R, we simply provide `read_blocks` with the vector of file names.
 
@@ -145,7 +147,7 @@ for (i in 1:length(temp_filenames2)) {
 }
 ```
 
-However, this only works if the data in your block-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file:
+However, this only works if the data in your block-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file, and the data itself starts on the 4th row:
 
 ```{r}
 print(read.csv(temp_filenames2[1], header = FALSE))

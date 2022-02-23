@@ -41,7 +41,7 @@ test_that("infer_names works as expected", {
   expect_equal(
     infer_names(df = data.frame(matrix(1:16, nrow = 4)),
               startrow = NA, startcol = NA, endrow = NA, endcol = NA,
-              infer_colnames = TRUE, infer_rownames = TRUE),
+              header = NA, sider = NA),
     list(startrow = 1, startcol = 1, endrow = 4, endcol = 4,
          rownames_col = NA, colnames_row = NA))
   
@@ -49,7 +49,7 @@ test_that("infer_names works as expected", {
   expect_equal(
     infer_names(df = data.frame(matrix(c("", 2:16), nrow = 4)),
                 startrow = NA, startcol = NA, endrow = NA, endcol = NA,
-                infer_colnames = TRUE, infer_rownames = TRUE),
+                header = NA, sider = NA),
     list(startrow = 2, startcol = 2, endrow = 4, endcol = 4,
          rownames_col = 1, colnames_row = 1))
   
@@ -57,23 +57,29 @@ test_that("infer_names works as expected", {
   expect_equal(
     infer_names(df = data.frame(matrix(c(1:16), nrow = 4)),
                 startrow = 2, startcol = NA, endrow = NA, endcol = NA,
-                infer_colnames = TRUE, infer_rownames = TRUE),
+                header = NA, sider = NA),
     list(startrow = 2, startcol = 1, endrow = 4, endcol = 4,
-         rownames_col = NA, colnames_row = 1))
+         rownames_col = NA, colnames_row = NA))
+  expect_equal(
+    infer_names(df = data.frame(matrix(c("", 2:16), nrow = 4)),
+                startrow = 1, startcol = NA, endrow = NA, endcol = NA,
+                header = NA, sider = NA),
+    list(startrow = 2, startcol = 2, endrow = 4, endcol = 4,
+         rownames_col = 1, colnames_row = 1))
   
   #Infer both, only start col
   expect_equal(
     infer_names(df = data.frame(matrix(c(1:16), nrow = 4)),
                 startrow = NA, startcol = 2, endrow = NA, endcol = NA,
-                infer_colnames = TRUE, infer_rownames = TRUE),
+                header = NA, sider = NA),
     list(startrow = 1, startcol = 2, endrow = 4, endcol = 4,
-         rownames_col = 1, colnames_row = NA))
+         rownames_col = NA, colnames_row = NA))
   
   #No infer, no start info
   expect_equal(
     infer_names(df = data.frame(matrix(c("", 2:16), nrow = 4)),
                 startrow = NA, startcol = NA, endrow = NA, endcol = NA,
-                infer_colnames = FALSE, infer_rownames = FALSE),
+                header = FALSE, sider = FALSE),
     list(startrow = 1, startcol = 1, endrow = 4, endcol = 4,
          rownames_col = NA, colnames_row = NA))
   
@@ -81,7 +87,7 @@ test_that("infer_names works as expected", {
   expect_equal(
     infer_names(df = data.frame(matrix(c("", 2:16), nrow = 4)),
                 startrow = NA, startcol = 2, endrow = NA, endcol = NA,
-                infer_colnames = FALSE, infer_rownames = FALSE),
+                header = FALSE, sider = FALSE),
     list(startrow = 1, startcol = 2, endrow = 4, endcol = 4,
          rownames_col = NA, colnames_row = NA))
   
@@ -89,7 +95,7 @@ test_that("infer_names works as expected", {
   expect_equal(
     infer_names(df = data.frame(matrix(c("", 2:16), nrow = 4)),
                 startrow = 2, startcol = NA, endrow = NA, endcol = NA,
-                infer_colnames = FALSE, infer_rownames = FALSE),
+                header = FALSE, sider = FALSE),
     list(startrow = 2, startcol = 1, endrow = 4, endcol = 4,
          rownames_col = NA, colnames_row = NA))
 })

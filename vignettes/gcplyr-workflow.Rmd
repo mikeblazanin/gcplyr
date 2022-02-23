@@ -171,6 +171,16 @@ imported_blockdata <- read_blocks(
   startrow = 4, startcol = "A")
 ```
 
+Additionally, some equipment might output growth curves data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
+
+```{r, eval = FALSE}
+imported_blockdata <- read_blocks(
+  files = "example_file.csv",
+  startrow = c(1, 10, 19, 28, 37, 46, 55),
+  endrow = c(8, 17, 26, 35, 44, 53, 62))
+```
+
+
 ### Specifying metadata
 
 Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `read_blocks` can include that information as well via the `metadata` argument. 
@@ -279,9 +289,13 @@ imported_widedata <- read_wides(files = temp_filename,
 ```
 
 # Transforming data
-Once data have been read into the R environment, `gcplyr` handles transformation of data that is block-shaped or wide-shaped using the `trans_\*` functions.
+Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most equipment that generates growth curves data outputs in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses.
+
+You can transform your data.frames using the `trans_\*` functions in `gcplyr`.
 
 ## Transforming from block-shaped to wide-shaped
+
+
 
 To transform block-shaped data into wide-shaped data, use `trans_block_to_wide`. 
 ```{r}
@@ -305,6 +319,8 @@ Often during analysis of growth curves data, we'd like to incorporate informatio
 Just like spectrophotometric data, design elements that are saved in tabular data files can be read using the `read_\*` functions. Simply use `read_blocks` or `read_wides` to read such files into the R environment.
 
 Then, just as for spectrophotometric data, use the `trans_\*` functions to transform this data into tidy-shaped.
+
+[More details on how design elements should best be saved]
 
 ## Generating tidy-shaped design elements programmatically
 `gcplyr` also has the ability to generate tidy-shaped design dataframes from arguments via `make_tidydesign`. `make_tidydesign` allows generation of dataframes with multiple design elements, each of which can have multiple values.
@@ -452,17 +468,26 @@ head(my_design, 20)
 # Merging spectrophotometric and design data
 Design and spectrophotometric data can be combined using `merge_dfs`, from which point they can be pre-processed and analyzed using additional functions.
 
+
+
 # Pre-processing data
 
 # Analyzing data
 
 
+# Handling multiple plates simultaneously
+
+
 
 # Overview of gcplyr functions
 
+*This figure needs updating*
 ![General overview of gcplyr workflow](pkg-workflow.png){#id .class width=7in height=2.45in}
 
+
 # Text graveyard
+
+
 Additionally, there are broadly two classes of growth curves-related information to be manipulated: numerical spectrophotometric data, and experimental design elements. If reading from files, `gcplyr` can read both classes of information, transform them, and merge them for subsequent analyses. `gcplyr` also contains the capability of specifying design elements programmatically, which can then be merged with imported spectrophotometric data.
 
 Once spectrophotometric data and design elements have been combined, this merged measures-designs tidy-shaped dataframe can be used for subsequent pre-processing and analyses.

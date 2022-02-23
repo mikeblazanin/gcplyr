@@ -100,7 +100,7 @@ infer_names <- function(df,
     if (is.na(sider)) {
       temp <- c(startrow, startcol)
       temp[is.na(temp)] <- 1
-      if (df[temp[1], temp[2]] == "") {
+      if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
         output$rownames_col <- temp[2]
         output$startcol <- temp[2] + 1
       } else {
@@ -121,7 +121,7 @@ infer_names <- function(df,
     if (is.na(header)) {
       temp <- c(startrow, startcol)
       temp[is.na(temp)] <- 1
-      if (df[temp[1], temp[2]] == "") {
+      if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
         output$colnames_row <- temp[1]
         output$startrow <- temp[1] + 1
       } else {
@@ -133,7 +133,7 @@ infer_names <- function(df,
   if (is.na(header) & is.na(sider)) {
     temp <- c(startrow, startcol)
     temp[is.na(temp)] <- 1
-    if (df[temp[1], temp[2]] == "") {
+    if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
       output$colnames_row <- temp[1]
       output$startrow <- temp[1] + 1
       output$rownames_col <- temp[2]

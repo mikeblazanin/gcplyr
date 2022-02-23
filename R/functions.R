@@ -86,8 +86,16 @@ infer_names <- function(df,
                  rownames_col = NA, colnames_row = NA)
   
   #Inferring startrow/startcol & rownames/colnames is complex:
-  if (isFALSE(header) | (is.na(header) & isFALSE(sider))) {output$colnames_row <- 0}
-  if (isFALSE(sider) | (is.na(sider) & isFALSE(header))) {output$rownames_col <- 0}
+  #In this case the colnames will be auto-generated
+  if (isFALSE(header) | (is.na(header) & isFALSE(sider))) {
+    output$colnames_row <- 0
+    if (is.na(output$startrow)) {output$startrow <- 1}
+  }
+  #In this case the rownames will be auto-generated
+  if (isFALSE(sider) | (is.na(sider) & isFALSE(header))) {
+    output$rownames_col <- 0
+    if (is.na(output$startcol)) {output$startcol <- 1}
+  }
   if (isTRUE(header)) {
     if (!is.na(startrow)) {
       output$colnames_row <- startrow
@@ -98,6 +106,8 @@ infer_names <- function(df,
     }
     
     if (is.na(sider)) {
+      #This is just a way to check if the top-left cell is empty
+      # and if so then we'll use the first row/col as rownames/colnames
       temp <- c(startrow, startcol)
       temp[is.na(temp)] <- 1
       if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
@@ -119,6 +129,8 @@ infer_names <- function(df,
     }
     
     if (is.na(header)) {
+      #This is just a way to check if the top-left cell is empty
+      # and if so then we'll use the first row/col as rownames/colnames
       temp <- c(startrow, startcol)
       temp[is.na(temp)] <- 1
       if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {

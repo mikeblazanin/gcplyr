@@ -11,7 +11,6 @@
 #             (e.g. like that of devtools::check_win_devel(),
 #             see: https://community.rstudio.com/t/error-regarding-manual-from-devtools-check-r-cmd-check/14227/2)
 #       Figure out what's wrong with my local Latex installation
-#       Change header results so first row becomes header (not row before)
 #       There's still a use of t() in make_tidydesign
 #       Write tests for blocken_wides 
 #       Finish import_blockdesign functions

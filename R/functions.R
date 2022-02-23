@@ -529,27 +529,11 @@ read_wides <- function(files, extension = NULL,
                        names_to_col = "file",
                        metadata = NULL, 
                        metadata_Excel_names = TRUE) {
-  #CLEAN THIS UP LATER
   #Logic 2.0: if header TRUE
-  #             if startrow provided, header is startrow-1
+  #             if startrow provided, header is startrow
   #             if startrow not provided, header is 1
   #           if header FALSE
   #             columns numbered V1...Vn
-  
-  #Logic:   if infer_header TRUE
-  #           if startrow is provided, header is startrow-1
-  #           if startrow NULL header is row 1
-  #         if infer_header FALSE
-  #           columns are simply numbered well_1, well_2, etc
-  #         
-  #         if timecol provided
-  #           timecol is timecol
-  #         if timecol NULL
-  #           if infer_timecol TRUE
-  #             if startcol is provided, timecol is startcol-1
-  #             if startcol is NULL, timecol is col 1
-  #           if infer_timecol FALSE
-  #             rows are numbered timepoint_1, timepoint_2, etc
   
   if (!is.null(startrow) & !is.numeric(startrow)) {
     startrow <- from_excel(startrow)}
@@ -643,8 +627,8 @@ read_wides <- function(files, extension = NULL,
     if(is.na(startcol[i])) {startcol[i] <- 1}
     if (header == TRUE) { #so colnames taken from file
       if (is.na(startrow[i])) {startrow[i] <- 2}
-      outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-      colnames(outputs[[i]]) <- temp[(startrow[i]-1), startcol[i]:endcol[i]]
+      outputs[[i]] <- temp[startrow[i+1]:endrow[i], startcol[i]:endcol[i]]
+      colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
       if (is.na(startrow[i])) {startrow[i] <- 1}
       outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]

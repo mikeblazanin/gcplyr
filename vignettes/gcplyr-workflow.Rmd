@@ -147,19 +147,19 @@ for (i in 1:length(temp_filenames2)) {
 }
 ```
 
-However, this only works if the data in your block-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file, and the data itself starts on the 4th row:
+However, this only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file, and the data itself starts with a header on the 4th row:
 
 ```{r}
 print(read.csv(temp_filenames2[1], header = FALSE))
 ```
 
-Thus, we can see the data header is in row 4, and the data begins in row 5. To specify that to `read_blocks`, we simply do:
+Thus, we can see the column names are in row 4 and the rownames are in column 1. To specify that to `read_blocks`, we simply do:
 
 ```{r}
 #Now let's read it with read_blocks
 imported_blockdata <- read_blocks(
   files = temp_filenames,
-  startrow = 5, startcol = 2)
+  startrow = 4, startcol = 1)
 ```
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_blocks` will translate that to a number for you!
@@ -168,7 +168,7 @@ If you're looking at your data in Excel or a similar spreadsheet program, you'll
 #Now let's read it with read_blocks
 imported_blockdata <- read_blocks(
   files = temp_filenames,
-  startrow = 5, startcol = "B")
+  startrow = 4, startcol = "A")
 ```
 
 ### Specifying metadata
@@ -183,7 +183,7 @@ For example, in our previous example files, the timepoint information was locate
 #Reading the blockcurves files with metadata included
 imported_blockdata <- read_blocks(
   files = temp_filenames2,
-  startrow = 4, startcol = "B",
+  startrow = 4, startcol = "A",
   metadata = list("time" = c(2, 3)))
 ```
 
@@ -241,7 +241,7 @@ write.table(modified_example_widedata, file = temp_filename2,
           row.names = FALSE, col.names = FALSE, sep = ",")
 ```
 
-However, this only works if the data in your wide-shaped files starts in the first row and column (or has headers in the first row/column). If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). For instance, in this set of example files, some other information is output by the equipment in the first few rows:
+However, this only works if the data in your wide-shaped files starts in the first column and in the first row with a header. If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). For instance, in this set of example files, some other information is output by the equipment in the first few rows:
 
 ```{r}
 #Let's take a peek at what this file looks like
@@ -249,11 +249,11 @@ head(read.csv(temp_filename2, header = FALSE),
      c(10, 4), row.names = FALSE)
 ```
 
-Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do:
+Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do (note that `header = TRUE` by default):
 
 ```{r}
 imported_widedata <- read_wides(files = temp_filename,
-                                startrow = 6)
+                                startrow = 5)
 ```
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_wides` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but we do so just to show this letter-style functionality).

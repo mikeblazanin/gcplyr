@@ -75,7 +75,7 @@ uninterleave <- function(interleaved_list, n) {
 #' 
 infer_names <- function(df,
                         startrow, endrow, startcol, endcol,
-                        infer_colnames, infer_rownames) {
+                        header, sider) {
 
   #Infer endrow/endcol if they're not provided to be the last row/col
   if (is.na(endrow)) {endrow <- nrow(df)}

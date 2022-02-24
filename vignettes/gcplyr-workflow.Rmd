@@ -271,15 +271,16 @@ print_df(head(read.csv(temp_filename2, header = FALSE), c(10, 4)))
 Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do (note that `header = TRUE` by default):
 
 ```{r}
-imported_widedata <- read_wides(files = temp_filename,
+imported_widedata <- read_wides(files = temp_filename2,
                                 startrow = 5)
+print_df(head(imported_widedata, c(6, 6)))
 ```
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_wides` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but we do so just to show this letter-style functionality).
 
 ```{r}
-imported_widedata <- read_wides(files = temp_filename,
-                                startrow = 6, startcol = "A")
+imported_widedata <- read_wides(files = temp_filename2,
+                                startrow = 5, startcol = "A")
 ```
 
 ### Specifying metadata
@@ -291,10 +292,11 @@ The `metadata` argument should be a list of named vectors. Each vector should be
 For example, in our previous example files, the experiment name was located in the 2nd row, 2nd column, and the start date was located in the 3rd row, 2nd column. Here's how we could specify that metadata:
 
 ```{r}
-imported_widedata <- read_wides(files = temp_filename,
-                                startrow = 7,
-                                metadata = list("experiment_name" = c(2, 2),
-                                                "start_date" = c(3, 2)))
+imported_widedata <- read_wides(files = temp_filename2,
+                                startrow = 5,
+                                metadata = list("experiment_name" = c(1, 2),
+                                                "start_date" = c(2, 2)))
+print_df(head(imported_widedata, c(6, 6)))
 ```
 
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
@@ -306,19 +308,35 @@ You can transform your data.frames using the `trans_\*` functions in `gcplyr`.
 
 ## Transforming from block-shaped to wide-shaped
 
+If the data you've read into the R environment is block-shaped, you'll first transform it to wide-shaped using `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the R object created by `read_blocks`.
 
-
-To transform block-shaped data into wide-shaped data, use `trans_block_to_wide`. 
 ```{r}
-#Example code to be written here
+imported_blocks_now_wide <- trans_block_to_wide(imported_blockdata)
 ```
+
+Note that `trans_block_to_wide` automatically detected the metadata that `read_blocks` had pulled from our files, and has stored each piece of metadata as a column in our output file.
+
+```{r}
+print(head(imported_blocks_now_wide, c(1, 5)), row.names = FALSE)
+```
+
+Now that your block-shaped data has been transformed to wide-shaped data, you can use `trans_wide_to_tidy` (below) to further transform it into the tidy-shaped data we need for our analyses.
 
 ## Transforming from wide-shaped to tidy-shaped
 
-To transform wide-shaped data into tidy-shaped data, use `trans_wide_to_tidy`.
+If the data you've read into the R environment is wide-shaped (or you've gotten wide-shaped data by transforming your originally block-shaped data), you'll transform it to tidy-shaped using `trans_wide_to_tidy`. 
+
+First, you need to provide `trans_wide_to_tidy` with the R object created by `read_wides` or by `trans_block_to_wide`. Then, you have to specify either the columns your data (the spectrophotometric measures) are in via `data_cols`, or what columns your non-data (e.g. time and other information) are in via `id_cols`.
+
 
 ```{r}
-#Example code to be written here
+# imported_blocks_now_tidy <- trans_wide_to_tidy(
+#   wides = imported_blocks_now_wide,
+#   id_cols = c("block_name", "time"))
+# 
+# imported_wides_now_tidy <- trans_wide_to_tidy(
+#   wides = imported_widedata,
+#   id_cols = c("file", "experiment_name", "start_date", "Time"))
 ```
 
 # Including design elements

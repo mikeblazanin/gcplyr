@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 ```
 
 # Getting started
-`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth curves data. This vignette serves as the main walkthrough of how to use `gcplyr`'s most common functions.
+`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). This document gives a walkthrough of how to use `gcplyr`'s most common functions.
 
-If you want to use `gcplyr` to analyze some growth curves data, all you need is the data file with the growth curves measures in it saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
+All you need is the data file with the growth curves measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
-Additionally, users will often want to combine their measures data with some information on the experimental design of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
+Users often want to combine their data with some information on experimental design elements of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
 
 Let's get started by loading `gcplyr`
 
@@ -39,9 +39,9 @@ print_df <- function(df, col.names = FALSE) {
 
 
 # Data layouts
-Growth curves data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped. 
+Growth curves data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 
-Tidy-shaped data is the best layout for analyses, but most lab equipment outputs block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped into wide-shaped data, and wide-shaped data into tidy-shaped data, then running any analyses.
+Tidy-shaped data is the best layout for analyses, but most plate readers output block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped into wide-shaped data, and wide-shaped data into tidy-shaped data, then running any analyses.
 
 So, what are these three data layouts, and how can you tell which of them your data is in?
 
@@ -49,7 +49,7 @@ So, what are these three data layouts, and how can you tell which of them your d
 
 In block-shaped data, the organization of the data corresponds directly with the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the data.frame will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
 
-For example, here is a block-shaped data.frame of a 96-well plate (with ... indicating the additional columns in the middle that are not printed). In this example, all the data shown would be from a single timepoint.
+For example, here is a block-shaped data.frame of a 96-well plate (with "..." indicating Columns 4 - 10, not shown). In this example, all the data shown would be from a single timepoint.
 
 |         | Column 1 | Column 2  | Column 3  | ... | Column 11 | Column 12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -67,7 +67,7 @@ For example, here is a block-shaped data.frame of a 96-well plate (with ... indi
 
 In wide-shaped data, each column of the dataframe corresponds to a single well from the plate, and each row of the dataframe corresponds to a single timepoint. Typically, headers contain the well names.
 
-For example, here is a wide-shaped dataframe of a 96-well plate (again, ... denotes columns not printed). Each row of this dataframe corresponds to a single timepoint.
+For example, here is a wide-shaped dataframe of a 96-well plate (here, "..." indicates the 91 columns A4 - H10, not shown). Each row of this dataframe corresponds to a single timepoint.
 
 Time      | A1 | A2 | A3  | ... | H11 | H12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -82,7 +82,9 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 ### Tidy-shaped
 
-In tidy-shaped data, each unique measurement has its own row, such that the number of rows equals the number of wells times the number of timepoints. In tidy-shaped data, additional columns specify the timepoint, well information, and any other design elements. Tidy-shaped data is the best format for downstream analyses, and users may be familiar with this format from the `tidyverse` R packages, like `ggplot`. For more details, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
+In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
+
+Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 96 timepoints, that will be 9216 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of R packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
 
 
 Timepoint | Well | Measurement | 
@@ -179,7 +181,7 @@ imported_blockdata <- read_blocks(
   startrow = 4, startcol = "A")
 ```
 
-Additionally, some equipment might output growth curves data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
+Additionally, some plate readers might output growth curves data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
 
 ```{r, eval = FALSE}
 imported_blockdata <- read_blocks(
@@ -261,7 +263,7 @@ write.table(modified_example_widedata, file = temp_filename2,
           row.names = FALSE, col.names = FALSE, sep = ",")
 ```
 
-However, this only works if the data in your wide-shaped files starts in the first column and in the first row with a header. If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). For instance, in this set of example files, some other information is output by the equipment in the first few rows:
+However, this only works if the data in your wide-shaped files starts in the first column and in the first row with a header. If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). For instance, in this set of example files, some other information is output by the plate reader in the first few rows:
 
 ```{r}
 #Let's take a peek at what this file looks like
@@ -302,7 +304,7 @@ print_df(head(imported_widedata, c(6, 6)))
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
 # Transforming data
-Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most equipment that generates growth curves data outputs in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses.
+Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses.
 
 You can transform your data.frames using the `trans_\*` functions in `gcplyr`.
 
@@ -330,13 +332,13 @@ First, you need to provide `trans_wide_to_tidy` with the R object created by `re
 
 
 ```{r}
-# imported_blocks_now_tidy <- trans_wide_to_tidy(
-#   wides = imported_blocks_now_wide,
-#   id_cols = c("block_name", "time"))
-# 
-# imported_wides_now_tidy <- trans_wide_to_tidy(
-#   wides = imported_widedata,
-#   id_cols = c("file", "experiment_name", "start_date", "Time"))
+imported_blocks_now_tidy <- trans_wide_to_tidy(
+  wides = imported_blocks_now_wide,
+  id_cols = c("block_name", "time"))
+
+imported_wides_now_tidy <- trans_wide_to_tidy(
+  wides = imported_widedata,
+  id_cols = c("file", "experiment_name", "start_date", "Time"))
 ```
 
 # Including design elements

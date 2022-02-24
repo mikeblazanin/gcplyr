@@ -450,6 +450,13 @@ read_blocks <- function(files, extension = NULL,
     #Add user-specified metadata (if any)
     if (!is.null(metadata)) {
       for (j in 1:length(metadata)) {
+        #Convert from Excel-style formatting if needed
+        if(!is.numeric(metadata[[j]][1])) {
+          metadata[[j]][1] <- from_excel(metadata[[j]][1])
+        }
+        if(!is.numeric(metadata[[j]][2])) {
+          metadata[[j]][2] <- from_excel(metadata[[j]][2])
+        }
         outputs[[i]]$metadata[j+1] <- temp[metadata[[j]][1], metadata[[j]][2]]
       }
     }
@@ -640,6 +647,12 @@ read_wides <- function(files, extension = NULL,
       metadata_vector <- rep(NA, times = length(metadata))
       names(metadata_vector) <- names(metadata)
       for (j in 1:length(metadata)) {
+        if(!is.numeric(metadata[[j]][1])) {
+          metadata[[j]][1] <- from_excel(metadata[[j]][1])
+        }
+        if(!is.numeric(metadata[[j]][2])) {
+          metadata[[j]][2] <- from_excel(metadata[[j]][2])
+        }
         metadata_vector[j] <- temp[metadata[[j]][1], metadata[[j]][2]]
       }
     } else {metadata_vector <- NULL}

@@ -634,7 +634,7 @@ read_wides <- function(files, extension = NULL,
     if(is.na(startcol[i])) {startcol[i] <- 1}
     if (header == TRUE) { #so colnames taken from file
       if (is.na(startrow[i])) {startrow[i] <- 2}
-      outputs[[i]] <- temp[startrow[i+1]:endrow[i], startcol[i]:endcol[i]]
+      outputs[[i]] <- temp[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
       colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
       if (is.na(startrow[i])) {startrow[i] <- 1}

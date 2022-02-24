@@ -1081,7 +1081,7 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #' 
 #' @export
 trans_block_to_wide <- function(blocks, wellnames_sep = "_", 
-                         nested_metadata = NULL, colnames_first = TRUE) {
+                         nested_metadata = NULL, colnames_first = FALSE) {
   
   if(class(blocks) != "list") {
     blocks <- list(blocks)

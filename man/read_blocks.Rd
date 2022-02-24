@@ -14,8 +14,8 @@ read_blocks(
   sheet = NULL,
   metadata = NULL,
   block_names = NULL,
-  infer_colnames = TRUE,
-  infer_rownames = TRUE,
+  header = NA,
+  sider = NA,
   wellnames_Excel = TRUE
 )
 }
@@ -31,8 +31,9 @@ provided filenames}
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
 the measures data are in \code{files},
 can be a vector or list the same length as \code{files}, or
-a single value that applies to all \code{files}
-If not provided \code{read_blocks} will try to infer it}
+a single value that applies to all \code{files}.
+If not provided data is presumed to begin on the first
+row and column of the files.}
 
 \item{sheet}{(optional) If data is in .xls or .xlsx files, which sheet it 
 is located on. Defaults to the first sheet if not specified}
@@ -48,28 +49,31 @@ to the output metadata.}
 in \code{files}. If not provided, block_names are inferred
 from the filenames}
 
-\item{infer_colnames, infer_rownames}{Booleans for whether column names
-and rownames should be inferred.
-If TRUE and startrow or startcol are specified, respectively, 
-column or row names will be inferred as the previous column
-or row, respectively.
-If both \code{infer_colnames} and \code{infer_rownames} are
-TRUE and startrow or startcol are not specified,
-the first row and first column will be taken as column names
-and row names, respectively, if the row 1 column 1 cell is 
-empty
-If FALSE, rows will be numbered with an "R" prefix and columns
-will be numbered with a "C" prefix}
+\item{header}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+such values, indicating whether the file(s) contains the
+column names as its first line. If \code{header = NA}
+will attempt to infer the presence of column names. If
+\code{header = FALSE} or no column names are inferred when 
+\code{header = NA}, column names will be generated
+automatically according to \code{wellnames_Excel}}
+
+\item{sider}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+such values, indicating whether the file(s) contains the
+row names as its first line. If \code{sider = NA}
+will attempt to infer the presence of row names. If
+\code{sider = FALSE} or no row names are inferred when 
+\code{sider = NA}, row names will be generated
+automatically according to \code{wellnames_Excel}}
 
 \item{wellnames_Excel}{If row names and column names are not provided in the
-input dataframe as specified by \code{infer_colnames}
-and \code{infer_rownames}, then names will be generated
+input dataframe as specified by \code{header}
+and \code{sider}, then names will be generated
 automatically.
 If \code{wellnames_Excel} is TRUE, generated names
 will use Excel-style base-26 lettering for columns
 and numbers for rows. 
 If \code{wellnames_Excel} is FALSE, rows and columns
-will be numbered with "R" and "C" prefixes.}
+will be numbered with "R" and "C" prefixes, respectively.}
 }
 \value{
 A list where each entry is a list containing the block measures data

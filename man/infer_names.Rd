@@ -4,31 +4,23 @@
 \alias{infer_names}
 \title{A function that handles name inference logic}
 \usage{
-infer_names(
-  df,
-  startrow,
-  endrow,
-  startcol,
-  endcol,
-  infer_colnames,
-  infer_rownames
-)
+infer_names(df, startrow, endrow, startcol, endcol, header, sider)
 }
 \arguments{
 \item{df}{The dataframe}
 
 \item{startrow, endrow, startcol, endcol}{The rows & columns specified by user}
 
-\item{infer_colnames, infer_rownames}{Whether column and row names should be
-inferred}
+\item{header, sider}{Whether the file contains a header or sider
+(can be TRUE, FALSE, or NA)}
 }
 \value{
 a list: list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
 }
 \description{
 This function takes in the fully-read dataframe alongside information
-about whether rows and columns have been specified, and whether rownames
-and colnames should be inferred.
+about whether rows and columns have been specified, and whether header
+and sider have been specified.
 }
 \details{
 None of the specified arguments should be a vector, they should

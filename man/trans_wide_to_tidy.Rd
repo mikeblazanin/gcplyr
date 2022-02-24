@@ -5,7 +5,7 @@
 \title{Pivot widemeasures longer}
 \usage{
 trans_wide_to_tidy(
-  widemeasures,
+  wides,
   data_cols = NA,
   id_cols = NA,
   names_to = "Well",
@@ -15,15 +15,13 @@ trans_wide_to_tidy(
 )
 }
 \arguments{
-\item{widemeasures}{A single widemeasures data.frame, or a list of widemeasures
-data.frame's}
-
 \item{data_cols, id_cols}{Specifies which columns have data vs are ID's
 (in tidyr::pivot_longer parlance). Each can be
 a single vector (which will be applied for all
 widemeasures) or a list of vectors, with each
 vector corresponding to the same-index widemeasure
 in \code{widemeasures}
+
 Entries that are NA in the list will not be used
 If neither data_cols nor id_cols are specified,
 user must provide arguments to tidyr::pivot_longer
@@ -43,6 +41,9 @@ overridden by arguments passed in \code{...}}
 \item{...}{Other functions to be passed to tidyr::pivot_longer
 Note that including values_transform here will override the
 behavior of values_to_numeric}
+
+\item{widemeasures}{A single widemeasures data.frame, or a list of widemeasures
+data.frame's}
 }
 \value{
 Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)

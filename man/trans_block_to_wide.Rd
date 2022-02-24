@@ -8,7 +8,7 @@ trans_block_to_wide(
   blocks,
   wellnames_sep = "_",
   nested_metadata = NULL,
-  colnames_first = TRUE
+  colnames_first = FALSE
 )
 }
 \arguments{

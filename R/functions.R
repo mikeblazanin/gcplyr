@@ -1274,7 +1274,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #' Essentially a wrapper for tidyr::pivot_longer that works on both a single
 #' widemeasures as well as a list of widemeasures
 #' 
-#' @param widemeasures A single widemeasures data.frame, or a list of widemeasures
+#' @param wides A single widemeasures data.frame, or a list of widemeasures
 #'                   data.frame's
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
 #'                          (in tidyr::pivot_longer parlance). Each can be

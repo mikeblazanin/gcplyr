@@ -29,7 +29,7 @@ test_that("read_blocks reads data correctly", {
   my_blockcurves1 <- read_blocks(
     files = paste("./test_blockcurves_data_csv/",
                   list.files("./test_blockcurves_data_csv/"), sep = ""),
-    startrow = 2, startcol = 2, endrow = 9, endcol = 13,
+    startrow = 1, startcol = 1, endrow = 9, endcol = "M",
     metadata = list("type1" = c(9, 9), "type2" = c(5, 8)))
   
   my_blockcurves1_expected <- rep(list(NA), length(example_dfs_list))
@@ -50,7 +50,7 @@ test_that("read_blocks reads data correctly", {
   my_blockcurves2 <- read_blocks(
     files = paste("./test_blockcurves_data_xlsx/",
                   list.files("./test_blockcurves_data_xlsx/"), sep = ""),
-    startrow = 2, startcol = 2, endrow = 9, endcol = 13,
+    startrow = 1, startcol = 1, endrow = 9, endcol = 13,
     metadata = list("type1" = c(9, 9), "type2" = c(5, 8)))
   my_blockcurves2_expected <- rep(list(NA), length(example_dfs_list))
   for (i in 1:length(my_blockcurves2_expected)) {

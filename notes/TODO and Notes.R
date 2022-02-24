@@ -15,10 +15,6 @@
 #       Write tests for blocken_wides 
 #       Finish import_blockdesign functions
 #       Write shorthand functions with presets for find_local_extrema
-#       Use letter-number naming for wells by default (bc it's what other
-#        software uses and we should be consistent at least)
-#       Accept letter-number naming for rows/cols when reading in data
-#        (bc it's what users will see if they look in Excel for row/cols)
 #       Compare setup to other packages for similar analyses, eg growthcurver
 #       in growthcurver they keep the timestamps in a column named "time",
 #         I should follow a similar convention
@@ -26,22 +22,18 @@
 #           columns (e.g. Temperature) that are also output and that
 #           the users want to keep (because rownames can only include
 #           one thing)
-#       add support for providing only startcol and startrow, with automatic
-#         inference that the rest of the dataframe is data
-#       Improve comments/documentation
 #       
 #       make_tidydesign calls t which calls as.matrix
 #       
 #       add capability for make_tidydesign to accept simple wellnumbers
 #       
-#       add plot shortcut for blockcurves that shows curves like the plate
-#          reader software does
 #       
 #Change smoothing to include other functions
 #LOESS (which can simplify to a weighted moving average)
 #LOWESS
 #Spline models
 #General additive model
+#Moving median
 
 #wide measures: dataframe with each column corresponding to a single well
 #block measures: dataframe where rows and columns match literally to a plate

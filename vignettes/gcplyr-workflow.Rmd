@@ -30,6 +30,14 @@ Let's get started by loading `gcplyr`
 library(gcplyr)
 ```
 
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+
 # Data layouts
 Growth curves data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped. 
 
@@ -114,7 +122,7 @@ for (i in 1:length(temp_filenames)) {
 Here's a simple example. We've created a series of example block-shaped .csv files (under the hood, so you don't have to worry about it), and stored the file names in `temp_filenames`. Here's what one of the files looks like (where the values are bacterial density):
 
 ```{r}
-print(read.csv(temp_filenames[1], header = FALSE))
+print_df(read.csv(temp_filenames[1], header = FALSE))
 ```
 
 This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. Moreover, we can see that at this timepoint the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
@@ -150,7 +158,7 @@ for (i in 1:length(temp_filenames2)) {
 However, this only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file, and the data itself starts with a header on the 4th row:
 
 ```{r}
-print(read.csv(temp_filenames2[1], header = FALSE))
+print_df(read.csv(temp_filenames2[1], header = FALSE))
 ```
 
 Thus, we can see the column names are in row 4 and the rownames are in column 1. To specify that to `read_blocks`, we simply do:
@@ -197,6 +205,8 @@ imported_blockdata <- read_blocks(
   metadata = list("time" = c(2, 3)))
 ```
 
+And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
+
 
 ## Importing wide-shaped data
 To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a data.frame (or list of data.frames). 
@@ -211,8 +221,8 @@ write.csv(example_widedata, file = temp_filename, row.names = FALSE)
 Here's a simple example. We've created a wide-shaped .csv file (under the hood, so you don't have to worry about it), and stored the file name in `temp_filename`. Here's what the start of the file looks like (where the values are bacterial density):
 
 ```{r}
-head(read.csv(temp_filename, header = FALSE),
-     c(10, 4), row.names = FALSE)
+print_df(head(read.csv(temp_filename, header = FALSE), 
+              c(10, 4), row.names = FALSE))
 ```
 
 This would correspond to all the reads for a single plate taken across all timepoints. For instance, we can see that the first column contains the timepoint information, and each subsequent column corresponds to a well in the plate.
@@ -255,8 +265,7 @@ However, this only works if the data in your wide-shaped files starts in the fir
 
 ```{r}
 #Let's take a peek at what this file looks like
-head(read.csv(temp_filename2, header = FALSE), 
-     c(10, 4), row.names = FALSE)
+print_df(head(read.csv(temp_filename2, header = FALSE), c(10, 4)))
 ```
 
 Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do (note that `header = TRUE` by default):
@@ -287,6 +296,8 @@ imported_widedata <- read_wides(files = temp_filename,
                                 metadata = list("experiment_name" = c(2, 2),
                                                 "start_date" = c(3, 2)))
 ```
+
+And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
 # Transforming data
 Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most equipment that generates growth curves data outputs in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses.

@@ -241,7 +241,14 @@ If we want to read these files into R, we simply provide `read_wides` with the f
 imported_widedata <- read_wides(files = temp_filename)
 ```
 
-This also works if we have multiple files we'd like to read in. In this case, read_wides will return a list containing all the data.frames:
+The resulting `data.frame` looks like this:
+```{r}
+print_df(head(imported_widedata, c(6, 3)))
+```
+
+Note that read_wides automatically saves the filename the data was imported from into the first column of the output `data.frame`. This is done to ensure that later on, `data.frames` from multiple plates can be combined without fear of losing the identity of each plate.
+
+Note that if you have multiple files you'd like to read in, you can do so directly with a single `read_wides` command. In this case, read_wides will return a list containing all the data.frames:
 
 ```{r}
 #If we had multiple wide-shaped data files to import
@@ -280,7 +287,7 @@ Thus, we can see the data header is in row 5, and the data begins in row 6. To s
 ```{r}
 imported_widedata <- read_wides(files = temp_filename2,
                                 startrow = 5)
-print_df(head(imported_widedata, c(6, 6)))
+print_df(head(imported_widedata, c(6, 3)))
 ```
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_wides` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but we do so just to show this letter-style functionality).
@@ -303,7 +310,7 @@ imported_widedata <- read_wides(files = temp_filename2,
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, 2),
                                                 "start_date" = c(2, 2)))
-print_df(head(imported_widedata, c(6, 6)))
+print_df(head(imported_widedata, c(6, 3)))
 ```
 
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.

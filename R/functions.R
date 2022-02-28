@@ -370,12 +370,12 @@ read_blocks <- function(files, extension = NULL,
   if (is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
-    if(!extension %in% c("csv", "xls", "xlsx")) {
+    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
       stop("Extension inferred but not one of: csv, xls, xlsx")
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
-    if(!extension %in% c("csv", "xls", "xlsx")) {
+    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
       stop("Extension provided by user must be one of: csv, xls, xlsx")
     }
   }
@@ -952,7 +952,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         wellnames_sep = "", wellnames_colname = "Well",
                         wellnames_Excel = TRUE, lookup_tbl_start = 1,
                         pattern_split = "", ...) {
-  
+
   #Do we need to include a plate_name argument?
     #(old comment) the plates have to be identified uniquely
   
@@ -969,8 +969,12 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   #               "Rep" = list("1" = 
   
   #Check inputs
-  stopifnot(!(is.null(nrows) & is.null(block_row_names)),
-            !(is.null(ncols) & is.null(block_col_names)))
+  if(is.null(nrows) & is.null(block_row_names)) {
+    stop("nrows or block_row_names must be provided")
+  }
+  if(is.null(ncols) & is.null(block_col_names)) {
+    stop("ncols or block_col_names must be provided")
+  }
   if (is.null(block_row_names)) {
     if (wellnames_Excel) {block_row_names <- 1:nrows
     } else {block_row_names <- paste("R", 1:nrows, sep = "")}

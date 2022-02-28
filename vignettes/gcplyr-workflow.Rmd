@@ -4,8 +4,10 @@ author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:
     toc: true
-  pdf_document: default
-  word_document: default
+  pdf_document:
+    toc: true
+  word_document:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{gcplyr-workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -507,22 +509,16 @@ head(my_design, 20)
 ```
 
 
-
 # Merging spectrophotometric and design data
 Design and spectrophotometric data can be combined using `merge_dfs`, from which point they can be pre-processed and analyzed using additional functions.
 
-
+[further documentation to-be-written]
 
 # Pre-processing data
+[further documentation to-be-written]
 
 # Analyzing data
-
+[further documentation to-be-written]
 
 # Handling multiple plates simultaneously
-
-
-
-
-
-
-
+[further documentation to-be-written]

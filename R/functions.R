@@ -174,6 +174,12 @@ infer_names <- function(df,
 #' 
 #' @export
 to_excel <- function(x) {
+  x_numeric <- suppressWarnings(as.numeric(x))
+  if(any(is.na(x_numeric))) {
+  stop(paste("Failed to convert to Excel-format:",
+       paste(x[is.na(x_numeric)], collapse = ",")))
+  }
+  
   divisor_modulo_excel <- function(x) {
     #This function is just a way to return %/% and %% modified as Excel uses them
     #see Python inspiration: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
@@ -215,6 +221,10 @@ from_excel <- function(x) {
     temp <- match(x_splt[[i]], LETTERS)
     #Multiply indices by powers of 26
     out[i] <- sum(temp*26**((length(temp)-1):0))
+  }
+  if(any(is.na(out))) {
+    stop(paste("Failed to convert from Excel-format:",
+               paste(x[is.na(out)], collapse = ",")))
   }
   return(out)
 }
@@ -451,13 +461,14 @@ read_blocks <- function(files, extension = NULL,
     if (!is.null(metadata)) {
       for (j in 1:length(metadata)) {
         #Convert from Excel-style formatting if needed
-        if(!is.numeric(metadata[[j]][1])) {
+        if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
           metadata[[j]][1] <- from_excel(metadata[[j]][1])
         }
-        if(!is.numeric(metadata[[j]][2])) {
+        if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
           metadata[[j]][2] <- from_excel(metadata[[j]][2])
         }
-        outputs[[i]]$metadata[j+1] <- temp[metadata[[j]][1], metadata[[j]][2]]
+        outputs[[i]]$metadata[j+1] <- 
+          temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
       }
     }
   }
@@ -646,13 +657,14 @@ read_wides <- function(files, extension = NULL,
       metadata_vector <- rep(NA, times = length(metadata))
       names(metadata_vector) <- names(metadata)
       for (j in 1:length(metadata)) {
-        if(!is.numeric(metadata[[j]][1])) {
+        if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
           metadata[[j]][1] <- from_excel(metadata[[j]][1])
         }
-        if(!is.numeric(metadata[[j]][2])) {
+        if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
           metadata[[j]][2] <- from_excel(metadata[[j]][2])
         }
-        metadata_vector[j] <- temp[metadata[[j]][1], metadata[[j]][2]]
+        metadata_vector[j] <- 
+          temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
       }
     } else {metadata_vector <- NULL}
     #Add run_names if requested as column

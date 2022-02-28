@@ -46,6 +46,13 @@ test_that("read_blocks reads data correctly", {
   }
   expect_equal(my_blockcurves1, my_blockcurves1_expected)
   
+  my_blockcurves1_excel <- read_blocks(
+    files = paste("./test_blockcurves_data_csv/",
+                  list.files("./test_blockcurves_data_csv/"), sep = ""),
+    startrow = 1, startcol = 1, endrow = 9, endcol = "M",
+    metadata = list("type1" = c(9, "I"), "type2" = c("E", 8)))
+  expect_equal(my_blockcurves1_excel, my_blockcurves1_expected)
+  
   #Read xlsx with all rows/cols specified, metadata included
   my_blockcurves2 <- read_blocks(
     files = paste("./test_blockcurves_data_xlsx/",
@@ -65,6 +72,13 @@ test_that("read_blocks reads data correctly", {
       as.character(row.names(my_blockcurves2_expected[[i]]$data))
   }
   expect_equal(my_blockcurves2, my_blockcurves2_expected)
+  
+  my_blockcurves2_excel <- read_blocks(
+    files = paste("./test_blockcurves_data_xlsx/",
+                  list.files("./test_blockcurves_data_xlsx/"), sep = ""),
+    startrow = 1, startcol = 1, endrow = 9, endcol = 13,
+    metadata = list("type1" = c("I", 9), "type2" = c(5, "H")))
+  expect_equal(my_blockcurves2_excel, my_blockcurves2_expected)
   
   unlink("./test_blockcurves_data_csv", recursive = TRUE)
   unlink("./test_blockcurves_data_xlsx", recursive = TRUE)
@@ -121,6 +135,14 @@ test_that("read_wides works correctly", {
                             "row12col2" = rep(data[11, 2], nrow(data2))),
                               data2[, -1])
   expect_equal(data_in3,
+               list("test_widecurves_data/test" = data3,
+                    "test_widecurves_data/test" = data3))
+  
+  data_in3_excel <- read_wides(
+    files = c("./test_widecurves_data/test.csv",
+              "./test_widecurves_data/test.xlsx"),
+    metadata = list(c("E", 5), "row12col2" = c(12, "B")))
+  expect_equal(data_in3_excel,
                list("test_widecurves_data/test" = data3,
                     "test_widecurves_data/test" = data3))
   

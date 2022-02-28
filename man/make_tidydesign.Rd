@@ -14,6 +14,7 @@ make_tidydesign(
   wellnames_Excel = TRUE,
   lookup_tbl_start = 1,
   pattern_split = "",
+  colnames_first = FALSE,
   ...
 )
 }
@@ -31,8 +32,8 @@ well names}
 
 \item{wellnames_Excel}{If \code{block_row_names} or \code{block_col_names}
 are not specified, should rows and columns be named
-using Excel-style base-26 lettering for columns
-and numbering for rows? If FALSE, rows and columns
+using Excel-style base-26 lettering for rows
+and numbering for columns? If FALSE, rows and columns
 will be numbered with "R" and "C" prefix.}
 
 \item{lookup_tbl_start}{Value in the lookup table for the split pattern values
@@ -45,6 +46,10 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)}
 
 \item{pattern_split}{character to split pattern elements provided in
 \code{...} by}
+
+\item{colnames_first}{In the wellnames created by \code{paste}-ing the
+rownames and column names, should the column names
+come first}
 
 \item{...}{Each \code{...} argument must be a list with five elements:
 

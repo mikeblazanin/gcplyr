@@ -28,6 +28,9 @@ for (i in 1:96) {
     (1+((k_vir_vector[i]-dens_init_vir_vector[i])/dens_init_vir_vector[i])*
        exp(-u_vir_vector[i]*example_widedata$Time))
   example_widedata[(example_widedata[, i+1] < 0), i+1] <- 0
+  #Convert cfu/mL to OD600
+  example_widedata[ , i+1] <- 
+    round(example_widedata[, i+1]/(5*10**8), digits = 3)
 }
 #Code to visualize example data
 ex_lng <- tidyr::pivot_longer(example_widedata, cols = -Time)

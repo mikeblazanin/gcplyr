@@ -226,7 +226,7 @@ from_excel <- function(x) {
     stop(paste("Failed to convert from Excel-format:",
                paste(x[is.na(out)], collapse = ",")))
   }
-  return(out)
+  return(as.numeric(out))
 }
 
 # Read files ----
@@ -607,6 +607,14 @@ read_wides <- function(files, extension = NULL,
     if (is.null(names(metadata))) {
       names(metadata) <- rep("", length(metadata))}
     for (i in 1:length(metadata)) {
+      #Convert to numeric if provided Excel-style
+      if(is.na(suppressWarnings(as.numeric(metadata[[i]][1])))) {
+        metadata[[i]][1] <- from_excel(metadata[[i]][1])
+      }
+      if(is.na(suppressWarnings(as.numeric(metadata[[i]][2])))) {
+        metadata[[i]][2] <- from_excel(metadata[[i]][2])
+      }
+      #Then make names
       if (names(metadata)[i] == "") {
         if (metadata_Excel_names) {
           names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
@@ -657,12 +665,6 @@ read_wides <- function(files, extension = NULL,
       metadata_vector <- rep(NA, times = length(metadata))
       names(metadata_vector) <- names(metadata)
       for (j in 1:length(metadata)) {
-        if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
-          metadata[[j]][1] <- from_excel(metadata[[j]][1])
-        }
-        if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
-          metadata[[j]][2] <- from_excel(metadata[[j]][2])
-        }
         metadata_vector[j] <- 
           temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
       }

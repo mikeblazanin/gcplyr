@@ -1,0 +1,23 @@
+---
+title: "Extra Vignette Text"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview of gcplyr functions
+*This figure needs updating*
+![General overview of gcplyr workflow](pkg-workflow.png){#id .class width=7in height=2.45in}
+
+# Text graveyard
+
+
+Additionally, there are broadly two classes of growth curves-related information to be manipulated: numerical spectrophotometric data, and experimental design elements. If reading from files, `gcplyr` can read both classes of information, transform them, and merge them for subsequent analyses. `gcplyr` also contains the capability of specifying design elements programmatically, which can then be merged with imported spectrophotometric data.
+
+Once spectrophotometric data and design elements have been combined, this merged measures-designs tidy-shaped dataframe can be used for subsequent pre-processing and analyses.
+
+
+
+Note that `gcplyr` can handle multiple plates throughout this process, using lists which contain the corresponding single-plate data.frames as elements. Once design elements have been merged with these data.frames so that independent plates can be distinguished, multiple-plate lists can be collapsed together into a single tidy-shaped measures-designs dataframe using `merge_dfs`.

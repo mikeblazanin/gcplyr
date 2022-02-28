@@ -898,6 +898,9 @@ split_blockdesign <- function() {
 #'                         c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
 #'                         for example, lookup_tbl_start = "A", then the lookup
 #'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
+#' @param colnames_first  In the wellnames created by \code{paste}-ing the
+#'                        rownames and column names, should the column names
+#'                        come first
 #' @param ... Each \code{...} argument must be a list with five elements:
 #' 
 #'              1. a vector of the values
@@ -951,7 +954,8 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         wellnames_sep = "", wellnames_colname = "Well",
                         wellnames_Excel = TRUE, lookup_tbl_start = 1,
-                        pattern_split = "", ...) {
+                        pattern_split = "", colnames_first = FALSE,
+                        ...) {
 
   #Do we need to include a plate_name argument?
     #(old comment) the plates have to be identified uniquely
@@ -991,8 +995,15 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   #Make base output dataframe
   output <- as.data.frame(matrix(NA, nrow = nrows*ncols, 
                                  ncol = 1+length(unique(names(dot_args)))))
-  output[,1] <- paste(rep(block_row_names, each = ncols),
-                      block_col_names, sep = wellnames_sep)
+  if(colnames_first) {
+    output[,1] <- paste(block_col_names,
+                        rep(block_row_names, each = ncols),
+                        sep = wellnames_sep)
+  } else {
+    output[,1] <- paste(rep(block_row_names, each = ncols),
+                        block_col_names, sep = wellnames_sep)
+  }
+  
   colnames(output)[1] <- wellnames_colname
   
   #Note dot_args structure

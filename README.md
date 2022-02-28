@@ -51,7 +51,7 @@ functions and walks through how to import, manipulate, and analyze
 growth curves data using `gcplyr` from start to finish.
 
 You can [access a pdf of the workflow vignette
-here](../../vignettes/gcplyr-workflow.pdf "gcplyr workflow vignette")
+here](./vignettes/gcplyr-workflow.pdf "gcplyr workflow vignette")
 
 Or, after installing `gcplyr`, run:
 

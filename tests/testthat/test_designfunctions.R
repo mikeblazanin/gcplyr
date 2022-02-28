@@ -23,7 +23,7 @@ test_that("make_tidydesign issues errors when expected for invalid pattern strin
 
 test_that("make_tidydesign works as expected for numerical pattern strings", {
   expect_equal(
-    make_tidydesign(nrows = 4, ncols = 4,
+    make_tidydesign(nrows = 4, ncols = 4, colnames_first = TRUE,
                     "name" = list(c(1, "a", "hello"),
                                   2:3, 2:4,
                                   pattern = "122333")),
@@ -38,7 +38,7 @@ test_that("make_tidydesign works as expected for numerical pattern strings", {
 
 test_that("make_tidydesign works with 0's in numerical pattern string", {
   expect_equal(
-    make_tidydesign(nrows = 4, ncols = 4,
+    make_tidydesign(nrows = 4, ncols = 4, colnames_first = TRUE,
                   "name" = list(c(1, "a", "hello"),
                                 2:3, 2:4,
                                 pattern = "122033")),
@@ -53,7 +53,7 @@ test_that("make_tidydesign works with 0's in numerical pattern string", {
 
 test_that("make_tidydesign works for multiple design elements", {
   expect_equal(
-    make_tidydesign(nrows = 4, ncols = 4,
+    make_tidydesign(nrows = 4, ncols = 4, colnames_first = TRUE,
                     "name" = list(c(1, "a", "hello"), 
                                   2:3, 2:4,
                                   pattern = "122033"),
@@ -75,7 +75,7 @@ test_that("make_tidydesign works for multiple design elements", {
 
 test_that("make_tidydesign works as expected for alpha pattern strings", {
   expect_equal(
-    make_tidydesign(nrows = 4, ncols = 4,
+    make_tidydesign(nrows = 4, ncols = 4, colnames_first = TRUE,
                     lookup_tbl_start = "a",
                     "name" = list(c(1, "a", "hello"),
                                   2:3, 2:4,

@@ -245,10 +245,10 @@ And just like how you can specify `startrow`, `startcol`, etc. with Excel-style 
 
 ```{r}
 #Reading the blockcurves files with metadata included
-imported_blockdata <- read_blocks(
-  files = temp_filenames2,
-  startrow = 4, startcol = "A",
-  metadata = list("time" = c(2, "C")))
+# imported_blockdata <- read_blocks(
+#   files = temp_filenames2,
+#   startrow = 4, startcol = "A",
+#   metadata = list("time" = c(2, "C")))
 ```
 
 ## Importing wide-shaped data
@@ -363,6 +363,14 @@ print_df(head(imported_widedata, c(6, 3)))
 ```
 
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
+
+```{r}
+# imported_widedata <- read_wides(files = temp_filename2,
+#                                 startrow = 5,
+#                                 metadata = list("experiment_name" = c(1, "B"),
+#                                                 "start_date" = c(2, "B")))
+```
+
 
 # Transforming data
 Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses and required by gcplyr.

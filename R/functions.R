@@ -370,10 +370,16 @@ read_blocks <- function(files, extension = NULL,
   if (is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
+    if(!extension %in% c("csv", "xls", "xlsx")) {
+      stop("Extension inferred but not one of: csv, xls, xlsx")
+    }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
+    if(!extension %in% c("csv", "xls", "xlsx")) {
+      stop("Extension provided by user must be one of: csv, xls, xlsx")
+    }
   }
-  stopifnot(extension %in% c("csv", "xls", "xlsx"))
+  
   
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata

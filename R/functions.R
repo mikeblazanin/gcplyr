@@ -178,7 +178,7 @@ to_excel <- function(x) {
   if(any(is.na(x_numeric))) {
   stop(paste("Failed to convert to Excel-format:",
        paste(x[is.na(x_numeric)], collapse = ",")))
-  }
+  } else {x <- x_numeric}
   
   divisor_modulo_excel <- function(x) {
     #This function is just a way to return %/% and %% modified as Excel uses them

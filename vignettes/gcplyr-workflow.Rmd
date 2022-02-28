@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 # Getting started
 `gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). This document gives a walkthrough of how to use `gcplyr`'s most common functions.
 
-All you need is the data file with the growth curves measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
+To get started, all you need is the data file with the growth curves measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
 Users often want to combine their data with some information on experimental design elements of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
 
@@ -91,7 +91,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
 
-Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 96 timepoints, that will be 9216 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of R packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
+Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of R packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
 
 
 Timepoint | Well | Measurement | 
@@ -112,8 +112,12 @@ To import block-shaped data, use the `read_blocks` function. `read_blocks` only 
 
 ### The simplest example
 
-```{r, include = FALSE}
-#This code just creates a set of example files with no time added
+Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames`.
+
+```{r}
+#This code just creates a series of block-shaped example files
+#Don't worry about how it works - when working with real growth
+#curves data, all these files would be created by the plate reader
 temp_filenames <- 
   tempfile(pattern = paste(as.character(example_widedata$Time), "_", sep = ""),
                            fileext = ".csv")
@@ -122,13 +126,17 @@ for (i in 1:length(temp_filenames)) {
     cbind(matrix(c("", "A", "B", "C", "D", "E", "F", "G", "H"), nrow = 9),
           rbind(
             matrix(1:12, ncol = 12),
-            matrix(example_widedata[i, 2:ncol(example_widedata)], ncol = 12))), 
+            matrix(
+                (example_widedata[i, 2:ncol(example_widedata)]/(5*10**8)),
+              ncol = 12)
+            )
+          ), 
     file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
     col.names = FALSE)
 }
 ```
 
-Here's a simple example. We've created a series of example block-shaped .csv files (under the hood, so you don't have to worry about it), and stored the file names in `temp_filenames`. Here's what one of the files looks like (where the values are bacterial density):
+Here's what one of the files looks like (where the values are absorbance/optical density):
 
 ```{r}
 print_df(read.csv(temp_filenames[1], header = FALSE))
@@ -144,33 +152,46 @@ imported_blockdata <- read_blocks(files = temp_filenames)
 
 ### Specifying the location of your block-shaped data
 
-```{r, include = FALSE}
-#This code just creates a set of example files with time added in the first row
+However, running `read_blocks` with only the filenames only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). 
+
+To show how this works, first let's create some example files where the data doesn't begin in the first row/column. In these example files, the plate reader saved the time that each plate was read in the 2nd row of the file, and started saving the data itself with a header in the 4th row.
+
+Again, **don't worry how this code works**. When working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames2`.
+
+```{r}
+#This code just creates a series of block-shaped example files
+#Don't worry about how it works - when working with real growth
+#curves data, all these files would be created by the plate reader
 temp_filenames2 <- 
   tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
                            fileext = ".csv")
 for (i in 1:length(temp_filenames2)) {
   write.table(
-    cbind(matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
-                 nrow = 12),
-          rbind(
-            rep("", 12),
-            matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
-            rep("", 12),
-            matrix(1:12, ncol = 12),
-            matrix(example_widedata[i, 2:ncol(example_widedata)], ncol = 12))), 
+    cbind(
+      matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
+             nrow = 12),
+      rbind(
+        rep("", 12),
+        matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
+        rep("", 12),
+        matrix(1:12, ncol = 12),
+        matrix(
+              (example_widedata[i, 2:ncol(example_widedata)]/(5*10**8)),
+                ncol = 12)
+      )
+    ), 
     file = temp_filenames2[i], quote = FALSE, row.names = FALSE, sep = ",",
     col.names = FALSE)
 }
 ```
 
-However, this only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). For instance, in this set of example files, the timepoint of each block is stored in the 2nd row of the file, and the data itself starts with a header on the 4th row:
+Let's take a look at one of the files:
 
 ```{r}
 print_df(read.csv(temp_filenames2[1], header = FALSE))
 ```
 
-Thus, we can see the column names are in row 4 and the rownames are in column 1. To specify that to `read_blocks`, we simply do:
+In the above example, the column names are in row 4 and the rownames are in column 1. To specify that to `read_blocks`, we simply do:
 
 ```{r}
 #Now let's read it with read_blocks
@@ -202,9 +223,13 @@ imported_blockdata <- read_blocks(
 
 Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `read_blocks` can include that information as well via the `metadata` argument. 
 
-The `metadata` argument should be a list of named vectors. Each vector should be of length 2, with the first entry specifying the row and the second entry specifying the column where the metadata is located.
+For example, let's return to our most-recent example files:
 
-For example, in our previous example files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata:
+```{r}
+print_df(read.csv(temp_filenames2[1], header = FALSE))
+```
+
+In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `read_blocks` command:
 
 ```{r}
 #Reading the blockcurves files with metadata included
@@ -214,20 +239,33 @@ imported_blockdata <- read_blocks(
   metadata = list("time" = c(2, 3)))
 ```
 
+You can see that the metadata argument must be a list of named vectors. Each vector should have two elements specifying the location of the metadata in the input files: the first element is the row, the second element is the column.
+
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
+```{r}
+#Reading the blockcurves files with metadata included
+imported_blockdata <- read_blocks(
+  files = temp_filenames2,
+  startrow = 4, startcol = "A",
+  metadata = list("time" = c(2, "C")))
+```
 
 ## Importing wide-shaped data
 To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a data.frame (or list of data.frames). 
 
 ### The simplest example
-```{r, include = FALSE}
-#Let's create an example file
+Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. when working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file name(s) in R, here we've stored the file name in `temp_filename`. 
+
+```{r}
+#This code just creates a wide-shaped example file
+#Don't worry about how it works - when working with real growth
+#curves data, this file would be created by the plate reader
 temp_filename <- paste(tempfile(), ".csv", sep = "")
 write.csv(example_widedata, file = temp_filename, row.names = FALSE)
 ```
 
-Here's a simple example. We've created a wide-shaped .csv file (under the hood, so you don't have to worry about it), and stored the file name in `temp_filename`. Here's what the start of the file looks like (where the values are bacterial density):
+Here's what the start of the file looks like (where the values are absorbance/optical density):
 
 ```{r}
 print_df(head(read.csv(temp_filename, header = FALSE), 
@@ -259,8 +297,17 @@ imported_widedata <- read_wides(files = c(temp_filename, temp_filename))
 
 ### Specifying the location of your wide-shaped data
 
-```{r, include = FALSE}
-#Let's save an example file where the data doesn't start right away
+However, running `read_wides` with only the filename(s) only works if the data in your wide-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). 
+
+To show how this works, first let's create an example file where the data doesn't begin in the first row/column. In this example file, the plate reader started saving the data itself with a header in the 5th row.
+
+Again, **don't worry how this code works**. When working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file name in `temp_filename2`.
+
+```{r}
+#This code just creates a wide-shaped example file where the data doesn't
+#start on the first row.
+#Don't worry about how it works - when working with real growth
+#curves data, this file would be created by the plate reader
 temp_filename2 <- tempfile(fileext = ".csv")
 temp_example_widedata <- example_widedata
 colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
@@ -277,7 +324,7 @@ write.table(modified_example_widedata, file = temp_filename2,
           row.names = FALSE, col.names = FALSE, sep = ",")
 ```
 
-However, this only works if the data in your wide-shaped files starts in the first column and in the first row with a header. If your data starts elsewhere, `read_wides` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_wides` also needs to know where your data ends). For instance, in this set of example files, some other information is output by the plate reader in the first few rows:
+Let's take a look at the file:
 
 ```{r}
 #Let's take a peek at what this file looks like
@@ -318,13 +365,13 @@ print_df(head(imported_widedata, c(6, 3)))
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
 # Transforming data
-Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses.
+Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses and required by gcplyr.
 
 You can transform your data.frames using the `trans_\*` functions in `gcplyr`.
 
 ## Transforming from block-shaped to wide-shaped
 
-If the data you've read into the R environment is block-shaped, you'll first transform it to wide-shaped using `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the R object created by `read_blocks`.
+If the data you've read into the R environment is block-shaped, you'll need to transform it from block-shaped to wide-shaped, and then wide-shaped to tidy-shaped. For the first step, you'll use `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the R object created by `read_blocks`.
 
 ```{r}
 imported_blocks_now_wide <- trans_block_to_wide(imported_blockdata)

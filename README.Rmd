@@ -48,7 +48,7 @@ devtools::install_github("mikeblazanin/gcplyr")
 
 The best way to get started is to check out the `gcplyr-workflow` vignette, which included examples of all of the most common `gcplyr` functions and walks through how to import, manipulate, and analyze growth curves data using `gcplyr` from start to finish.
 
-You can [access a pdf of the workflow vignette here](./vignettes/gcplyr-workflow.pdf "gcplyr workflow vignette")
+You can [access a pdf of the workflow vignette here](../../vignettes/gcplyr-workflow.pdf "gcplyr workflow vignette")
 
 Or, after installing `gcplyr`, run:
 

@@ -54,9 +54,9 @@ So, what are these three data layouts, and how can you tell which of them your d
 
 ### Block-shaped
 
-In block-shaped data, the organization of the data corresponds directly with the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the data.frame will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
+In block-shaped data, the organization of the data corresponds directly with the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the `data.frame` will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
 
-For example, here is a block-shaped data.frame of a 96-well plate (with "..." indicating Columns 4 - 10, not shown). In this example, all the data shown would be from a single timepoint.
+For example, here is a block-shaped `data.frame` of a 96-well plate (with "..." indicating Columns 4 - 10, not shown). In this example, all the data shown would be from a single timepoint.
 
 |         | Column 1 | Column 2  | Column 3  | ... | Column 11 | Column 12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -108,7 +108,7 @@ Timepoint | Well | Measurement |
 Once you've determined what format your data is in, you can begin importing it using the `read_` functions of `gcplyr`. If your data is block-shaped, you'll use `read_blocks`. If your data is wide-shaped, you'll use `read_wides`. In the unlikely event your data is already tidy, you can simply read it using the built-in R function `read.table`.
 
 ## Importing block-shaped data
-To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames, with each data.frame corresponding to a single block. 
+To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames, with each `data.frame` corresponding to a single block. 
 
 ### The simplest example
 
@@ -252,7 +252,7 @@ And just like how you can specify `startrow`, `startcol`, etc. with Excel-style 
 ```
 
 ## Importing wide-shaped data
-To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a data.frame (or list of data.frames). 
+To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames). 
 
 ### The simplest example
 Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. when working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file name(s) in R, here we've stored the file name in `temp_filename`. 
@@ -365,17 +365,17 @@ print_df(head(imported_widedata, c(6, 3)))
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
 ```{r}
-# imported_widedata <- read_wides(files = temp_filename2,
-#                                 startrow = 5,
-#                                 metadata = list("experiment_name" = c(1, "B"),
-#                                                 "start_date" = c(2, "B")))
+imported_widedata <- read_wides(files = temp_filename2,
+                                startrow = 5,
+                                metadata = list("experiment_name" = c(1, "B"),
+                                                "start_date" = c(2, "B")))
 ```
 
 
 # Transforming data
-Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped data.frames are the best shape for analyses and required by gcplyr.
+Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
 
-You can transform your data.frames using the `trans_\*` functions in `gcplyr`.
+You can transform your `data.frame`s using the `trans_\*` functions in `gcplyr`.
 
 ## Transforming from block-shaped to wide-shaped
 
@@ -411,69 +411,21 @@ imported_wides_now_tidy <- trans_wide_to_tidy(
 ```
 
 # Including design elements
-Often during analysis of growth curves data, we'd like to incorporate information on the experimental design. For example, which bacteria are present in which wells, or which wells have received some treatment (whether it be changes in growth media, antibiotics, phage presence, etc). `gcplyr` enables incorporation of design elements in two ways:
-1. Design elements can be imported from files using `read_\*` functions
+Often during analysis of growth curves data, we'd like to incorporate information on the experimental design. For example, which bacteria are present in which wells, or which wells have received some treatment. `gcplyr` enables incorporation of design elements in two ways:
+1. Design elements can be imported from tidy-shaped files using `read_table` functions and merged with previously-imported data
 2. Design elements can be generated programmatically using `make_tidydesign`
 
 ## Reading design elements from files
-Just like spectrophotometric data, design elements that are saved in tabular data files can be read using the `read_\*` functions. Simply use `read_blocks` or `read_wides` to read such files into the R environment.
+Just like spectrophotometric data, design elements that are saved in tidy-shaped tabular data files can be read using the `read_table` function.
 
-Then, just as for spectrophotometric data, use the `trans_\*` functions to transform this data into tidy-shaped.
-
-[More details on how design elements should best be saved]
+Once these design elements have been read into the R environment, you can merge them with your data. See the next section for details.
 
 ## Generating tidy-shaped design elements programmatically
-`gcplyr` also has the ability to generate tidy-shaped design dataframes from arguments via `make_tidydesign`. `make_tidydesign` allows generation of dataframes with multiple design elements, each of which can have multiple values.
+If you don't have your experimental design information saved in a file, you can directly create such a `data.frame` using the `gcplyr` function `make_tidydesign`. `make_tidydesign` uses the spatial location of design elements in a multiwell plate as input arguments, but outputs a tidy-shaped `data.frame` that can be easily merged with your tidy-shaped data.
 
-`make_tidydesign` is written so that design elements can be specified according to their spatial location in the multiwell plate. The resulting dataframe, however, is already tidy-shaped, so that users do not have to transform the resulting design elements dataframe.
+### An example with a single design
 
-### An example
-For example, let's imagine a growth curves experiment where a 96 well plate (12 columns and 8 rows) has a different media in each column in the plate, but the first and last columns and first and last rows were left empty.
-
-Row names | Column 1 | Column 2 | Column 3 | ... | Column 11 | Column 12
---------- | -------- | -------- | -------- | --- | --------- | --------
-Row A     | Blank    | Blank    | Blank    | ... | Blank     | Blank
-Row B     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
-...       |...       | ...      | ...      | ... | ...       | ... 
-Row G     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
-Row H     | Blank    | Blank    | Blank    | ... | Blank     | Blank
-
-To generate a tidy-shaped design dataframe representing this information, we can use `make_tidydesign`. 
-Each design element has the following structure
-'name_of_design_element' = list(
-* a vector containing the possible values
-* a vector containing all the rows these values should be applied to
-* a vector containing all the columns these values should be applied to
-* a string of the pattern itself within those rows and columns
-* an optional Boolean for whether this pattern should be filled byrow (defaults to TRUE)
-)
-
-```{r}
-my_design <- make_tidydesign(
-  nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Media = list(c("Media 1", "Media 2", "Media 3",
-                 "Media 4", "Media 5", "Media 6",
-                 "Media 7", "Media 8", "Media 9",
-                 "Media 10", "Media 11", "Media 12"),
-               2:7,
-               2:11,
-               "abcdefghij"))
-head(my_design, 20)
-```
-
-### A few notes on the pattern string
-In order to fill in the values, make_tidydesign uses `strsplit` to split the pattern string with the split character specified by `pattern_split`.
-
-If this splitting results in pattern items that are more than 1 character long, all pattern items must be numeric.
-
-If this splitting results in pattern items that are all only 1 character long, the items can be alpha numeric. Items will be indexed against a lookup table that has the following order: first, the numbers, starting with 1 and proceeding up to 9, then, capitalized letters, starting with A and proceeding up to Z, then, lowercase letters, starting with a and proceeding up to z.
-
-Note that you can mix numbers, capitalized letters, and lowercase letters, but a warning will be issued if the utilized items are not consecutive in the lookup table.
-
-0 is a reserved character for `NA` values to be filled in.
-
-### Continuing with the example
-Returning to the previous example, now let's imagine in the same experiment we also loaded a different bacterial strain into each row of the plate. 
+For example, let's imagine a growth curves experiment where a 96 well plate (12 columns and 8 rows) has a different bacterial strain in each row, but the first and last columns and first and last rows were left empty.
 
 Row names | Column 1 | Column 2  | Column 3  | ... | Column 11 | Column 12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -485,28 +437,129 @@ Row G     | Blank    | Strain #5 | Strain #5 | ... | Strain #5 | Blank
 Row G     | Blank    | Strain #6 | Strain #6 | ... | Strain #6 | Blank
 Row H     | Blank    | Blank     | Blank     | ... | Blank     | Blank
 
+To generate a tidy-shaped design dataframe representing this information, we can use `make_tidydesign`:
+
+```{r}
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12,
+  Bacteria = list(
+    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    2:7,
+    2:11,
+    "123456",
+    FALSE)
+)
+```
+
+Now, what are each of the things we've specified for our "Bacteria" design component?
+
+Well, make_tidydesign expects give things for each design component:
+* a vector containing the possible values
+* a vector containing all the rows these values should be applied to
+* a vector containing all the columns these values should be applied to
+* a string of the pattern itself within those rows and columns
+* a Boolean for whether this pattern should be filled byrow (defaults to TRUE)
+
+So for our example above, we can see:
+* the possible values are `c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6")`
+* the rows these values should be applied to are rows `2:7`
+* the columns these values should be applied to are columns `2:11`
+* the pattern these values should be filled in by is `"123456"`
+* and these values should *not* be filled byrow
+
+This entire list is passed with a name (here, "Bacteria"), that will be used as the resulting column header.
+
+What does the resulting `data.frame` look like?
+
+```{r}
+head(my_design, 20)
+```
+
+### A few notes on the pattern string
+The fourth element of every argument passed to `make_tidydesign` is the string specifying the pattern of values.
+
+Oftentimes, it will be most convenient to simply use single-characters to correspond to the values. This is the default behavior of `make_tidydesign`, which splits the pattern string into individual characters, and then uses those characters to correspond to the indices of the values you provided.
+
+For instance, in our example above, we used the numbers 1 through 6 to correspond to the values `"Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"`.
+
+It's important to **note that the "0" character is reserved for `NA` values.** There is an example of this later.
+
+If you have more than 9 values, you can use letters (uppercase and/or lowercase) and specify to `make_tidydesign` what letter you'd like the indices to start with. By default, the order goes from 1 to 9, then A to Z (uppercase), then a to z (lowercase). For instance, in the previous example, we could have done:
+
+```{r}
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12, lookup_tbl_start = "A",
+  Bacteria = list(
+    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    2:7,
+    2:11,
+    "ABCDEF",
+    FALSE)
+)
+```
+
+Or we could have done:
+
+```{r}
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Bacteria = list(
+    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    2:7,
+    2:11,
+    "abcdef",
+    FALSE)
+)
+```
+
+Alternatively, you can use a separating character like a comma to delineate your indices. If you are doing so in order to use multicharacter indices (like numbers with more than one digit), all your indices will have to be numeric.
+
+```{r}
+my_design <- make_tidydesign(
+  nrows = 8, ncols = 12, pattern_split = ",",
+  Bacteria = list(
+    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    2:7,
+    2:11,
+    "1,2,3,4,5,6",
+    FALSE)
+)
+```
+
+### Continuing with the example: multiple designs
+Now let's return to our example growth curves experiment. Imagine that now, in addition to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
+
+Row names | Column 1 | Column 2 | Column 3 | ... | Column 11 | Column 12
+--------- | -------- | -------- | -------- | --- | --------- | --------
+Row A     | Blank    | Blank    | Blank    | ... | Blank     | Blank
+Row B     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
+...       |...       | ...      | ...      | ... | ...       | ... 
+Row G     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
+Row H     | Blank    | Blank    | Blank    | ... | Blank     | Blank
+
 We can generate that design by adding an additional argument to our make_tidydesign call.
 
 ```{r}
 my_design <- make_tidydesign(
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
+                    "Strain 4", "Strain 5", "Strain 6"),
+                  2:7,
+                  2:11,
+                  "abcdef",
+                  FALSE),
   Media = list(c("Media 1", "Media 2", "Media 3",
                  "Media 4", "Media 5", "Media 6",
                  "Media 7", "Media 8", "Media 9",
                  "Media 10", "Media 11", "Media 12"),
                2:7,
                2:11,
-               "abcdefghij"),
-  Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
-                    "Strain 4", "Strain 5", "Strain 6"),
-                  2:7,
-                  2:11,
-                  "abcdef",
-                  FALSE))
+               "abcdefghij")
+  )
 head(my_design, 20)
 ```
 
-Finally, let's imagine that we later discover that Bacterial Strain 4 and Media #6 were contaminated, and we'd like to exclude them from our analyses by marking them as `NA` in the design. We can simply modify our pattern string, placing a 0 anywhere we would like an `NA` to be filled in.
+Now, imagine after the experiment we discover that Bacterial Strain 4 and Media #6 were contaminated, and we'd like to exclude them from our analyses by marking them as `NA` in the design. We can simply modify our pattern string, placing a 0 anywhere we would like an `NA` to be filled in.
 
 ```{r}
 my_design <- make_tidydesign(
@@ -544,7 +597,7 @@ my_design <- make_tidydesign(
 head(my_design, 20)
 ```
 
-`gcplyr` also includes a helper function, `make_designpattern`, which simply facilitates the specification of the design elements by formatting them into a list and reminding users of the essential components that must be provided. For example, the following code produces the exact same design output as the earlier example:
+`gcplyr` also includes an optional helper function for `make_tidydesign` called `make_designpattern`. `make_designpattern` just helps by reminding the user what arguments are necessary for each design and ensuring they're in the correct order. For example, the following produces the same `data.frame` as the above code:
 
 ```{r}
 my_design <- make_tidydesign(
@@ -559,15 +612,78 @@ my_design <- make_tidydesign(
     values = c("Strain 1", "Strain 2", "Strain 3",
                "Strain 4", "Strain 5", "Strain 6"),
     rows = 2:7, cols = 2:11, pattern = "abc0ef",
-    FALSE))
+    byrow = FALSE))
 head(my_design, 20)
 ```
 
 
 # Merging spectrophotometric and design data
-Design and spectrophotometric data can be combined using `merge_dfs`, from which point they can be pre-processed and analyzed using additional functions.
+Once we have both our design and data in the R environment, we can merge them using `merge_dfs`.
 
-[further documentation to-be-written]
+For this, we'll use the data in the `example_widedata` dataset that is included with `gcplyr`, and which was the source for our previous examples with `read_blocks` and `read_wides`.
+
+In the `example_widedata` dataset, we have 48 different bacterial strains. The left side of the plate has all 48 strains in a single well each, and the right side of the plate also has all 48 strains in a single well each:
+
+Row names |Column 1  | ... | Column 6  | Column 7  | ... | Column 12
+--------- |--------  | ... | --------  | --------  | --- | --------
+Row A     |Strain #1 | ... | Strain #6 | Strain #1 | ... | Strain #6
+Row B     |Strain #7 | ... | Strain #12| Strain #7 | ... | Strain #12
+...       |...       | ... | ...       | ...       | ... |  ... 
+Row G     |Strain #37| ... | Strain #42| Strain #37| ... |  Strain #42
+Row H     |Strain #43| ... | Strain #48| Strain #43| ... |  Strain #48
+
+Then, on the right hand side of the plate a phage was also inoculated (while the left hand side remained bacteria-only):
+
+Row names |Column 1 | ... | Column 6 | Column 7    | ... | Column 12
+--------- |-------- | ... | -------- | --------    | --- | --------
+Row A     |No Phage | ... | No Phage | Phage Added | ... | Phage Added
+Row B     |No Phage | ... | No Phage | Phage Added | ... | Phage Added
+...       |...      | ... | ...      | ...         | ... |  ... 
+Row G     |No Phage | ... | No Phage | Phage Added | ... |  Phage Added
+Row H     |No Phage | ... | No Phage | Phage Added | ... |  Phage Added
+
+Let's generate our design:
+
+```{r}
+example_design <- make_tidydesign(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6,
+    pattern = paste(1:48, collapse = ","),
+    byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12,
+    pattern = paste(1:48, collapse = ","),
+    byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"),
+    rows = 1:8, cols = 1:6,
+    pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"),
+    rows = 1:8, cols = 7:12,
+    pattern = "1"))
+```
+
+Now let's transform the `example_widedata` to tidy-shaped.
+
+```{r}
+example_tidydata <- trans_wide_to_tidy(example_widedata,
+                                       id_cols = "Time")
+```
+
+And finally, we merge the two using `merge_dfs`:
+
+```{r}
+example_data_and_designs <-
+  merge_dfs(example_tidydata,
+            example_design)
+
+print_df(head(example_data_and_designs))
+```
+
 
 # Pre-processing data
 [further documentation to-be-written]

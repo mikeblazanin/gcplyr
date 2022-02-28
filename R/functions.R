@@ -886,8 +886,8 @@ split_blockdesign <- function() {
 #'                          well names
 #' @param wellnames_Excel If \code{block_row_names} or \code{block_col_names}
 #'                        are not specified, should rows and columns be named
-#'                        using Excel-style base-26 lettering for columns
-#'                        and numbering for rows? If FALSE, rows and columns
+#'                        using Excel-style base-26 lettering for rows
+#'                        and numbering for columns? If FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefix.
 #' @param pattern_split character to split pattern elements provided in
 #'                      \code{...} by
@@ -980,11 +980,11 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     stop("ncols or block_col_names must be provided")
   }
   if (is.null(block_row_names)) {
-    if (wellnames_Excel) {block_row_names <- 1:nrows
+    if (wellnames_Excel) {block_row_names <- to_excel(1:nrows)
     } else {block_row_names <- paste("R", 1:nrows, sep = "")}
   }
   if (is.null(block_col_names)) {
-    if (wellnames_Excel) {block_col_names <- to_excel(1:ncols)
+    if (wellnames_Excel) {block_col_names <- 1:ncols
     } else {block_col_names <- paste("C", 1:ncols, sep = "")}
   }
   if (is.null(nrows)) {nrows <- length(block_row_names)}

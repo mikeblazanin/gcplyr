@@ -4,6 +4,8 @@ author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:
     toc: true
+  pdf_document: default
+  word_document: default
 vignette: >
   %\VignetteIndexEntry{gcplyr-workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,6 +17,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+#Note: to knit to all output formats simultaneously, run in R console:
+#rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
 ```
 
 # Getting started

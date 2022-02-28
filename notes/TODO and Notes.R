@@ -5,6 +5,7 @@
 #gcer
 
 #TODO: 
+#       Build pipeline for block-shaped design files
 #       Add plot option for blocks and wides so that users can check that
 #             things worked (have it look like the plot in plate reader software)
 #       Figure out how to call xlsx in remote building

@@ -624,18 +624,18 @@ For this, we'll use the data in the `example_widedata` dataset that is included 
 
 In the `example_widedata` dataset, we have 48 different bacterial strains. The left side of the plate has all 48 strains in a single well each, and the right side of the plate also has all 48 strains in a single well each:
 
-Row names |Column 1  | ... | Column 6  | Column 7  | ... | Column 12
---------- |--------  | ... | --------  | --------  | --- | --------
-Row A     |Strain #1 | ... | Strain #6 | Strain #1 | ... | Strain #6
-Row B     |Strain #7 | ... | Strain #12| Strain #7 | ... | Strain #12
-...       |...       | ... | ...       | ...       | ... |  ... 
-Row G     |Strain #37| ... | Strain #42| Strain #37| ... |  Strain #42
-Row H     |Strain #43| ... | Strain #48| Strain #43| ... |  Strain #48
+Row names | Column 1   | ... | Column 6   | Column 7   | ... | Column 12
+--------- | --------   | --- | --------   | --------   | --- | --------
+Row A     | Strain #1  | ... | Strain #6  | Strain #1  | ... | Strain #6
+Row B     | Strain #7  | ... | Strain #12 | Strain #7  | ... | Strain #12
+...       | ...        | ... | ...        | ...        | ... |  ...
+Row G     | Strain #37 | ... | Strain #42 | Strain #37 | ... |  Strain #42
+Row H     | Strain #43 | ... | Strain #48 | Strain #43 | ... |  Strain #48
 
 Then, on the right hand side of the plate a phage was also inoculated (while the left hand side remained bacteria-only):
 
 Row names |Column 1 | ... | Column 6 | Column 7    | ... | Column 12
---------- |-------- | ... | -------- | --------    | --- | --------
+--------- |-------- | --- | -------- | --------    | --- | --------
 Row A     |No Phage | ... | No Phage | Phage Added | ... | Phage Added
 Row B     |No Phage | ... | No Phage | Phage Added | ... | Phage Added
 ...       |...      | ... | ...      | ...         | ... |  ... 
@@ -681,10 +681,8 @@ example_data_and_designs <-
   merge_dfs(example_tidydata,
             example_design)
 
-print_df(head(example_data_and_designs))
+head(example_data_and_designs)
 ```
-
-
 # Pre-processing data
 [further documentation to-be-written]
 

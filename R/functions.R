@@ -1016,7 +1016,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     pattern_list <- strsplit(dot_args[[i]][[4]],
                              split = pattern_split)[[1]]
     if (any(nchar(pattern_list) > 1)) {
-      if (any(is.na(as.numeric(pattern_list)))) {
+      if (any(is.na(suppressWarnings(as.numeric(pattern_list))))) {
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
       } else { #they're all numeric
         pattern_list <- as.numeric(pattern_list)

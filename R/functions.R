@@ -1984,7 +1984,13 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   if(!na.rm & any(c(is.na(x), is.na(y)))) {
     stop("na.rm = FALSE but x or y contain NA's")
   }
-  stopifnot(is.vector(x), is.vector(y))
+  if(!is.vector(x)) {
+    stop(paste("x is not a vector, it is class:", class(x)))
+  }
+  if(!is.vector(y)) {
+    stop(paste("y is not a vector, it is class:", class(y)))
+  }
+
   to_keep <- which(!(is.na(x) | is.na(y)))
   x <- x[to_keep]
   y <- y[to_keep]

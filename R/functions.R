@@ -1510,7 +1510,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'                For \code{gam} smoothing, typically of the format:
 #'                dens ~ s(time), which uses mgcv::s to smooth the data
 #' @param data data frame containing the variables in the model
-#' @param method Argument specifying which smoothing algorithm should
+#' @param method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include "loess",
 #'                  "moving-average", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
@@ -1529,9 +1529,9 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'         as an added column with column name \code{values_to}
 #'         If return_fitobject == TRUE:
 #'         A list the same length as unique(subset_by) where each element is
-#'         an object of the same class as returned by the smoothing algorithm
+#'         an object of the same class as returned by the smoothing method
 #'         (typically a named list-like object)
-#'         Varies by algorithm, but always with a first element named 'fitted'
+#'         Varies by method, but always with a first element named 'fitted'
 #'         containing the smoothed values of the response variable, and a 
 #'         second element named 'residuals' containing the residuals of the
 #'         fitted values and the input values
@@ -1541,8 +1541,8 @@ smooth_data <- function(formula, data, method,
                         subset_by = NULL, values_to = "fitted",
                         return_fitobject = FALSE,
                         ...) {
-  if (algorithm == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
-    warning("gam algorithm is called without 's()' to smooth")}
+  if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
+    warning("gam method is called without 's()' to smooth")}
   if (!is.null(subset_by) & length(subset_by) != nrow(data)) {
     stop("subset_by is not the same length as the number of rows of data")
   }
@@ -1558,10 +1558,10 @@ smooth_data <- function(formula, data, method,
     colnames(data)[ncol(data)] <- values_to
   }
   
-  #Run smoothing algorithms
+  #Run smoothing methods
   for (i in 1:length(unique(subset_by))) {
     #Calculate fitted values
-    if (algorithm == "moving-average") {
+    if (method == "moving-average") {
       temp <- 
         list(
         moving_average(formula = formula, 
@@ -1569,14 +1569,14 @@ smooth_data <- function(formula, data, method,
                        ...))
       names(temp) <- values_to
     } else {
-      if (algorithm == "loess") {
+      if (method == "loess") {
         temp <- 
           stats::loess(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ], 
                        ...)
         #Rename fitted to whatever values_to is
         names(temp)[match("fitted", names(temp))] <- values_to
-      } else if (algorithm == "gam") {
+      } else if (method == "gam") {
         temp <- 
           mgcv::gam(formula = formula, 
                     data = data[subset_by == unique(subset_by)[i], ], 

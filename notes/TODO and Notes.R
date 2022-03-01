@@ -5,6 +5,7 @@
 #gcer
 
 #TODO: 
+#       Allow pattern string to be vector in make_tidydesign
 #       Build pipeline for block-shaped design files
 #       Add plot option for blocks and wides so that users can check that
 #             things worked (have it look like the plot in plate reader software)

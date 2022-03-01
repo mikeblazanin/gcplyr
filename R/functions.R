@@ -1510,7 +1510,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'                For \code{gam} smoothing, typically of the format:
 #'                dens ~ s(time), which uses mgcv::s to smooth the data
 #' @param data data frame containing the variables in the model
-#' @param algorithm Argument specifying which smoothing algorithm should
+#' @param method Argument specifying which smoothing algorithm should
 #'                  be used to smooth data. Options include "loess",
 #'                  "moving-average", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
@@ -1537,7 +1537,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'         fitted values and the input values
 #' 
 #' @export
-smooth_data <- function(formula, data, algorithm,
+smooth_data <- function(formula, data, method,
                         subset_by = NULL, values_to = "fitted",
                         return_fitobject = FALSE,
                         ...) {

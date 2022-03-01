@@ -47,7 +47,7 @@ test_that("smooth_data returns properly for moving-average", {
   for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
   expect_equal(smooth_data(dens ~ time,
                            data = data,
-                           algorithm = "moving-average",
+                           method = "moving-average",
                            window_width = 5),
                expected = data.frame("time" = 1:100, "dens" = data$dens,
                                      "fitted" = manual_expect_win5))
@@ -55,7 +55,7 @@ test_that("smooth_data returns properly for moving-average", {
                       "dens" = c(data$dens, data$dens + 10),
                       "treat" = rep(c("A", "B"), each = 100))
   expect_equal(smooth_data(dens ~ time, data = data2,
-                           algorithm = "moving-average",
+                           method = "moving-average",
                            subset_by = data2$treat,
                            window_width = 5),
                expected = data.frame(

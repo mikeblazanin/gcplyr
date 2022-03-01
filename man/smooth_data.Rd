@@ -7,7 +7,7 @@
 smooth_data(
   formula,
   data,
-  algorithm,
+  method,
   subset_by = NULL,
   values_to = "fitted",
   return_fitobject = FALSE,
@@ -22,7 +22,7 @@ dens ~ s(time), which uses mgcv::s to smooth the data}
 
 \item{data}{data frame containing the variables in the model}
 
-\item{algorithm}{Argument specifying which smoothing algorithm should
+\item{method}{Argument specifying which smoothing algorithm should
 be used to smooth data. Options include "loess",
 "moving-average", and "gam"}
 

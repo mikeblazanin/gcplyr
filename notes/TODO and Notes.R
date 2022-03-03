@@ -5,6 +5,13 @@
 #gcer
 
 #TODO: 
+#       import_blockdesign
+#            if there's just one block, it's not an issue to use
+#            the standard pipeline
+#            If there's more than one block, we just have to paste them
+#            together and then use the standard pipeline
+#            And then in tidy format, have a function that will split
+#            the column up by the separator
 #       Add citation()
 #       Integrate with growthcurver
 #       Allow pattern string to be vector in make_tidydesign

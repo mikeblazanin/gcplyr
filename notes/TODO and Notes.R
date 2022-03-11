@@ -12,6 +12,8 @@
 #            together and then use the standard pipeline
 #            And then in tidy format, have a function that will split
 #            the column up by the separator
+#       Make way to transform tidy designs to blocks and print them
+#        (or save to file)
 #       Add citation()
 #       Integrate with growthcurver
 #       Allow pattern string to be vector in make_tidydesign

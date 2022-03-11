@@ -17,7 +17,7 @@ area under the curve should be calculated}
 \item{na.rm}{a logical indicating whether missing values should be removed}
 }
 \description{
-This function takes a vector of \code{x} and \code{y} values and returns
-a scalar for the area under the curve, calculated using the trapezoid
-rule
+This function takes a vector of \code{x} and \code{y} values
+and returns a scalar for the area under the curve, calculated using 
+the trapezoid rule
 }

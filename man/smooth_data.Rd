@@ -22,7 +22,7 @@ dens ~ s(time), which uses mgcv::s to smooth the data}
 
 \item{data}{data frame containing the variables in the model}
 
-\item{method}{Argument specifying which smoothing algorithm should
+\item{method}{Argument specifying which smoothing method should
 be used to smooth data. Options include "loess",
 "moving-average", and "gam"}
 
@@ -46,9 +46,9 @@ If return_fitobject == FALSE:
         as an added column with column name \code{values_to}
         If return_fitobject == TRUE:
         A list the same length as unique(subset_by) where each element is
-        an object of the same class as returned by the smoothing algorithm
+        an object of the same class as returned by the smoothing method
         (typically a named list-like object)
-        Varies by algorithm, but always with a first element named 'fitted'
+        Varies by method, but always with a first element named 'fitted'
         containing the smoothed values of the response variable, and a 
         second element named 'residuals' containing the residuals of the
         fitted values and the input values

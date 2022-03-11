@@ -2,10 +2,10 @@
 % Please edit documentation in R/functions.R
 \name{find_local_extrema}
 \alias{find_local_extrema}
-\title{find local extrema of numeric vector}
+\title{Find local extrema of numeric vector}
 \usage{
 find_local_extrema(
-  values,
+  y,
   return_maxima = TRUE,
   return_minima = TRUE,
   width_limit = NULL,
@@ -15,8 +15,6 @@ find_local_extrema(
 )
 }
 \arguments{
-\item{values}{Numeric vector of values in which to identify local extrema}
-
 \item{return_maxima, return_minima}{Boolean for which classes of local extrema
 to return}
 
@@ -36,6 +34,8 @@ the function may return non-extrema}
 be removed from the returned vector of extrema}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
+
+\item{values}{Numeric vector of values in which to identify local extrema}
 }
 \value{
 A vector of indices of \code{values} corresponding to local extrema

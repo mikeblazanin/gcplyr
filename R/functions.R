@@ -2044,10 +2044,11 @@ first_below <- function(y, x = NULL, threshold, return = "index", subset = NULL)
   if(!is.null(x) & length(x) != length(y)) {
     stop("x and y must be the same length")
   }
+  if(return == "x" & is.null(x)) {stop("return = x but x is not provided")}
   
-  if(is.na(suppressWarnings(as.numeric(y)))) {stop("y must be numeric")}
+  if(any(is.na(suppressWarnings(as.numeric(y))))) {stop("y must be numeric")}
   if(!is.null(x)) {
-    if(is.na(suppressWarnings(as.numeric(x)))) {stop("x must be numeric")}
+    if(any(is.na(suppressWarnings(as.numeric(x))))) {stop("x must be numeric")}
     y <- y[order(x)]
     x <- x[order(x)]
   }
@@ -2060,7 +2061,7 @@ first_below <- function(y, x = NULL, threshold, return = "index", subset = NULL)
   
   #Find first below index
   if(any(y < threshold)) {
-    out_idx <- min(which(y < threshold))
+    out_idx <- min(which(y <= threshold))
   } else {out <- NA}
   
   #Return as appropriate

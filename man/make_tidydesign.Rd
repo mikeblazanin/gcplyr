@@ -89,34 +89,3 @@ my_example <- make_tidydesign(nrows = 8, ncols = 12,
                                                 pattern = "11223300",
                                                 byrow = TRUE))
 }
-\examples{
-#Basic example
-make_tidydesign(
-       nrows = 8, ncols = 12,
-       Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
-                  "Strain 4", "Strain 5", "Strain 6"),
-                2:7,
-                2:11,
-                "123456",
-                FALSE))
-#Example using letters in pattern and modified lookup table
-make_tidydesign(
-       nrows = 8, ncols = 12, lookup_tbl_start = "a",
-       Media = list(c("Media 1", "Media 2", "Media 3",
-               "Media 4", "Media 5", "Media 6",
-               "Media 7", "Media 8", "Media 9",
-               "Media 10", "Media 11", "Media 12"),
-             2:7,
-             2:11,
-             "abcdefghij"))
-#Example showing that 0's become NA's
-make_tidydesign(
-       nrows = 8, ncols = 12,
-       Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
-                  "Strain 4", "Strain 5", "Strain 6"),
-                2:7,
-                2:11,
-                "123056",
-                FALSE))
-
-}

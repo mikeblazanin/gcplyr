@@ -15,34 +15,34 @@ find_local_extrema(
 )
 }
 \arguments{
+\item{y}{Numeric vector of y values in which to identify local extrema}
+
 \item{return_maxima, return_minima}{Boolean for which classes of local extrema
 to return}
 
-\item{width_limit}{Width of the window (in number of \code{values}) used to
+\item{width_limit}{Width of the window (in number of \code{y} values) used to
 search for local extrema. A narrower width will me more
 sensitive to narrow local maxima/minima, while a wider
 width will be less sensitive to local maxima/minima.}
 
-\item{height_limit}{The maximum change in \code{values} a single extrema-search
+\item{height_limit}{The maximum change in \code{y} a single extrema-search
 step is allowed to take.
 For example, a maxima-finding function will not pass a
 valley deeper than height_limit. This also limits
 approaches to true extrema, so if it is set too small
 the function may return non-extrema}
 
-\item{remove_endpoints}{Should the first and last values in \code{values}
+\item{remove_endpoints}{Should the first and last values in \code{y}
 be removed from the returned vector of extrema}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
-
-\item{values}{Numeric vector of values in which to identify local extrema}
 }
 \value{
-A vector of indices of \code{values} corresponding to local extrema
+A vector of indices of \code{y} corresponding to local extrema
         in the data
 }
 \description{
-This function takes a vector of \code{values} and returns a vector
+This function takes a vector of \code{y} values and returns a vector
 of the indices of all local value extrema (by default, this includes both
 local minima and local maxima)
 Either width_limit or height_limit must be provided

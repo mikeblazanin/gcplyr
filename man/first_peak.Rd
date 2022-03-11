@@ -4,7 +4,7 @@
 \alias{first_peak}
 \title{Find the first local peak of a numeric vector}
 \usage{
-first_peak(y, x = NULL, return = "index", width_limit = 0.2 * length(values))
+first_peak(y, x = NULL, return = "index", width_limit = NULL, ...)
 }
 \arguments{
 \item{y}{Numeric vector of y values in which to identify local extrema}
@@ -18,7 +18,9 @@ first peak in y values}
 \item{width_limit}{Width of the window (in number of \code{y}) used to
 search for local extrema. A narrower width will me more
 sensitive to local maxima/minima, while a wider
-width will be less sensitive to local maxima/minima.}
+width will be less sensitive to local maxima/minima.
+
+If not provided, defaults to ~0.2*length(y)}
 
 \item{...}{Other parameters to pass to \code{find_local_extrema}}
 }

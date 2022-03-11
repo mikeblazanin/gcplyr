@@ -1957,7 +1957,7 @@ find_local_extrema <- function(y,
 #'                    width will be less sensitive to local maxima/minima.
 #'                    
 #'                    If not provided, defaults to ~0.2*length(y)
-#' @param ...    Other parameters to pass to \code{find_local_extrema}
+#' @param ... Other parameters to pass to \code{find_local_extrema}
 #'                    
 #' @export      
 first_peak <- function(y, x = NULL, return = "index", 
@@ -2004,6 +2004,7 @@ first_peak <- function(y, x = NULL, return = "index",
 #' @param y Numeric vector of y values in which to identify first point
 #'          below some threshold
 #' @param x Optional numeric vector of corresponding x values
+#' @param threshold Threshold y value of interest
 #' @param return One of c("index", "x"), determining whether the function
 #'               will return the index or x value associated with the
 #'               first y value below some threshold
@@ -2014,7 +2015,8 @@ first_peak <- function(y, x = NULL, return = "index",
 #'               not the subset of the vector
 #'                    
 #' @export    
-first_below <- function(y, x = NULL, threshold, return = "index", subset = NULL) {
+first_below <- function(y, x = NULL, threshold, 
+                        return = "index", subset = NULL) {
   if (!return %in% c("x", "index")) {
     stop('return must be "x" or "index"')
   }

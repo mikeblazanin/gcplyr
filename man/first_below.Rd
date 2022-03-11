@@ -12,6 +12,8 @@ below some threshold}
 
 \item{x}{Optional numeric vector of corresponding x values}
 
+\item{threshold}{Threshold y value of interest}
+
 \item{return}{One of c("index", "x"), determining whether the function
 will return the index or x value associated with the
 first y value below some threshold}

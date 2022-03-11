@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+knitr::opts_knit$set(root.dir = tempdir())
 
 #Note: to knit to all output formats simultaneously, run in R console:
 #rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
@@ -27,9 +28,9 @@ knitr::opts_chunk$set(
 # Getting started
 `gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). This document gives a walkthrough of how to use `gcplyr`'s most common functions.
 
-To get started, all you need is the data file with the growth curves measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
+To get started, all you need is the data file with the growth curve measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
-Users often want to combine their data with some information on experimental design elements of their growth curves plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
+Users often want to combine their data with some information on experimental design elements of their growth curve plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
 
 Let's get started by loading `gcplyr`
 
@@ -46,7 +47,7 @@ print_df <- function(df, col.names = FALSE) {
 
 
 # Data layouts
-Growth curves data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
+Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 
 Tidy-shaped data is the best layout for analyses, but most plate readers output block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped into wide-shaped data, and wide-shaped data into tidy-shaped data, then running any analyses.
 
@@ -91,7 +92,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
 
-Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of R packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014. for more details.
+Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of R packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014.
 
 
 Timepoint | Well | Measurement | 
@@ -105,22 +106,32 @@ Timepoint | Well | Measurement |
 7         | H12      | 1.394   | 
 
 # Importing data
-Once you've determined what format your data is in, you can begin importing it using the `read_` functions of `gcplyr`. If your data is block-shaped, you'll use `read_blocks`. If your data is wide-shaped, you'll use `read_wides`. In the unlikely event your data is already tidy, you can simply read it using the built-in R function `read.table`.
+Once you've determined what format your data is in, you can begin importing it using the `read_*` functions of `gcplyr`. 
+
+If your data is block-shaped, you'll use `read_blocks` and you can start in the next section. 
+
+If your data is wide-shaped, you'll use `read_wides` and you can skip down to the **Importing wide-shaped data** section. 
+
+In the unlikely event your data is already tidy, you can simply read it using the built-in R function `read.table`.
 
 ## Importing block-shaped data
 To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames, with each `data.frame` corresponding to a single block. 
 
 ### The simplest example
 
-Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames`.
+Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames`.
 
 ```{r}
 #This code just creates a series of block-shaped example files
 #Don't worry about how it works - when working with real growth
 #curves data, all these files would be created by the plate reader
-temp_filenames <- 
-  tempfile(pattern = paste(as.character(example_widedata$Time), "_", sep = ""),
-                           fileext = ".csv")
+temp_filenames <- tempfile(
+      pattern = paste(as.character(example_widedata$Time), "_", sep = ""),
+      fileext = ".csv")
+for (i in 1:length(temp_filenames)) {
+  temp_filenames[i] <- strsplit(temp_filenames[i], split = "\\\\")[[1]][
+    length(strsplit(temp_filenames[i], split = "\\\\")[[1]])]
+}
 for (i in 1:length(temp_filenames)) {
   write.table(
     cbind(matrix(c("", "A", "B", "C", "D", "E", "F", "G", "H"), nrow = 9),
@@ -139,10 +150,11 @@ for (i in 1:length(temp_filenames)) {
 Here's what one of the files looks like (where the values are absorbance/optical density):
 
 ```{r}
-print_df(read.csv(temp_filenames[1], header = FALSE))
+print_df(read.csv(temp_filenames[10], header = FALSE, 
+                  colClasses = "character"))
 ```
 
-This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. Moreover, we can see that at this timepoint the wells on the left-hand-side of the plate have a different density than on the right-hand-side.
+This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look small here because R doesn't know that the first row is a header yet.
 
 If we want to read these files into R, we simply provide `read_blocks` with the vector of file names.
 
@@ -156,7 +168,7 @@ However, running `read_blocks` with only the filenames only works if the data in
 
 To show how this works, first let's create some example files where the data doesn't begin in the first row/column. In these example files, the plate reader saved the time that each plate was read in the 2nd row of the file, and started saving the data itself with a header in the 4th row.
 
-Again, **don't worry how this code works**. When working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames2`.
+Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames2`.
 
 ```{r}
 #This code just creates a series of block-shaped example files
@@ -165,6 +177,10 @@ Again, **don't worry how this code works**. When working with real growth curves
 temp_filenames2 <- 
   tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
                            fileext = ".csv")
+for (i in 1:length(temp_filenames2)) {
+  temp_filenames2[i] <- strsplit(temp_filenames2[i], split = "\\\\")[[1]][
+    length(strsplit(temp_filenames2[i], split = "\\\\")[[1]])]
+}
 for (i in 1:length(temp_filenames2)) {
   write.table(
     cbind(
@@ -188,7 +204,8 @@ for (i in 1:length(temp_filenames2)) {
 Let's take a look at one of the files:
 
 ```{r}
-print_df(read.csv(temp_filenames2[1], header = FALSE))
+print_df(read.csv(temp_filenames2[10], header = FALSE,
+                  colClasses = "character"))
 ```
 
 In the above example, the column names are in row 4 and the rownames are in column 1. To specify that to `read_blocks`, we simply do:
@@ -196,7 +213,7 @@ In the above example, the column names are in row 4 and the rownames are in colu
 ```{r}
 #Now let's read it with read_blocks
 imported_blockdata <- read_blocks(
-  files = temp_filenames,
+  files = temp_filenames2,
   startrow = 4, startcol = 1)
 ```
 
@@ -205,11 +222,11 @@ If you're looking at your data in Excel or a similar spreadsheet program, you'll
 ```{r}
 #Now let's read it with read_blocks
 imported_blockdata <- read_blocks(
-  files = temp_filenames,
+  files = temp_filenames2,
   startrow = 4, startcol = "A")
 ```
 
-Additionally, some plate readers might output growth curves data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
+Additionally, some plate readers might output growth curve data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
 
 ```{r, eval = FALSE}
 imported_blockdata <- read_blocks(
@@ -226,7 +243,8 @@ Sometimes, your input files will have information you want to import that's not 
 For example, let's return to our most-recent example files:
 
 ```{r}
-print_df(read.csv(temp_filenames2[1], header = FALSE))
+print_df(read.csv(temp_filenames2[10], header = FALSE,
+                  colClasses = "character"))
 ```
 
 In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `read_blocks` command:
@@ -245,23 +263,28 @@ And just like how you can specify `startrow`, `startcol`, etc. with Excel-style 
 
 ```{r}
 #Reading the blockcurves files with metadata included
-# imported_blockdata <- read_blocks(
-#   files = temp_filenames2,
-#   startrow = 4, startcol = "A",
-#   metadata = list("time" = c(2, "C")))
+imported_blockdata <- read_blocks(
+  files = temp_filenames2,
+  startrow = 4, startcol = "A",
+  metadata = list("time" = c(2, "C")))
 ```
+
+### What to do next
+Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Skip the next section, **Importing wide-shaped data**, and instead jump to the **Transforming data** section.
 
 ## Importing wide-shaped data
 To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames). 
 
 ### The simplest example
-Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. when working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file name(s) in R, here we've stored the file name in `temp_filename`. 
+Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. when working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file name(s) in R, here we've stored the file name in `temp_filename`. 
 
 ```{r}
 #This code just creates a wide-shaped example file
 #Don't worry about how it works - when working with real growth
 #curves data, this file would be created by the plate reader
 temp_filename <- paste(tempfile(), ".csv", sep = "")
+temp_filename <- strsplit(temp_filename, split = "\\\\")[[1]][
+  length(strsplit(temp_filename, split = "\\\\")[[1]])]
 write.csv(example_widedata, file = temp_filename, row.names = FALSE)
 ```
 
@@ -283,10 +306,10 @@ imported_widedata <- read_wides(files = temp_filename)
 
 The resulting `data.frame` looks like this:
 ```{r}
-print_df(head(imported_widedata, c(6, 3)))
+print_df(head(imported_widedata, c(10, 6)))
 ```
 
-Note that read_wides automatically saves the filename the data was imported from into the first column of the output `data.frame`. This is done to ensure that later on, `data.frames` from multiple plates can be combined without fear of losing the identity of each plate.
+Note that *read_wides automatically saves the filename* the data was imported from into the first column of the output `data.frame`. This is done to ensure that later on, `data.frames` from multiple plates can be combined without fear of losing the identity of each plate.
 
 Note that if you have multiple files you'd like to read in, you can do so directly with a single `read_wides` command. In this case, read_wides will return a list containing all the data.frames:
 
@@ -301,7 +324,7 @@ However, running `read_wides` with only the filename(s) only works if the data i
 
 To show how this works, first let's create an example file where the data doesn't begin in the first row/column. In this example file, the plate reader started saving the data itself with a header in the 5th row.
 
-Again, **don't worry how this code works**. When working with real growth curves data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file name in `temp_filename2`.
+Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file name in `temp_filename2`.
 
 ```{r}
 #This code just creates a wide-shaped example file where the data doesn't
@@ -309,6 +332,8 @@ Again, **don't worry how this code works**. When working with real growth curves
 #Don't worry about how it works - when working with real growth
 #curves data, this file would be created by the plate reader
 temp_filename2 <- tempfile(fileext = ".csv")
+temp_filename2 <- strsplit(temp_filename2, split = "\\\\")[[1]][
+  length(strsplit(temp_filename2, split = "\\\\")[[1]])]
 temp_example_widedata <- example_widedata
 colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
                                          sep = "")
@@ -328,7 +353,7 @@ Let's take a look at the file:
 
 ```{r}
 #Let's take a peek at what this file looks like
-print_df(head(read.csv(temp_filename2, header = FALSE), c(10, 4)))
+print_df(head(read.csv(temp_filename2, header = FALSE), c(10, 6)))
 ```
 
 Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do (note that `header = TRUE` by default):
@@ -336,7 +361,7 @@ Thus, we can see the data header is in row 5, and the data begins in row 6. To s
 ```{r}
 imported_widedata <- read_wides(files = temp_filename2,
                                 startrow = 5)
-print_df(head(imported_widedata, c(6, 3)))
+print_df(head(imported_widedata, c(10, 6)))
 ```
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_wides` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but we do so just to show this letter-style functionality).
@@ -371,15 +396,17 @@ imported_widedata <- read_wides(files = temp_filename2,
                                                 "start_date" = c(2, "B")))
 ```
 
+### What to do next
+Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **Transforming data** section.
 
 # Transforming data
-Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curves data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
+Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
 
-You can transform your `data.frame`s using the `trans_\*` functions in `gcplyr`.
+You can transform your `data.frame`s using the `trans_*` functions in `gcplyr`.
 
 ## Transforming from block-shaped to wide-shaped
 
-If the data you've read into the R environment is block-shaped, you'll need to transform it from block-shaped to wide-shaped, and then wide-shaped to tidy-shaped. For the first step, you'll use `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the R object created by `read_blocks`.
+If the data you've read into the R environment is block-shaped, you'll need to transform it from block-shaped to wide-shaped, and then wide-shaped to tidy-shaped. For the first step, you'll use `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the R object you saved when you used `read_blocks`.
 
 ```{r}
 imported_blocks_now_wide <- trans_block_to_wide(imported_blockdata)
@@ -388,7 +415,7 @@ imported_blocks_now_wide <- trans_block_to_wide(imported_blockdata)
 Note that `trans_block_to_wide` automatically detected the metadata that `read_blocks` had pulled from our files, and has stored each piece of metadata as a column in our output file.
 
 ```{r}
-print(head(imported_blocks_now_wide, c(1, 5)), row.names = FALSE)
+print(head(imported_blocks_now_wide, c(6, 12)), row.names = FALSE)
 ```
 
 Now that your block-shaped data has been transformed to wide-shaped data, you can use `trans_wide_to_tidy` (below) to further transform it into the tidy-shaped data we need for our analyses.
@@ -397,7 +424,11 @@ Now that your block-shaped data has been transformed to wide-shaped data, you ca
 
 If the data you've read into the R environment is wide-shaped (or you've gotten wide-shaped data by transforming your originally block-shaped data), you'll transform it to tidy-shaped using `trans_wide_to_tidy`. 
 
-First, you need to provide `trans_wide_to_tidy` with the R object created by `read_wides` or by `trans_block_to_wide`. Then, you have to specify either the columns your data (the spectrophotometric measures) are in via `data_cols`, or what columns your non-data (e.g. time and other information) are in via `id_cols`.
+First, you need to provide `trans_wide_to_tidy` with the R object created by `read_wides` or by `trans_block_to_wide`. 
+
+Then, you have to specify one of:
+* the columns your data (the spectrophotometric measures) are in via `data_cols`
+* what columns your non-data (e.g. time and other information) are in via `id_cols`
 
 
 ```{r}
@@ -408,10 +439,12 @@ imported_blocks_now_tidy <- trans_wide_to_tidy(
 imported_wides_now_tidy <- trans_wide_to_tidy(
   wides = imported_widedata,
   id_cols = c("file", "experiment_name", "start_date", "Time"))
+
+print(head(imported_blocks_now_tidy), row.names = FALSE)
 ```
 
 # Including design elements
-Often during analysis of growth curves data, we'd like to incorporate information on the experimental design. For example, which bacteria are present in which wells, or which wells have received some treatment. `gcplyr` enables incorporation of design elements in two ways:
+Often during analysis of growth curve data, we'd like to incorporate information on the experimental design. For example, which bacteria are present in which wells, or which wells have received some treatment. `gcplyr` enables incorporation of design elements in two ways:
 1. Design elements can be imported from tidy-shaped files using `read_table` functions and merged with previously-imported data
 2. Design elements can be generated programmatically using `make_tidydesign`
 
@@ -425,7 +458,9 @@ If you don't have your experimental design information saved in a file, you can 
 
 ### An example with a single design
 
-For example, let's imagine a growth curves experiment where a 96 well plate (12 columns and 8 rows) has a different bacterial strain in each row, but the first and last columns and first and last rows were left empty.
+Let's start with a simple example demonstrating the basic use of `make_tidydesign` (we'll move on to more complicated designs afterwards).
+
+For example, let's imagine a growth curve experiment where a 96 well plate (12 columns and 8 rows) has a different bacterial strain in each row, but the first and last columns and first and last rows were left empty.
 
 Row names | Column 1 | Column 2  | Column 3  | ... | Column 11 | Column 12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -437,13 +472,14 @@ Row G     | Blank    | Strain #5 | Strain #5 | ... | Strain #5 | Blank
 Row G     | Blank    | Strain #6 | Strain #6 | ... | Strain #6 | Blank
 Row H     | Blank    | Blank     | Blank     | ... | Blank     | Blank
 
-To generate a tidy-shaped design dataframe representing this information, we can use `make_tidydesign`:
+To generate a tidy-shaped design `data.frame` representing this information, we can use `make_tidydesign`:
 
 ```{r}
 my_design <- make_tidydesign(
   nrows = 8, ncols = 12,
   Bacteria = list(
-    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    c("Strain 1", "Strain 2", "Strain 3", 
+      "Strain 4", "Strain 5", "Strain 6"),
     2:7,
     2:11,
     "123456",
@@ -453,7 +489,7 @@ my_design <- make_tidydesign(
 
 Now, what are each of the things we've specified for our "Bacteria" design component?
 
-Well, make_tidydesign expects give things for each design component:
+Well, make_tidydesign expects five things for each design component:
 * a vector containing the possible values
 * a vector containing all the rows these values should be applied to
 * a vector containing all the columns these values should be applied to
@@ -527,7 +563,7 @@ my_design <- make_tidydesign(
 ```
 
 ### Continuing with the example: multiple designs
-Now let's return to our example growth curves experiment. Imagine that now, in addition to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
+Now let's return to our example growth curve experiment. Imagine that now, in addition to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
 
 Row names | Column 1 | Column 2 | Column 3 | ... | Column 11 | Column 12
 --------- | -------- | -------- | -------- | --- | --------- | --------

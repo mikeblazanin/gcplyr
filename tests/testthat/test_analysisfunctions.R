@@ -18,3 +18,33 @@ test_that("auc returns correctly with xlim", {
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, 7)), 115)
   expect_error(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, NA)))
 })
+
+test_that("first_peak matches find_local_extrema results", {
+  
+  
+})
+
+test_that("first_below works correctly with no subset", {
+  dat <- data.frame(x = 1:20,
+                    y = 20 - abs(12 - 1:20))
+  expect_equal(first_below(y = 20:1, threshold = 15), 6)
+  expect_equal(first_below(y = 20:1, threshold = 10.5), 11)
+  expect_equal(
+    first_below(y = 20:1, x = 21:40, return = "x", threshold = 10), 31)
+  expect_equal(
+    first_below(y = 20:1, x = 21:40, return = "x", threshold = 10.5), 30.5)
+})
+
+test_that("first_below works correctly with subset", {
+  dat <- data.frame(x = 1:20,
+                    y = 20 - abs(12 - 1:20))
+  expect_equal(first_below(y = 20:1, threshold = 15, subset = (1:20 < 10)), 6)
+  expect_equal(
+    first_below(y = 20:1, threshold = 10.5, subset = (abs(1:20-10) < 5)), 11)
+  expect_equal(
+    first_below(y = 20:1, x = 21:40, return = "x", 
+                threshold = 10, subset = (abs(1:20-10) < 5)), 31)
+  expect_equal(
+    first_below(y = 20:1, x = 21:40, return = "x", 
+                threshold = 10.5, subset = (abs(1:20-10) < 5)), 30.5)
+})

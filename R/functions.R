@@ -2045,12 +2045,27 @@ first_below <- function(y, x = NULL, threshold, return = "index", subset = NULL)
     stop("x and y must be the same length")
   }
   
+  if(is.na(suppressWarnings(as.numeric(y)))) {stop("y must be numeric")}
+  if(!is.null(x)) {
+    if(is.na(suppressWarnings(as.numeric(x)))) {stop("x must be numeric")}
+    y <- y[order(x)]
+    x <- x[order(x)]
+  }
+  
+  #Apply subset
+  if(is.null(subset)) {indices = 1:length(y)
+  } else {indices <- which(subset)}
+  if(!is.null(x)) {x <- x[indices]}
+  y <- y[indices]
+  
+  #Find first below index
   if(any(y < threshold)) {
     out_idx <- min(which(y < threshold))
   } else {out <- NA}
   
+  #Return as appropriate
   if(return == "index") {
-    return(out_idx) 
+    return(indices[out_idx])
   } else if (return == "x") {
     #Use linear interpolation to find exact extinction time
     x1 <- x[(out_idx-1)]

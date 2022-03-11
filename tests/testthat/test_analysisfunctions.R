@@ -20,8 +20,15 @@ test_that("auc returns correctly with xlim", {
 })
 
 test_that("first_peak matches find_local_extrema results", {
-  
-  
+  expect_equal(
+    first_peak(y = (20 - abs(12 - 1:20))),
+    find_local_extrema(y = (20 - abs(12 - 1:20)),
+                       return_minima = FALSE,
+                       width_limit = 3))
+  expect_equal(
+    first_peak(y = (20 - abs(12 - 1:20)), return = "y"), 20)
+  expect_equal(
+    first_peak(x = 21:40, y = (20 - abs(12 - 1:20)), return = "x"), 32)
 })
 
 test_that("first_below works correctly with no subset", {

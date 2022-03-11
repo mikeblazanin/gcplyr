@@ -1728,7 +1728,7 @@ calc_deriv <- function(density, percapita = FALSE,
 
 #' Find local extrema of numeric vector
 #' 
-#' This function takes a vector of \code{values} and returns a vector
+#' This function takes a vector of \code{y} values and returns a vector
 #' of the indices of all local value extrema (by default, this includes both
 #' local minima and local maxima)
 #' Either width_limit or height_limit must be provided
@@ -1739,23 +1739,23 @@ calc_deriv <- function(density, percapita = FALSE,
 #' 
 #' This function is designed to be compatible with dplyr::group_by and summarize
 #' 
-#' @param values Numeric vector of values in which to identify local extrema
+#' @param y Numeric vector of y values in which to identify local extrema
 #' @param return_maxima,return_minima Boolean for which classes of local extrema
 #'                                    to return
-#' @param width_limit Width of the window (in number of \code{values}) used to
+#' @param width_limit Width of the window (in number of \code{y} values) used to
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to narrow local maxima/minima, while a wider
 #'                    width will be less sensitive to local maxima/minima.
-#' @param height_limit The maximum change in \code{values} a single extrema-search
+#' @param height_limit The maximum change in \code{y} a single extrema-search
 #'                     step is allowed to take.
 #'                     For example, a maxima-finding function will not pass a
 #'                     valley deeper than height_limit. This also limits
 #'                     approaches to true extrema, so if it is set too small
 #'                     the function may return non-extrema
-#' @param remove_endpoints Should the first and last values in \code{values}
+#' @param remove_endpoints Should the first and last values in \code{y}
 #'                         be removed from the returned vector of extrema
 #' @param na.rm Boolean whether NA's should be removed before analyzing
-#' @return A vector of indices of \code{values} corresponding to local extrema
+#' @return A vector of indices of \code{y} corresponding to local extrema
 #'         in the data  
 #' 
 #' @export                             
@@ -1984,11 +1984,17 @@ find_local_extrema <- function(y,
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to local maxima/minima, while a wider
 #'                    width will be less sensitive to local maxima/minima.
+#'                    
+#'                    If not provided, defaults to ~0.2*length(y)
 #' @param ...    Other parameters to pass to \code{find_local_extrema}
 #'                    
 #' @export      
 first_peak <- function(y, x = NULL, return = "index", 
-                       width_limit = 0.2*length(values)) {
+                       width_limit = NULL, ...) {
+  if(is.null(width_limit)) {
+    width_limit <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
+  }
+  
   if (!return %in% c("x", "y", "index")) {
     stop('return must be one of "x", "y", or "index"')
   }

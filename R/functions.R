@@ -1470,7 +1470,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   return(output)
 }
 
-# Preprocess ----
+# Smoothing ----
 
 #' Smooth data
 #' 
@@ -1496,12 +1496,16 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'            or \code{moving_average}
 #' 
 #' @return If return_fitobject == FALSE:
+#' 
 #'         A dataframe, the same as \code{data}, but with smoothed data
 #'         as an added column with column name \code{values_to}
+#'         
 #'         If return_fitobject == TRUE:
+#'         
 #'         A list the same length as unique(subset_by) where each element is
 #'         an object of the same class as returned by the smoothing method
 #'         (typically a named list-like object)
+#'         
 #'         Varies by method, but always with a first element named 'fitted'
 #'         containing the smoothed values of the response variable, and a 
 #'         second element named 'residuals' containing the residuals of the
@@ -1636,7 +1640,58 @@ moving_average <- function(formula, data, window_width) {
   return(results)
 }
 
-
+#' Moving median smoothing
+#' 
+#' This function uses a moving median to smooth data
+#' 
+#' @param formula Formula specifying the numeric response (density) 
+#'                and numeric predictor (time).
+#' @param data Dataframe containing variables in \code{formula}
+#' @param window_width Number of data points wide the moving average window is
+#'                     (therefore, must be an odd number of points)
+#' @return Vector of smoothed data, with NA's appended at both ends
+#' 
+#' @export   
+moving_median <- function(formula, data, window_width) {
+  #Check window width
+  if(window_width %% 2 == 0) {stop("window_width must be an odd number")}
+  
+  #Check formula formatting
+  if (length(formula) < 3) {stop("No response variable specified")}
+  if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
+  
+  #Parse formula
+  response_var <- as.character(formula[[2]])
+  predictor_var <- as.character(formula[[3]])
+  
+  #Check for vars in data
+  stopifnot(response_var %in% colnames(data),
+            predictor_var %in% colnames(data))
+  
+  if (!is.numeric(data[, predictor_var])) {
+    warning(paste("data is being sorted by order(", predictor_var,
+                  "), but ", predictor_var, " is not numeric", sep = ""))
+  }
+  data <- data[order(data[, predictor_var]), ]
+  
+  if(!is.numeric(data[, response_var]) ) {
+    warning(paste("Coercing", response_var, "to numeric"))
+    data[, response_var] <- as.numeric(data[, response_var])
+  }
+  
+  #Calculate moving average
+  window_radius <- (window_width - 1)/2
+  results <- c(rep(NA, window_radius),
+               rep(0, (nrow(data)-2*window_radius)),
+               rep(NA, window_radius))
+  
+  for (i in (window_radius+1):(length(results) - window_radius)) {
+    results[i] <- median(data[(i - window_radius):(i + window_radius), 
+                              response_var])
+  }
+  
+  return(results)
+}
 
 # Analyze ----
 

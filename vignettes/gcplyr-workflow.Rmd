@@ -719,11 +719,27 @@ example_data_and_designs <-
 
 head(example_data_and_designs)
 ```
-# Pre-processing data
-[further documentation to-be-written]
-
 # Analyzing data
-[further documentation to-be-written]
+Once you have your spectrophotometric and design data merged, you're ready to begin analyzing your data.
+
+There are a number of functions in `gcplyr` that can help analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Analyzing data** section of this document, therefore, is written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
+
+## Pre-processing with smoothing
+Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
+
+`smooth_data` has four different smoothing algorithms: moving average, moving median, loess, and gam. Moving average and moving median are simple smoothing algorithms that primarily act to reduce the strength of outliers on the data. loess and gam are both spline-fitting approaches that smooth data. loess uses polynomial-like curves, which in some cases can create additional curvature artifacts not present in the original data. gam uses additive curves that can, in some cases, avoid this drawback of loess.
+
+To use `smooth_data`, pass your data frame, a formula indicating the response variable (absorbance, density, etc) and the explanatory variable (time), and your method of choice.
+
+## Calculating derivatives
+
+## Finding local extrema
+
+## Threshold identification
+
+## Area under the curve
+
+
 
 # Handling multiple plates simultaneously
 [further documentation to-be-written]

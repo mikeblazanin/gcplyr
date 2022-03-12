@@ -1482,8 +1482,8 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'                dens ~ s(time), which uses mgcv::s to smooth the data
 #' @param data data frame containing the variables in the model
 #' @param method Argument specifying which smoothing method should
-#'                  be used to smooth data. Options include "loess",
-#'                  "moving-average", and "gam"
+#'                  be used to smooth data. Options include 
+#'                  "moving-average", "moving-median', "loess", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
 #'                  Each unique value of this vector will be smoothed
 #'                  independently of the others.
@@ -1540,6 +1540,13 @@ smooth_data <- function(formula, data, method,
       temp <- 
         list(
         moving_average(formula = formula, 
+                       data = data[subset_by == unique(subset_by)[i], ],
+                       ...))
+      names(temp) <- values_to
+    } else if (method == "moving-median") {
+      temp <-
+        list(
+          moving_median(formula = formula,
                        data = data[subset_by == unique(subset_by)[i], ],
                        ...))
       names(temp) <- values_to

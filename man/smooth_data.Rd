@@ -5,49 +5,48 @@
 \title{Smooth data}
 \usage{
 smooth_data(
-  formula,
-  data,
+  x = NULL,
+  y,
   method,
   subset_by = NULL,
-  values_to = "fitted",
   return_fitobject = FALSE,
   ...
 )
 }
 \arguments{
-\item{formula}{a formula specifying the numeric response (typically density) 
-and numeric predictors (typically just time)
-For \code{gam} smoothing, typically of the format:
-dens ~ s(time), which uses mgcv::s to smooth the data}
+\item{x}{An (optional) vector of predictor values to smooth along (e.g. time)}
 
-\item{data}{data frame containing the variables in the model}
+\item{y}{A vector of response values to be smoothed (e.g. density)}
 
 \item{method}{Argument specifying which smoothing method should
-be used to smooth data. Options include "loess",
-"moving-average", and "gam"}
+be used to smooth data. Options include 
+"moving-average", "moving-median', "loess", and "gam"}
 
 \item{subset_by}{A vector as long as the number of rows of data. 
 Each unique value of this vector will be smoothed
 independently of the others.}
-
-\item{values_to}{If return_fitobject == FALSE, column name for the column containing
-the smoothed values}
 
 \item{return_fitobject}{Boolean indicating whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.}
 
 \item{...}{Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
-or \code{moving_average}}
+\code{moving_average}, or \code{moving_median}.
+
+For \code{moving_average} and \code{moving_median}, window_width
+is required. For \code{loess} and \code{gam}, see details.}
 }
 \value{
 If return_fitobject == FALSE:
-        A dataframe, the same as \code{data}, but with smoothed data
-        as an added column with column name \code{values_to}
+
+        A vector, the same length as \code{y}, with the now-smoothed y values
+        
         If return_fitobject == TRUE:
+        
         A list the same length as unique(subset_by) where each element is
         an object of the same class as returned by the smoothing method
         (typically a named list-like object)
+        
         Varies by method, but always with a first element named 'fitted'
         containing the smoothed values of the response variable, and a 
         second element named 'residuals' containing the residuals of the
@@ -55,4 +54,17 @@ If return_fitobject == FALSE:
 }
 \description{
 This function calls other functions to smooth growth curve data
+}
+\details{
+For smoothing using \code{loess} or \code{gam} that depends on 
+         more than one predictor, \code{formula} and \code{data} can be
+         passed to \code{smooth_data} via the \code{...} argument.
+         
+         The formula should specify the response (e.g. density) 
+         and predictors. For \code{gam} smoothing, the formula should
+         typically be of the format: dens ~ s(time), which uses 
+         \code{mgcv::s} to smooth the data
+         
+         The data argument should be a \code{data.frame} containing the
+         variables in the formula
 }

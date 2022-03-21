@@ -45,24 +45,18 @@ test_that("smooth_data returns properly for moving-average", {
                        rnorm(100, sd = 0.5))
   manual_expect_win5 <- c(NA, NA, rep(0, (nrow(data)-4)), NA, NA)
   for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
-  expect_equal(smooth_data(dens ~ time,
-                           data = data,
+  expect_equal(smooth_data(x = data$time, y = data$dens,
                            method = "moving-average",
                            window_width = 5),
-               expected = data.frame("time" = 1:100, "dens" = data$dens,
-                                     "fitted" = manual_expect_win5))
+               expected = manual_expect_win5)
   data2 <- data.frame("time" = c(1:100, 1:100),
                       "dens" = c(data$dens, data$dens + 10),
                       "treat" = rep(c("A", "B"), each = 100))
-  expect_equal(smooth_data(dens ~ time, data = data2,
+  expect_equal(smooth_data(x = data2$time, y = data2$dens,
                            method = "moving-average",
                            subset_by = data2$treat,
                            window_width = 5),
-               expected = data.frame(
-                 "time" = c(1:100, 1:100),
-                 "dens" = c(data$dens, data$dens + 10),
-                 "treat" = rep(c("A", "B"), each = 100),
-                 "fitted" = c(manual_expect_win5, manual_expect_win5 + 10)))
+               expected = c(manual_expect_win5, manual_expect_win5 + 10))
 })
 
 test_that("moving_median returns as expected", {

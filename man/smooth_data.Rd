@@ -58,11 +58,12 @@ This function calls other functions to smooth growth curve data
 \details{
 For smoothing using \code{loess} or \code{gam} that depends on 
          more than one predictor, \code{formula} and \code{data} can be
-         passed to \code{smooth_data} via the \code{...} argument.
+         passed to \code{smooth_data} via the \code{...} argument and will
+         override the \code{x} and \code{y} arguments.
          
          The formula should specify the response (e.g. density) 
          and predictors. For \code{gam} smoothing, the formula should
-         typically be of the format: dens ~ s(time), which uses 
+         typically be of the format: y ~ s(x), which uses 
          \code{mgcv::s} to smooth the data
          
          The data argument should be a \code{data.frame} containing the

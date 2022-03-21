@@ -1495,11 +1495,12 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'
 #' @details For smoothing using \code{loess} or \code{gam} that depends on 
 #'          more than one predictor, \code{formula} and \code{data} can be
-#'          passed to \code{smooth_data} via the \code{...} argument.
+#'          passed to \code{smooth_data} via the \code{...} argument and will
+#'          override the \code{x} and \code{y} arguments.
 #'          
 #'          The formula should specify the response (e.g. density) 
 #'          and predictors. For \code{gam} smoothing, the formula should
-#'          typically be of the format: dens ~ s(time), which uses 
+#'          typically be of the format: y ~ s(x), which uses 
 #'          \code{mgcv::s} to smooth the data
 #'          
 #'          The data argument should be a \code{data.frame} containing the
@@ -1532,6 +1533,8 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
       data <- list(...)$data
     }
   } else {
+    if(is.null(x)) {x <- 1:length(y)}
+    if(length(x) != length(y)) {stop("x and y must be the same length")}
     data <- data.frame(x, y)
     if(method == "gam") {formula <- y ~ s(x)
     } else {formula <- y ~ x}

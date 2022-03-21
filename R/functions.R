@@ -1524,6 +1524,10 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #' @export
 smooth_data <- function(x = NULL, y, method, subset_by = NULL,
                         return_fitobject = FALSE, ...) {
+  if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
+    stop("method must be one of: moving-average, moving-median, gam, or loess")
+  }
+  
   #Parse x and y, or ... args, into formula and data
   if (any(c("formula", "data") %in% names(list(...)))) {
     if(!all(c("formula", "data") %in% names(list(...)))) {
@@ -1542,11 +1546,11 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
   
   if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
     warning("gam method is called without 's()' to smooth")}
-  if (!is.null(subset_by) & length(subset_by) != nrow(data)) {
-    stop("subset_by is not the same length as the number of rows of data")
-  }
   
-  if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))}
+  if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
+  } else if (length(subset_by) != nrow(data)) {
+    stop("subset_by must be the same length as data")
+  }
   
   #Prepare output containers
   if (return_fitobject) {
@@ -1583,10 +1587,12 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
           mgcv::gam(formula = formula, 
                     data = data[subset_by == unique(subset_by)[i], ], 
                     ...)
+        #Rename fitted.values to fitted
+        names(temp)[match("fitted.values", names(temp))] <- "fitted"
       }
       #Reorder elements to have 'fitted' be first, then 'residuals'
       temp <- 
-        temp[c(values_to, "residuals", 
+        temp[c("fitted", "residuals", 
                     names(temp)[which(!names(temp) %in% 
                                              c("fitted", "residuals"))])]
     }

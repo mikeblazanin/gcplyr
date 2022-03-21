@@ -1476,29 +1476,38 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #' 
 #' This function calls other functions to smooth growth curve data
 #' 
-#' @param formula a formula specifying the numeric response (typically density) 
-#'                and numeric predictors (typically just time)
-#'                For \code{gam} smoothing, typically of the format:
-#'                dens ~ s(time), which uses mgcv::s to smooth the data
-#' @param data data frame containing the variables in the model
+#' @param x An (optional) vector of predictor values to smooth along (e.g. time)
+#' @param y A vector of response values to be smoothed (e.g. density)
 #' @param method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
 #'                  "moving-average", "moving-median', "loess", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
 #'                  Each unique value of this vector will be smoothed
 #'                  independently of the others.
-#' @param values_to If return_fitobject == FALSE, column name for the column containing
-#'            the smoothed values
 #' @param return_fitobject Boolean indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
 #' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
-#'            or \code{moving_average}
+#'            \code{moving_average}, or \code{moving_median}.
+#'            
+#'            For \code{moving_average} and \code{moving_median}, window_width
+#'            is required. For \code{loess} and \code{gam}, see details.
+#'
+#' @details For smoothing using \code{loess} or \code{gam} that depends on 
+#'          more than one predictor, \code{formula} and \code{data} can be
+#'          passed to \code{smooth_data} via the \code{...} argument.
+#'          
+#'          The formula should specify the response (e.g. density) 
+#'          and predictors. For \code{gam} smoothing, the formula should
+#'          typically be of the format: dens ~ s(time), which uses 
+#'          \code{mgcv::s} to smooth the data
+#'          
+#'          The data argument should be a \code{data.frame} containing the
+#'          variables in the formula
 #' 
 #' @return If return_fitobject == FALSE:
 #' 
-#'         A dataframe, the same as \code{data}, but with smoothed data
-#'         as an added column with column name \code{values_to}
+#'         A vector, the same length as \code{y}, with the now-smoothed y values
 #'         
 #'         If return_fitobject == TRUE:
 #'         
@@ -1512,10 +1521,22 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'         fitted values and the input values
 #' 
 #' @export
-smooth_data <- function(formula, data, method,
-                        subset_by = NULL, values_to = "fitted",
-                        return_fitobject = FALSE,
-                        ...) {
+smooth_data <- function(x = NULL, y, method, subset_by = NULL,
+                        return_fitobject = FALSE, ...) {
+  #Parse x and y, or ... args, into formula and data
+  if (any(c("formula", "data") %in% names(list(...)))) {
+    if(!all(c("formula", "data") %in% names(list(...)))) {
+      warning("both or neither formula and data must be specified, reverting to smoothing y on x")
+    } else {
+      formula <- list(...)$formula
+      data <- list(...)$data
+    }
+  } else {
+    data <- data.frame(x, y)
+    if(method == "gam") {formula <- y ~ s(x)
+    } else {formula <- y ~ x}
+  }
+  
   if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
     warning("gam method is called without 's()' to smooth")}
   if (!is.null(subset_by) & length(subset_by) != nrow(data)) {
@@ -1528,9 +1549,7 @@ smooth_data <- function(formula, data, method,
   if (return_fitobject) {
     fits_list <- list(rep(NA, length(unique(subset_by))))
   } else {
-    #Add column for output
-    data <- cbind(data, NA)
-    colnames(data)[ncol(data)] <- values_to
+    out <- rep(NA, nrow(data))
   }
   
   #Run smoothing methods
@@ -1542,29 +1561,25 @@ smooth_data <- function(formula, data, method,
         moving_average(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ],
                        ...))
-      names(temp) <- values_to
+      names(temp) <- "fitted"
     } else if (method == "moving-median") {
       temp <-
         list(
           moving_median(formula = formula,
                        data = data[subset_by == unique(subset_by)[i], ],
                        ...))
-      names(temp) <- values_to
+      names(temp) <- "fitted"
     } else {
       if (method == "loess") {
         temp <- 
           stats::loess(formula = formula, 
                        data = data[subset_by == unique(subset_by)[i], ], 
                        ...)
-        #Rename fitted to whatever values_to is
-        names(temp)[match("fitted", names(temp))] <- values_to
       } else if (method == "gam") {
         temp <- 
           mgcv::gam(formula = formula, 
                     data = data[subset_by == unique(subset_by)[i], ], 
                     ...)
-        #Rename fitted.values to whatever values_to is
-        names(temp)[match("fitted.values", names(temp))] <- values_to
       }
       #Reorder elements to have 'fitted' be first, then 'residuals'
       temp <- 
@@ -1577,13 +1592,13 @@ smooth_data <- function(formula, data, method,
     if (return_fitobject) {
       fits_list[[i]] <- temp
     } else {
-      #Fill in output column if needed
-      data[subset_by == unique(subset_by)[i], values_to] <- temp[[values_to]]
+      #Fill in output if needed
+      out[subset_by == unique(subset_by)[i]] <- temp[["fitted"]]
     }
   }
   
   #Return as requested
-  if (return_fitobject == TRUE) {return(fits_list)} else {return(data)}
+  if (return_fitobject == TRUE) {return(fits_list)} else {return(out)}
 }
 
 

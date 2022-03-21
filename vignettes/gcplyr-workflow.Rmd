@@ -727,9 +727,102 @@ There are a number of functions in `gcplyr` that can help analyze growth curves 
 ## Pre-processing with smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
 
-`smooth_data` has four different smoothing algorithms: moving average, moving median, loess, and gam. Moving average and moving median are simple smoothing algorithms that primarily act to reduce the strength of outliers on the data. loess and gam are both spline-fitting approaches that smooth data. loess uses polynomial-like curves, which in some cases can create additional curvature artifacts not present in the original data. gam uses additive curves that can, in some cases, avoid this drawback of loess.
+First, let's add some noise to the example data we've been working with:
 
-To use `smooth_data`, pass your data frame, a formula indicating the response variable (absorbance, density, etc) and the explanatory variable (time), and your method of choice.
+```{r}
+#First let's add some simulated noise to our example data
+example_data_and_designs$Measurements <-
+  example_data_and_designs$Measurements * 
+  runif(nrow(example_data_and_designs), min = 0.9, max = 1.1)
+
+#What does this noisy data look like?
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$Measurements[
+       example_data_and_designs$Well == "A2"])
+```
+
+Now, we can see how our smoothing works. `smooth_data` has four different smoothing algorithms to choose from: moving average, moving median, loess, and gam. Moving average and moving median are simple smoothing algorithms that primarily act to reduce the effects of outliers on the data. loess and gam are both spline-fitting approaches that smooth data. loess uses polynomial-like curves, which produce curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data. gam uses additive curves with less smoothly changing derivatives, but tends to better avoid the creation of curvature artifacts.
+
+To use `smooth_data`, pass your x and y values, your method of choice, and any additional arguments needed for the method. It will return a vector of your smoothed y values.
+
+Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y, whose unique values denote the subset groups. (Note: if you're using an approach like `dplyr::mutate`, `smooth_data` will work within `mutate` on your groups with no need for the `subset_by` argument)
+
+**A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are. For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via `...`. For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via `...`.
+
+```{r}
+example_data_and_designs$smoothed <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "moving-average",
+              subset_by = example_data_and_designs$Well,
+              window_width = 5)
+
+#What does the smoothed data look like compared to the noisy original?
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$Measurements[
+       example_data_and_designs$Well == "A2"])
+lines(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$smoothed[
+       example_data_and_designs$Well == "A2"])
+```
+
+```{r}
+example_data_and_designs$smoothed <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "moving-median",
+              subset_by = example_data_and_designs$Well,
+              window_width = 3)
+
+#What does the smoothed data look like compared to the noisy original?
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$Measurements[
+       example_data_and_designs$Well == "A2"])
+lines(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$smoothed[
+       example_data_and_designs$Well == "A2"])
+```
+
+```{r}
+example_data_and_designs$smoothed <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "loess",
+              subset_by = example_data_and_designs$Well)
+
+#What does the smoothed data look like compared to the noisy original?
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$Measurements[
+       example_data_and_designs$Well == "A2"])
+lines(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$smoothed[
+       example_data_and_designs$Well == "A2"])
+```
+
+```{r}
+example_data_and_designs$smoothed <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "gam",
+              subset_by = example_data_and_designs$Well)
+
+#What does the smoothed data look like compared to the noisy original?
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$Measurements[
+       example_data_and_designs$Well == "A2"])
+lines(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$smoothed[
+       example_data_and_designs$Well == "A2"])
+```
 
 ## Calculating derivatives
 

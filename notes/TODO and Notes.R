@@ -14,6 +14,7 @@
 #       calc_deriv
 #       find_local_extrema
 #     FEATURES:
+#       vignette section on multiple plates
 #       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use
 #            the standard pipeline

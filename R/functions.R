@@ -1798,7 +1798,7 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
       sub_ans <- sub_ans/
         ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
     }
-    ans[indices] <- c(sub_ans[start_order], NA)
+    ans[indices] <- c(sub_ans[start_order])
   }
   return(ans)
 }

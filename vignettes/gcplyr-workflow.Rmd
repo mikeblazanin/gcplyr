@@ -722,7 +722,7 @@ example_data_and_designs <-
 
 head(example_data_and_designs)
 ```
-# A Note on pre-processing, processing, and analyzing your data
+# A note on pre-processing, processing, and analyzing your data
 Once you have your spectrophotometric and design data merged, you're ready to move on to the next steps: pre-processing, processing, and analyzing.
 
 There are a number of functions in `gcplyr` that can help pre-process, process, and analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Pre-processing**, **Processing**, and **Analyzing** sections of this document, therefore, are written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
@@ -948,7 +948,7 @@ The `group_by` functions in `dplyr` do exactly what it sounds like, they take yo
 Here's what that could look like. First, we have to tell `group_by` what columns we want to group our data by. Since dplyr will drop any columns that the data aren't grouped by, we'll typically want to group by all of our design columns (including plate and well). *Make sure not to group by Time, Absorbance, or any smoothed or derivative columns*, since if you do `dplyr` will think that different timepoints belong in different groups.
 
 ```{r}
-library(gplyr)
+library(dplyr)
 grouped_example_data_and_designs <- 
   group_by(example_data_and_designs,
            Well, Bacteria_strain, Phage)
@@ -958,16 +958,18 @@ Then, we run `summarize`, specifying the name of the summarized column and the f
 
 ```{r}
 example_data_and_designs_sum <-
-  summarize(max_abs = max(smoothed))
+  summarize(grouped_example_data_and_designs,
+            max_abs = max(smoothed))
 head(example_data_and_designs_sum)
 ```
 
-If you want additional measures, you simply add them to the summarize call. For instance, we could get the minimum of the per-capita growth rate:
+If you want additional measures, you simply add them to the summarize call. For instance, we could get the minimum of the per-capita growth rate (note that na.rm is needed to tell `min` to ignore `NA` values):
 
 ```{r}
 example_data_and_designs_sum <-
-  summarize(max_abs = max(smoothed),
-            min_percap_deriv = min(deriv_percap))
+  summarize(grouped_example_data_and_designs,
+            max_abs = max(smoothed),
+            min_percap_deriv = min(deriv_percap, na.rm = TRUE))
 head(example_data_and_designs_sum)
 ```
 

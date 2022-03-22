@@ -4,10 +4,13 @@ author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:
     toc: true
+    toc_depth: 3
   pdf_document:
     toc: true
+    toc_depth: 3
   word_document:
     toc: true
+    toc_depth: 3
 vignette: >
   %\VignetteIndexEntry{gcplyr-workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -53,7 +56,7 @@ Tidy-shaped data is the best layout for analyses, but most plate readers output 
 
 So, what are these three data layouts, and how can you tell which of them your data is in?
 
-### Block-shaped
+**Block-shaped**
 
 In block-shaped data, the organization of the data corresponds directly with the layout of the physical multi-well plate it was generated from. For instance, a data point from the third row and fourth column of the `data.frame` will be from the well in the third row and fourth column in the physical plate. Because of this, a timeseries of growth curve data that is block-shaped will consist of many separate block-shaped data.frames, each corresponding to a single timepoint.
 
@@ -71,7 +74,7 @@ For example, here is a block-shaped `data.frame` of a 96-well plate (with "..." 
 **Row H** | 0.056    |0.069      |0.070      | ... |0.053      |0.078
 
 
-### Wide-shaped
+**Wide-shaped**
 
 In wide-shaped data, each column of the dataframe corresponds to a single well from the plate, and each row of the dataframe corresponds to a single timepoint. Typically, headers contain the well names.
 
@@ -88,7 +91,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 6 | 0.181    |1.292      |1.204      | ... |1.192      |1.352
 7 | 0.197    |1.324      |1.288      | ... |1.234      |1.394
 
-### Tidy-shaped
+**Tidy-shaped**
 
 In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
 
@@ -719,12 +722,12 @@ example_data_and_designs <-
 
 head(example_data_and_designs)
 ```
-# Analyzing data
-Once you have your spectrophotometric and design data merged, you're ready to begin analyzing your data.
+# A Note on pre-processing, processing, and analyzing your data
+Once you have your spectrophotometric and design data merged, you're ready to move on to the next steps: pre-processing, processing, and analyzing.
 
-There are a number of functions in `gcplyr` that can help analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Analyzing data** section of this document, therefore, is written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
+There are a number of functions in `gcplyr` that can help pre-process, process, and analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Pre-processing**, **Processing**, and **Analyzing** sections of this document, therefore, are written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
 
-## Pre-processing with smoothing
+# Pre-processing: smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
 
 First, let's add some noise to the example data we've been working with:
@@ -751,7 +754,7 @@ Since your dataframe likely includes data from multiple wells (or even plates), 
 
 **A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are. For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument.
 
-### Smoothing with moving-average
+## Smoothing with moving-average
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -773,7 +776,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-### Smoothing with moving-median
+## Smoothing with moving-median
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -795,7 +798,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-### Smoothing with LOESS
+## Smoothing with LOESS
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -816,7 +819,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-### Smoothing with GAM
+## Smoothing with GAM
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -837,16 +840,16 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-## Calculating derivatives
+# Processing data: calculating derivatives
 
 In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
 
-If you've previously smoothed your absorbance data, remember to use those smoothed values rather than the original values!
+*If you've previously smoothed your absorbance data, remember to use those smoothed values rather than the original values!*
 
-**Here's the original absorbance data curve we'll be getting the derivatives of:**
+**Here's the smoothed absorbance data curve we'll be getting the derivatives of:**
 
 ```{r}
-#Now let's plot the absorbance to remind ourselves what it looks like
+#Now let's plot the smoothed absorbance to remind ourselves what it looks like
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
      example_data_and_designs$smoothed[
@@ -854,7 +857,7 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "Smoothed Abs")
 ```
 
-### A simple derivative
+## A simple derivative
 
 To calculate a simple derivative, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
 
@@ -872,7 +875,7 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "derivative (Absorbance/sec)")
 ```
 
-### Per-capita derivative
+## Per-capita derivative
 
 `calc_deriv` can also return the per-capita derivative, simply by setting `percapita = TRUE`
 
@@ -891,7 +894,7 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "log10(per-capita derivative (/sec)")
 ```
 
-### Finite differences
+## Finite differences
 
 If, instead of derivatives, you simply want the difference between each time-step, you can set `scale_x = NA` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
 
@@ -909,7 +912,7 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "Difference between timesteps (Abs)")
 ```
 
-### Changing the derivative units
+## Changing the derivative units
 
 Finally, if you want your derivative in units different from those that x is provided in, you can specify the ratio of your x units to the desired units with `x_scale` as well. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
 
@@ -928,11 +931,40 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "derivative (Absorbance/hr)")
 ```
 
+# Analyzing data with summarize
+
+Now we've moved on to the style of analysis where we are trying to analyze our growth curves so that each one can be characterized by a single number. Some osrt of metric that characterizes some part, or the whole, of a curve.
+
+In order to do so, we will employ the wonderfully powerful `dplyr::summarize` function, along with some functions 
+
 ## Finding local extrema
 
-### Introducing the multi-purpose function: find_local_extrema
+One common analysis step is identifying peaks and valleys in the growth curve data, whether it be in the original absorbance vs time data, or in one of the derivatives in the curve. `gcplyr` has functions to facilitate identifying these local extrema.
 
-### A common special-case: the first peak
+### A common use-case: the first peak
+
+One of the main cases users are interested in identifying is the first peak in some data. In the absorbance data, the first peak could be of interest because the bacteria begin to decline from some killing agent. In derivative data, the first peak could be of interest because it represents the maximum growth rate when conditions are optimal.
+
+To identify the first peak, use `first_peak`. `first_peak` simply requires the y data you want to identify the peak in. Let's use the derivative we calculated in the previous section, since it has a clear peak we might want to identify.
+
+```{r}
+#Let's plot the derivative in units of Abs/hour again
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$deriv_hr[
+       example_data_and_designs$Well == "A2"],
+  xlab = "time", ylab = "derivative (Absorbance/hr)")
+```
+
+Now let's identify the peak in our data. 
+
+```{r}
+
+```
+
+
+### Multi-purpose extrema finding
+
 
 
 ## Threshold identification
@@ -940,6 +972,3 @@ plot(example_data_and_designs$Time[
 ## Area under the curve
 
 
-
-# Handling multiple plates simultaneously
-[further documentation to-be-written]

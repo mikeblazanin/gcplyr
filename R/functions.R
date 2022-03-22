@@ -1717,7 +1717,7 @@ moving_median <- function(formula, data, window_width) {
                rep(NA, window_radius))
   
   for (i in (window_radius+1):(length(results) - window_radius)) {
-    results[i] <- median(data[(i - window_radius):(i + window_radius), 
+    results[i] <- stats::median(data[(i - window_radius):(i + window_radius), 
                               response_var])
   }
   

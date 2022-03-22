@@ -1724,7 +1724,7 @@ moving_median <- function(formula, data, window_width) {
   return(results)
 }
 
-# Analyze ----
+# Derivatives ----
 
 #' Calculate derivatives of vector of data
 #' 
@@ -1799,6 +1799,8 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
   }
   return(ans)
 }
+
+# Analyze ----
 
 #' Find local extrema of numeric vector
 #' 
@@ -1887,7 +1889,7 @@ find_local_extrema <- function(y,
     if (!is.null(width_limit)) { #using width limit
       window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
     }
-    if (!is.null(height_limit)) { #using height limig
+    if (!is.null(height_limit)) { #using height limit
       #For startpoint height, we want the latest point that is
       #behind of our current point and
       #either:

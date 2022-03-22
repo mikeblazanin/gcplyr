@@ -1726,55 +1726,65 @@ moving_median <- function(formula, data, window_width) {
 
 # Analyze ----
 
-#' Calculate derivatives of vector of density data
+#' Calculate derivatives of vector of data
 #' 
-#' Provided a vector of density values, this function returns (by default) the
-#' difference between sequential values
+#' Provided a vector of y values, this function returns the difference
+#' between sequential values, derivative between sequential values,
+#' or per-capita derivative between sequential values
 #' 
-#' @param density Density data to calculate derivatives of
+#' @param y       Data to calculate difference or derivative of
+#' 
 #'                Note that data must be sequentially in unique sets and then 
 #'                in order when passed to \code{calc_deriv}
-#' @param percapita When percapita = TRUE, the differences of density are 
-#'                  divided by density
+#' @param x Vector of x values provided as a simple numeric
+#'          (e.g. if time, in number of seconds, not POSIX)
+#' @param x_scale Factor to scale x by in denominator of derivative calculation
+#'                
+#'                When \code{x_scale = NA}, \code{calc_deriv} returns 
+#'                differences in \code{y}
+#'                
+#'                When \code{x_scale = 1}, \code{calc_deriv} returns the 
+#'                standard derivative in the same units as y/x
+#'                
+#'                For other units, set x_scale to the ratio of the the units of 
+#'                x to the desired units. E.g. if x is in seconds, but the 
+#'                desired derivative is in units of /minute, set 
+#'                \code{x_scale = 60} (since there are 60 seconds in 1 minute).
+#' @param percapita When percapita = TRUE, the differences of y are 
+#'                  divided by y
 #' @param subset_by if subset_by is provided, it should be a vector (same 
-#'                  length as density), the unique values of which will 
+#'                  length as y), the unique values of which will 
 #'                  separate calculations
-#' @param time Vector of time values provided as a simple numeric
-#'             (e.g. number of seconds, rather than a POSIX-based time format)
-#' @param time_normalize When time_normalize = TRUE, the difference will be 
-#'                       normalized for the time_normalize value (e.g. if time 
-#'                       is provided in seconds and the difference per hour 
-#'                       is wanted, time_normalize should = 3600)
-#' @return A vector of the derivative values (or per-capita derivative values)
-#'         the same length as \code{density}, with \code{NA} appended to the end
+#' @return A vector of the difference, derivative, or per-capita derivative 
+#'         values the same length as \code{y}, with \code{NA} appended to 
+#'         the end
 #' 
 #' @export   
-calc_deriv <- function(density, percapita = FALSE,
-                       subset_by = NULL, time = NULL,
-                       time_normalize = NULL) {
+calc_deriv <- function(y, x = NULL, x_scale = 1,
+                       percapita = FALSE, subset_by = NULL) {
   
   #Check inputs
-  if (!is.numeric(time)) {
-    stop("time is not numeric")
+  if (!is.numeric(x)) {
+    stop("x is not numeric")
   }
-  if (!is.null(time_normalize)) {
-    if (!is.numeric(time_normalize)) {
-      stop("time_normalize is not numeric")
-    } else if (is.null(time)) {
-      stop("time_normalize is specified, but time is not provided")
+  if (!is.na(x_scale)) {
+    if (!is.numeric(x_scale)) {
+      stop("x_scale is not numeric")
+    } else if (is.null(x)) {
+      stop("x_scale is specified, but x is not provided")
     }
   }
   
   #Calc derivative
-  ans <- c(density[2:length(density)]-density[1:(length(density)-1)])
+  ans <- c(y[2:length(y)]-y[1:(length(y)-1)])
   #Percapita (if specified)
   if (percapita) {
-    ans <- ans/density[1:(length(density)-1)]
+    ans <- ans/y[1:(length(y)-1)]
   }
   #Time normalize (if specified)
-  if (!is.null(time_normalize)) {
+  if (!is.na(x_scale)) {
     ans <- ans/
-      (c(time[2:length(time)]-time[1:(length(time)-1)])/time_normalize)
+      (c(x[2:length(x)]-x[1:(length(x)-1)])/x_scale)
   }
   #Subset by (if specified)
   if (!is.null(subset_by)) {

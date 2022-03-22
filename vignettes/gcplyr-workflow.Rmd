@@ -933,9 +933,45 @@ plot(example_data_and_designs$Time[
 
 # Analyzing data with summarize
 
-Now we've moved on to the style of analysis where we are trying to analyze our growth curves so that each one can be characterized by a single number. Some osrt of metric that characterizes some part, or the whole, of a curve.
+Now we've moved on to the style of analysis where we are trying to analyze our growth curves so that each one can be characterized by a single number. Some sort of metric that characterizes some part, or the whole, of a curve.
 
-In order to do so, we will employ the wonderfully powerful `dplyr::summarize` function, along with some functions 
+At this point, we want to start summarizing the traits of our growth curves into simpler statistics than the full vector of density over time. Typically, we want to characterize some part or the whole curve with some measure (e.g. the area under the curve, maximum absorbance, etc).
+
+In order to do so, we will employ the wonderfully powerful `dplyr::summarize` function, along with some functions from `gcplyr`
+
+## A brief introduction to dplyr: grouping and summarize
+
+The R package `dplyr` contains a number of functions useful for a broad array of data analysis tasks (in fact, `dplyr`'s name is the direct inspiration for this package's name!) In particular, here we will focus on the `group_by` and `summarize` (or `summarise`) functions.
+
+The `group_by` functions in `dplyr` do exactly what it sounds like, they take your data rows and group them into subgroups. Then, the `summarize` function can calculate something about each subgroup, returning a new `data.frame` where there is only a single row for each group in the original `data.frame`. For us, we want to group our data into unique wells, then calculate characteristics of the growth curve in each well.
+
+Here's what that could look like. First, we have to tell `group_by` what columns we want to group our data by. Since dplyr will drop any columns that the data aren't grouped by, we'll typically want to group by all of our design columns (including plate and well). *Make sure not to group by Time, Absorbance, or any smoothed or derivative columns*, since if you do `dplyr` will think that different timepoints belong in different groups.
+
+```{r}
+library(gplyr)
+grouped_example_data_and_designs <- 
+  group_by(example_data_and_designs,
+           Well, Bacteria_strain, Phage)
+```
+
+Then, we run `summarize`, specifying the name of the summarized column and the function that calculates the summary output. Here, we're interested in the maximum absorbance each well reached at any point in its growth, and we'll use our smoothed absorbance values.
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(max_abs = max(smoothed))
+head(example_data_and_designs_sum)
+```
+
+If you want additional measures, you simply add them to the summarize call. For instance, we could get the minimum of the per-capita growth rate:
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(max_abs = max(smoothed),
+            min_percap_deriv = min(deriv_percap))
+head(example_data_and_designs_sum)
+```
+
+`dplyr`'s `group_by` and `summarize` functions have extensive documentation and tutorials of their own, which I won't get into here. Feel free to seek them out as needed, but this primer should be sufficient to use the remaining `gcplyr` functions. **These analysis functions in `gcplyr` are used *within* dplyr::summarize to calculate characteristics of growth curves**.
 
 ## Finding local extrema
 

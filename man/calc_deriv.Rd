@@ -2,41 +2,43 @@
 % Please edit documentation in R/functions.R
 \name{calc_deriv}
 \alias{calc_deriv}
-\title{Calculate derivatives of vector of density data}
+\title{Calculate derivatives of vector of data}
 \usage{
-calc_deriv(
-  density,
-  percapita = FALSE,
-  subset_by = NULL,
-  time = NULL,
-  time_normalize = NULL
-)
+calc_deriv(y, x = NULL, x_scale = 1, percapita = FALSE, subset_by = NULL)
 }
 \arguments{
-\item{density}{Density data to calculate derivatives of
-Note that data must be sequentially in unique sets and then 
-in order when passed to \code{calc_deriv}}
+\item{y}{Data to calculate difference or derivative of}
 
-\item{percapita}{When percapita = TRUE, the differences of density are 
-divided by density}
+\item{x}{Vector of x values provided as a simple numeric
+(e.g. if time, in number of seconds, not POSIX)}
+
+\item{x_scale}{Factor to scale x by in denominator of derivative calculation
+
+When \code{x_scale = NA}, \code{calc_deriv} returns 
+differences in \code{y}
+
+When \code{x_scale = 1}, \code{calc_deriv} returns the 
+standard derivative in the same units as y/x
+
+For other units, set x_scale to the ratio of the the units of 
+x to the desired units. E.g. if x is in seconds, but the 
+desired derivative is in units of /minute, set 
+\code{x_scale = 60} (since there are 60 seconds in 1 minute).}
+
+\item{percapita}{When percapita = TRUE, the differences of y are 
+divided by y}
 
 \item{subset_by}{if subset_by is provided, it should be a vector (same 
-length as density), the unique values of which will 
+length as y), the unique values of which will 
 separate calculations}
-
-\item{time}{Vector of time values provided as a simple numeric
-(e.g. number of seconds, rather than a POSIX-based time format)}
-
-\item{time_normalize}{When time_normalize = TRUE, the difference will be 
-normalized for the time_normalize value (e.g. if time 
-is provided in seconds and the difference per hour 
-is wanted, time_normalize should = 3600)}
 }
 \value{
-A vector of the derivative values (or per-capita derivative values)
-        the same length as \code{density}, with \code{NA} appended to the end
+A vector of the difference, derivative, or per-capita derivative 
+        values the same length as \code{y}, with \code{NA} appended to 
+        the end
 }
 \description{
-Provided a vector of density values, this function returns (by default) the
-difference between sequential values
+Provided a vector of y values, this function returns the difference
+between sequential values, derivative between sequential values,
+or per-capita derivative between sequential values
 }

@@ -1785,7 +1785,7 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
       #Reorder
       sub_y <- sub_y[start_order]
       sub_x <- sub_x[start_order]
-    }
+    } else {start_order <- 1:length(sub_y)}
     #Calculate differences
     sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
     #Percapita (if specified)

@@ -4,8 +4,16 @@
 #gcanalyzer
 #gcer
 
-#TODO: 
+#TODO:
+#     FIXES:
 #       fix reordering issues in smoothing
+#       There's still a use of t() in make_tidydesign
+#     TESTS:
+#       read_blocks and read_wides: change to use temp folder for files
+#       smooth_data: algorithms other than moving-average
+#       calc_deriv
+#       find_local_extrema
+#     FEATURES:
 #       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use
 #            the standard pipeline
@@ -13,44 +21,21 @@
 #            together and then use the standard pipeline
 #            And then in tidy format, have a function that will split
 #            the column up by the separator
+#            1. concat_blocks
+#            2. split_tidy's
 #       Make way to transform tidy designs to blocks and print them
 #        (or save to file) (Cathy would like)
+#        trans_tidy_to_wide, trans_wide_to_block
 #       Add citation()
-#       Integrate with growthcurver
 #       Allow pattern string to be vector in make_tidydesign
-#       Build pipeline for block-shaped design files
+#       Compare to & integrate with other packages, eg growthcurver
 #       Add plot option for blocks and wides so that users can check that
 #             things worked (have it look like the plot in plate reader software)
 #       Figure out how to call xlsx in remote building
 #             (e.g. like that of devtools::check_win_devel(),
 #             see: https://community.rstudio.com/t/error-regarding-manual-from-devtools-check-r-cmd-check/14227/2)
-#       Figure out what's wrong with my local Latex installation
-#       There's still a use of t() in make_tidydesign
-#       Write tests for blocken_wides 
-#       Finish import_blockdesign functions
-#       Write shorthand functions with presets for find_local_extrema
-#       Compare setup to other packages for similar analyses, eg growthcurver
-#       in growthcurver they keep the timestamps in a column named "time",
-#         I should follow a similar convention
-#         This is especially useful if there are multiple "variable" type
-#           columns (e.g. Temperature) that are also output and that
-#           the users want to keep (because rownames can only include
-#           one thing)
-#       
-#       make_tidydesign calls t which calls as.matrix
-#       
 #       add capability for make_tidydesign to accept simple wellnumbers
-#       
-#       
-#Change smoothing to include other functions
-#LOESS (which can simplify to a weighted moving average)
-#LOWESS
-#Spline models
-#General additive model
-#Moving median
-
-#wide measures: dataframe with each column corresponding to a single well
-#block measures: dataframe where rows and columns match literally to a plate
+#       Add functions to smooth_data: LOWESS, spline models
 
 #General pipeline:
 # 1.  import_blockmeasures OR

@@ -732,8 +732,8 @@ First, let's add some noise to the example data we've been working with:
 ```{r}
 #First let's add some simulated noise to our example data
 example_data_and_designs$Measurements <-
-  example_data_and_designs$Measurements * 
-  runif(nrow(example_data_and_designs), min = 0.9, max = 1.1)
+  example_data_and_designs$Measurements + 
+  runif(nrow(example_data_and_designs), min = 0, max = 0.1)
 
 #What does this noisy data look like?
 plot(example_data_and_designs$Time[
@@ -749,7 +749,9 @@ To use `smooth_data`, pass your x and y values, your method of choice, and any a
 
 Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y, whose unique values denote the subset groups. (Note: if you're using an approach like `dplyr::mutate`, `smooth_data` will work within `mutate` on your groups with no need for the `subset_by` argument)
 
-**A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are. For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via `...`. For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via `...`.
+**A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are. For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument.
+
+### Smoothing with moving-average
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -771,6 +773,8 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
+### Smoothing with moving-median
+
 ```{r}
 example_data_and_designs$smoothed <-
   smooth_data(x = example_data_and_designs$Time,
@@ -791,6 +795,8 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
+### Smoothing with LOESS
+
 ```{r}
 example_data_and_designs$smoothed <-
   smooth_data(x = example_data_and_designs$Time,
@@ -809,6 +815,8 @@ lines(example_data_and_designs$Time[
      example_data_and_designs$smoothed[
        example_data_and_designs$Well == "A2"])
 ```
+
+### Smoothing with GAM
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -833,7 +841,22 @@ lines(example_data_and_designs$Time[
 
 In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
 
-If you've previously smoothed your absorbance data, make sure to use those smoothed values rather than the original values!
+If you've previously smoothed your absorbance data, remember to use those smoothed values rather than the original values!
+
+**Here's the original absorbance data curve we'll be getting the derivatives of:**
+
+```{r}
+#Now let's plot the absorbance to remind ourselves what it looks like
+plot(example_data_and_designs$Time[
+  example_data_and_designs$Well == "A2"],
+     example_data_and_designs$smoothed[
+       example_data_and_designs$Well == "A2"],
+  xlab = "time", ylab = "Smoothed Abs")
+```
+
+### A simple derivative
+
+To calculate a simple derivative, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
 
 ```{r}
 example_data_and_designs$deriv <-
@@ -841,18 +864,15 @@ example_data_and_designs$deriv <-
              y = example_data_and_designs$smoothed,
              subset_by = example_data_and_designs$Well)
 
-#Now let's plot the absorbance and the derivative
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "Smoothed Abs")
+#Now let's plot the derivative
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
      example_data_and_designs$deriv[
        example_data_and_designs$Well == "A2"],
   xlab = "time", ylab = "derivative (Absorbance/sec)")
 ```
+
+### Per-capita derivative
 
 `calc_deriv` can also return the per-capita derivative, simply by setting `percapita = TRUE`
 
@@ -863,12 +883,7 @@ example_data_and_designs$deriv_percap <-
              subset_by = example_data_and_designs$Well,
              percapita = TRUE)
 
-#Now let's plot the absorbance and the per-capita derivative
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "Smoothed Abs")
+#Now let's plot the per-capita derivative
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
      log10(example_data_and_designs$deriv_percap[
@@ -876,7 +891,9 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "log10(per-capita derivative (/sec)")
 ```
 
-If, instead of derivatives, you simply want the difference between each time-step, you can set `scale_x = NA` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timesteps are equally long)
+### Finite differences
+
+If, instead of derivatives, you simply want the difference between each time-step, you can set `scale_x = NA` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
 
 ```{r}
 example_data_and_designs$difference <-
@@ -884,18 +901,15 @@ example_data_and_designs$difference <-
              subset_by = example_data_and_designs$Well,
              x_scale = NA)
 
-#Now let's plot the absorbance and the per-capita derivative
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "Smoothed Abs")
+#Now let's plot the finite differences
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
      example_data_and_designs$difference[
        example_data_and_designs$Well == "A2"],
   xlab = "time", ylab = "Difference between timesteps (Abs)")
 ```
+
+### Changing the derivative units
 
 Finally, if you want your derivative in units different from those that x is provided in, you can specify the ratio of your x units to the desired units with `x_scale` as well. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
 
@@ -906,12 +920,7 @@ example_data_and_designs$deriv_hr <-
              subset_by = example_data_and_designs$Well,
              x_scale = 3600)
 
-#Now let's plot the absorbance and the per-capita derivative
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "Smoothed Abs")
+#Now let's plot the derivative in units of Abs/hour
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
      example_data_and_designs$deriv_hr[
@@ -920,6 +929,11 @@ plot(example_data_and_designs$Time[
 ```
 
 ## Finding local extrema
+
+### Introducing the multi-purpose function: find_local_extrema
+
+### A common special-case: the first peak
+
 
 ## Threshold identification
 

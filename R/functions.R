@@ -1733,9 +1733,6 @@ moving_median <- function(formula, data, window_width) {
 #' or per-capita derivative between sequential values
 #' 
 #' @param y       Data to calculate difference or derivative of
-#' 
-#'                Note that data must be sequentially in unique sets and then 
-#'                in order when passed to \code{calc_deriv}
 #' @param x Vector of x values provided as a simple numeric
 #'          (e.g. if time, in number of seconds, not POSIX)
 #' @param x_scale Factor to scale x by in denominator of derivative calculation

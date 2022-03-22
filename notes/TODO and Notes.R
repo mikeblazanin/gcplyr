@@ -5,7 +5,8 @@
 #gcer
 
 #TODO: 
-#       import_blockdesign
+#       fix reordering issues in calc_deriv, smoothing
+#       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use
 #            the standard pipeline
 #            If there's more than one block, we just have to paste them
@@ -13,7 +14,7 @@
 #            And then in tidy format, have a function that will split
 #            the column up by the separator
 #       Make way to transform tidy designs to blocks and print them
-#        (or save to file)
+#        (or save to file) (Cathy would like)
 #       Add citation()
 #       Integrate with growthcurver
 #       Allow pattern string to be vector in make_tidydesign

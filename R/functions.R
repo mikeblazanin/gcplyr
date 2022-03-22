@@ -1764,9 +1764,6 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
                        percapita = FALSE, subset_by = NULL) {
   
   #Check inputs
-  if (!is.numeric(x)) {
-    stop("x is not numeric")
-  }
   if (!is.na(x_scale)) {
     if (!is.numeric(x_scale)) {
       stop("x_scale is not numeric")
@@ -1774,23 +1771,36 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
       stop("x_scale is specified, but x is not provided")
     }
   }
+  if (!is.null(x) & !is.numeric(x)) {
+    stop("x is not numeric")
+  }
+  if(!is.numeric(y)) {y <- as.numeric(y)}
   
   #Calc derivative
-  ans <- c(y[2:length(y)]-y[1:(length(y)-1)])
-  #Percapita (if specified)
-  if (percapita) {
-    ans <- ans/y[1:(length(y)-1)]
+  ans <- rep(NA, length(y))
+  if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
+  for (i in 1:length(unique(subset_by))) {
+    indices <- which(subset_by == unique(subset_by)[i])
+    sub_y <- y[indices]
+    if(!is.null(x)) {
+      sub_x <- x[indices]
+      start_order <- order(sub_x) #so we can put things back at the end
+      #Reorder
+      sub_y <- sub_y[start_order]
+      sub_x <- sub_x[start_order]
+    }
+    #Calculate differences
+    sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
+    #Percapita (if specified)
+    if(percapita) {sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
+    #Derivative & rescale (if specified)
+    if(!is.na(x_scale)) {
+      sub_ans <- sub_ans/
+        ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
+    }
+    ans[indices] <- c(sub_ans[start_order], NA)
   }
-  #Time normalize (if specified)
-  if (!is.na(x_scale)) {
-    ans <- ans/
-      (c(x[2:length(x)]-x[1:(length(x)-1)])/x_scale)
-  }
-  #Subset by (if specified)
-  if (!is.null(subset_by)) {
-    ans[subset_by[2:length(subset_by)] != subset_by[1:(length(subset_by)-1)]] <- NA
-  }
-  return(c(ans, NA))
+  return(ans)
 }
 
 #' Find local extrema of numeric vector

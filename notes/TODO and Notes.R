@@ -5,7 +5,7 @@
 #gcer
 
 #TODO: 
-#       fix reordering issues in calc_deriv, smoothing
+#       fix reordering issues in smoothing
 #       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use
 #            the standard pipeline

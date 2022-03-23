@@ -752,7 +752,10 @@ To use `smooth_data`, pass your x and y values, your method of choice, and any a
 
 Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y, whose unique values denote the subset groups. (Note: if you're using an approach like `dplyr::mutate`, `smooth_data` will work within `mutate` on your groups with no need for the `subset_by` argument)
 
-**A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are. For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument.
+**A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are.
+* For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. 
+* For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. 
+* For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument, and altered tuning parameters (e.g. `k`, `sp`, `bs`) would be included in `formula`.
 
 ## Smoothing with moving-average
 
@@ -846,10 +849,10 @@ In many cases, identifying features of a growth curve requires looking not only 
 
 *If you've previously smoothed your absorbance data, remember to use those smoothed values rather than the original values!*
 
-**Here's the smoothed absorbance data curve we'll be getting the derivatives of:**
+**Here's the smoothed absorbance data we'll be getting the derivatives of:**
 
 ```{r}
-#Now let's plot the smoothed absorbance to remind ourselves what it looks like
+#Let's plot the smoothed absorbance to remind ourselves what it looks like
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
      example_data_and_designs$smoothed[
@@ -859,7 +862,7 @@ plot(example_data_and_designs$Time[
 
 ## A simple derivative
 
-To calculate a simple derivative, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
+To calculate a simple derivative using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
 
 ```{r}
 example_data_and_designs$deriv <-
@@ -877,7 +880,7 @@ plot(example_data_and_designs$Time[
 
 ## Per-capita derivative
 
-`calc_deriv` can also return the per-capita derivative, simply by setting `percapita = TRUE`
+`calc_deriv` can also return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`
 
 ```{r}
 example_data_and_designs$deriv_percap <-
@@ -896,7 +899,7 @@ plot(example_data_and_designs$Time[
 
 ## Finite differences
 
-If, instead of derivatives, you simply want the difference between each time-step, you can set `scale_x = NA` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
+If, instead of derivatives, you simply want the difference between each subsequent y value, you can set `scale_x = NA` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
 
 ```{r}
 example_data_and_designs$difference <-
@@ -933,19 +936,17 @@ plot(example_data_and_designs$Time[
 
 # Analyzing data with summarize
 
-Now we've moved on to the style of analysis where we are trying to analyze our growth curves so that each one can be characterized by a single number. Some sort of metric that characterizes some part, or the whole, of a curve.
+Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. For instance, we may calculate the maximum density, maximum per-capita growth rate, or total area under the curve. `gcplyr` contains a number of functions to assist with these calculations. 
 
-At this point, we want to start summarizing the traits of our growth curves into simpler statistics than the full vector of density over time. Typically, we want to characterize some part or the whole curve with some measure (e.g. the area under the curve, maximum absorbance, etc).
+However, before we can explore how to use those `gcplyr` functions, we need to familiarize ourselves with the *`dplyr`* functions `group_by` and `summarize` that the remaining `gcplyr` functions depend on. **If you're already familiar with `dplyr`, feel free to skip the next section.** If you're not familiar yet, don't worry! Continue to the next section, where we provide a primer on using `group_by` and `summarize` that will teach you all you need to know for using `gcplyr`.
 
-In order to do so, we will employ the wonderfully powerful `dplyr::summarize` function, along with some functions from `gcplyr`
+## A brief primer on dplyr: grouping and summarize
 
-## A brief introduction to dplyr: grouping and summarize
+The R package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes, we're going to focus on two particular functions: `group_by` and `summarize` (also available as `summarise`).
 
-The R package `dplyr` contains a number of functions useful for a broad array of data analysis tasks (in fact, `dplyr`'s name is the direct inspiration for this package's name!) In particular, here we will focus on the `group_by` and `summarize` (or `summarise`) functions.
+The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve.
 
-The `group_by` functions in `dplyr` do exactly what it sounds like, they take your data rows and group them into subgroups. Then, the `summarize` function can calculate something about each subgroup, returning a new `data.frame` where there is only a single row for each group in the original `data.frame`. For us, we want to group our data into unique wells, then calculate characteristics of the growth curve in each well.
-
-Here's what that could look like. First, we have to tell `group_by` what columns we want to group our data by. Since dplyr will drop any columns that the data aren't grouped by, we'll typically want to group by all of our design columns (including plate and well). *Make sure not to group by Time, Absorbance, or any smoothed or derivative columns*, since if you do `dplyr` will think that different timepoints belong in different groups.
+Let's work through an example. First, we need to group our data. `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
 
 ```{r}
 library(dplyr)
@@ -954,7 +955,9 @@ grouped_example_data_and_designs <-
            Well, Bacteria_strain, Phage)
 ```
 
-Then, we run `summarize`, specifying the name of the summarized column and the function that calculates the summary output. Here, we're interested in the maximum absorbance each well reached at any point in its growth, and we'll use our smoothed absorbance values.
+Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns, and the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
+
+Then, we run `summarize`, specifying the name of the summarized column and the function that calculates the summary output. For instance, in the code below we've calculated the maximum smoothed absorbance each well reached at any point in its growth.
 
 ```{r}
 example_data_and_designs_sum <-
@@ -963,7 +966,7 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-If you want additional measures, you simply add them to the summarize call. For instance, we could get the minimum of the per-capita growth rate (note that na.rm is needed to tell `min` to ignore `NA` values):
+If you want additional characteristics, you simply add them to the summarize. For instance, we could get the minimum of the per-capita growth rate (note that na.rm is needed to tell `min` to ignore `NA` values):
 
 ```{r}
 example_data_and_designs_sum <-
@@ -973,7 +976,7 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-`dplyr`'s `group_by` and `summarize` functions have extensive documentation and tutorials of their own, which I won't get into here. Feel free to seek them out as needed, but this primer should be sufficient to use the remaining `gcplyr` functions. **These analysis functions in `gcplyr` are used *within* dplyr::summarize to calculate characteristics of growth curves**.
+That's all you need to know for now! If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use **the remaining `gcplyr` functions, which have to be used within `summarize` to work correctly**.
 
 ## Finding local extrema
 

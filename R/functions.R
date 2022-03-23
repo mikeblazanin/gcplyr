@@ -2065,8 +2065,7 @@ find_local_extrema <- function(y,
 #' @param ... Other parameters to pass to \code{find_local_extrema}
 #'                    
 #' @export      
-first_peak <- function(y, x = NULL, return = "index", 
-                       width_limit = NULL, ...) {
+first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
   if(is.null(width_limit)) {
     width_limit <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
@@ -2077,6 +2076,7 @@ first_peak <- function(y, x = NULL, return = "index",
   if(!is.null(x) & length(x) != length(y)) {
     stop("x and y must be the same length")
   }
+  if(is.null(x) & return == "x") {stop('return = "x" but x is not provided')}
   
   dot_args <- list(...)
   if (any(c("return_maxima", "return_minima") %in% names(dot_args))) {

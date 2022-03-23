@@ -1816,6 +1816,10 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #' This function is designed to be compatible with dplyr::group_by and summarize
 #' 
 #' @param y Numeric vector of y values in which to identify local extrema
+#' @param x Optional numeric vector of corresponding x values
+#' @param return One of c("index", "x", "y"), determining whether the function
+#'               will return the index, x value, or y value associated with the
+#'               identified extremas
 #' @param return_maxima,return_minima Boolean for which classes of local extrema
 #'                                    to return
 #' @param width_limit Width of the window (in number of \code{y} values) used to
@@ -1835,7 +1839,7 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #'         in the data  
 #' 
 #' @export                             
-find_local_extrema <- function(y, 
+find_local_extrema <- function(y, x = NULL, return = "index",
                                return_maxima = TRUE,
                                return_minima = TRUE,
                                width_limit = NULL,
@@ -1858,6 +1862,13 @@ find_local_extrema <- function(y,
   if (is.null(width_limit) & !is.null(height_limit)) {
     warning("height_limit alone tends to be sensitive to height_limit parameter, use with caution")
   }
+  if (!return %in% c("x", "y", "index")) {
+    stop('return must be one of "x", "y", or "index"')
+  }
+  if(!is.null(x) & length(x) != length(y)) {
+    stop("x and y must be the same length")
+  }
+  if(is.null(x) & return == "x") {stop('return = "x" but x is not provided')}
   
   #Deal with NA's in y
   if(any(is.na(y))) {
@@ -2040,7 +2051,14 @@ find_local_extrema <- function(y,
     }
   }
   
-  return(output)
+  #Return as specified
+  if (return == "index") {
+    return(output)
+  } else if (return == "x") {
+    return(x[output])
+  } else if (return == "y") {
+    return(y[output])
+  }
 }
 
 #' Find the first local peak of a numeric vector

@@ -57,7 +57,72 @@ uninterleave <- function(interleaved_list, n) {
   return(output)
 }
 
-#' A function that handles name inference logic
+#' A function that converts numbers into base-26 Excel-style letters
+#' 
+#' @param x A vector of numbers in base-10
+#' 
+#' @return A vector of letters in Excel-style base-26 format
+#' 
+#' @export
+to_excel <- function(x) {
+  x_numeric <- suppressWarnings(as.numeric(x))
+  if(any(is.na(x_numeric))) {
+  stop(paste("Failed to convert to Excel-format:",
+       paste(x[is.na(x_numeric)], collapse = ",")))
+  } else {x <- x_numeric}
+  
+  divisor_modulo_excel <- function(x) {
+    #This function is just a way to return %/% and %% modified as Excel uses them
+    #see Python inspiration: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
+    div <- x %/% 26
+    rem <- x %% 26
+    if (rem == 0) {return(c(div-1, rem + 26))
+    } else {return(c(div, rem))}
+  }
+  
+  #Carry out conversion to Excel letters
+  out <- c()
+  for (i in 1:length(x)) {
+    val <- x[i]
+    chars <- c()
+    while(val > 0) {
+      temp <- divisor_modulo_excel(val)
+      val <- temp[1]
+      rem <- temp[2]
+      chars <- c(LETTERS[rem], chars)
+    }
+    out <- c(out, paste(chars, collapse = ""))
+  }
+  return(out)
+}
+
+#' A function that converts base-26 Excel-style letters to numbers
+#' 
+#' @param x A vector of numbers in Excel-style base-26 letter format
+#' 
+#' @return A vector of numbers in base-10
+#' 
+#' @export
+from_excel <- function(x) {
+  #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
+  out <- rep(NA, length(x))
+  x_splt <- strsplit(x, "")
+  for (i in 1:length(x_splt)) {
+    #Get indices of letters
+    temp <- match(x_splt[[i]], LETTERS)
+    #Multiply indices by powers of 26
+    out[i] <- sum(temp*26**((length(temp)-1):0))
+  }
+  if(any(is.na(out))) {
+    stop(paste("Failed to convert from Excel-format:",
+               paste(x[is.na(out)], collapse = ",")))
+  }
+  return(as.numeric(out))
+}
+
+# Read files ----
+
+#' An internal function that handles name inference logic for other functions
 #' 
 #' This function takes in the fully-read dataframe alongside information
 #' about whether rows and columns have been specified, and whether header
@@ -76,7 +141,7 @@ uninterleave <- function(interleaved_list, n) {
 infer_names <- function(df,
                         startrow, endrow, startcol, endcol,
                         header, sider) {
-
+  
   #Infer endrow/endcol if they're not provided to be the last row/col
   if (is.na(endrow)) {endrow <- nrow(df)}
   if (is.na(endcol)) {endcol <- ncol(df)}
@@ -165,71 +230,6 @@ infer_names <- function(df,
   
   return(output)
 }
-
-#' A function that converts numbers into base-26 Excel-style letters
-#' 
-#' @param x A vector of numbers in base-10
-#' 
-#' @return A vector of letters in Excel-style base-26 format
-#' 
-#' @export
-to_excel <- function(x) {
-  x_numeric <- suppressWarnings(as.numeric(x))
-  if(any(is.na(x_numeric))) {
-  stop(paste("Failed to convert to Excel-format:",
-       paste(x[is.na(x_numeric)], collapse = ",")))
-  } else {x <- x_numeric}
-  
-  divisor_modulo_excel <- function(x) {
-    #This function is just a way to return %/% and %% modified as Excel uses them
-    #see Python inspiration: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
-    div <- x %/% 26
-    rem <- x %% 26
-    if (rem == 0) {return(c(div-1, rem + 26))
-    } else {return(c(div, rem))}
-  }
-  
-  #Carry out conversion to Excel letters
-  out <- c()
-  for (i in 1:length(x)) {
-    val <- x[i]
-    chars <- c()
-    while(val > 0) {
-      temp <- divisor_modulo_excel(val)
-      val <- temp[1]
-      rem <- temp[2]
-      chars <- c(LETTERS[rem], chars)
-    }
-    out <- c(out, paste(chars, collapse = ""))
-  }
-  return(out)
-}
-
-#' A function that converts base-26 Excel-style letters to numbers
-#' 
-#' @param x A vector of numbers in Excel-style base-26 letter format
-#' 
-#' @return A vector of numbers in base-10
-#' 
-#' @export
-from_excel <- function(x) {
-  #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
-  out <- rep(NA, length(x))
-  x_splt <- strsplit(x, "")
-  for (i in 1:length(x_splt)) {
-    #Get indices of letters
-    temp <- match(x_splt[[i]], LETTERS)
-    #Multiply indices by powers of 26
-    out[i] <- sum(temp*26**((length(temp)-1):0))
-  }
-  if(any(is.na(out))) {
-    stop(paste("Failed to convert from Excel-format:",
-               paste(x[is.na(out)], collapse = ",")))
-  }
-  return(as.numeric(out))
-}
-
-# Read files ----
 
 #' Read blockmeasures
 #' 
@@ -1801,6 +1801,9 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 }
 
 # Analyze ----
+
+
+
 
 #' Find local extrema of numeric vector
 #' 

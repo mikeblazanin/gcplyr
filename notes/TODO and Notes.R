@@ -8,6 +8,8 @@
 #     FIXES:
 #       fix reordering issues in smoothing
 #       There's still a use of t() in make_tidydesign
+#       Allow multiple startrow/startcol, etc from a single file in
+#        read_blocks, read_wides
 #     TESTS:
 #       read_blocks and read_wides: change to use temp folder for files
 #       smooth_data: algorithms other than moving-average

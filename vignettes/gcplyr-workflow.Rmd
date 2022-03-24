@@ -732,11 +732,15 @@ Oftentimes, growth curve data produced by a plate reader will be noisy, and some
 
 First, let's add some noise to the example data we've been working with:
 
+```{r, include = FALSE}
+set.seed(2)
+```
+
 ```{r}
 #First let's add some simulated noise to our example data
 example_data_and_designs$Measurements <-
   example_data_and_designs$Measurements + 
-  runif(nrow(example_data_and_designs), min = 0, max = 0.1)
+  runif(nrow(example_data_and_designs), min = 0.1, max = 0.2)
 
 #What does this noisy data look like?
 plot(example_data_and_designs$Time[
@@ -892,9 +896,9 @@ example_data_and_designs$deriv_percap <-
 #Now let's plot the per-capita derivative
 plot(example_data_and_designs$Time[
   example_data_and_designs$Well == "A2"],
-     log10(example_data_and_designs$deriv_percap[
-       example_data_and_designs$Well == "A2"]),
-  xlab = "time", ylab = "log10(per-capita derivative (/sec)")
+     example_data_and_designs$deriv_percap[
+       example_data_and_designs$Well == "A2"],
+  xlab = "time", ylab = "per-capita derivative (/sec)")
 ```
 
 ## Finite differences
@@ -938,7 +942,7 @@ plot(example_data_and_designs$Time[
 
 Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. For instance, we may calculate the maximum density, maximum per-capita growth rate, or total area under the curve. `gcplyr` contains a number of functions to assist with these calculations. 
 
-However, before we can explore how to use those `gcplyr` functions, we need to familiarize ourselves with the *`dplyr`* functions `group_by` and `summarize` that the remaining `gcplyr` functions depend on. **If you're already familiar with `dplyr`, feel free to skip the next section.** If you're not familiar yet, don't worry! Continue to the next section, where we provide a primer on using `group_by` and `summarize` that will teach you all you need to know for using `gcplyr`.
+However, before we can explore how to use those functions, we need to familiarize ourselves with the `dplyr` functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you're already familiar with `dplyr`, feel free to skip the next section.** If you're not familiar yet, don't worry! Continue to the next section, where we provide a primer on using `group_by` and `summarize` that will teach you all you need to know for.
 
 ## A brief primer on dplyr: grouping and summarize
 
@@ -952,39 +956,39 @@ Let's work through an example. First, we need to group our data. `group_by` simp
 library(dplyr)
 grouped_example_data_and_designs <- 
   group_by(example_data_and_designs,
-           Well, Bacteria_strain, Phage)
+           Bacteria_strain, Phage, Well)
 ```
 
 Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns, and the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
 
-Then, we run `summarize`, specifying the name of the summarized column and the function that calculates the summary output. For instance, in the code below we've calculated the maximum smoothed absorbance each well reached at any point in its growth.
+Then, we run `summarize`, specifying the name of the summarized column and the function that calculates the summary output. For instance, in the code below we've calculated the minimum smoothed absorbance each well reached at any point in its growth.
 
 ```{r}
 example_data_and_designs_sum <-
   summarize(grouped_example_data_and_designs,
-            max_abs = max(smoothed))
+            min_abs = min(smoothed))
 head(example_data_and_designs_sum)
 ```
 
-If you want additional characteristics, you simply add them to the summarize. For instance, we could get the minimum of the per-capita growth rate (note that na.rm is needed to tell `min` to ignore `NA` values):
+If you want additional characteristics, you simply add them to the summarize. For instance, we could get the maximum of the per-capita growth rate (note that na.rm is needed to tell `max` to ignore `NA` values):
 
 ```{r}
 example_data_and_designs_sum <-
   summarize(grouped_example_data_and_designs,
-            max_abs = max(smoothed),
-            min_percap_deriv = min(deriv_percap, na.rm = TRUE))
+            min_abs = min(smoothed),
+            max_percap_deriv = max(deriv_percap, na.rm = TRUE))
 head(example_data_and_designs_sum)
 ```
 
-That's all you need to know for now! If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use **the remaining `gcplyr` functions, which have to be used within `summarize` to work correctly**.
+That's all you need to know for now! If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use the remaining `gcplyr` functions, which have to be used *within* `summarize` to work correctly.
 
 ## Finding local extrema
 
-One common analysis step is identifying peaks and valleys in the growth curve data, whether it be in the original absorbance vs time data, or in one of the derivatives in the curve. `gcplyr` has functions to facilitate identifying these local extrema.
+One common analysis step is identifying peaks and valleys in growth curve data, whether it be in the original absorbance data, or in one of the derivatives in the curve. `gcplyr` has several functions to facilitate identifying these local extrema.
 
 ### A common use-case: the first peak
 
-One of the main cases users are interested in identifying is the first peak in some data. In the absorbance data, the first peak could be of interest because the bacteria begin to decline from some killing agent. In derivative data, the first peak could be of interest because it represents the maximum growth rate when conditions are optimal.
+One of the main peaks or valleys users are interested in identifying is the first peak. For instance, in absorbance data, the first peak could be the maximum absorbance reached before the population begins to decline as a result of phages or antibiotics. Whereas in derivative data, the first peak could show the maximum growth rate of the bacteria.
 
 To identify the first peak, use `first_peak`. `first_peak` simply requires the y data you want to identify the peak in. Let's use the derivative we calculated in the previous section, since it has a clear peak we might want to identify.
 
@@ -997,15 +1001,94 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "derivative (Absorbance/hr)")
 ```
 
-Now let's identify the peak in our data. 
+Now let's identify the peak in our data. First, we'll group our data using `dplyr::group_by`, then use `first_peak` inside our summarize command. (Remember to load dplyr with `library(dplyr)` if you haven't already)
 
 ```{r}
-
+example_data_and_designs_grouped <- 
+  group_by(example_data_and_designs,
+           Bacteria_strain, Phage, Well)
+example_data_and_designs_sum <-
+  summarize(example_data_and_designs_grouped,
+            first_peak_index = first_peak(deriv_hr))
+head(example_data_and_designs_sum)
 ```
 
+By default, `first_peak` returns the index of the timepoint where the first peak is located *within* the group. If you want the x or y of the first peak, simply set `return = "x"` or `return = "y"`. Note that if `return = "x"`, you must specify the x values to `first_peak`
 
-### Multi-purpose extrema finding
+```{r}
+example_data_and_designs_sum <-
+  summarize(example_data_and_designs_grouped,
+            first_peak_x = first_peak(deriv_hr, x = Time, return = "x"),
+            first_peak_y = first_peak(deriv_hr, return = "y"))
+head(example_data_and_designs_sum)
+```
 
+And now that we have x and y values, we can plot them to confirm that `first_peak` finds what we expect.
+
+```{r}
+plot(example_data_and_designs$Time[
+       example_data_and_designs$Well == "A2"],
+     example_data_and_designs$deriv_hr[
+       example_data_and_designs$Well == "A2"],
+  xlab = "time", ylab = "derivative (Absorbance/hr)")
+points(x = example_data_and_designs_sum$first_peak_x[
+             example_data_and_designs_sum$Well == "A2"],
+  y = example_data_and_designs_sum$first_peak_y[
+        example_data_and_designs_sum$Well == "A2"],
+  pch = 16, cex = 2)
+```
+
+Here we can see that `first_peak` has found *a* peak, but perhaps not the large one we're primarily interested in. If we want `first_peak` to be less sensitive to local peaks, we can increase the `width_limit` argument (which defaults to 20% of the length of `y`, in this case `= 19`).
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(example_data_and_designs_grouped,
+            first_peak_x = first_peak(deriv_hr, x = Time, return = "x",
+                                      width_limit = 39),
+            first_peak_y = first_peak(deriv_hr, return = "y",
+                                      width_limit = 39))
+head(example_data_and_designs_sum)
+plot(example_data_and_designs$Time[
+       example_data_and_designs$Well == "A2"],
+     example_data_and_designs$deriv_hr[
+       example_data_and_designs$Well == "A2"],
+  xlab = "time", ylab = "derivative (Absorbance/hr)")
+points(x = example_data_and_designs_sum$first_peak_x[
+             example_data_and_designs_sum$Well == "A2"],
+  y = example_data_and_designs_sum$first_peak_y[
+        example_data_and_designs_sum$Well == "A2"],
+  pch = 16, cex = 2)
+```
+
+Great! However, if we look at all the summarized data, some of the curves have `NA` for their first peak information. 
+
+```{r}
+head(example_data_and_designs_sum[
+      is.na(example_data_and_designs_sum$first_peak_x), ])
+```
+
+Why is that? Let's take a look at one of them:
+
+```{r}
+#Let's plot the absorbance
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "F1"],
+     example_data_and_designs$deriv_hr[example_data_and_designs$Well == "F1"],
+  xlab = "time", ylab = "derivative (Absorbance/hr)")
+```
+
+Here, we can see that this derivative curve doesn't have a local peak in the data. By design, `first_peak` only identifies peaks *within* the data, ignoring any peaks at the endpoints of the data. In the next section, we'll learn how to use `find_local_extrema` to identify other kinds of local extrema, including peaks at the beginning or end of the growth curve.
+
+### Finding any kind of local extrema
+
+We've seen how `first_peak` can be used to identify the first peak. But what about other extrema in the data? The first minimum? Or peaks that occur at the beginning or end of the data? The *second* peak?
+
+In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. `find_local_extrema` works very similarly to `first_peak`, but with a few additional options that users can specify to get exactly the kinds of peaks and valleys they want.
+
+Just like `first_peak`, `find_local_extrema` only requires a vector of y data in which to find the local extrema, and will return the index of the extrema *within* the current group. By altering the `return` argument to `return = "x"` or `return = "y"`, find_local_extrema will return x and y values rather than indices.
+
+Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`.
+
+Additionally, with `find_local_extrema`, users must specify at least one of the tuning parameters: `width_limit` or `height_limit`. These parameters control how sensitive the function is to smaller local peaks and valleys. `width_limit` is the number of data points wide the algorithm will search at each step, meaning that a smaller `width_limit` will be more sensitive to narrow peaks and valleys. `height_limit` (in units of `y`) limits the depth of the peaks and valleys the algorithm will search over at each step, meaning that a smaller `height_limit` will be more sensitive to shallow peaks and valleys.
 
 
 ## Threshold identification

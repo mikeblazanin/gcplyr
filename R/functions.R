@@ -1924,7 +1924,7 @@ find_next_extrema <- function(cnt_pos, y,
       #  higher than the length of the vector)
       cnt_pos <- window_lims[1]-1+which.max(y[window_lims[1]:window_lims[2]])
     }
-    ##Looking for next minima
+  ##Looking for next minima
   } else if (looking_for == "minima") {
     while (cnt_pos != best_pos) {
       #Move the previous best pointer to current pointer location

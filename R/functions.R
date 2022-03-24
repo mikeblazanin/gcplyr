@@ -1832,11 +1832,17 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #'                     valley deeper than height_limit. This also limits
 #'                     approaches to true extrema, so if it is set too small
 #'                     the function may return non-extrema
-#' @param remove_endpoints Should the first and last values in \code{y}
+#' @param return_endpoints Should the first and last values in \code{y}
 #'                         be removed from the returned vector of extrema
 #' @param na.rm Boolean whether NA's should be removed before analyzing
-#' @return A vector of indices of \code{y} corresponding to local extrema
-#'         in the data  
+#' @return If \code{return = "index}, a vector of indices of 
+#'           \code{y} corresponding to local extrema in the data
+#'           
+#'         If \code{return = "x"}, a vector of x values corresponding
+#'           to local extrema in the data
+#'          
+#'         If \code{return = "y"}, a vector of y values corresponding
+#'           to local extrema in the data
 #' 
 #' @export                             
 find_local_extrema <- function(y, x = NULL, return = "index",
@@ -1844,7 +1850,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
                                return_minima = TRUE,
                                width_limit = NULL,
                                height_limit = NULL,
-                               remove_endpoints = TRUE,
+                               return_endpoints = FALSE,
                                na.rm = TRUE) {
   #Check inputs
   if (!return_maxima & !return_minima) {
@@ -2034,7 +2040,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   if (return_maxima) {output <- c(output, maxima_list)}
   if (return_minima) {output <- c(output, minima_list)}
   #If remove endpoints is true, remove first or last y from return
-  if (remove_endpoints) {
+  if (!return_endpoints) {
     if (1 %in% output) {output <- output[-which(output == 1)]}
     if (length(y) %in% output) {
       output <- output[-which(output == length(y))]}

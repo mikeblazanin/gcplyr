@@ -31,4 +31,7 @@ below some threshold y value.
 }
 \details{
 This function is designed to be compatible with dplyr::group_by and summarize
+
+
+This function is designed to be compatible with dplyr::group_by and summarize
 }

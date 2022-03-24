@@ -31,4 +31,7 @@ for \code{find_local_extrema}
 }
 \details{
 This function is designed to be compatible with dplyr::group_by and summarize
+
+
+This function is designed to be compatible with dplyr::group_by and summarize
 }

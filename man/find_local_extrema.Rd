@@ -6,16 +6,24 @@
 \usage{
 find_local_extrema(
   y,
+  x = NULL,
+  return = "index",
   return_maxima = TRUE,
   return_minima = TRUE,
   width_limit = NULL,
   height_limit = NULL,
-  remove_endpoints = TRUE,
+  return_endpoints = FALSE,
   na.rm = TRUE
 )
 }
 \arguments{
 \item{y}{Numeric vector of y values in which to identify local extrema}
+
+\item{x}{Optional numeric vector of corresponding x values}
+
+\item{return}{One of c("index", "x", "y"), determining whether the function
+will return the index, x value, or y value associated with the
+identified extremas}
 
 \item{return_maxima, return_minima}{Boolean for which classes of local extrema
 to return}
@@ -32,14 +40,20 @@ valley deeper than height_limit. This also limits
 approaches to true extrema, so if it is set too small
 the function may return non-extrema}
 
-\item{remove_endpoints}{Should the first and last values in \code{y}
+\item{return_endpoints}{Should the first and last values in \code{y}
 be removed from the returned vector of extrema}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
 \value{
-A vector of indices of \code{y} corresponding to local extrema
-        in the data
+If \code{return = "index}, a vector of indices of 
+          \code{y} corresponding to local extrema in the data
+          
+        If \code{return = "x"}, a vector of x values corresponding
+          to local extrema in the data
+         
+        If \code{return = "y"}, a vector of y values corresponding
+          to local extrema in the data
 }
 \description{
 This function takes a vector of \code{y} values and returns a vector

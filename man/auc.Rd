@@ -21,3 +21,6 @@ This function takes a vector of \code{x} and \code{y} values
 and returns a scalar for the area under the curve, calculated using 
 the trapezoid rule
 }
+\details{
+This function is designed to be compatible with dplyr::group_by and summarize
+}

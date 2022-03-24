@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{infer_names}
 \alias{infer_names}
-\title{A function that handles name inference logic}
+\title{An internal function that handles name inference logic for other functions}
 \usage{
 infer_names(df, startrow, endrow, startcol, endcol, header, sider)
 }

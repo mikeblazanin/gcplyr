@@ -2122,6 +2122,9 @@ find_local_extrema <- function(y, x = NULL, return = "index",
 #'                    
 #'                    If not provided, defaults to ~0.2*length(y)
 #' @param ... Other parameters to pass to \code{find_local_extrema}
+#' 
+#' @details 
+#' This function is designed to be compatible with dplyr::group_by and summarize
 #'                    
 #' @export      
 first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
@@ -2177,6 +2180,9 @@ first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
 #'               
 #'               If returning index, index will be for the whole vector and
 #'               not the subset of the vector
+#'               
+#' @details 
+#' This function is designed to be compatible with dplyr::group_by and summarize
 #'                    
 #' @export    
 first_below <- function(y, x = NULL, threshold, 
@@ -2235,6 +2241,9 @@ first_below <- function(y, x = NULL, threshold,
 #' @param xlim Vector, of length 2, delimiting the x range over which the
 #'             area under the curve should be calculated
 #' @param na.rm a logical indicating whether missing values should be removed
+#' 
+#' @details 
+#' This function is designed to be compatible with dplyr::group_by and summarize
 #'             
 #' @export
 auc <- function(x, y, xlim = NULL, na.rm = TRUE) {

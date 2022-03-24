@@ -1865,9 +1865,6 @@ find_local_extrema <- function(y, x = NULL, return = "index",
       width_limit <- width_limit - 1
     }
   }
-  if (is.null(width_limit) & !is.null(height_limit)) {
-    warning("height_limit alone tends to be sensitive to height_limit parameter, use with caution")
-  }
   if (!return %in% c("x", "y", "index")) {
     stop('return must be one of "x", "y", or "index"')
   }
@@ -1907,36 +1904,37 @@ find_local_extrema <- function(y, x = NULL, return = "index",
       window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
     }
     if (!is.null(height_limit)) { #using height limit
-      #For startpoint height, we want the latest point that is
-      #behind of our current point and
-      #either:
-      # below current height - height limit
-      # or above current height + height limit
-      #Then we move one place forward 
-      # (so it's the last value w/in height limit)
-      window_start[2] <- max(c(1,
-                               1+which(1:length(y) < cnt_pos &
-                                         (y >= (y[cnt_pos] + height_limit) |
-                                            y <= (y[cnt_pos] - height_limit)))))
+      #For startpoint height, we want the earliest point that is
+      #before our current point and
+      #within +/- height limit of all points between it and current point
+      i <- cnt_pos-1
+      while(i >= 1 &
+            all(y[i] >= y[(i+1):cnt_pos] - height_limit) &
+            all(y[i] <= y[(i+1):cnt_pos] + height_limit)) {
+        i <- i-1
+      }
+      window_start[2] <- i+1
+      
       #Make sure we're going at least 1 point backwards
       if(window_start[2] >= cnt_pos) {window_start[2] <- cnt_pos-1}
     }
+    
     window_end <- c(NA, NA)
     if (!is.null(width_limit)) { #using width limit
       window_end[1] <- min(c(length(y), cnt_pos+floor(width_limit/2)))
     }
     if (!is.null(height_limit)) { #using height limit
-      #For endpoint height, we want the earliest point that is
-      #forward of our current point and
-      #either:
-      # below current height - height limit
-      # or above current height + height limit
-      #Then we move one place back 
-      # (so it's the last value w/in height limit)
-      window_end[2] <- min(c(length(y),
-                             -1+which(1:length(y) > cnt_pos & #not backwards
-                                        (y <= (y[cnt_pos] - height_limit) |
-                                           y >= (y[cnt_pos] + height_limit)))))
+      #For endpoint height, we want the latest point that is
+      #after our current point and
+      #within +/- height limit of all points between it and current point
+      i <- cnt_pos+1
+      while(i <= length(y) &
+            all(y[i] >= y[(i-1):cnt_pos] - height_limit) &
+            all(y[i] <= y[(i-1):cnt_pos] + height_limit)) {
+        i <- i+1
+      }
+      window_end[2] <- i-1
+      
       #Make sure we're going at least one point forwards
       if (window_end[2] <= cnt_pos) {window_end[2] <- cnt_pos+1}
     }

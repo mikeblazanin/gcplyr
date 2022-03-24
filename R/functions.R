@@ -1802,7 +1802,115 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 
 # Analyze ----
 
+#Define sub-function to find limits of the window
+get_window_limits <- function(cnt_pos,
+                              width_limit = NULL,
+                              height_limit = NULL,
+                              looking_for = c("minima", "maxima"),
+                              y = NULL) {
+  #Check inputs
+  if (length(looking_for) > 1) {stop("looking_for must be specified")}
+  if (!is.null(height_limit) & is.null(y)) {
+    stop("height_limit is specified, but no y are provided")
+  }
+  if (is.null(width_limit) & is.null(height_limit)) {
+    stop("Either width_limit or height_limit must be provided")
+  }
+  
+  #Define window limits
+  window_start <- c(NA, NA)
+  if (!is.null(width_limit)) { #using width limit
+    window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
+  }
+  if (!is.null(height_limit)) { #using height limit
+    #For startpoint height, we want the earliest point that is
+    #before our current point and
+    #within +/- height limit of all points between it and current point
+    i <- cnt_pos-1
+    while(i >= 1 &
+          all(y[i] >= y[(i+1):cnt_pos] - height_limit) &
+          all(y[i] <= y[(i+1):cnt_pos] + height_limit)) {
+      i <- i-1
+    }
+    window_start[2] <- i+1
+    
+    #Make sure we're going at least 1 point backwards
+    if(window_start[2] >= cnt_pos) {window_start[2] <- cnt_pos-1}
+  }
+  
+  window_end <- c(NA, NA)
+  if (!is.null(width_limit)) { #using width limit
+    window_end[1] <- min(c(length(y), cnt_pos+floor(width_limit/2)))
+  }
+  if (!is.null(height_limit)) { #using height limit
+    #For endpoint height, we want the latest point that is
+    #after our current point and
+    #within +/- height limit of all points between it and current point
+    i <- cnt_pos+1
+    while(i <= length(y) &
+          all(y[i] >= y[(i-1):cnt_pos] - height_limit) &
+          all(y[i] <= y[(i-1):cnt_pos] + height_limit)) {
+      i <- i+1
+    }
+    window_end[2] <- i-1
+    
+    #Make sure we're going at least one point forwards
+    if (window_end[2] <= cnt_pos) {window_end[2] <- cnt_pos+1}
+  }
+  return(c(max(window_start, na.rm = T), min(window_end, na.rm = T)))
+}
 
+find_next_extrema <- function(cnt_pos, y,
+                              width_limit = NULL,
+                              height_limit = NULL,
+                              looking_for = c("minima", "maxima")) {
+  if (cnt_pos == length(y)) {best_pos <- cnt_pos-1
+  } else {best_pos <- cnt_pos+1}
+  
+  #Save the starting position so we never go backwards
+  start_pos <- cnt_pos
+  
+  ##Looking for next maxima
+  if(looking_for == "maxima") {
+    while (cnt_pos != best_pos) {
+      #Move the previous best pointer to current pointer location
+      best_pos <- cnt_pos
+      #Get next window limits
+      window_lims <- get_window_limits(cnt_pos = cnt_pos,
+                                       width_limit = width_limit,
+                                       height_limit = height_limit,
+                                       looking_for = "maxima",
+                                       y = y)
+      #Make sure we're not going backwards
+      window_lims <- c(max(start_pos, window_lims[1]),
+                       max(start_pos, window_lims[2]))
+      #Then move current pointer to highest point within window
+      # (making sure not to check non-integer indices, or indices below 1 or
+      #  higher than the length of the vector)
+      cnt_pos <- window_lims[1]-1+which.max(y[window_lims[1]:window_lims[2]])
+    }
+    ##Looking for next minima
+  } else if (looking_for == "minima") {
+    while (cnt_pos != best_pos) {
+      #Move the previous best pointer to current pointer location
+      best_pos <- cnt_pos
+      #Get next window limits
+      window_lims <- get_window_limits(cnt_pos = cnt_pos,
+                                       width_limit = width_limit,
+                                       height_limit = height_limit,
+                                       looking_for = "minima",
+                                       y = y)
+      #Make sure we're not going backwards
+      window_lims <- c(max(start_pos, window_lims[1]),
+                       max(start_pos, window_lims[2]))
+      #Then move current pointer to lowest point within window
+      # (making sure not to check non-integer indices, or indices below 1 or
+      #  higher than the length of the vector)
+      cnt_pos <- window_lims[1]-1+which.min(y[window_lims[1]:window_lims[2]])
+    }
+  }
+  return(best_pos)
+}
 
 
 #' Find local extrema of numeric vector
@@ -1886,116 +1994,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
     }
   } else {nas_removed_indices <- NULL}
   
-  #Define sub-function to find limits of the window
-  get_window_limits <- function(cnt_pos,
-                                width_limit = NULL,
-                                height_limit = NULL,
-                                looking_for = c("minima", "maxima"),
-                                y = NULL) {
-    #Check inputs
-    if (length(looking_for) > 1) {stop("looking_for must be specified")}
-    if (!is.null(height_limit) & is.null(y)) {
-      stop("height_limit is specified, but no y are provided")
-    }
-    if (is.null(width_limit) & is.null(height_limit)) {
-      stop("Either width_limit or height_limit must be provided")
-    }
-    
-    #Define window limits
-    window_start <- c(NA, NA)
-    if (!is.null(width_limit)) { #using width limit
-      window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
-    }
-    if (!is.null(height_limit)) { #using height limit
-      #For startpoint height, we want the earliest point that is
-      #before our current point and
-      #within +/- height limit of all points between it and current point
-      i <- cnt_pos-1
-      while(i >= 1 &
-            all(y[i] >= y[(i+1):cnt_pos] - height_limit) &
-            all(y[i] <= y[(i+1):cnt_pos] + height_limit)) {
-        i <- i-1
-      }
-      window_start[2] <- i+1
-      
-      #Make sure we're going at least 1 point backwards
-      if(window_start[2] >= cnt_pos) {window_start[2] <- cnt_pos-1}
-    }
-    
-    window_end <- c(NA, NA)
-    if (!is.null(width_limit)) { #using width limit
-      window_end[1] <- min(c(length(y), cnt_pos+floor(width_limit/2)))
-    }
-    if (!is.null(height_limit)) { #using height limit
-      #For endpoint height, we want the latest point that is
-      #after our current point and
-      #within +/- height limit of all points between it and current point
-      i <- cnt_pos+1
-      while(i <= length(y) &
-            all(y[i] >= y[(i-1):cnt_pos] - height_limit) &
-            all(y[i] <= y[(i-1):cnt_pos] + height_limit)) {
-        i <- i+1
-      }
-      window_end[2] <- i-1
-      
-      #Make sure we're going at least one point forwards
-      if (window_end[2] <= cnt_pos) {window_end[2] <- cnt_pos+1}
-    }
-    return(c(max(window_start, na.rm = T), min(window_end, na.rm = T)))
-  }
-  
-  find_next_extrema <- function(cnt_pos, y,
-                                width_limit = NULL,
-                                height_limit = NULL,
-                                looking_for = c("minima", "maxima")) {
-    if (cnt_pos == length(y)) {best_pos <- cnt_pos-1
-    } else {best_pos <- cnt_pos+1}
-    
-    #Save the starting position so we never go backwards
-    start_pos <- cnt_pos
-    
-    ##Looking for next maxima
-    if(looking_for == "maxima") {
-      while (cnt_pos != best_pos) {
-        #Move the previous best pointer to current pointer location
-        best_pos <- cnt_pos
-        #Get next window limits
-        window_lims <- get_window_limits(cnt_pos = cnt_pos,
-                                         width_limit = width_limit,
-                                         height_limit = height_limit,
-                                         looking_for = "maxima",
-                                         y = y)
-        #Make sure we're not going backwards
-        window_lims <- c(max(start_pos, window_lims[1]),
-                         max(start_pos, window_lims[2]))
-        #Then move current pointer to highest point within window
-        # (making sure not to check non-integer indices, or indices below 1 or
-        #  higher than the length of the vector)
-        cnt_pos <- window_lims[1]-1+which.max(y[window_lims[1]:window_lims[2]])
-      }
-      ##Looking for next minima
-    } else if (looking_for == "minima") {
-      while (cnt_pos != best_pos) {
-        #Move the previous best pointer to current pointer location
-        best_pos <- cnt_pos
-        #Get next window limits
-        window_lims <- get_window_limits(cnt_pos = cnt_pos,
-                                         width_limit = width_limit,
-                                         height_limit = height_limit,
-                                         looking_for = "minima",
-                                         y = y)
-        #Make sure we're not going backwards
-        window_lims <- c(max(start_pos, window_lims[1]),
-                         max(start_pos, window_lims[2]))
-        #Then move current pointer to lowest point within window
-        # (making sure not to check non-integer indices, or indices below 1 or
-        #  higher than the length of the vector)
-        cnt_pos <- window_lims[1]-1+which.min(y[window_lims[1]:window_lims[2]])
-      }
-    }
-    return(best_pos)
-  }
-  
+  #Start finding extrema
   cnt_pos <- 1
   ##Find first maxima
   maxima_list <- c(find_next_extrema(cnt_pos, y,

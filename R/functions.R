@@ -1802,7 +1802,25 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 
 # Analyze ----
 
-#Define sub-function to find limits of the window
+#' Find limits of window for next extrema search (for internal use only)
+#' 
+#' @param cnt_pos Current position index to start search from
+#' @param width_limit Width of the window (in number of \code{y} values) used to
+#'                    search for local extrema. A narrower width will me more
+#'                    sensitive to narrow local maxima/minima, while a wider
+#'                    width will be less sensitive to local maxima/minima.
+#' @param height_limit The maximum change in \code{y} a single extrema-search
+#'                     step is allowed to take.
+#'                     For example, a maxima-finding function will not pass a
+#'                     valley deeper than height_limit. This also limits
+#'                     approaches to true extrema, so if it is set too small
+#'                     the function may return non-extrema
+#' @param looking_for  Is the next window looking for a "maxima" or a "minima"?
+#' @param y Numeric vector of y values in which to identify local extrema
+#' 
+#' @return Vector, of length two, with start index and end index of the
+#'         next window to use
+#'           
 get_window_limits <- function(cnt_pos,
                               width_limit = NULL,
                               height_limit = NULL,
@@ -1860,6 +1878,25 @@ get_window_limits <- function(cnt_pos,
   return(c(max(window_start, na.rm = T), min(window_end, na.rm = T)))
 }
 
+#' Find the next extrema from the current position (for internal use only)
+#' 
+#' @param cnt_pos Current position index to start search from
+#' @param width_limit Width of the window (in number of \code{y} values) used to
+#'                    search for local extrema. A narrower width will me more
+#'                    sensitive to narrow local maxima/minima, while a wider
+#'                    width will be less sensitive to local maxima/minima.
+#' @param height_limit The maximum change in \code{y} a single extrema-search
+#'                     step is allowed to take.
+#'                     For example, a maxima-finding function will not pass a
+#'                     valley deeper than height_limit. This also limits
+#'                     approaches to true extrema, so if it is set too small
+#'                     the function may return non-extrema
+#' @param y Numeric vector of y values in which to identify local extrema
+#' @param looking_for  Is the next window looking for a "maxima" or a "minima"?
+#' 
+#' @return The index of the next extrema, of the same type as specified by
+#'         looking_for
+#'
 find_next_extrema <- function(cnt_pos, y,
                               width_limit = NULL,
                               height_limit = NULL,

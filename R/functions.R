@@ -1805,6 +1805,9 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #' Find limits of window for next extrema search (for internal use only)
 #' 
 #' @param cnt_pos Current position index to start search from
+#' @param y Numeric vector of y values in which to identify local extrema
+#'          (technically optional if only using width_limit, but since
+#'          find_next_extrema will always provide it's required for simplicity)
 #' @param width_limit Width of the window (in number of \code{y} values) used to
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to narrow local maxima/minima, while a wider
@@ -1815,27 +1818,20 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #'                     valley deeper than height_limit. This also limits
 #'                     approaches to true extrema, so if it is set too small
 #'                     the function may return non-extrema
-#' @param looking_for  Is the next window looking for a "maxima" or a "minima"?
-#' @param y Numeric vector of y values in which to identify local extrema
 #' 
 #' @return Vector, of length two, with start index and end index of the
 #'         next window to use
 #'           
-get_window_limits <- function(cnt_pos,
+get_window_limits <- function(cnt_pos, y,
                               width_limit = NULL,
-                              height_limit = NULL,
-                              looking_for = c("minima", "maxima"),
-                              y = NULL) {
+                              height_limit = NULL) {
   #Check inputs
-  if (length(looking_for) > 1) {stop("looking_for must be specified")}
-  if (!is.null(height_limit) & is.null(y)) {
-    stop("height_limit is specified, but no y are provided")
-  }
   if (is.null(width_limit) & is.null(height_limit)) {
     stop("Either width_limit or height_limit must be provided")
   }
   
   #Define window limits
+  #Define window start candidates
   window_start <- c(NA, NA)
   if (!is.null(width_limit)) { #using width limit
     window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
@@ -1856,6 +1852,7 @@ get_window_limits <- function(cnt_pos,
     if(window_start[2] >= cnt_pos) {window_start[2] <- cnt_pos-1}
   }
   
+  #Define window end candidates
   window_end <- c(NA, NA)
   if (!is.null(width_limit)) { #using width limit
     window_end[1] <- min(c(length(y), cnt_pos+floor(width_limit/2)))
@@ -1875,6 +1872,7 @@ get_window_limits <- function(cnt_pos,
     #Make sure we're going at least one point forwards
     if (window_end[2] <= cnt_pos) {window_end[2] <- cnt_pos+1}
   }
+  #Return conservative of start candidates, end candidates
   return(c(max(window_start, na.rm = T), min(window_end, na.rm = T)))
 }
 

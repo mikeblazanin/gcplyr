@@ -1914,7 +1914,6 @@ find_next_extrema <- function(cnt_pos, y,
       window_lims <- get_window_limits(cnt_pos = cnt_pos,
                                        width_limit = width_limit,
                                        height_limit = height_limit,
-                                       looking_for = "maxima",
                                        y = y)
       #Make sure we're not going backwards
       window_lims <- c(max(start_pos, window_lims[1]),
@@ -1933,7 +1932,6 @@ find_next_extrema <- function(cnt_pos, y,
       window_lims <- get_window_limits(cnt_pos = cnt_pos,
                                        width_limit = width_limit,
                                        height_limit = height_limit,
-                                       looking_for = "minima",
                                        y = y)
       #Make sure we're not going backwards
       window_lims <- c(max(start_pos, window_lims[1]),

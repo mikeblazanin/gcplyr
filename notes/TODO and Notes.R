@@ -14,6 +14,8 @@
 #       read_blocks and read_wides: change to use temp folder for files
 #       smooth_data: algorithms other than moving-average
 #       calc_deriv
+#       get_window_limits
+#       find_next_extrema
 #       find_local_extrema
 #     FEATURES:
 #       vignette section on multiple plates
@@ -39,6 +41,7 @@
 #             see: https://community.rstudio.com/t/error-regarding-manual-from-devtools-check-r-cmd-check/14227/2)
 #       add capability for make_tidydesign to accept simple wellnumbers
 #       Add functions to smooth_data: LOWESS, spline models
+#       Improve efficiency of find_local_extrema
 
 #General pipeline:
 # 1.  import_blockmeasures OR

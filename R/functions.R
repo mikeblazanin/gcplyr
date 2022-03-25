@@ -1981,7 +1981,7 @@ find_next_extrema <- function(cnt_pos, y,
 #' @param return_endpoints Should the first and last values in \code{y}
 #'                         be removed from the returned vector of extrema
 #' @param na.rm Boolean whether NA's should be removed before analyzing
-#' @return If \code{return = "index}, a vector of indices of 
+#' @return If \code{return = "index"}, a vector of indices of 
 #'           \code{y} corresponding to local extrema in the data
 #'           
 #'         If \code{return = "x"}, a vector of x values corresponding

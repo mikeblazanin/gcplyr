@@ -46,7 +46,7 @@ be removed from the returned vector of extrema}
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
 \value{
-If \code{return = "index}, a vector of indices of 
+If \code{return = "index"}, a vector of indices of 
           \code{y} corresponding to local extrema in the data
           
         If \code{return = "x"}, a vector of x values corresponding

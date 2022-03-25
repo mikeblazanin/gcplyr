@@ -1080,7 +1080,7 @@ Here, we can see that this derivative curve doesn't have a local peak in the dat
 
 ### Finding any kind of local extrema
 
-We've seen how `first_peak` can be used to identify the first peak. But what about other extrema in the data? The first minimum? Or peaks that occur at the beginning or end of the data? The *second* peak?
+We've seen how `first_peak` can be used to identify the first peak. But what about other extrema in the data? The first minimum? Or peaks that occur at the beginning or end of the data? The *second* peak? Etc.
 
 In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. `find_local_extrema` works very similarly to `first_peak`, but with a few additional options that users can specify to get exactly the kinds of peaks and valleys they want.
 

@@ -12,9 +12,14 @@ auc(x, y, xlim = NULL, na.rm = TRUE)
 \item{y}{Numeric vector of y values}
 
 \item{xlim}{Vector, of length 2, delimiting the x range over which the
-area under the curve should be calculated}
+area under the curve should be calculated (where NA can be
+provided for the area to be calculated from the start or to
+the end of the data)}
 
 \item{na.rm}{a logical indicating whether missing values should be removed}
+}
+\value{
+A scalar for the total area under the curve
 }
 \description{
 This function takes a vector of \code{x} and \code{y} values
@@ -22,5 +27,6 @@ and returns a scalar for the area under the curve, calculated using
 the trapezoid rule
 }
 \details{
-This function is designed to be compatible with dplyr::group_by and summarize
+This function is designed to be compatible for use within
+ dplyr::group_by and dplyr::summarize
 }

@@ -21,8 +21,8 @@ first y value below some threshold}
 \item{subset}{A vector of Boolean values indicating which x and y values
 should be included (TRUE) or excluded (FALSE).
 
-If returning index, index will be for the whole vector and
-not the subset of the vector}
+If \code{return = "index"}, index will be for the whole 
+vector and not the subset of the vector}
 }
 \description{
 This function takes a vector of \code{x} and \code{y} values and 
@@ -30,8 +30,6 @@ returns the index (by default) of the first point that falls
 below some threshold y value.
 }
 \details{
-This function is designed to be compatible with dplyr::group_by and summarize
-
-
-This function is designed to be compatible with dplyr::group_by and summarize
+This function is designed to be compatible for use within
+ dplyr::group_by and dplyr::summarize
 }

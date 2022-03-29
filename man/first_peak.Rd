@@ -4,7 +4,7 @@
 \alias{first_peak}
 \title{Find the first local peak of a numeric vector}
 \usage{
-first_peak(y, x = NULL, return = "index", width_limit = NULL, ...)
+first_peak(y, x = NULL, return = "index", width_limit_n = NULL, ...)
 }
 \arguments{
 \item{y}{Numeric vector of y values in which to identify local extrema}
@@ -15,7 +15,7 @@ first_peak(y, x = NULL, return = "index", width_limit = NULL, ...)
 will return the index, x value, or y value associated with the
 first peak in y values}
 
-\item{width_limit}{Width of the window (in number of \code{y}) used to
+\item{width_limit_n}{Width of the window (in number of \code{y}) used to
 search for local extrema. A narrower width will me more
 sensitive to local maxima/minima, while a wider
 width will be less sensitive to local maxima/minima.
@@ -30,8 +30,6 @@ This function takes a vector of \code{y} values and returns the index
 for \code{find_local_extrema}
 }
 \details{
-This function is designed to be compatible with dplyr::group_by and summarize
-
-
-This function is designed to be compatible with dplyr::group_by and summarize
+This function is designed to be compatible for use within
+ dplyr::group_by and dplyr::summarize
 }

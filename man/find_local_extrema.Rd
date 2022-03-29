@@ -10,9 +10,9 @@ find_local_extrema(
   return = "index",
   return_maxima = TRUE,
   return_minima = TRUE,
-  width_limit = NULL,
-  height_limit = NULL,
   return_endpoints = FALSE,
+  width_limit_n = NULL,
+  height_limit = NULL,
   na.rm = TRUE
 )
 }
@@ -28,7 +28,11 @@ identified extremas}
 \item{return_maxima, return_minima}{Boolean for which classes of local extrema
 to return}
 
-\item{width_limit}{Width of the window (in number of \code{y} values) used to
+\item{return_endpoints}{Should the first and last values in \code{y}
+be included if they are in the returned 
+vector of extrema?}
+
+\item{width_limit_n}{Width of the window (in number of \code{y} values) used to
 search for local extrema. A narrower width will me more
 sensitive to narrow local maxima/minima, while a wider
 width will be less sensitive to local maxima/minima.}
@@ -39,9 +43,6 @@ For example, a maxima-finding function will not pass a
 valley deeper than height_limit. This also limits
 approaches to true extrema, so if it is set too small
 the function may return non-extrema}
-
-\item{return_endpoints}{Should the first and last values in \code{y}
-be removed from the returned vector of extrema}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
@@ -59,11 +60,12 @@ If \code{return = "index"}, a vector of indices of
 This function takes a vector of \code{y} values and returns a vector
 of the indices of all local value extrema (by default, this includes both
 local minima and local maxima)
-Either width_limit or height_limit must be provided
+Either width_limit_n or height_limit must be provided
 }
 \details{
-If both width_limit and height_limit are provided, steps are limited
+If both width_limit_n and height_limit are provided, steps are limited
 conservatively (a single step must meet both criteria)
 
-This function is designed to be compatible with dplyr::group_by and summarize
+This function is designed to be compatible for use within
+ dplyr::group_by and dplyr::summarize
 }

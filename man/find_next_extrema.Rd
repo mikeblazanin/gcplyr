@@ -7,7 +7,7 @@
 find_next_extrema(
   cnt_pos,
   y,
-  width_limit = NULL,
+  width_limit_n = NULL,
   height_limit = NULL,
   looking_for = c("minima", "maxima")
 )
@@ -17,7 +17,7 @@ find_next_extrema(
 
 \item{y}{Numeric vector of y values in which to identify local extrema}
 
-\item{width_limit}{Width of the window (in number of \code{y} values) used to
+\item{width_limit_n}{Width of the window (in number of \code{y} values) used to
 search for local extrema. A narrower width will me more
 sensitive to narrow local maxima/minima, while a wider
 width will be less sensitive to local maxima/minima.}

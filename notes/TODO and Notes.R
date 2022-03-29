@@ -18,6 +18,8 @@
 #       find_next_extrema
 #       find_local_extrema
 #     FEATURES:
+#       in find_local_extrema add a width_limit arg that can be specified
+#            in units of x
 #       vignette section on multiple plates
 #       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use

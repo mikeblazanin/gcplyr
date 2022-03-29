@@ -2175,8 +2175,8 @@ first_peak <- function(y, x = NULL, return = "index", width_limit_n = NULL, ...)
 #' @param subset A vector of Boolean values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
-#'               If returning index, index will be for the whole vector and
-#'               not the subset of the vector
+#'               If \code{return = "index"}, index will be for the whole 
+#'               vector and not the subset of the vector
 #'               
 #' @details 
 #' This function is designed to be compatible for use within

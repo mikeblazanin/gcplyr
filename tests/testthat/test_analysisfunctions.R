@@ -24,7 +24,7 @@ test_that("first_peak matches find_local_extrema results", {
     first_peak(y = (20 - abs(12 - 1:20))),
     find_local_extrema(y = (20 - abs(12 - 1:20)),
                        return_minima = FALSE,
-                       width_limit = 3))
+                       width_limit_n = 3))
   expect_equal(
     first_peak(y = (20 - abs(12 - 1:20)), return = "y"), 20)
   expect_equal(

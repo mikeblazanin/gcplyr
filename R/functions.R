@@ -1806,9 +1806,9 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #' 
 #' @param cnt_pos Current position index to start search from
 #' @param y Numeric vector of y values in which to identify local extrema
-#'          (technically optional if only using width_limit, but since
+#'          (technically optional if only using width_limit_n, but since
 #'          find_next_extrema will always provide it's required for simplicity)
-#' @param width_limit Width of the window (in number of \code{y} values) used to
+#' @param width_limit_n Width of the window (in number of \code{y} values) used to
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to narrow local maxima/minima, while a wider
 #'                    width will be less sensitive to local maxima/minima.
@@ -1823,18 +1823,18 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #'         next window to use
 #'           
 get_window_limits <- function(cnt_pos, y,
-                              width_limit = NULL,
+                              width_limit_n = NULL,
                               height_limit = NULL) {
   #Check inputs
-  if (is.null(width_limit) & is.null(height_limit)) {
-    stop("Either width_limit or height_limit must be provided")
+  if (is.null(width_limit_n) & is.null(height_limit)) {
+    stop("Either width_limit_n or height_limit must be provided")
   }
   
   #Define window limits
   #Define window start candidates
   window_start <- c(NA, NA)
-  if (!is.null(width_limit)) { #using width limit
-    window_start[1] <- max(c(1, cnt_pos-floor(width_limit/2)))
+  if (!is.null(width_limit_n)) { #using width limit
+    window_start[1] <- max(c(1, cnt_pos-floor(width_limit_n/2)))
   }
   if (!is.null(height_limit)) { #using height limit
     #For startpoint height, we want the earliest point that is
@@ -1854,8 +1854,8 @@ get_window_limits <- function(cnt_pos, y,
   
   #Define window end candidates
   window_end <- c(NA, NA)
-  if (!is.null(width_limit)) { #using width limit
-    window_end[1] <- min(c(length(y), cnt_pos+floor(width_limit/2)))
+  if (!is.null(width_limit_n)) { #using width limit
+    window_end[1] <- min(c(length(y), cnt_pos+floor(width_limit_n/2)))
   }
   if (!is.null(height_limit)) { #using height limit
     #For endpoint height, we want the latest point that is
@@ -1879,7 +1879,7 @@ get_window_limits <- function(cnt_pos, y,
 #' Find the next extrema from the current position (for internal use only)
 #' 
 #' @param cnt_pos Current position index to start search from
-#' @param width_limit Width of the window (in number of \code{y} values) used to
+#' @param width_limit_n Width of the window (in number of \code{y} values) used to
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to narrow local maxima/minima, while a wider
 #'                    width will be less sensitive to local maxima/minima.
@@ -1896,7 +1896,7 @@ get_window_limits <- function(cnt_pos, y,
 #'         looking_for
 #'
 find_next_extrema <- function(cnt_pos, y,
-                              width_limit = NULL,
+                              width_limit_n = NULL,
                               height_limit = NULL,
                               looking_for = c("minima", "maxima")) {
   if (cnt_pos == length(y)) {best_pos <- cnt_pos-1
@@ -1912,7 +1912,7 @@ find_next_extrema <- function(cnt_pos, y,
       best_pos <- cnt_pos
       #Get next window limits
       window_lims <- get_window_limits(cnt_pos = cnt_pos,
-                                       width_limit = width_limit,
+                                       width_limit_n = width_limit_n,
                                        height_limit = height_limit,
                                        y = y)
       #Make sure we're not going backwards
@@ -1930,7 +1930,7 @@ find_next_extrema <- function(cnt_pos, y,
       best_pos <- cnt_pos
       #Get next window limits
       window_lims <- get_window_limits(cnt_pos = cnt_pos,
-                                       width_limit = width_limit,
+                                       width_limit_n = width_limit_n,
                                        height_limit = height_limit,
                                        y = y)
       #Make sure we're not going backwards
@@ -1951,14 +1951,15 @@ find_next_extrema <- function(cnt_pos, y,
 #' This function takes a vector of \code{y} values and returns a vector
 #' of the indices of all local value extrema (by default, this includes both
 #' local minima and local maxima)
-#' Either width_limit or height_limit must be provided
+#' Either width_limit_n or height_limit must be provided
 #' 
 #' @details 
-#' If both width_limit and height_limit are provided, steps are limited
+#' If both width_limit_n and height_limit are provided, steps are limited
 #' conservatively (a single step must meet both criteria)
 #' 
-#' This function is designed to be compatible with dplyr::group_by and summarize
-#' 
+#' This function is designed to be compatible for use within
+#'  dplyr::group_by and dplyr::summarize
+#'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
 #' @param return One of c("index", "x", "y"), determining whether the function
@@ -1966,7 +1967,10 @@ find_next_extrema <- function(cnt_pos, y,
 #'               identified extremas
 #' @param return_maxima,return_minima Boolean for which classes of local extrema
 #'                                    to return
-#' @param width_limit Width of the window (in number of \code{y} values) used to
+#' @param return_endpoints Should the first and last values in \code{y}
+#'                         be included if they are in the returned 
+#'                         vector of extrema?
+#' @param width_limit_n Width of the window (in number of \code{y} values) used to
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to narrow local maxima/minima, while a wider
 #'                    width will be less sensitive to local maxima/minima.
@@ -1976,8 +1980,6 @@ find_next_extrema <- function(cnt_pos, y,
 #'                     valley deeper than height_limit. This also limits
 #'                     approaches to true extrema, so if it is set too small
 #'                     the function may return non-extrema
-#' @param return_endpoints Should the first and last values in \code{y}
-#'                         be removed from the returned vector of extrema
 #' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @return If \code{return = "index"}, a vector of indices of 
 #'           \code{y} corresponding to local extrema in the data
@@ -1992,21 +1994,21 @@ find_next_extrema <- function(cnt_pos, y,
 find_local_extrema <- function(y, x = NULL, return = "index",
                                return_maxima = TRUE,
                                return_minima = TRUE,
-                               width_limit = NULL,
-                               height_limit = NULL,
                                return_endpoints = FALSE,
+                               width_limit_n = NULL,
+                               height_limit = NULL,
                                na.rm = TRUE) {
   #Check inputs
   if (!return_maxima & !return_minima) {
     stop("Both return_maxima and return_minima are FALSE, at least one must be TRUE")
   }
-  if (is.null(width_limit) & is.null(height_limit)) {
-    stop("Either width_limit or height_limit must be provided")
+  if (is.null(width_limit_n) & is.null(height_limit)) {
+    stop("Either width_limit_n or height_limit must be provided")
   }
-  if (!is.null(width_limit)) {
-    if (width_limit%%2 == 0) {
-      warning("width_limit must be odd, will use ", width_limit-1, " as width_limit")
-      width_limit <- width_limit - 1
+  if (!is.null(width_limit_n)) {
+    if (width_limit_n%%2 == 0) {
+      warning("width_limit_n must be odd, will use ", width_limit_n-1, " as width_limit_n")
+      width_limit_n <- width_limit_n - 1
     }
   }
   if (!return %in% c("x", "y", "index")) {
@@ -2031,12 +2033,12 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   cnt_pos <- 1
   ##Find first maxima
   maxima_list <- c(find_next_extrema(cnt_pos, y,
-                                     width_limit = width_limit,
+                                     width_limit_n = width_limit_n,
                                      height_limit = height_limit,
                                      looking_for = "maxima"))
   ##Find first minima
   minima_list <- c(find_next_extrema(cnt_pos, y,
-                                     width_limit = width_limit,
+                                     width_limit_n = width_limit_n,
                                      height_limit = height_limit,
                                      looking_for = "minima"))
   
@@ -2055,14 +2057,14 @@ find_local_extrema <- function(y, x = NULL, return = "index",
     if (cnt_pos %in% minima_list) {
       maxima_list <- c(maxima_list,
                        find_next_extrema(cnt_pos, y,
-                                         width_limit = width_limit,
+                                         width_limit_n = width_limit_n,
                                          height_limit = height_limit,
                                          looking_for = "maxima"))
       #we're looking for a minima next
     } else if (cnt_pos %in% maxima_list) {
       minima_list <- c(minima_list,
                        find_next_extrema(cnt_pos, y,
-                                         width_limit = width_limit,
+                                         width_limit_n = width_limit_n,
                                          height_limit = height_limit,
                                          looking_for = "minima"))
     }
@@ -2106,14 +2108,12 @@ find_local_extrema <- function(y, x = NULL, return = "index",
 #' (by default) of the first local maxima. It serves as a wrapper function
 #' for \code{find_local_extrema}
 #' 
-#' This function is designed to be compatible with dplyr::group_by and summarize
-#' 
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
 #'               first peak in y values
-#' @param width_limit Width of the window (in number of \code{y}) used to
+#' @param width_limit_n Width of the window (in number of \code{y}) used to
 #'                    search for local extrema. A narrower width will me more
 #'                    sensitive to local maxima/minima, while a wider
 #'                    width will be less sensitive to local maxima/minima.
@@ -2122,12 +2122,13 @@ find_local_extrema <- function(y, x = NULL, return = "index",
 #' @param ... Other parameters to pass to \code{find_local_extrema}
 #' 
 #' @details 
-#' This function is designed to be compatible with dplyr::group_by and summarize
+#' This function is designed to be compatible for use within
+#'  dplyr::group_by and dplyr::summarize
 #'                    
 #' @export      
-first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
-  if(is.null(width_limit)) {
-    width_limit <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
+first_peak <- function(y, x = NULL, return = "index", width_limit_n = NULL, ...) {
+  if(is.null(width_limit_n)) {
+    width_limit_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
   
   if (!return %in% c("x", "y", "index")) {
@@ -2147,7 +2148,7 @@ first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
   out <- find_local_extrema(y = y,
                             return_maxima = TRUE,
                             return_minima = FALSE,
-                            width_limit = width_limit,
+                            width_limit_n = width_limit_n,
                             ...)
   if (return == "index") {
     return(out[1])
@@ -2164,8 +2165,6 @@ first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
 #' returns the index (by default) of the first point that falls
 #' below some threshold y value.
 #' 
-#' This function is designed to be compatible with dplyr::group_by and summarize
-#' 
 #' @param y Numeric vector of y values in which to identify first point
 #'          below some threshold
 #' @param x Optional numeric vector of corresponding x values
@@ -2180,7 +2179,8 @@ first_peak <- function(y, x = NULL, return = "index", width_limit = NULL, ...) {
 #'               not the subset of the vector
 #'               
 #' @details 
-#' This function is designed to be compatible with dplyr::group_by and summarize
+#' This function is designed to be compatible for use within
+#'  dplyr::group_by and dplyr::summarize
 #'                    
 #' @export    
 first_below <- function(y, x = NULL, threshold, 
@@ -2237,11 +2237,16 @@ first_below <- function(y, x = NULL, threshold,
 #' @param x Numeric vector of x values
 #' @param y Numeric vector of y values
 #' @param xlim Vector, of length 2, delimiting the x range over which the
-#'             area under the curve should be calculated
+#'             area under the curve should be calculated (where NA can be
+#'             provided for the area to be calculated from the start or to
+#'             the end of the data)
 #' @param na.rm a logical indicating whether missing values should be removed
 #' 
 #' @details 
-#' This function is designed to be compatible with dplyr::group_by and summarize
+#' This function is designed to be compatible for use within
+#'  dplyr::group_by and dplyr::summarize
+#'
+#' @return A scalar for the total area under the curve
 #'             
 #' @export
 auc <- function(x, y, xlim = NULL, na.rm = TRUE) {

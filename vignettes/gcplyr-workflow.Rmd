@@ -12,7 +12,7 @@ output:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{gcplyr-workflow}
+  %\VignetteIndexEntry{An introduction to using gcplyr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -1108,7 +1108,7 @@ Additionally, note that with `find_local_extrema`, users must specify at least o
 
 ## Threshold identification
 
-
+[This section to-be-written]
 
 ## Area under the curve
 

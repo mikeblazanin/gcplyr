@@ -1970,19 +1970,28 @@ find_next_extrema <- function(cnt_pos, y,
 #' @param return_endpoints Should the first and last values in \code{y}
 #'                         be included if they are in the returned 
 #'                         vector of extrema?
-#' @param width_limit_n Width of the window (in number of \code{y} values) used to
-#'                    search for local extrema. A narrower width will me more
-#'                    sensitive to narrow local maxima/minima, while a wider
-#'                    width will be less sensitive to local maxima/minima.
+#' @param width_limit_n The maximum number of data points a single 
+#'                      extrema-search step is allowed to take. For example,
+#'                      when maxima-finding, the function will not pass
+#'                      a valley consisting of more than \code{width_limit_n}
+#'                      data points.
+#'                      
+#'                      A smaller \code{width_limit_n} will me more sensitive 
+#'                      to narrow local maxima/minima, while a larger 
+#'                      \code{width_limit_n} will be less sensitive to 
+#'                      narrow local maxima/minima.
 #' @param height_limit The maximum change in \code{y} a single extrema-search
-#'                     step is allowed to take.
-#'                     For example, a maxima-finding function will not pass a
-#'                     valley deeper than height_limit. This also limits
-#'                     approaches to true extrema, so if it is set too small
-#'                     the function may return non-extrema
+#'                     step is allowed to take.  For example, when 
+#'                     maxima-finding, the function will not pass a
+#'                     valley deeper than \code{height_limit}.
+#'                     
+#'                     A smaller \code{height_limit} will be more sensitive 
+#'                     to shallow local maxima/minima, while a larger 
+#'                     \code{height_limit} will be less sensitive to 
+#'                     shallow maxima/minima.
 #' @param na.rm Boolean whether NA's should be removed before analyzing
-#' @return If \code{return = "index"}, a vector of indices of 
-#'           \code{y} corresponding to local extrema in the data
+#' @return If \code{return = "index"}, a vector of indices corresponding 
+#'           to local extrema in the data
 #'           
 #'         If \code{return = "x"}, a vector of x values corresponding
 #'           to local extrema in the data

@@ -1038,15 +1038,15 @@ points(x = example_data_and_designs_sum$first_peak_x[
   pch = 16, cex = 2)
 ```
 
-Here we can see that `first_peak` has found *a* peak, but perhaps not the large one we're primarily interested in. If we want `first_peak` to be less sensitive to local peaks, we can increase the `width_limit` argument (which defaults to 20% of the length of `y`, in this case `= 19`).
+Here we can see that `first_peak` has found *a* peak, but perhaps not the large one we're primarily interested in. If we want `first_peak` to be less sensitive to local peaks, we can increase the `width_limit_n` argument (which defaults to 20% of the length of `y`, in this case `= 19`).
 
 ```{r}
 example_data_and_designs_sum <-
   summarize(example_data_and_designs_grouped,
             first_peak_x = first_peak(deriv_hr, x = Time, return = "x",
-                                      width_limit = 39),
+                                      width_limit_n = 39),
             first_peak_y = first_peak(deriv_hr, return = "y",
-                                      width_limit = 39))
+                                      width_limit_n = 39))
 head(example_data_and_designs_sum)
 plot(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"],
@@ -1096,15 +1096,15 @@ example_data_and_designs_sum <-
             first_peak_x = find_local_extrema(
               y = deriv_hr, x = Time, return = "x",
               return_maxima = TRUE, return_minima = FALSE,
-              return_endpoints = TRUE, width_limit = 39)[1],
+              return_endpoints = TRUE, width_limit_n = 39)[1],
             first_peak_y = find_local_extrema(
               y = deriv_hr, return = "y",
               return_maxima = TRUE, return_minima = FALSE,
-              return_endpoints = TRUE, width_limit = 39)[1])
+              return_endpoints = TRUE, width_limit_n = 39)[1])
 head(example_data_and_designs_sum)
 ```
 
-Additionally, note that with `find_local_extrema`, users must specify at least one of the tuning parameters: `width_limit` or `height_limit`. These parameters control how sensitive the function is to smaller local peaks and valleys. `width_limit` is the number of data points wide the algorithm will search at each step, meaning that a smaller `width_limit` will be more sensitive to narrow peaks and valleys. `height_limit` (in units of `y`) limits the depth of the peaks and valleys the algorithm will search over at each step, meaning that a smaller `height_limit` will be more sensitive to shallow peaks and valleys.
+Additionally, note that with `find_local_extrema`, users must specify at least one of the tuning parameters: `width_limit_n` or `height_limit`. These parameters control how sensitive the function is to smaller local peaks and valleys. `width_limit_n` is the number of data points wide the algorithm will search at each step, meaning that a smaller `width_limit_n` will be more sensitive to narrow peaks and valleys. `height_limit` (in units of `y`) limits the depth of the peaks and valleys the algorithm will search over at each step, meaning that a smaller `height_limit` will be more sensitive to shallow peaks and valleys.
 
 ## Threshold identification
 

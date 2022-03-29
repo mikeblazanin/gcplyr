@@ -1094,7 +1094,7 @@ For instance, here's an example where we've used `find_local_extrema` to identif
 example_data_and_designs_sum <-
   summarize(example_data_and_designs_grouped,
             first_peak_x = find_local_extrema(
-              y = deriv_hr, return = "x",
+              y = deriv_hr, x = Time, return = "x",
               return_maxima = TRUE, return_minima = FALSE,
               return_endpoints = TRUE, width_limit = 39)[1],
             first_peak_y = find_local_extrema(

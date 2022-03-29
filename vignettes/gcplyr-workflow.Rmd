@@ -1,5 +1,5 @@
 ---
-title: "gcplyr-workflow"
+title: "An introduction to using gcplyr"
 author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:
@@ -118,9 +118,9 @@ If your data is wide-shaped, you'll use `read_wides` and you can skip down to th
 In the unlikely event your data is already tidy, you can simply read it using the built-in R function `read.table`.
 
 ## Importing block-shaped data
-To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames, with each `data.frame` corresponding to a single block. 
+To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames (with each `data.frame` corresponding to a single block) that you can save in R. 
 
-### The simplest example
+### A basic example
 
 Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames`.
 
@@ -159,7 +159,7 @@ print_df(read.csv(temp_filenames[10], header = FALSE,
 
 This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look small here because R doesn't know that the first row is a header yet.
 
-If we want to read these files into R, we simply provide `read_blocks` with the vector of file names.
+If we want to read these files into R, we simply provide `read_blocks` with the vector of file names, and save the result to some R object (here, `imported_blockdata`).
 
 ```{r}
 imported_blockdata <- read_blocks(files = temp_filenames)
@@ -276,9 +276,9 @@ imported_blockdata <- read_blocks(
 Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Skip the next section, **Importing wide-shaped data**, and instead jump to the **Transforming data** section.
 
 ## Importing wide-shaped data
-To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames). 
+To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-### The simplest example
+### A basic example
 Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. when working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file name(s) in R, here we've stored the file name in `temp_filename`. 
 
 ```{r}
@@ -300,7 +300,7 @@ print_df(head(read.csv(temp_filename, header = FALSE),
 
 This would correspond to all the reads for a single plate taken across all timepoints. For instance, we can see that the first column contains the timepoint information, and each subsequent column corresponds to a well in the plate.
 
-If we want to read these files into R, we simply provide `read_wides` with the file name.
+If we want to read these files into R, we simply provide `read_wides` with the file name, and save the result to some R object (here, `imported_widedata`).
 
 ```{r}
 #Now let's use read_wides to import our wide-shaped data
@@ -1086,13 +1086,43 @@ In order to identify these kinds of extrema, we can use the more-general functio
 
 Just like `first_peak`, `find_local_extrema` only requires a vector of y data in which to find the local extrema, and will return the index of the extrema *within* the current group. By altering the `return` argument to `return = "x"` or `return = "y"`, find_local_extrema will return x and y values rather than indices.
 
-Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`.
+Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`. However, `find_local_extrema` will always return a vector of all the extrema found, so users should use brackets to specify which one they want.
 
-Additionally, with `find_local_extrema`, users must specify at least one of the tuning parameters: `width_limit` or `height_limit`. These parameters control how sensitive the function is to smaller local peaks and valleys. `width_limit` is the number of data points wide the algorithm will search at each step, meaning that a smaller `width_limit` will be more sensitive to narrow peaks and valleys. `height_limit` (in units of `y`) limits the depth of the peaks and valleys the algorithm will search over at each step, meaning that a smaller `height_limit` will be more sensitive to shallow peaks and valleys.
+For instance, here's an example where we've used `find_local_extrema` to identify the first peak in the data *that includes endpoints*:
 
+```{r}
+example_data_and_designs_sum <-
+  summarize(example_data_and_designs_grouped,
+            first_peak_x = find_local_extrema(
+              y = deriv_hr, return = "x",
+              return_maxima = TRUE, return_minima = FALSE,
+              return_endpoints = TRUE, width_limit = 39)[1],
+            first_peak_y = find_local_extrema(
+              y = deriv_hr, return = "y",
+              return_maxima = TRUE, return_minima = FALSE,
+              return_endpoints = TRUE, width_limit = 39)[1])
+head(example_data_and_designs_sum)
+```
+
+Additionally, note that with `find_local_extrema`, users must specify at least one of the tuning parameters: `width_limit` or `height_limit`. These parameters control how sensitive the function is to smaller local peaks and valleys. `width_limit` is the number of data points wide the algorithm will search at each step, meaning that a smaller `width_limit` will be more sensitive to narrow peaks and valleys. `height_limit` (in units of `y`) limits the depth of the peaks and valleys the algorithm will search over at each step, meaning that a smaller `height_limit` will be more sensitive to shallow peaks and valleys.
 
 ## Threshold identification
 
+
+
 ## Area under the curve
 
+One other common metric of growth curves is the total area under the curve. `gcplyr` has an `auc` function to easily calculate this area. Just like `first_peak` and `find_local_extrema`, it needs to be used inside of a `data.frame` that has been grouped and is being summarized using `dplyr`.
+
+To use `auc`, simply specify the x and y data you are interested in calculating the area-under-the-curve of. Note that you can also specify a subset of the x-range to calculate the area of, in cases where you do not want the area under the curve from the beginning to the end of your time series.
+
+Here, we calculate the area-under-the-curve of the density data, as well as the area-under-the-curve beginning after 3 hours (10800 seconds)
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(example_data_and_designs_grouped,
+            auc = auc(x = Time, y = smoothed),
+            auc_after3hrs = auc(x = Time, y = smoothed, xlim = c(10800, NA)))
+head(example_data_and_designs_sum)
+```
 

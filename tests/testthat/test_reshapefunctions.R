@@ -170,3 +170,65 @@ test_that("Merge function collapses lists of dfs correctly", {
                           fake_treat = c(LETTERS, rep(NA, 74),
                                          letters, rep(NA, 74))))
 })
+
+test_that("paste_blocks works as expected", {
+  #With no metadata
+  example_dfs_list <- rep(list(NA), 100)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
+                                                  nrow = 8, byrow = T))
+  }
+  
+  expected <- data.frame(matrix(nrow = 8, ncol = 12))
+  colnames(expected) <- colnames(example_dfs_list[[1]])
+  row.names(expected) <- row.names(example_dfs_list[[1]])
+  for (i in 1:nrow(expected)) {
+    for (j in 1:ncol(expected)) {
+      expected[i, j] <- example_dfs_list[[1]][i, j]
+      for (k in 2:length(example_dfs_list)) {
+        expected[i, j] <- paste(expected[i, j], example_dfs_list[[k]][i, j],
+                                sep = "_")
+      }
+    }
+  }
+  
+  expect_equal(
+    paste_blocks(example_dfs_list, nested_metadata = FALSE),
+    expected)
+  
+  #With metadata
+  example_dfs_list2 <- rep(list(NA), 10)
+  for (i in 1:length(example_dfs_list2)) {
+    example_dfs_list2[[i]] <- 
+      list("data" = as.data.frame(matrix(as.character(i*(1:96)), 
+                                         nrow = 8, byrow = T)),
+           "metadata" = c("temp1" = i*15, "temp2" = i*30))
+  }
+  expected2 <- list(list(data = data.frame(matrix(nrow = 8, ncol = 12)),
+                         metadata = c("temp1" = NA, "temp2" = NA)))
+  colnames(expected2[[1]]$data) <- colnames(example_dfs_list2[[1]]$data)
+  row.names(expected2[[1]]$data) <- row.names(example_dfs_list2[[1]]$data)
+  for (i in 1:nrow(expected2[[1]]$data)) {
+    for (j in 1:ncol(expected2[[1]]$data)) {
+      expected2[[1]]$data[i, j] <- example_dfs_list2[[1]]$data[i, j]
+      for (k in 2:length(example_dfs_list2)) {
+        expected2[[1]]$data[i, j] <- 
+          paste(expected2[[1]]$data[i, j], example_dfs_list2[[k]]$data[i, j],
+                sep = "_")
+      }
+    }
+  }
+  for(i in 1:length(expected2[[1]]$metadata)) {
+    expected2[[1]]$metadata[i] <- example_dfs_list2[[1]]$metadata[i]
+    for (j in 2:length(example_dfs_list2)) {
+      expected2[[1]]$metadata[i] <- 
+        paste(expected2[[1]]$metadata[i], example_dfs_list2[[j]]$metadata[i],
+              sep = "_")
+    }
+  }
+  
+  #read blocks with metadata in row2 col 3, row 3 col 6
+  expect_equal(
+    paste_blocks(example_dfs_list2, nested_metadata = TRUE),
+    expected2)
+})

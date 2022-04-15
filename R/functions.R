@@ -281,6 +281,39 @@ infer_names <- function(df,
 #'                        and numbers for rows. 
 #'                        If \code{wellnames_Excel} is FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
+#'
+#' @details 
+#'  For metadata, \code{read_blocks} can handle an arbitrary number of additional
+#'  pieces of information to extract from each blockcurve file as metadata.
+#'  These pieces of information are specified as a list of (named) vectors
+#'  where each vector is the c(row, column) where the information is to be
+#'  pulled from in the input files.
+#' 
+#'  This metadata is returned as the second list element of each
+#'  blockcurve, e.g.:
+#'  
+#'   [[1]] [1] "data" #1 [2] "metadata"  [2][1] name #1
+#'   
+#'   [2][2] date-time #1
+#'   
+#'   [2][3] temp #1
+#'   
+#'   [[2]] [1] "data" #2 [2] "metadata"  [2][1] name #2
+#'   
+#'   [2][2] date-time #2
+#'   
+#'   [2][3] temp #2
+#'   
+#'   ...
+#' 
+#'  Calling \code{uninterleave} on the output of read_blocks works on block data
+#'  and the associated metadata because uninterleave operates on the highest 
+#'  level entries of the list (the [[1]] [[2]] level items), 
+#'  leaving the meta-data associated with the block data
+#' 
+#'  \code{trans_block_to_wide} integrates this metadata into the
+#'  wide-shaped dataframe it produces
+#' 
 #' @return A list where each entry is a list containing the block measures data
 #'         followed by the block_names (or filenames, if block_names is not 
 #'         provided) and any specified metadata.
@@ -293,33 +326,6 @@ read_blocks <- function(files, extension = NULL,
                         block_names = NULL,
                         header = NA, sider = NA,
                         wellnames_Excel = TRUE) {
-  #         Note that the ... is just so that this function can be called
-  #          by other functions with generic passing of arguments
-  #         TODO: check if this is actually necessary
-  #         
-  #         For metadata, read_blocks  can handle an arbitrary number of additional
-  #         pieces of information to extract from each blockcurve file as metadata
-  #         These pieces of information are specified as a list of (named) vectors
-  #         where each vector is the c(row, column) where the information is to be
-  #         pulled from in the input files.
-  #         
-  #         This metadata is returned as the second list element of each 
-  #         blockcurve, e.g.:
-  #         [[1]] [1] "data" #1 [2] "metadata"  [2][1] name #1
-  #                                             [2][2] date-time #1
-  #                                             [2][3] temp #1
-  #         [[2]] [1] "data" #2 [2] "metadata"  [2][1] name #2
-  #                                             [2][2] date-time #2
-  #                                             [2][3] temp #2
-  #         ...
-  #         
-  #         Calling uninterleave on such an outputted list will still work
-  #         because it will operate on the highest level entries of the list
-  #         (the [[1]] [[2]] level items), leaving the meta-data intact
-  #         
-  #         Widen_blocks integrates this metadata into the dataframe during
-  #         the pivot_wider process
-
   if (is.null(startrow)) {
     startrow <- rep(NA, length(files))
   } else {
@@ -1070,7 +1076,7 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #' 
 #' Takes blocks and returns them in a wide format
 #' 
-#' @param blocks Blockmeasures, either a single data.frame or a list of
+#' @param blocks Blocks, either a single data.frame or a list of
 #'                      data.frames
 #' @param wellnames_sep String to use as separator for well names between 
 #'                      rowname and column name
@@ -1400,8 +1406,8 @@ trans_tidy_to_wide <- function() {
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 
 #' This function is essentially a wrapper for dplyr::full_join
-#' The most typical use of this function is to merge \code{tidydesign} 
-#' with \code{tidymeasures} or to use the collapse functionality of this 
+#' The most typical use of this function is to merge designs 
+#' with measures data, or to use the collapse functionality of this 
 #' function to merge a list of dataframes into a single dataframe 
 #'  
 #' @param x First data.frame to be joined

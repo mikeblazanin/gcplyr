@@ -757,7 +757,7 @@ To use `smooth_data`, pass your x and y values, your method of choice, and any a
 Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y, whose unique values denote the subset groups. (Note: if you're using an approach like `dplyr::mutate`, `smooth_data` will work within `mutate` on your groups with no need for the `subset_by` argument)
 
 **A note on tuning parameters:** All four smoothing algorithms require a tuning parameter that controls how "smoothed" the data are.
-* For `moving-average` and `moving-median`, this is the `window_width` parameter, which controls how wide the moving windows used to calculate the median and average is. 
+* For `moving-average` and `moving-median`, this is the `window_width_n` parameter, which controls how wide the moving windows used to calculate the median and average is. 
 * For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. 
 * For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument, and altered tuning parameters (e.g. `k`, `sp`, `bs`) would be included in `formula`.
 
@@ -769,7 +769,7 @@ example_data_and_designs$smoothed <-
               y = example_data_and_designs$Measurements,
               method = "moving-average",
               subset_by = example_data_and_designs$Well,
-              window_width = 5)
+              window_width_n = 5)
 
 #What does the smoothed data look like compared to the noisy original?
 plot(example_data_and_designs$Time[
@@ -791,7 +791,7 @@ example_data_and_designs$smoothed <-
               y = example_data_and_designs$Measurements,
               method = "moving-median",
               subset_by = example_data_and_designs$Well,
-              window_width = 3)
+              window_width_n = 3)
 
 #What does the smoothed data look like compared to the noisy original?
 plot(example_data_and_designs$Time[

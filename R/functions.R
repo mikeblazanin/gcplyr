@@ -1490,7 +1490,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
 #'            \code{moving_average}, or \code{moving_median}.
 #'            
-#'            For \code{moving_average} and \code{moving_median}, window_width
+#'            For \code{moving_average} and \code{moving_median}, window_width_n
 #'            is required. For \code{loess} and \code{gam}, see details.
 #'
 #' @details For smoothing using \code{loess} or \code{gam} that depends on 
@@ -1619,14 +1619,14 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
 #' @param data Dataframe containing variables in \code{formula}
-#' @param window_width Number of data points wide the moving average window is
+#' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_average <- function(formula, data, window_width) {
+moving_average <- function(formula, data, window_width_n) {
   #Check window width
-  if(window_width %% 2 == 0) {stop("window_width must be an odd number")}
+  if(window_width_n %% 2 == 0) {stop("window_width_n must be an odd number")}
   
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}
@@ -1652,12 +1652,12 @@ moving_average <- function(formula, data, window_width) {
   }
   
   #Calculate moving average
-  window_radius <- (window_width - 1)/2
+  window_radius <- (window_width_n - 1)/2
   results <- c(rep(NA, window_radius),
                rep(0, (nrow(data)-2*window_radius)),
                rep(NA, window_radius))
   
-  for (i in 1:window_width) {
+  for (i in 1:window_width_n) {
     offset <- i - 1 - window_radius
     
     results[(1 + window_radius):(length(results) - window_radius)] <-
@@ -1666,7 +1666,7 @@ moving_average <- function(formula, data, window_width) {
              (length(results) - window_radius + offset), 
            response_var]
   }
-  results <- results/window_width
+  results <- results/window_width_n
 
   return(results)
 }
@@ -1678,14 +1678,14 @@ moving_average <- function(formula, data, window_width) {
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
 #' @param data Dataframe containing variables in \code{formula}
-#' @param window_width Number of data points wide the moving average window is
+#' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_median <- function(formula, data, window_width) {
+moving_median <- function(formula, data, window_width_n) {
   #Check window width
-  if(window_width %% 2 == 0) {stop("window_width must be an odd number")}
+  if(window_width_n %% 2 == 0) {stop("window_width_n must be an odd number")}
   
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}
@@ -1711,7 +1711,7 @@ moving_median <- function(formula, data, window_width) {
   }
   
   #Calculate moving average
-  window_radius <- (window_width - 1)/2
+  window_radius <- (window_width_n - 1)/2
   results <- c(rep(NA, window_radius),
                rep(0, (nrow(data)-2*window_radius)),
                rep(NA, window_radius))

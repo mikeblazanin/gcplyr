@@ -8,9 +8,9 @@
 #     DOCS:
 #       how to remove empty wells via complete.cases (or some tidyverse
 #        equivalent)
+#       converting dates with lubridate
 #       Pulling in other data like EOP & merging it
 #     FIXES:
-#       figure out why non-exported functions are being exported
 #       fix reordering issues in smoothing
 #       There's still a use of t() in make_tidydesign
 #       Allow multiple startrow/startcol, etc from a single file in
@@ -18,7 +18,6 @@
 #       Allow passing of any args via ... in read_wides and read_blocks
 #        (and change read.csv to read.table to facilitate)
 #       Check in smooth_data for x and y to be numeric or coercable
-#       Change arg in moving_avg and moving_med to window_width_n
 #     TESTS:
 #       read_blocks and read_wides: change to use temp folder for files
 #       smooth_data: algorithms other than moving-average

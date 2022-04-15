@@ -1476,6 +1476,111 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   return(output)
 }
 
+#' Paste a list of blocks into a single block
+#' 
+#' This function uses \code{paste} to concatenate the same-location entries
+#' of a list of data.frames together (i.e. all the first row-first column
+#' values are pasted together, all the second row-first column values are
+#' pasted together, etc.)
+#' 
+#' @param blocks Blocks, either a single data.frame or a list of
+#'                      data.frames
+#' @param sep String to use as separator for output pasted values
+#' @param nested_metadata A Boolean indicating the existence of nested metadata
+#'                        in the \code{blockmeasures} list, e.g. as is typically
+#'                        output by \code{read_blocks}. If NULL, will attempt to
+#'                        infer existence of nested metadata
+#' 
+#' @return If nested_metadata = TRUE (or is inferred to be TRUE), a list
+#'         containing a list containing: 1. a \code{data.frame} with the
+#'         pasted data values from \code{blocks}, and 2. a vector with the 
+#'         pasted metadata values from \code{blocks}
+#'         
+#'         If nested_metadata = FALSE (or is inferred to be FALSE), a list
+#'         containing \code{data.frame}'s with the pasted values from
+#'         \code{blocks}
+#' 
+#' @export
+paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
+  #Infer nestedness if nested_metadata is set to NULL
+  if (is.null(nested_metadata)) {
+    if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
+      nested_metadata <- FALSE
+      warning("Inferring nested_metadata to be FALSE")
+    } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
+      nested_metadata <- TRUE
+      warning("Inferring nested_metadata to be TRUE")
+    } else {
+      stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
+    }
+  }
+  
+  #Check that all blocks have same dimensions
+  if (length(blocks) > 1) {
+    if (nested_metadata) { #there is nested metadata
+      if (stats::var(sapply(blocks, simplify = TRUE, 
+                            FUN = function(x) {dim(x[[1]])[1]})) != 0) {
+        stop("Not all blocks have the same number of rows of data")
+      }
+      if (stats::var(sapply(blocks, simplify = TRUE,
+                            FUN = function(x) {dim(x[[1]])[2]})) != 0) {
+        stop("Not all blocks have the same number of columns of data")
+      }
+    } else { #there is not nested metadata
+      if (stats::var(sapply(blocks, simplify = TRUE, 
+                            FUN = function(x) {dim(x)[1]})) != 0) {
+        stop("Not all blocks have the same number of rows of data")
+      }
+      if (stats::var(sapply(blocks, simplify = TRUE,
+                            FUN = function(x) {dim(x)[2]})) != 0) {
+        stop("Not all blocks have the same number of columns of data")
+      }
+    }
+  }
+  
+  if(nested_metadata) {
+    #Make empty output list
+    blocks_pasted <- 
+      list(list(data = data.frame(matrix(nrow = nrow(blocks[[1]]$data),
+                                         ncol = ncol(blocks[[1]]$data))),
+                metadata = rep(NA, length(blocks[[1]]$metadata))))
+    colnames(blocks_pasted[[1]]$data) <- colnames(blocks[[1]]$data)
+    row.names(blocks_pasted[[1]]$data) <- row.names(blocks[[1]]$data)
+    names(blocks_pasted[[1]]$metadata) <- names(blocks[[1]]$metadata)
+    
+    #Fill in values
+    for (i in 1:nrow(blocks_pasted[[1]]$data)) {
+      for (j in 1:ncol(blocks_pasted[[1]]$data)) {
+        blocks_pasted[[1]]$data[i, j] <-
+          paste(sapply(blocks, FUN = function(x) {x[[1]][i, j]}),
+                collapse = sep)
+      }
+    }
+    for (i in 1:length(blocks_pasted[[1]]$metadata)) {
+      blocks_pasted[[1]]$metadata[i] <-
+        paste(sapply(blocks, FUN = function(x) {x[[2]][i]}), collapse = sep)
+    }
+  } else { #nested_metadata = FALSE
+    #make empty output list
+    blocks_pasted <- 
+      data.frame(matrix(nrow = nrow(blocks[[1]]), ncol = ncol(blocks[[1]])))
+    colnames(blocks_pasted) <- colnames(blocks[[1]])
+    row.names(blocks_pasted) <- row.names(blocks[[1]])
+    
+    #fill in values
+    for (i in 1:nrow(blocks_pasted)) {
+      for (j in 1:ncol(blocks_pasted)) {
+        blocks_pasted[i, j] <-
+          paste(sapply(blocks, FUN = function(x) {x[i, j]}),
+                collapse = sep)
+      }
+    }
+  }
+  
+  return(blocks_pasted)
+}
+
+
 # Smoothing ----
 
 #' Smooth data

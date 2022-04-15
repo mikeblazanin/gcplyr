@@ -78,14 +78,14 @@ test_that("read_blocks reads data correctly", {
                                                   nrow = 8, byrow = T))
     
     write.csv(example_dfs_list[[i]],
-              paste("./test_blockcurves_data_csv/", 
+              paste("./test_blockcurves_data_csv/",
                     formatC(i, width = 3, flag = "0"), ".csv", sep = ""),
               row.names = TRUE)
-    write.xlsx(example_dfs_list[[i]], 
-               file = paste("./test_blockcurves_data_xlsx/", 
-                            formatC(i, width = 3, flag = "0"), 
+    write.xlsx(example_dfs_list[[i]],
+               file = paste("./test_blockcurves_data_xlsx/",
+                            formatC(i, width = 3, flag = "0"),
                             ".xlsx", sep = ""),
-               sheetName = "Sheet1", 
+               sheetName = "Sheet1",
                col.names = TRUE, row.names = TRUE, append = FALSE)
   }
   

@@ -10,6 +10,7 @@
 #        equivalent)
 #       converting dates with lubridate
 #       Pulling in other data like EOP & merging it
+#       section on multiple plates
 #     FIXES:
 #       fix reordering issues in smoothing
 #       There's still a use of t() in make_tidydesign
@@ -18,6 +19,9 @@
 #       Allow passing of any args via ... in read_wides and read_blocks
 #        (and change read.csv to read.table to facilitate)
 #       Check in smooth_data for x and y to be numeric or coercable
+#       Make sure error is called when moving_average and moving_median
+#        don't have a window_width_n specified?
+#       Change find_local_extrema to include endpoints by default
 #     TESTS:
 #       read_blocks and read_wides: change to use temp folder for files
 #       smooth_data: algorithms other than moving-average
@@ -25,10 +29,11 @@
 #       get_window_limits
 #       find_next_extrema
 #       find_local_extrema
+#         incl case when na.rm = TRUE and last index is a maxima
 #     FEATURES:
+#       merge_dfs more than 2 dfs
 #       in find_local_extrema add a width_limit arg that can be specified
 #            in units of x
-#       vignette section on multiple plates
 #       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use
 #            the standard pipeline
@@ -52,6 +57,7 @@
 #       add capability for make_tidydesign to accept simple wellnumbers
 #       Add functions to smooth_data: LOWESS, spline models
 #       Improve efficiency of find_local_extrema
+#       Add window_width (in units of x) to smooth_data subfunctions
 
 #General pipeline:
 # 1.  import_blockmeasures OR

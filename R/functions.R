@@ -1295,6 +1295,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #'                          in \code{widemeasures}
 #'                          
 #'                          Entries that are NA in the list will not be used
+#'                          
 #'                          If neither data_cols nor id_cols are specified,
 #'                          user must provide arguments to tidyr::pivot_longer
 #'                          via \code{...} for at least the \code{cols} argument
@@ -1579,6 +1580,8 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
   
   return(blocks_pasted)
 }
+
+
 
 
 # Smoothing ----
@@ -2143,6 +2146,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   if(any(is.na(y))) {
     if(na.rm == TRUE) {
       nas_removed_indices <- which(is.na(y))
+      y_orig <- y
       y <- y[!is.na(y)]
     } else {
       stop("Some of y are NA but na.rm = FALSE")
@@ -2218,7 +2222,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   } else if (return == "x") {
     return(x[output])
   } else if (return == "y") {
-    return(y[output])
+    return(y_orig[output])
   }
 }
 

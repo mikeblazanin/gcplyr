@@ -26,6 +26,7 @@ vector corresponding to the same-index widemeasure
 in \code{widemeasures}
 
 Entries that are NA in the list will not be used
+
 If neither data_cols nor id_cols are specified,
 user must provide arguments to tidyr::pivot_longer
 via \code{...} for at least the \code{cols} argument

@@ -83,3 +83,35 @@ A list where each entry is a list containing the block measures data
 \description{
 A function that reads block measures into the R environment
 }
+\details{
+For metadata, \code{read_blocks} can handle an arbitrary number of additional
+ pieces of information to extract from each blockcurve file as metadata.
+ These pieces of information are specified as a list of (named) vectors
+ where each vector is the c(row, column) where the information is to be
+ pulled from in the input files.
+
+ This metadata is returned as the second list element of each
+ blockcurve, e.g.:
+ 
+  [[1]] [1] "data" #1 [2] "metadata"  [2][1] name #1
+  
+  [2][2] date-time #1
+  
+  [2][3] temp #1
+  
+  [[2]] [1] "data" #2 [2] "metadata"  [2][1] name #2
+  
+  [2][2] date-time #2
+  
+  [2][3] temp #2
+  
+  ...
+
+ Calling \code{uninterleave} on the output of read_blocks works on block data
+ and the associated metadata because uninterleave operates on the highest 
+ level entries of the list (the [[1]] [[2]] level items), 
+ leaving the meta-data associated with the block data
+
+ \code{trans_block_to_wide} integrates this metadata into the
+ wide-shaped dataframe it produces
+}

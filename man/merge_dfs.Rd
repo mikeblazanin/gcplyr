@@ -43,7 +43,7 @@ Data.frame containing merged output of \code{x} and
 }
 \description{
 This function is essentially a wrapper for dplyr::full_join
-The most typical use of this function is to merge \code{tidydesign} 
-with \code{tidymeasures} or to use the collapse functionality of this 
+The most typical use of this function is to merge designs 
+with measures data, or to use the collapse functionality of this 
 function to merge a list of dataframes into a single dataframe
 }

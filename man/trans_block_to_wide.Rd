@@ -12,7 +12,7 @@ trans_block_to_wide(
 )
 }
 \arguments{
-\item{blocks}{Blockmeasures, either a single data.frame or a list of
+\item{blocks}{Blocks, either a single data.frame or a list of
 data.frames}
 
 \item{wellnames_sep}{String to use as separator for well names between 

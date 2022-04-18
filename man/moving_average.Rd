@@ -4,7 +4,7 @@
 \alias{moving_average}
 \title{Moving average smoothing}
 \usage{
-moving_average(formula, data, window_width)
+moving_average(formula, data, window_width_n)
 }
 \arguments{
 \item{formula}{Formula specifying the numeric response (density) 
@@ -12,7 +12,7 @@ and numeric predictor (time).}
 
 \item{data}{Dataframe containing variables in \code{formula}}
 
-\item{window_width}{Number of data points wide the moving average window is
+\item{window_width_n}{Number of data points wide the moving average window is
 (therefore, must be an odd number of points)}
 }
 \value{

@@ -238,9 +238,11 @@ infer_names <- function(df,
 #' @param files A vector of filepaths relative to the current working directory
 #'              where each filepath is a single plate read
 #' @param extension (optional) the extension of the files:
-#'                  "csv", "xls", or "xlsx"
+#'                  "csv", "xls", or "xlsx", or "tbl" for use of read.table
+#'                  
 #'                  If none provided, \code{read_blocks} will infer file extension from
-#'                  provided filenames
+#'                  provided filenames. When extension is not "csv", "xls", or
+#'                  "xlsx" will use \code{utils::read.table}
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the measures data are in \code{files},
 #'                 can be a vector or list the same length as \code{files}, or
@@ -281,6 +283,9 @@ infer_names <- function(df,
 #'                        and numbers for rows. 
 #'                        If \code{wellnames_Excel} is FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
+#' @param ...   Other arguments passed to \code{utils::read_csv},
+#'              \code{readxl::read_xls}, \code{readxl::read_xlsx},
+#'              or \code{utils::read.table}
 #'
 #' @details 
 #'  For metadata, \code{read_blocks} can handle an arbitrary number of additional
@@ -325,7 +330,7 @@ read_blocks <- function(files, extension = NULL,
                         sheet = NULL, metadata = NULL,
                         block_names = NULL,
                         header = NA, sider = NA,
-                        wellnames_Excel = TRUE) {
+                        wellnames_Excel = TRUE, ...) {
   if (is.null(startrow)) {
     startrow <- rep(NA, length(files))
   } else {
@@ -377,12 +382,12 @@ read_blocks <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      stop("Extension inferred but not one of: csv, xls, xlsx")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
-    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      stop("Extension provided by user must be one of: csv, xls, xlsx")
+    if(any(!extension %in% c("csv", "xls", "xlsx", "tbl"))) {
+      stop("Extension provided by user must be one of: csv, xls, xlsx, tbl")
     }
   }
   
@@ -409,21 +414,23 @@ read_blocks <- function(files, extension = NULL,
   #Import data
   for (i in 1:length(files)) {
     ##Read file & save in temp
-    if (extension[i] == "csv") {
+    if (extension[i] == "tbl") {
+      temp <- utils::read.table(files[i], ...)
+    } else if (extension[i] == "csv") {
         temp <- utils::read.csv(files[i], colClasses = "character", 
-                         header = FALSE)
+                         header = FALSE, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
             readxl::read_xls(files[i], col_names = FALSE, col_types = "text", 
-                             sheet = sheet[i])))
+                             sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
             readxl::read_xlsx(files[i], col_names = FALSE, col_types = "text", 
-                              sheet = sheet[i])))
+                              sheet = sheet[i], ...)))
     }
     
     #Infer rows, cols, rownames, colnames
@@ -511,8 +518,12 @@ read_blocks <- function(files, extension = NULL,
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a widemeasures set of data
-#' @param extension (optional) the extension of the files,"csv", "xls", or "xlsx"
-#'                  (will attempt to infer extension if none is provided)
+#' @param extension (optional) the extension of the files:
+#'                  "csv", "xls", or "xlsx", or "tbl" for use of read.table
+#'                  
+#'                  If none provided, \code{read_wides} will infer file 
+#'                  extension from provided filenames. When extension is not 
+#'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
 #'                  the data is located. If none provided assumes the entire
 #'                  file is data.
@@ -546,6 +557,10 @@ read_blocks <- function(files, extension = NULL,
 #'                             If FALSE, names will be numbered with "R" and "C"
 #'                             prefixes for row and column.
 #'                             (e.g. R4C7 is the 4th column, 7th row)
+#' @param ...   Other arguments passed to \code{utils::read_csv},
+#'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
+#'              \code{utils::read.table}
+#'              
 #' @return A dataframe containing a single widemeasures, or
 #'         A list of widemeasures named by filename
 #' 
@@ -558,7 +573,8 @@ read_wides <- function(files, extension = NULL,
                        run_names = NULL,
                        names_to_col = "file",
                        metadata = NULL, 
-                       metadata_Excel_names = TRUE) {
+                       metadata_Excel_names = TRUE,
+                       ...) {
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow
   #             if startrow not provided, header is 1
@@ -599,9 +615,12 @@ read_wides <- function(files, extension = NULL,
   if (is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
+    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+    }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
-    stopifnot(all(extension %in% c("csv", "xls", "xlsx")))
+    stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
   }
   
   #Check for names error
@@ -645,18 +664,23 @@ read_wides <- function(files, extension = NULL,
   #Import data
   for (i in 1:length(files)) {
     #Read file & save in temp
-    if (extension[i] == "csv") {
-      temp <- utils::read.csv(files[i], colClasses = "character", header = FALSE)
+    if (extension[i] == "tbl") {
+      temp <- utils::read.table(files[i], ...)
+    } else if (extension[i] == "csv") {
+      temp <- 
+        utils::read.csv(files[i], colClasses = "character", header = FALSE, ...)
     } else if (extension[i] == "xls") {
-      suppressMessages(temp <- 
-                         as.data.frame(
-                           readxl::read_xls(files[i], col_names = FALSE, 
-                                            col_types = "text", sheet = sheet[i])))
+      suppressMessages(
+        temp <- 
+          as.data.frame(
+            readxl::read_xls(files[i], col_names = FALSE, 
+                             col_types = "text", sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
-      suppressMessages(temp <- 
-                         as.data.frame(
-                           readxl::read_xlsx(files[i], col_names = FALSE, 
-                                             col_types = "text", sheet = sheet[i])))
+      suppressMessages(
+        temp <- 
+          as.data.frame(
+            readxl::read_xlsx(files[i], col_names = FALSE, 
+                              col_types = "text", sheet = sheet[i], ...)))
     }
     
     #Infer colnames/take subsets as needed

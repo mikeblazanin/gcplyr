@@ -16,8 +16,6 @@
 #       There's still a use of t() in make_tidydesign
 #       Allow multiple startrow/startcol, etc from a single file in
 #        read_blocks, read_wides
-#       Allow passing of any args via ... in read_wides and read_blocks
-#        (and change read.csv to read.table to facilitate)
 #       Check in smooth_data for x and y to be numeric or coercable
 #       Make sure error is called when moving_average and moving_median
 #        don't have a window_width_n specified?

@@ -16,7 +16,8 @@ read_blocks(
   block_names = NULL,
   header = NA,
   sider = NA,
-  wellnames_Excel = TRUE
+  wellnames_Excel = TRUE,
+  ...
 )
 }
 \arguments{
@@ -24,9 +25,11 @@ read_blocks(
 where each filepath is a single plate read}
 
 \item{extension}{(optional) the extension of the files:
-"csv", "xls", or "xlsx"
+"csv", "xls", or "xlsx", or "tbl" for use of read.table
+
 If none provided, \code{read_blocks} will infer file extension from
-provided filenames}
+provided filenames. When extension is not "csv", "xls", or
+"xlsx" will use \code{utils::read.table}}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
 the measures data are in \code{files},
@@ -74,6 +77,10 @@ will use Excel-style base-26 lettering for columns
 and numbers for rows. 
 If \code{wellnames_Excel} is FALSE, rows and columns
 will be numbered with "R" and "C" prefixes, respectively.}
+
+\item{...}{Other arguments passed to \code{utils::read_csv},
+\code{readxl::read_xls}, \code{readxl::read_xlsx},
+or \code{utils::read.table}}
 }
 \value{
 A list where each entry is a list containing the block measures data

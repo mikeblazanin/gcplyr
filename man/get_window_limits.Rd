@@ -4,7 +4,14 @@
 \alias{get_window_limits}
 \title{Find limits of window for next extrema search (for internal use only)}
 \usage{
-get_window_limits(cnt_pos, y, width_limit_n = NULL, height_limit = NULL)
+get_window_limits(
+  cnt_pos,
+  y,
+  x = NULL,
+  width_limit = NULL,
+  width_limit_n = NULL,
+  height_limit = NULL
+)
 }
 \arguments{
 \item{cnt_pos}{Current position index to start search from}
@@ -13,8 +20,13 @@ get_window_limits(cnt_pos, y, width_limit_n = NULL, height_limit = NULL)
 (technically optional if only using width_limit_n, but since
 find_next_extrema will always provide it's required for simplicity)}
 
+\item{width_limit}{Width of the window (in units of \code{x}) used to
+search for local extrema. A narrower width will be more
+sensitive to narrow local maxima/minima, while a wider
+width will be less sensitive to local maxima/minima.}
+
 \item{width_limit_n}{Width of the window (in number of \code{y} values) used to
-search for local extrema. A narrower width will me more
+search for local extrema. A narrower width will be more
 sensitive to narrow local maxima/minima, while a wider
 width will be less sensitive to local maxima/minima.}
 

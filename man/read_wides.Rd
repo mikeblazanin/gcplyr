@@ -16,15 +16,20 @@ read_wides(
   run_names = NULL,
   names_to_col = "file",
   metadata = NULL,
-  metadata_Excel_names = TRUE
+  metadata_Excel_names = TRUE,
+  ...
 )
 }
 \arguments{
 \item{files}{A vector of filepaths (relative to current working directory)
 where each one is a widemeasures set of data}
 
-\item{extension}{(optional) the extension of the files,"csv", "xls", or "xlsx"
-(will attempt to infer extension if none is provided)}
+\item{extension}{(optional) the extension of the files:
+"csv", "xls", or "xlsx", or "tbl" for use of read.table
+
+If none provided, \code{read_wides} will infer file 
+extension from provided filenames. When extension is not 
+"csv", "xls", or "xlsx" will use \code{utils::read.table}}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data is located. If none provided assumes the entire
@@ -65,6 +70,10 @@ is TRUE, names will be in Excel format
 If FALSE, names will be numbered with "R" and "C"
 prefixes for row and column.
 (e.g. R4C7 is the 4th column, 7th row)}
+
+\item{...}{Other arguments passed to \code{utils::read_csv},
+\code{readxl::read_xls}, \code{readxl::read_xlsx}, or
+\code{utils::read.table}}
 }
 \value{
 A dataframe containing a single widemeasures, or

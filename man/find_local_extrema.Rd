@@ -11,6 +11,7 @@ find_local_extrema(
   return_maxima = TRUE,
   return_minima = TRUE,
   return_endpoints = FALSE,
+  width_limit = NULL,
   width_limit_n = NULL,
   height_limit = NULL,
   na.rm = TRUE
@@ -32,13 +33,18 @@ to return}
 be included if they are in the returned 
 vector of extrema?}
 
+\item{width_limit}{Width of the window (in units of \code{x}) used to
+search for local extrema. A narrower width will be more
+sensitive to narrow local maxima/minima, while a wider
+width will be less sensitive to local maxima/minima.}
+
 \item{width_limit_n}{The maximum number of data points a single 
 extrema-search step is allowed to take. For example,
 when maxima-finding, the function will not pass
 a valley consisting of more than \code{width_limit_n}
 data points.
 
-A smaller \code{width_limit_n} will me more sensitive 
+A smaller \code{width_limit_n} will be more sensitive 
 to narrow local maxima/minima, while a larger 
 \code{width_limit_n} will be less sensitive to 
 narrow local maxima/minima.}
@@ -72,8 +78,8 @@ local minima and local maxima)
 Either width_limit_n or height_limit must be provided
 }
 \details{
-If both width_limit_n and height_limit are provided, steps are limited
-conservatively (a single step must meet both criteria)
+If multiple of width_limit, width_limit_n, and height_limit are provided, 
+steps are limited conservatively (a single step must meet all criteria)
 
 This function is designed to be compatible for use within
  dplyr::group_by and dplyr::summarize

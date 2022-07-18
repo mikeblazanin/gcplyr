@@ -10,7 +10,7 @@ calc_deriv(y, x = NULL, x_scale = 1, percapita = FALSE, subset_by = NULL)
 \item{y}{Data to calculate difference or derivative of}
 
 \item{x}{Vector of x values provided as a simple numeric
-(e.g. if time, in number of seconds, not POSIX)}
+(e.g. if time, in number of seconds, not POSIX).}
 
 \item{x_scale}{Factor to scale x by in denominator of derivative calculation
 
@@ -33,9 +33,11 @@ length as y), the unique values of which will
 separate calculations}
 }
 \value{
-A vector of the difference, derivative, or per-capita derivative 
-        values the same length as \code{y}, with \code{NA} appended to 
-        the end
+A vector of values for the difference (if \code{x_scale = NA}, 
+        derivative (if \code{x_scale} is a number), or per-capita derivative
+        (if \code{percapita = TRUE}) between \code{y} values. Vector
+        will be the same length as \code{y},  with \code{NA} appended 
+        to the end
 }
 \description{
 Provided a vector of y values, this function returns the difference

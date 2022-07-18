@@ -11,6 +11,7 @@
 #       converting dates with lubridate
 #       Pulling in other data like EOP & merging it
 #       section on multiple plates
+#       Better find_local_extrema examples
 #     FIXES:
 #       fix reordering issues in smoothing
 #       There's still a use of t() in make_tidydesign
@@ -30,8 +31,6 @@
 #         incl case when na.rm = TRUE and last index is a maxima
 #     FEATURES:
 #       merge_dfs more than 2 dfs
-#       in find_local_extrema add a width_limit arg that can be specified
-#            in units of x
 #       import_blockdesign (Alita would like)
 #            if there's just one block, it's not an issue to use
 #            the standard pipeline
@@ -45,6 +44,12 @@
 #        (or save to file) (Cathy would like)
 #        trans_tidy_to_wide, trans_wide_to_block
 #       Add citation()
+#         https://stackoverflow.com/questions/2192360/library-package-development-message-when-loading
+#         https://r-pkgs.org/misc.html?q=citation#inst
+#         https://scholar.google.com/citations?user=krIBxQgAAAAJ&hl=en&oi=ao
+#         https://ropensci.org/blog/2021/11/16/how-to-cite-r-and-r-packages/
+#         https://www.r-bloggers.com/2018/08/how-to-cite-packages/
+#         https://www.blopig.com/blog/2013/07/citing-r-packages-in-your-thesispaperassignments/
 #       Allow pattern string to be vector in make_tidydesign
 #       Compare to & integrate with other packages, eg growthcurver
 #       Add plot option for blocks and wides so that users can check that

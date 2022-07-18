@@ -19,6 +19,8 @@ find_next_extrema(
 
 \item{y}{Numeric vector of y values in which to identify local extrema}
 
+\item{x}{Optional numeric vector of corresponding x values}
+
 \item{width_limit}{Width of the window (in units of \code{x}) used to
 search for local extrema. A narrower width will be more
 sensitive to narrow local maxima/minima, while a wider

@@ -20,6 +20,8 @@ get_window_limits(
 (technically optional if only using width_limit_n, but since
 find_next_extrema will always provide it's required for simplicity)}
 
+\item{x}{Optional numeric vector of corresponding x values}
+
 \item{width_limit}{Width of the window (in units of \code{x}) used to
 search for local extrema. A narrower width will be more
 sensitive to narrow local maxima/minima, while a wider

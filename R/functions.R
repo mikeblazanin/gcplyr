@@ -1948,6 +1948,7 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
 #' @param y Numeric vector of y values in which to identify local extrema
 #'          (technically optional if only using width_limit_n, but since
 #'          find_next_extrema will always provide it's required for simplicity)
+#' @param x Optional numeric vector of corresponding x values
 #' @param width_limit Width of the window (in units of \code{x}) used to
 #'                   search for local extrema. A narrower width will be more
 #'                   sensitive to narrow local maxima/minima, while a wider
@@ -2049,6 +2050,7 @@ get_window_limits <- function(cnt_pos, y, x = NULL,
 #'                     approaches to true extrema, so if it is set too small
 #'                     the function may return non-extrema
 #' @param y Numeric vector of y values in which to identify local extrema
+#' @param x Optional numeric vector of corresponding x values
 #' @param looking_for  Is the next window looking for a "maxima" or a "minima"?
 #' 
 #' @return The index of the next extrema, of the same type as specified by

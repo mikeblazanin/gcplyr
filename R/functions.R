@@ -2116,7 +2116,7 @@ find_next_extrema <- function(cnt_pos, y,
 #'                      a valley consisting of more than \code{width_limit_n}
 #'                      data points.
 #'                      
-#'                      A smaller \code{width_limit_n} will me more sensitive 
+#'                      A smaller \code{width_limit_n} will be more sensitive 
 #'                      to narrow local maxima/minima, while a larger 
 #'                      \code{width_limit_n} will be less sensitive to 
 #'                      narrow local maxima/minima.

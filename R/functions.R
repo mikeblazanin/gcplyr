@@ -1872,7 +1872,7 @@ moving_median <- function(formula, data, window_width_n) {
 #' 
 #' @param y       Data to calculate difference or derivative of
 #' @param x Vector of x values provided as a simple numeric
-#'          (e.g. if time, in number of seconds, not POSIX)
+#'          (e.g. if time, in number of seconds, not POSIX).
 #' @param x_scale Factor to scale x by in denominator of derivative calculation
 #'                
 #'                When \code{x_scale = NA}, \code{calc_deriv} returns 
@@ -1890,9 +1890,11 @@ moving_median <- function(formula, data, window_width_n) {
 #' @param subset_by if subset_by is provided, it should be a vector (same 
 #'                  length as y), the unique values of which will 
 #'                  separate calculations
-#' @return A vector of the difference, derivative, or per-capita derivative 
-#'         values the same length as \code{y}, with \code{NA} appended to 
-#'         the end
+#' @return A vector of values for the difference (if \code{x_scale = NA}, 
+#'         derivative (if \code{x_scale} is a number), or per-capita derivative
+#'         (if \code{percapita = TRUE}) between \code{y} values. Vector
+#'         will be the same length as \code{y},  with \code{NA} appended 
+#'         to the end
 #' 
 #' @export   
 calc_deriv <- function(y, x = NULL, x_scale = 1,

@@ -1901,12 +1901,11 @@ calc_deriv <- function(y, x = NULL, x_scale = 1,
                        percapita = FALSE, subset_by = NULL) {
   
   #Check inputs
+  if (is.null(y)) {stop("y must be provided")}
+  if (length(x_scale) > 1) {stop("x_scale must be NA or a single value")}
   if (!is.na(x_scale)) {
-    if (!is.numeric(x_scale)) {
-      stop("x_scale is not numeric")
-    } else if (is.null(x)) {
-      stop("x_scale is specified, but x is not provided")
-    }
+    if (!is.numeric(x_scale)) {stop("x_scale is not numeric")}
+    if (is.null(x)) {stop("x_scale is specified, but x is not provided")}
   }
   if (!is.null(x) & !is.numeric(x)) {
     stop("x is not numeric")

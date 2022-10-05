@@ -37,7 +37,7 @@ gcplyr is currently in an **alpha release**. Many features are still under devel
 
 ## Installation
 
-You can install gcplyr from [GitHub](https://github.com/) with:
+You can install gcplyr from [GitHub](https://github.com/) by running the following lines in R:
 
 ``` r
 install.packages("devtools")

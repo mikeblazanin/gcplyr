@@ -4,6 +4,9 @@
 #gcanalyzer
 #gcer
 
+#Managing master & develop branches:
+# https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github
+
 #General pipeline:
 # 1.  import_blockmeasures OR
 #       (read_blocks -> uninterleave (optional) -> widen_blocks)

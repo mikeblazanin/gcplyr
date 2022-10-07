@@ -4,64 +4,6 @@
 #gcanalyzer
 #gcer
 
-#TODO:
-#     DOCS:
-#       how to remove empty wells via complete.cases (or some tidyverse
-#        equivalent)
-#       converting dates with lubridate
-#       Pulling in other data like EOP & merging it
-#       section on multiple plates
-#       Better find_local_extrema examples
-#     FIXES:
-#       fix reordering issues in smoothing
-#       There's still a use of t() in make_tidydesign
-#       Allow multiple startrow/startcol, etc from a single file in
-#        read_blocks, read_wides
-#       Check in smooth_data for x and y to be numeric or coercable
-#       Make sure error is called when moving_average and moving_median
-#        don't have a window_width_n specified?
-#       Change find_local_extrema to include endpoints by default
-#     TESTS:
-#       read_blocks and read_wides: change to use temp folder for files
-#       smooth_data: algorithms other than moving-average
-#       calc_deriv
-#       get_window_limits
-#       find_next_extrema
-#       find_local_extrema
-#         incl case when na.rm = TRUE and last index is a maxima
-#     FEATURES:
-#       merge_dfs more than 2 dfs
-#       import_blockdesign (Alita would like)
-#            if there's just one block, it's not an issue to use
-#            the standard pipeline
-#            If there's more than one block, we just have to paste them
-#            together and then use the standard pipeline
-#            And then in tidy format, have a function that will split
-#            the column up by the separator
-#            1. concat_blocks
-#            2. split_tidy's
-#       Make way to transform tidy designs to blocks and print them
-#        (or save to file) (Cathy would like)
-#        trans_tidy_to_wide, trans_wide_to_block
-#       Add citation()
-#         https://stackoverflow.com/questions/2192360/library-package-development-message-when-loading
-#         https://r-pkgs.org/misc.html?q=citation#inst
-#         https://scholar.google.com/citations?user=krIBxQgAAAAJ&hl=en&oi=ao
-#         https://ropensci.org/blog/2021/11/16/how-to-cite-r-and-r-packages/
-#         https://www.r-bloggers.com/2018/08/how-to-cite-packages/
-#         https://www.blopig.com/blog/2013/07/citing-r-packages-in-your-thesispaperassignments/
-#       Allow pattern string to be vector in make_tidydesign
-#       Compare to & integrate with other packages, eg growthcurver
-#       Add plot option for blocks and wides so that users can check that
-#             things worked (have it look like the plot in plate reader software)
-#       Figure out how to call xlsx in remote building
-#             (e.g. like that of devtools::check_win_devel(),
-#             see: https://community.rstudio.com/t/error-regarding-manual-from-devtools-check-r-cmd-check/14227/2)
-#       add capability for make_tidydesign to accept simple wellnumbers
-#       Add functions to smooth_data: LOWESS, spline models
-#       Improve efficiency of find_local_extrema
-#       Add window_width (in units of x) to smooth_data subfunctions
-
 #General pipeline:
 # 1.  import_blockmeasures OR
 #       (read_blocks -> uninterleave (optional) -> widen_blocks)

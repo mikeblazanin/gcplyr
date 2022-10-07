@@ -1061,27 +1061,12 @@ points(x = example_data_and_designs_sum$first_peak_x[
   pch = 16, cex = 2)
 ```
 
-Great! However, if we look at all the summarized data, some of the curves have `NA` for their first peak information. 
 
-```{r}
-head(example_data_and_designs_sum[
-      is.na(example_data_and_designs_sum$first_peak_x), ])
-```
-
-Why is that? Let's take a look at one of them:
-
-```{r}
-#Let's plot the absorbance
-plot(example_data_and_designs$Time[example_data_and_designs$Well == "F1"],
-     example_data_and_designs$deriv_hr[example_data_and_designs$Well == "F1"],
-  xlab = "time", ylab = "derivative (Absorbance/hr)")
-```
-
-Here, we can see that this derivative curve doesn't have a local peak in the data. By design, `first_peak` only identifies peaks *within* the data, ignoring any peaks at the endpoints of the data. In the next section, we'll learn how to use `find_local_extrema` to identify other kinds of local extrema, including peaks at the beginning or end of the growth curve.
+In the next section, we'll learn how to use `find_local_extrema` to identify other kinds of local extrema, not just the first peak.
 
 ### Finding any kind of local extrema
 
-We've seen how `first_peak` can be used to identify the first peak. But what about other extrema in the data? The first minimum? Or peaks that occur at the beginning or end of the data? The *second* peak? Etc.
+We've seen how `first_peak` can be used to identify the first peak. But what about other extrema in the data? The first minimum? The *second* peak? Etc.
 
 In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. `find_local_extrema` works very similarly to `first_peak`, but with a few additional options that users can specify to get exactly the kinds of peaks and valleys they want.
 

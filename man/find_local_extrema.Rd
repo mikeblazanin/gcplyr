@@ -10,7 +10,7 @@ find_local_extrema(
   return = "index",
   return_maxima = TRUE,
   return_minima = TRUE,
-  return_endpoints = FALSE,
+  return_endpoints = TRUE,
   width_limit = NULL,
   width_limit_n = NULL,
   height_limit = NULL,

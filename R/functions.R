@@ -1,3 +1,21 @@
+# Startup ----
+.onAttach <- function(...) {
+  ver <- utils::packageDescription("gcplyr")$Version
+  build_date <- utils::packageDescription("gcplyr")$Date
+  year <- sub("-.*", "", utils::packageDescription("gcplyr")$Date)
+  
+  packageStartupMessage(
+    paste(
+      "## \n",
+      "## gcplyr (Version ", ver, ", Build Date: ", build_date, ")\n",
+      "## See http://github.com/mikeblazanin/gcplyr for additional documentation\n",
+      "## Please cite software as:\n",
+      "##   Blazanin, Michael. ", year, ". 'gcplyr: manipulation and analysis of\n",
+      "##   growth curves data.' R package version ", ver, "\n",
+      "## \n",
+      sep = ""))
+}
+
 # Utility functions ----
 
 #' Check dimension of inputs

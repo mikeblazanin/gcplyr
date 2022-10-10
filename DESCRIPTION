@@ -1,7 +1,7 @@
 Package: gcplyr
 Type: Package
 Title: Manipulates and Analyzes Growth Curves Data
-Version: 0.8
+Version: 0.8.1
 Date: 2022-10-05
 Author: Mike Blazanin
 Maintainer: Mike Blazanin <mikeblazanin@gmail.com>

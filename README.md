@@ -16,8 +16,10 @@ bacterial growth curves data.
 
 gcplyr is currently in an **alpha release**. Many features are still
 under development and may change frequently. Documentation may also be
-incomplete or missing. Please send all questions, requests, and bugs to
-<mikeblazanin@gmail.com>
+incomplete or missing.
+
+**Please send all questions, requests, and bugs to mikeblazanin \[at\]
+gmail \[dot\] com**
 
 ## What this package can do
 
@@ -58,3 +60,8 @@ Or, after installing `gcplyr`, run:
 ``` r
 vignette("gcplyr-workflow")
 ```
+
+## Citation
+
+Please cite software as: Blazanin, Michael. 2022. ‘gcplyr: manipulation
+and analysis of growth curves data.’ R package version 0.8

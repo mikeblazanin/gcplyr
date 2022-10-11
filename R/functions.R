@@ -892,15 +892,6 @@ import_blockdesign <- function(files,
   }
 }
 
-#' Split block designs (work in progress)
-#' 
-#' This function will be called to split block designs that have been read
-#' from a file, after they've been widened and pivot_longered
-#' 
-split_blockdesign <- function() {
-  
-}
-
 
 # Make designs ----
 
@@ -1623,7 +1614,46 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
   return(blocks_pasted)
 }
 
-
+#' Separate a column into multiple columns
+#' 
+#' This function is primarily a wrapper for \code{tidyr::separate}, which
+#' turns a single character column into multiple columns
+#' 
+#' @param data A data frame
+#' @param col Column name or position
+#' @param into A character vector of the new column names. Use \code{NA} to
+#'             omit the variable in the output.
+#'             
+#'             If NULL, \code{separate_gc} will attempt to infer the new
+#'             column names from the column name of \code{col}
+#' @param sep Separator between columns passed to \code{tidyr::separate}:
+#' 
+#'            If character, \code{sep} is interpreted as a regular expression.
+#'            
+#'            If numeric, \code{sep} is interpreted as character positions
+#'            to split at. Positive values start at 1 at the far-left of the
+#'            string; negative values start at -1 at the far-right of the
+#'            string. The length of \code{sep} should be one less than 
+#'            \code{into}
+#' @param ... Other arguments passed to \code{tidyr::separate}
+#' 
+#' @return A data frame containing new columns in the place of \code{col}
+#' 
+#' @export
+separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
+  if(is.null(into)) {
+    if(col %in% colnames(data)) {
+      into <- strsplit(col, sep = sep)[[1]]
+    } else if (is.numeric(col)) {
+      into <- strsplit(colnames(data)[col], sep = sep)[[1]]
+    } else {
+      stop("into is NULL, but col is neither numeric nor a column name in data")
+    }
+  }
+  
+  return(
+    tidyr::separate(data = data, col = col, into = into, sep = sep, ...))
+}
 
 
 # Smoothing ----

@@ -69,6 +69,8 @@ test_that("infer_names works as expected", {
 test_that("read_blocks reads data correctly", {
   #Make test blockcurves data
   library(xlsx)
+  
+  setwd(tempdir())
   dir.create("./test_blockcurves_data_csv/", showWarnings = F)
   dir.create("./test_blockcurves_data_xlsx/", showWarnings = F)
   
@@ -151,6 +153,8 @@ test_that("read_blocks reads data correctly", {
 test_that("read_wides works correctly", {
   #Make test data
   library(xlsx)
+  
+  setwd(tempdir())
   dir.create("./test_widecurves_data/", showWarnings = F)
 
   set.seed(1)

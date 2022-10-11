@@ -115,7 +115,7 @@ If your data is block-shaped, you'll use `read_blocks` and you can start in the 
 
 If your data is wide-shaped, you'll use `read_wides` and you can skip down to the **Importing wide-shaped data** section. 
 
-In the unlikely event your data is already tidy, you can simply read it using the built-in R function `read.table`.
+In the unlikely event your data is already tidy, you'll use `read_tidys` and you can skip down to the **Importing tidy-shaped data** section.
 
 ## Importing block-shaped data
 To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames (with each `data.frame` corresponding to a single block) that you can save in R. 
@@ -401,6 +401,14 @@ imported_widedata <- read_wides(files = temp_filename2,
 
 ### What to do next
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **Transforming data** section.
+
+## Importing tidy-shaped data
+To import tidy-shaped data, you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information
+doesn't start on the first row and column.
+
+`read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
+
+If you've read in your tidy-shaped data, you won't need to transform it, so you can skip down to the **Including design elements** section.
 
 # Transforming data
 Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.

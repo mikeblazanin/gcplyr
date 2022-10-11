@@ -760,7 +760,7 @@ read_tidys <- function() {
 #' 
 #' Function to import blockmeasures from files and return widemeasures
 #' This function acts as a wrapper to call read_blocks, uninterleave, 
-#' then widen_blocks in one go
+#' then trans_block_to_wide in one go
 #' 
 #' @param files Vector of filenames (as strings), each of which is a blockmeasures
 #'              formatted file. Inputs can be .csv, .xls, or .xlsx
@@ -798,28 +798,54 @@ import_blockmeasures <- function(files, num_plates = 1,
 }
 
 
-#' Import blockdesigns from file (work-in-progress)
+#' Import blockdesigns
 #' 
-#' This function imports blockdesigns from file into the R environment
+#' Function to import block-shaped designs from files and return tidy designs.
+#' This function acts as a wrapper to call read_blocks, paste_blocks, 
+#' trans_block_to_wide, and trans_wide_to_tidy in one go
 #'
-#' @param files tbd
-#' @param startrow tbd
-#' @param startcol tbd
-#' @param metadata tbd
-#' @param field_sep tbd
-#' @param id_cols tbd
-#' @param ... tbd
-import_blockdesign <- function(files,
-                               startrow = 2, startcol = 2,
-                               metadata = list("design_element" = c(1, 1)),
-                               field_sep = "_",
-                               id_cols = c("block_name", "design_element"),
-                               ...) {
-  #Takes in a list of files, each of which includes a layout in it
-  # then cleans up the layout information in those files
-  # by splitting it
-  #Outputs that layout information in a tidy format
-  #
+#' @param files Vector of filenames (as strings), each of which is a 
+#'              block-shaped designs file. Inputs can be .csv, .xls, or .xlsx
+#' @param ...   Other arguments to pass to \code{read_blocks}, 
+#'              \code{paste_blocks}, \code{trans_block_to_wide},
+#'              \code{trans_wide_to_tidy}, or \code{separate_tidy}.
+#'              
+#'              See Details for more information
+#'              
+#' @details     Common arguments that you may want to provide include:
+#' 
+#'              startrow, endrow, startcol, endcol, sheet - specifying the
+#'              location of design information inside \code{files} to 
+#'              \code{read_blocks}
+#'              
+#'              sep - string separating separate design elements for
+#'              \code{separate_tidys} in block design files that are already
+#'              pasted
+#'              
+#'              into - vector of column names for design elements after
+#'              separation for \code{separate_tidys}
+#' 
+#' @export
+import_blockdesign <- function(files, ...) {
+  blocks <- read_blocks(files, ...)
+  
+  if(length(files) > 1) {blocks_pasted <- paste_blocks(blocks, ...)}
+  
+  wides <- trans_block_to_wide(blocks_pasted, ...)
+  
+  tidys <- trans_wide_to_tidy(wides, data_cols = colnames(wides), 
+                              values_to = "Design", values_to_numeric = FALSE,
+                              ...)
+  
+  tidy_sep <- separate_tidy(
+    tidys, col = "Design", 
+    into = paste("Design", 
+                 1:length(strsplit(tidys[1, "Design"], sep = "_")[[1]]),
+                 sep = "_"))
+  
+  return(tidy_sep)
+  
+  
   #By default assumes that the design element name is in row 1, column 1
   #E.g. a design block file looks like this:
   #     Treatment   1   2   3   4   5   6   7   ...
@@ -831,65 +857,6 @@ import_blockdesign <- function(files,
   #   and L, G, and C are the values for the treatment element
   # If this is not true, set metadata = NULL and adjust startrow/startcol
   
-  ##General steps
-  ##1. use read_blocks to get design into R
-  ##2. use widen_blocks to get design into wide format
-  ##3. use pivot wides longer to get design into tidy format
-  ##2. use split block to split design elements
-  
-  # blockdesigns <- read_blocks(files = files,
-  #                             metadata = metadata,
-  #                             startrow = startrow, startcol = startcol,
-  #                             ...)
-  # widedesigns <- widen_blocks(blockdesigns, ...)
-  
-  
-  
-  
-  #What to do if design_element is not supplied?
-  # tidydesigns <- pivot_wide_longer(widedesigns, id_cols = id_cols,
-  #                                  values_to = widedesigns$design_element[1],
-  #                                  ...)
-  
-  
-  
-  
-  # split_blockdesign()
-  #For reference, old version (possibly)
-  layout_cleanup <- function(layout) {
-    #This function takes a layout dataframe with ...'s where info needs to be 
-    #iterated in and does so, while adding _A, _B etc for replicate wells
-    #with the same contents
-    #Wells labeled NA are not filled in (they are empty)
-    
-    #Define a matrix to track well contents we've seen before
-    #So that when they come up again the replicate number can resume
-    #where it left off
-    vals_and_cntr <- matrix(nrow = 0, ncol = 2)
-    for (i in 1:nrow(layout)) {
-      for (j in 2:ncol(layout)) {
-        if(!is.na(layout[i, j])) { #Non-empty well
-          if (nchar(layout[i, j]) > 1) { #Non ... well
-            current_val <- layout[i, j]
-            if (!(current_val %in% vals_and_cntr[, 1])) {
-              #This is the first time we've seen these well contents
-              #So we should start numbering replicates at the beginning
-              vals_and_cntr <- rbind(vals_and_cntr, c(current_val, 1))
-              row <- nrow(vals_and_cntr)
-            } else { 
-              #this isn't the first time we've seen these contents
-              #resume replicate numbering where we left off
-              row <- which(vals_and_cntr[, 1] == current_val)
-            }
-          }
-          layout[i, j] <- paste(current_val, 
-                                LETTERS[as.numeric(vals_and_cntr[row, 2])], sep = "_")
-          vals_and_cntr[row, 2] <- as.numeric(vals_and_cntr[row, 2]) + 1
-        }
-      }
-    }
-    return(layout)
-  }
 }
 
 
@@ -1321,7 +1288,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #' @param wides A single widemeasures data.frame, or a list of widemeasures
 #'                   data.frame's
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
-#'                          (in tidyr::pivot_longer parlance). Each can be
+#'                          (in \code{tidyr::pivot_longer} parlance). Each can be
 #'                          a single vector (which will be applied for all
 #'                          widemeasures) or a list of vectors, with each
 #'                          vector corresponding to the same-index widemeasure
@@ -1620,7 +1587,7 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #' turns a single character column into multiple columns
 #' 
 #' @param data A data frame
-#' @param col Column name or position
+#' @param col  Column name or position
 #' @param into A character vector of the new column names. Use \code{NA} to
 #'             omit the variable in the output.
 #'             

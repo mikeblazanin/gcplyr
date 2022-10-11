@@ -460,8 +460,41 @@ Often during analysis of growth curve data, we'd like to incorporate information
 
 ## Reading design elements from files
 Users have two options for how to read design elements from files, depending on the shape of the design files they have created:
-* If design files are tidy-shaped, they can simply be read with `read_tidys`.
 * If design files are block-shaped, they can be read with `import_blockdesigns`
+* If design files are tidy-shaped, they can simply be read with `read_tidys`.
+
+### Importing block-shaped design files
+To import block-shaped design files, you can use the `import_blockdesigns` function, which will return a tidy-shaped designs data frame (or list of data frames).
+
+`import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R. That's right, it reads in block-shaped designs but returns a tidy-shaped data frame! 
+
+Let's take a look at an example. First, we need to create an example file. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
+
+```{r}
+temp_filename <- tempfile(fileext = ".csv")
+write.csv(
+  file = temp_filename,
+  x = matrix(rep(c("Treat 1", "Treat 2"), each = 48),
+             nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)))
+```
+
+Now let's take a look at what the file looks like:
+
+```{r}
+print_df(read.csv(temp_filename, header = FALSE, 
+                  colClasses = "character"))
+```
+
+Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`
+
+```{r}
+my_design <- import_blockdesigns(files = temp_filename)
+head(my_design, 20)
+```
+
+
+
+If you find yourself needing more control over the process of importing block-shaped design files, note that `import_blockdesigns` is a wrapper function that calls `read_blocks`, `paste_blocks`, `trans_block_to_wide`, and then `trans_wide_to_tidy`. All these functions are available to users to call themselves for greater control.
 
 ### Importing tidy-shaped design files
 Just like measures data, to import tidy-shaped designs you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
@@ -469,9 +502,6 @@ Just like measures data, to import tidy-shaped designs you could use the built-i
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
 Once these design elements have been read into the R environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **Merging spectrophotometric and design data** section.
-
-### Importing block-shaped design files
-
 
 ## Generating tidy-shaped design elements programmatically
 If you don't have your experimental design information saved in a file, you can directly create such a `data.frame` using the `gcplyr` function `make_tidydesign`. `make_tidydesign` uses the spatial location of design elements in a multiwell plate as input arguments, but outputs a tidy-shaped `data.frame` that can be easily merged with your tidy-shaped data.

@@ -1004,7 +1004,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              pasted
 #' 
 #' @export
-import_blockdesign <- function(files, into = NULL, ...) {
+import_blockdesigns <- function(files, into = NULL, ...) {
   blocks <- read_blocks(files, ...)
   
   if(length(files) > 1) {blocks_pasted <- paste_blocks(blocks, ...)}

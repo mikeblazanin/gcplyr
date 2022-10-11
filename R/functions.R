@@ -1013,7 +1013,8 @@ import_blockdesigns <- function(files, into = NULL, ...) {
   
   wides <- trans_block_to_wide(blocks_pasted, ...)
   
-  tidys <- trans_wide_to_tidy(wides, data_cols = colnames(wides), 
+  tidys <- trans_wide_to_tidy(wides, 
+                              id_cols = "block_name", 
                               values_to = "Design", values_to_numeric = FALSE,
                               ...)
   

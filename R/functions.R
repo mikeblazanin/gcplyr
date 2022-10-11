@@ -1008,7 +1008,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 import_blockdesigns <- function(files, into = NULL, ...) {
   blocks <- read_blocks(files, ...)
   
-  if(length(files) > 1) {blocks_pasted <- paste_blocks(blocks, ...)}
+  if(length(files) > 1) {blocks_pasted <- paste_blocks(blocks, ...)
+  } else {blocks_pasted <- blocks}
   
   wides <- trans_block_to_wide(blocks_pasted, ...)
   
@@ -1021,10 +1022,9 @@ import_blockdesigns <- function(files, into = NULL, ...) {
   if(nfields > 1) {
     if(is.null(into)) {into = paste("Design", 1:nfields, sep = "_")}
     tidy_sep <- separate_tidy(tidys, col = "Design", into = into)
-    return(tidy_sep)
-  } else {
-    return(tidys)
-  }
+  } else {tidy_sep <- tidys}
+    
+  return(tidy_sep)
 }
 
 

@@ -748,9 +748,186 @@ read_wides <- function(files, extension = NULL,
   }
 }
 
-#' Read tidy-formatted dfs (in progress)
-read_tidys <- function() {
+#' Read tidy-shaped files
+#' 
+#' A function that imports tidy-shaped files into R. Largely acts as a
+#' wrapper for \code{utils::read.csv}, \code{readxl::read_xls},
+#' \code{readxl::read_xls}, or \code{readxl::read_xlsx}, but can handle
+#' multiple files at once and has additional options for taking subsets 
+#' of rows/columns rather than the entire file and for adding filename 
+#' or run names as an added column in the output.
+#' 
+#' @param files A vector of filepaths (relative to current working directory)
+#'              where each one is a tidy-shaped data file
+#' @param extension (optional) the extension of the files:
+#'                  "csv", "xls", or "xlsx", or "tbl" for use of read.table
+#'                  
+#'                  If none provided, \code{read_tidys} will infer file 
+#'                  extension from provided filenames. When extension is not 
+#'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
+#'                  the data is located. If none provided assumes the entire
+#'                  file is data.
+#'                  
+#'                  Can be specified as a numeric or using base-26 Excel letter
+#'                  notation
+#' @param sheet The sheet of the input files where data is located (if input
+#'              files are .xls or .xlsx). If not specified defaults to the first
+#' @param run_names Names to give the tidy files read in. By default uses the
+#'                  file names if not specified. These names may be added
+#'                  to the resulting data frame depending on the value of
+#'                  the \code{names_to_col} argument
+#' @param names_to_col Should the run names (provided in \code{run_names}
+#'                     or inferred from \code{files}) be added as a column to the
+#'                     output? 
+#'                     
+#'                     If \code{names_to_col} is TRUE, they will be added with.
+#'                     the column name "run_name"
+#'                     
+#'                     If \code{names_to_col} is FALSE, they will not be added.
+#'                     
+#'                     If \code{names_to_col} is a string, they will be added
+#'                     and the column name will be the string specified
+#'                     for \code{names_to_col}.
+#'                     
+#'                     If \code{names_to_col} is NULL, they only will be 
+#'                     added if there are multiple tidy data.frames being read.
+#'                     In which case, the column name will be "run_name"
+#'                     
+#' @param ...   Other arguments passed to \code{utils::read_csv},
+#'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
+#'              \code{utils::read.table}
+#'              sheet
+#'               
+#' @details
+#' \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
+#' \code{sheet} and \code{extension} can either be a single value that 
+#' applies for all files or vectors or lists the same length as \code{files}
+#' 
+#' Note that the startrow is always assumed to be a header
+#' 
+#' @return A dataframe containing a single tidy data.frame, or
+#'         A list of tidy-shaped data.frames named by filename
+#'         
+#' @export
+read_tidys <- function(files, extension = NULL, 
+                       startrow = NULL, endrow = NULL, 
+                       startcol = NULL, endcol = NULL,
+                       sheet = NULL, 
+                       run_names = NULL, names_to_col = NULL,
+                       ...) {
+  if (!is.null(startrow) & !is.numeric(startrow)) {
+    startrow <- from_excel(startrow)}
+  if (!is.null(endrow) & !is.numeric(endrow)) {
+    endrow <- from_excel(endrow)}
+  if (!is.null(startcol) & !is.numeric(startcol)) {
+    startcol <- from_excel(startcol)}
+  if (!is.null(endcol) & !is.numeric(endcol)) {
+    endcol <- from_excel(endcol)}
   
+  if(is.null(startrow)) {startrow <- NA}
+  startrow <- checkdim_inputs(startrow, "startrow", length(files))
+  
+  if (is.null(endrow)) {endrow <- NA}
+  endrow <- checkdim_inputs(endrow, "endrow", length(files))
+  
+  if (is.null(startcol)) {startcol <- NA}
+  startcol <- checkdim_inputs(startcol, "startcol", length(files))
+  
+  if (is.null(endcol)) {endcol <- NA}
+  endcol <- checkdim_inputs(endcol, "endcol", length(files))
+  
+  if (!is.null(sheet)) {
+    sheet <- checkdim_inputs(sheet, "sheet", length(files))
+  }
+  
+  #Determine file extension(s)
+  if (is.null(extension)) {
+    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
+                        USE.NAMES = FALSE)
+    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+    }
+  } else {
+    extension <- checkdim_inputs(extension, "extension", length(files))
+    stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
+  }
+  
+  #Check for names error
+  if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}
+  
+  #If run_names not provided, infer from filenames
+  if (is.null(run_names)) {
+    #infer the names from filenames, stripping off the extension from end
+    # and the dot at the beginning (if any)
+    run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
+  }
+  
+  #Create empty recipient list
+  outputs <- rep(list(NA), length(files))
+  
+  #Import data
+  for (i in 1:length(files)) {
+    #Read file & save in temp
+    if (extension[i] == "tbl") {
+      temp <- utils::read.table(files[i], ...)
+    } else if (extension[i] == "csv") {
+      temp <- 
+        utils::read.csv(files[i], colClasses = "character", header = FALSE, ...)
+    } else if (extension[i] == "xls") {
+      suppressMessages(
+        temp <- 
+          as.data.frame(
+            readxl::read_xls(files[i], col_names = FALSE, 
+                             col_types = "text", sheet = sheet[i], ...)))
+    } else if (extension[i] == "xlsx") {
+      suppressMessages(
+        temp <- 
+          as.data.frame(
+            readxl::read_xlsx(files[i], col_names = FALSE, 
+                              col_types = "text", sheet = sheet[i], ...)))
+    }
+    
+    #Infer colnames/take subsets as needed
+    if(is.na(endrow[i])) {endrow[i] <- nrow(temp)}
+    if(is.na(endcol[i])) {endcol[i] <- ncol(temp)}
+    if(is.na(startcol[i])) {startcol[i] <- 1}
+    if (is.na(startrow[i])) {startrow[i] <- 1}
+    
+    #Get header
+    outputs[[i]] <- temp[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
+    colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
+    
+    #Add run name if needed
+    if(is.null(names_to_col)) {
+      if (length(outputs) > 1) {
+        #names should be saved in a column titled run_name
+        outputs[[i]] <- cbind(data.frame("run_name" = run_names[i]),
+                              outputs[[i]])
+      }
+    } else {
+      if(is.character(names_to_col)) {
+        #names should be saved in a column titled the value of names_to_col
+        temp <- data.frame("run_name" = run_names[i])
+        names(temp) <- names_to_col
+        outputs[[i]] <- cbind(temp, outputs[[i]])
+      } else {
+        if(names_to_col) {
+          #names_to_col is TRUE
+          outputs[[i]] <- cbind(data.frame("run_name" = run_names[i]),
+                                outputs[[i]])
+        } else if (!names_to_col) {
+          #names_to_col is FALSE, so add nothing
+        } else {stop("names_to_col is not one of the valid types")}
+      }
+    }
+  }
+  
+  if (length(outputs) == 1) {
+    return(outputs[[1]])
+  } else {
+    return(outputs)
+  }
 }
 
 

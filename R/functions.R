@@ -986,7 +986,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' @param into  Vector of column names for design elements after
 #'              separation by \code{separate_tidys}. Should be in the same
 #'              order as elements listed within \code{files} and/or same order
-#'              as corresponding \code{files} themselves
+#'              as corresponding \code{files} themselves. If \code{NULL},
+#'              column names will simply be "Design_1", "Design_2", etc.
 #' @param ...   Other arguments to pass to \code{read_blocks}, 
 #'              \code{paste_blocks}, \code{trans_block_to_wide},
 #'              \code{trans_wide_to_tidy}, or \code{separate_tidy}.
@@ -1015,27 +1016,15 @@ import_blockdesigns <- function(files, into = NULL, ...) {
                               values_to = "Design", values_to_numeric = FALSE,
                               ...)
   
-  if(is.null(into)) {
-    into = paste(
-      "Design", 1:length(strsplit(tidys[1, "Design"], sep = "_")[[1]]), 
-      sep = "_")
+  if(!is.null(into)) {nfields <- length(into)
+  } else {nfields <- length(strsplit(tidys[1, "Design"], sep = "_")[[1]])}
+  if(nfields > 1) {
+    if(is.null(into)) {into = paste("Design", 1:nfields, sep = "_")}
+    tidy_sep <- separate_tidy(tidys, col = "Design", into = into)
+    return(tidy_sep)
+  } else {
+    return(tidys)
   }
-  
-  tidy_sep <- separate_tidy(tidys, col = "Design", into = into)
-  
-  return(tidy_sep)
-  
-  #By default assumes that the design element name is in row 1, column 1
-  #E.g. a design block file looks like this:
-  #     Treatment   1   2   3   4   5   6   7   ...
-  #     A           L   G   C   L   G   C   L   ...
-  #     B           L   G   C   L   G   C   L   ...
-  #     C           L   G   C   L   G   C   L   ...
-  #     ...
-  # Where A, B, C... are the row names; 1, 2, 3... are the column names
-  #   and L, G, and C are the values for the treatment element
-  # If this is not true, set metadata = NULL and adjust startrow/startcol
-  
 }
 
 

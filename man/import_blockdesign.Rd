@@ -2,33 +2,36 @@
 % Please edit documentation in R/functions.R
 \name{import_blockdesign}
 \alias{import_blockdesign}
-\title{Import blockdesigns from file (work-in-progress)}
+\title{Import blockdesigns}
 \usage{
-import_blockdesign(
-  files,
-  startrow = 2,
-  startcol = 2,
-  metadata = list(design_element = c(1, 1)),
-  field_sep = "_",
-  id_cols = c("block_name", "design_element"),
-  ...
-)
+import_blockdesign(files, ...)
 }
 \arguments{
-\item{files}{tbd}
+\item{files}{Vector of filenames (as strings), each of which is a 
+block-shaped designs file. Inputs can be .csv, .xls, or .xlsx}
 
-\item{startrow}{tbd}
+\item{...}{Other arguments to pass to \code{read_blocks}, 
+\code{paste_blocks}, \code{trans_block_to_wide},
+\code{trans_wide_to_tidy}, or \code{separate_tidy}.
 
-\item{startcol}{tbd}
-
-\item{metadata}{tbd}
-
-\item{field_sep}{tbd}
-
-\item{id_cols}{tbd}
-
-\item{...}{tbd}
+See Details for more information}
 }
 \description{
-This function imports blockdesigns from file into the R environment
+Function to import block-shaped designs from files and return tidy designs.
+This function acts as a wrapper to call read_blocks, paste_blocks, 
+trans_block_to_wide, and trans_wide_to_tidy in one go
+}
+\details{
+Common arguments that you may want to provide include:
+
+             startrow, endrow, startcol, endcol, sheet - specifying the
+             location of design information inside \code{files} to 
+             \code{read_blocks}
+             
+             sep - string separating separate design elements for
+             \code{separate_tidys} in block design files that are already
+             pasted
+             
+             into - vector of column names for design elements after
+             separation for \code{separate_tidys}
 }

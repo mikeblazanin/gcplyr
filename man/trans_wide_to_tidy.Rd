@@ -19,7 +19,7 @@ trans_wide_to_tidy(
 data.frame's}
 
 \item{data_cols, id_cols}{Specifies which columns have data vs are ID's
-(in tidyr::pivot_longer parlance). Each can be
+(in \code{tidyr::pivot_longer} parlance). Each can be
 a single vector (which will be applied for all
 widemeasures) or a list of vectors, with each
 vector corresponding to the same-index widemeasure

@@ -30,5 +30,5 @@ or \code{widen_blocks}}
 \description{
 Function to import blockmeasures from files and return widemeasures
 This function acts as a wrapper to call read_blocks, uninterleave, 
-then widen_blocks in one go
+then trans_block_to_wide in one go
 }

@@ -706,6 +706,11 @@ example_design <- make_tidydesign(
     pattern = "1"))
 ```
 
+Here's what the resulting data.frame looks like:
+```{r}
+head(example_design, 20)
+```
+
 Now let's transform the `example_widedata` to tidy-shaped.
 
 ```{r}

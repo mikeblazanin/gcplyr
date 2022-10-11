@@ -403,8 +403,7 @@ imported_widedata <- read_wides(files = temp_filename2,
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **Transforming data** section.
 
 ## Importing tidy-shaped data
-To import tidy-shaped data, you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information
-doesn't start on the first row and column.
+To import tidy-shaped data, you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
@@ -456,13 +455,23 @@ print(head(imported_blocks_now_tidy), row.names = FALSE)
 
 # Including design elements
 Often during analysis of growth curve data, we'd like to incorporate information on the experimental design. For example, which bacteria are present in which wells, or which wells have received some treatment. `gcplyr` enables incorporation of design elements in two ways:
-1. Design elements can be imported from tidy-shaped files using `read_table` functions and merged with previously-imported data
+1. Design elements can be imported from files
 2. Design elements can be generated programmatically using `make_tidydesign`
 
 ## Reading design elements from files
-Just like spectrophotometric data, design elements that are saved in tidy-shaped tabular data files can be read using the `read_table` function.
+Users have two options for how to read design elements from files, depending on the shape of the design files they have created:
+* If design files are tidy-shaped, they can simply be read with `read_tidys`.
+* If design files are block-shaped, they can be read with `import_blockdesigns`
 
-Once these design elements have been read into the R environment, you can merge them with your data. See the next section for details.
+### Importing tidy-shaped design files
+Just like measures data, to import tidy-shaped designs you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
+
+`read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
+
+Once these design elements have been read into the R environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **Merging spectrophotometric and design data** section.
+
+### Importing block-shaped design files
+
 
 ## Generating tidy-shaped design elements programmatically
 If you don't have your experimental design information saved in a file, you can directly create such a `data.frame` using the `gcplyr` function `make_tidydesign`. `make_tidydesign` uses the spatial location of design elements in a multiwell plate as input arguments, but outputs a tidy-shaped `data.frame` that can be easily merged with your tidy-shaped data.

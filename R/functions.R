@@ -138,6 +138,26 @@ from_excel <- function(x) {
   return(as.numeric(out))
 }
 
+#' A function that parses dots arguments and only passes the correct ones
+#' 
+#' Use this in cases where a parent function calls multiple sub-functions
+#' and passes the ... dots argument to each, but some arguments users
+#' specify in the ... dots argument only work for some of the sub-functions.
+#' In this case, dots_parser will check and run \code{FUN} with only
+#' the arguments that \code{FUN} accepts
+#' 
+#' @param FUN The function to be called
+#' @param ... Additional arguments, some of which may not be arguments
+#'            for \code{FUN}
+#' 
+#' @return The output of \code{FUN} operating on arguments in \code{...}
+#' 
+dots_parser <- function(FUN, ...) {
+  argnames <- names(formals(FUN))
+  dots <- list(...)
+  return(do.call(FUN, dots[names(dots) %in% argnames]))
+}
+
 # Read files ----
 
 #' An internal function that handles name inference logic for other functions

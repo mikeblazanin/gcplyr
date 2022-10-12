@@ -458,14 +458,14 @@ read_blocks <- function(files, extension = NULL,
       suppressMessages(
         temp <- 
           as.data.frame(
-            dots_parser(readxl::read_xls, file = files[i], 
+            dots_parser(readxl::read_xls, path = files[i], 
                         col_names = FALSE, col_types = "text", 
                         sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            dots_parser(readxl::read_xlsx, file = files[i], 
+            dots_parser(readxl::read_xlsx, path = files[i], 
                         col_names = FALSE, col_types = "text", 
                         sheet = sheet[i], ...)))
     }
@@ -711,13 +711,13 @@ read_wides <- function(files, extension = NULL,
       suppressMessages(
         temp <- 
           as.data.frame(
-            dots_parser(readxl::read_xls, file = files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xls, path = files[i], col_names = FALSE, 
                              col_types = "text", sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            dots_parser(readxl::read_xlsx, files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xlsx, path = files[i], col_names = FALSE, 
                               col_types = "text", sheet = sheet[i], ...)))
     }
     
@@ -899,13 +899,13 @@ read_tidys <- function(files, extension = NULL,
       suppressMessages(
         temp <- 
           as.data.frame(
-            dots_parser(readxl::read_xls, files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xls, path = files[i], col_names = FALSE, 
                              col_types = "text", sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            dots_parser(readxl::read_xlsx, files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xlsx, path = files[i], col_names = FALSE, 
                               col_types = "text", sheet = sheet[i], ...)))
     }
     

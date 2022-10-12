@@ -58,9 +58,6 @@ checkdim_inputs <- function(input, input_name, needed_len,
 #' 
 #' @export
 uninterleave <- function(interleaved_list, n) {
-  # Note that the ... is just so that import_blockmeasures can call
-  # it with generic passing of arguments
-  
   #Input checking
   if ((length(interleaved_list) %% n) != 0) {
     stop("Length of list must be divisible by n")
@@ -453,22 +450,24 @@ read_blocks <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     ##Read file & save in temp
     if (extension[i] == "tbl") {
-      temp <- utils::read.table(files[i], ...)
+      temp <- dots_parser(utils::read.table, file = files[i], ...)
     } else if (extension[i] == "csv") {
-        temp <- utils::read.csv(files[i], colClasses = "character", 
-                         header = FALSE, ...)
+      temp <- dots_parser(utils::read.csv, file = files[i], 
+                          colClasses = "character", header = FALSE, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            readxl::read_xls(files[i], col_names = FALSE, col_types = "text", 
-                             sheet = sheet[i], ...)))
+            dots_parser(readxl::read_xls, file = files[i], 
+                        col_names = FALSE, col_types = "text", 
+                        sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            readxl::read_xlsx(files[i], col_names = FALSE, col_types = "text", 
-                              sheet = sheet[i], ...)))
+            dots_parser(readxl::read_xlsx, file = files[i], 
+                        col_names = FALSE, col_types = "text", 
+                        sheet = sheet[i], ...)))
     }
     
     #Infer rows, cols, rownames, colnames
@@ -703,21 +702,22 @@ read_wides <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     #Read file & save in temp
     if (extension[i] == "tbl") {
-      temp <- utils::read.table(files[i], ...)
+      temp <- dots_parser(utils::read.table, file = files[i], ...)
     } else if (extension[i] == "csv") {
       temp <- 
-        utils::read.csv(files[i], colClasses = "character", header = FALSE, ...)
+        dots_parser(utils::read.csv, file = files[i], 
+                    colClasses = "character", header = FALSE, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            readxl::read_xls(files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xls, file = files[i], col_names = FALSE, 
                              col_types = "text", sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            readxl::read_xlsx(files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xlsx, files[i], col_names = FALSE, 
                               col_types = "text", sheet = sheet[i], ...)))
     }
     
@@ -890,21 +890,22 @@ read_tidys <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     #Read file & save in temp
     if (extension[i] == "tbl") {
-      temp <- utils::read.table(files[i], ...)
+      temp <- dots_parser(utils::read.table, file = files[i], ...)
     } else if (extension[i] == "csv") {
       temp <- 
-        utils::read.csv(files[i], colClasses = "character", header = FALSE, ...)
+        dots_parser(utils::read.csv, file = files[i], 
+                    colClasses = "character", header = FALSE, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            readxl::read_xls(files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xls, files[i], col_names = FALSE, 
                              col_types = "text", sheet = sheet[i], ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
-            readxl::read_xlsx(files[i], col_names = FALSE, 
+            dots_parser(readxl::read_xlsx, files[i], col_names = FALSE, 
                               col_types = "text", sheet = sheet[i], ...)))
     }
     
@@ -975,7 +976,7 @@ import_blockmeasures <- function(files, num_plates = 1,
                                  wellnames_sep = "_",
                                  ...) {
   blockmeasures <- uninterleave(read_blocks(files = files, ...),
-                                n = num_plates, ...)
+                                n = num_plates)
   widemeasures <- rep(list(NA), num_plates)
   for (i in 1:length(blockmeasures)) {
     widemeasures[[i]] <- trans_block_to_wide(blockmeasures[[i]],
@@ -1026,23 +1027,25 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' 
 #' @export
 import_blockdesigns <- function(files, into = NULL, ...) {
-  blocks <- read_blocks(files, ...)
+  blocks <- dots_parser(read_blocks, files = files, ...)
   
-  if(length(files) > 1) {blocks_pasted <- paste_blocks(blocks, ...)
+  if(length(files) > 1) {
+    blocks_pasted <- dots_parser(paste_blocks, blocks = blocks, ...)
   } else {blocks_pasted <- blocks}
   
-  wides <- trans_block_to_wide(blocks_pasted, ...)
+  wides <- dots_parser(trans_block_to_wide, blocks = blocks_pasted, ...)
   
-  tidys <- trans_wide_to_tidy(wides, 
-                              id_cols = "block_name", 
-                              values_to = "Design", values_to_numeric = FALSE,
-                              ...)
+  tidys <- dots_parser(trans_wide_to_tidy, wides = wides, 
+                       id_cols = "block_name", 
+                       values_to = "Design", values_to_numeric = FALSE,
+                       ...)
   
   if(!is.null(into)) {nfields <- length(into)
   } else {nfields <- length(strsplit(tidys[1, "Design"], split = "_")[[1]])}
   if(nfields > 1) {
     if(is.null(into)) {into = paste("Design", 1:nfields, sep = "_")}
-    tidy_sep <- separate_tidy(tidys, col = "Design", into = into, ...)
+    tidy_sep <- dots_parser(separate_tidy, data = tidys, 
+                            col = "Design", into = into, ...)
   } else {tidy_sep <- tidys}
     
   return(tidy_sep)

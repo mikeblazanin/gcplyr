@@ -1805,9 +1805,9 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
   if(is.null(into)) {
     if(col %in% colnames(data)) {
-      into <- strsplit(col, sep = sep)[[1]]
+      into <- strsplit(col, split = sep)[[1]]
     } else if (is.numeric(col)) {
-      into <- strsplit(colnames(data)[col], sep = sep)[[1]]
+      into <- strsplit(colnames(data)[col], split = sep)[[1]]
     } else {
       stop("into is NULL, but col is neither numeric nor a column name in data")
     }

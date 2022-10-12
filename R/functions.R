@@ -999,8 +999,9 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' Import blockdesigns
 #' 
 #' Function to import block-shaped designs from files and return tidy designs.
-#' This function acts as a wrapper to call read_blocks, paste_blocks, 
-#' trans_block_to_wide, and trans_wide_to_tidy in one go
+#' This function acts as a wrapper to call \code{read_blocks}, 
+#' \code{paste_blocks}, \code{trans_block_to_wide}, \code{trans_wide_to_tidy}, 
+#' and \code{separate_tidys} in one go
 #'
 #' @param files Vector of filenames (as strings), each of which is a 
 #'              block-shaped designs file. Inputs can be .csv, .xls, or .xlsx
@@ -1030,10 +1031,12 @@ import_blockdesigns <- function(files, into = NULL, ...) {
   blocks <- dots_parser(read_blocks, files = files, ...)
   
   if(length(files) > 1) {
-    blocks_pasted <- dots_parser(paste_blocks, blocks = blocks, ...)
+    blocks_pasted <- dots_parser(paste_blocks, blocks = blocks, 
+                                 nested_metadata = TRUE, ...)
   } else {blocks_pasted <- blocks}
   
-  wides <- dots_parser(trans_block_to_wide, blocks = blocks_pasted, ...)
+  wides <- dots_parser(trans_block_to_wide, blocks = blocks_pasted,
+                       nested_metadata = TRUE, ...)
   
   tidys <- dots_parser(trans_wide_to_tidy, wides = wides, 
                        id_cols = "block_name", 
@@ -1500,7 +1503,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #' @param values_to_numeric Boolean indicating whether values will be coerced
 #'                          to numeric. See below for when this may be
 #'                          overridden by arguments passed in \code{...}
-#' @param ... Other functions to be passed to tidyr::pivot_longer
+#' @param ... Other functions to be passed to \code{tidyr::pivot_longer}
 #'            Note that including values_transform here will override the
 #'            behavior of values_to_numeric
 #' @return Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)

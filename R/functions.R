@@ -1022,7 +1022,7 @@ import_blockdesigns <- function(files, into = NULL, ...) {
   } else {nfields <- length(strsplit(tidys[1, "Design"], split = "_")[[1]])}
   if(nfields > 1) {
     if(is.null(into)) {into = paste("Design", 1:nfields, sep = "_")}
-    tidy_sep <- separate_tidy(tidys, col = "Design", into = into)
+    tidy_sep <- separate_tidy(tidys, col = "Design", into = into, ...)
   } else {tidy_sep <- tidys}
     
   return(tidy_sep)

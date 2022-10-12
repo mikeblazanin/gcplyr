@@ -42,7 +42,7 @@ Note that if neither data_cols nor id_cols}
 to numeric. See below for when this may be
 overridden by arguments passed in \code{...}}
 
-\item{...}{Other functions to be passed to tidyr::pivot_longer
+\item{...}{Other functions to be passed to \code{tidyr::pivot_longer}
 Note that including values_transform here will override the
 behavior of values_to_numeric}
 }

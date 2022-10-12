@@ -2,10 +2,85 @@
 % Please edit documentation in R/functions.R
 \name{read_tidys}
 \alias{read_tidys}
-\title{Read tidy-formatted dfs (in progress)}
+\title{Read tidy-shaped files}
 \usage{
-read_tidys()
+read_tidys(
+  files,
+  extension = NULL,
+  startrow = NULL,
+  endrow = NULL,
+  startcol = NULL,
+  endcol = NULL,
+  sheet = NULL,
+  run_names = NULL,
+  names_to_col = NULL,
+  ...
+)
+}
+\arguments{
+\item{files}{A vector of filepaths (relative to current working directory)
+where each one is a tidy-shaped data file}
+
+\item{extension}{(optional) the extension of the files:
+"csv", "xls", or "xlsx", or "tbl" for use of read.table
+
+If none provided, \code{read_tidys} will infer file 
+extension from provided filenames. When extension is not 
+"csv", "xls", or "xlsx" will use \code{utils::read.table}}
+
+\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
+the data is located. If none provided assumes the entire
+file is data.
+
+Can be specified as a numeric or using base-26 Excel letter
+notation}
+
+\item{sheet}{The sheet of the input files where data is located (if input
+files are .xls or .xlsx). If not specified defaults to the first}
+
+\item{run_names}{Names to give the tidy files read in. By default uses the
+file names if not specified. These names may be added
+to the resulting data frame depending on the value of
+the \code{names_to_col} argument}
+
+\item{names_to_col}{Should the run names (provided in \code{run_names}
+or inferred from \code{files}) be added as a column to the
+output? 
+
+If \code{names_to_col} is TRUE, they will be added with.
+the column name "run_name"
+
+If \code{names_to_col} is FALSE, they will not be added.
+
+If \code{names_to_col} is a string, they will be added
+and the column name will be the string specified
+for \code{names_to_col}.
+
+If \code{names_to_col} is NULL, they only will be 
+added if there are multiple tidy data.frames being read.
+In which case, the column name will be "run_name"}
+
+\item{...}{Other arguments passed to \code{utils::read_csv},
+\code{readxl::read_xls}, \code{readxl::read_xlsx}, or
+\code{utils::read.table}
+sheet}
+}
+\value{
+A dataframe containing a single tidy data.frame, or
+        A list of tidy-shaped data.frames named by filename
 }
 \description{
-Read tidy-formatted dfs (in progress)
+A function that imports tidy-shaped files into R. Largely acts as a
+wrapper for \code{utils::read.csv}, \code{readxl::read_xls},
+\code{readxl::read_xls}, or \code{readxl::read_xlsx}, but can handle
+multiple files at once and has additional options for taking subsets 
+of rows/columns rather than the entire file and for adding filename 
+or run names as an added column in the output.
+}
+\details{
+\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
+\code{sheet} and \code{extension} can either be a single value that 
+applies for all files or vectors or lists the same length as \code{files}
+
+Note that the startrow is always assumed to be a header
 }

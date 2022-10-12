@@ -4,13 +4,13 @@ author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
   pdf_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
   word_document:
     toc: true
-    toc_depth: 3
+    toc_depth: 4
 vignette: >
   %\VignetteIndexEntry{An introduction to using gcplyr}
   %\VignetteEngine{knitr::rmarkdown}
@@ -469,6 +469,7 @@ To import block-shaped design files, you can use the `import_blockdesigns` funct
 `import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R. That's right, it reads in block-shaped designs but returns a tidy-shaped data frame! 
 
 #### A basic example
+
 Let's take a look at an example. First, we need to create an example file. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
@@ -494,7 +495,8 @@ head(my_design, 20)
 ```
 
 #### Importing multiple block-shaped design elements
-What do you do if you have multiple design components? For instance, what if you have several different bacterial strains grown in several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
+
+What do you do if you have multiple design components? For instance, what if you have several different bacterial strains each grown in several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
 
 First, let's create another example designs file file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
 
@@ -526,6 +528,7 @@ head(my_design, 20)
 ```
 
 #### Notes for more advanced use
+
 Note that `import_blockdesigns` is essentially a wrapper function that calls `read_blocks`, `paste_blocks`, `trans_block_to_wide`, `trans_wide_to_tidy`, and then `separate_tidys`. Any arguments for those functions can be passed to `import_blockdesigns`. 
 
 For instance, if your design files do not start on the first row and first column, you can specify a `startrow` or `startcol` just like when you were using `read_blocks`. Or if your designs are located in a sheet other than the first sheet, you can specify `sheet`.

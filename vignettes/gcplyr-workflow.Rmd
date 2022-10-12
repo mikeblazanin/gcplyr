@@ -817,6 +817,59 @@ Once you have your spectrophotometric and design data merged, you're ready to mo
 
 There are a number of functions in `gcplyr` that can help pre-process, process, and analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Pre-processing**, **Processing**, and **Analyzing** sections of this document, therefore, are written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
 
+# Pre-processing: converting dates & times into numeric with lubridate
+Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
+
+First we have to create a data frame with time saved as it might be by a plate reader. As usual, **don't worry how this code works**, since it's just creating the output as if you had saved it from the plate reader.
+
+```{r}
+example_data_and_designs$Time <-
+  paste(example_data_and_designs$Time %/% 3600,
+        formatC((example_data_and_designs$Time %% 3600) %/% 60, 
+                width = 2, flag = 0),
+        formatC((example_data_and_designs$Time %% 3600) %% 60,
+                width = 2, flag = 0),
+        sep = ":")
+```
+
+Let's take a look at this data.frame. You'll notice that we've just modified the Time column from the `example_data_and_designs` file from the previous section.
+
+```{r}
+head(example_data_and_designs)
+```
+
+We can see that our `Time` aren't written in an easy numeric. Instead, they're in a format that's easy for a human to understand (but unfortunately not very usable for analysis). What are some of the time strings in the `Time` column?
+
+```{r}
+unique(example_data_and_designs$Time)
+```
+
+Here we can see that we have timepoints every 15 minutes all the way up to 24 hours. 
+
+Let's use `lubridate` to convert this text back into a usable format. `lubridate` has a whole family of functions that can parse text with hour, minute, and/or second components. You can use `hms` if your text contains hour, minute, and second information, `hm` if it only contains hour and minute information, and `ms` if it only contains minute and second information.
+
+Since the example has all three, we'll use `hms`:
+
+```{r}
+library(lubridate)
+
+example_data_and_designs$Time <- hms(example_data_and_designs$Time)
+
+head(example_data_and_designs)
+```
+
+Great! `hms` has parsed the text for us. However, `hms`, `hm`, and `ms` produce a class specific to the `lubridate` package called a `period`. Unfortunately, `period`s don't work well with some of our downstream analysis steps, so we need to convert it to a pure numeric value. We can use the `lubridate` function `time_length` to do so. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
+
+```{r}
+example_data_and_designs$Time <- time_length(example_data_and_designs$Time)
+
+head(example_data_and_designs)
+
+unique(example_data_and_designs$Time)
+```
+
+And now we can see that we've gotten our nice numeric `Time` values back! So we can proceed with the next steps of the analysis.
+
 # Pre-processing: smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
 

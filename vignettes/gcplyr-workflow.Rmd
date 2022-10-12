@@ -468,6 +468,7 @@ To import block-shaped design files, you can use the `import_blockdesigns` funct
 
 `import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R. That's right, it reads in block-shaped designs but returns a tidy-shaped data frame! 
 
+#### A basic example
 Let's take a look at an example. First, we need to create an example file. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
@@ -485,14 +486,44 @@ print_df(read.csv(temp_filename, header = FALSE,
                   colClasses = "character"))
 ```
 
-Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`
+Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`. Since this block contains the treatment numbers, we've given the `block_names` as "Treatment_numbers". If no `block_names` is provided, read_blocks will automatically name it according to the file name.
 
 ```{r}
-my_design <- import_blockdesigns(files = temp_filename)
+my_design <- import_blockdesigns(files = temp_filename, block_names = "Treatment_numbers")
 head(my_design, 20)
 ```
 
+#### Importing multiple block-shaped design elements
+What do you do if you have multiple design components? For instance, what if you have several different bacterial strains grown in several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
 
+First, let's create another example designs file file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
+
+```{r}
+temp_filename2 <- tempfile(fileext = ".csv")
+write.csv(
+  file = temp_filename2,
+  x = matrix(rep(c("Strain A", "Strain B", "Strain C", "Strain D"), each = 24),
+             nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
+             byrow = TRUE))
+```
+
+Now let's take a look at what the file looks like:
+
+```{r}
+print_df(read.csv(temp_filename2, header = FALSE, 
+                  colClasses = "character"))
+```
+
+Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
+
+Let's import this design using `import_blockdesigns`. Since our two blocks contains the treatment numbers and then the strain letters, we've given the `block_names` as `c("Treatment_numbers", "Strain_letters")`. If no `block_names` is provided, read_blocks will automatically name it according to the file name.
+
+```{r}
+my_design <- 
+  import_blockdesigns(files = c(temp_filename, temp_filename2), 
+                      block_names = c("Treatment_numbers", "Strain_letters"))
+head(my_design, 20)
+```
 
 If you find yourself needing more control over the process of importing block-shaped design files, note that `import_blockdesigns` is a wrapper function that calls `read_blocks`, `paste_blocks`, `trans_block_to_wide`, and then `trans_wide_to_tidy`. All these functions are available to users to call themselves for greater control.
 

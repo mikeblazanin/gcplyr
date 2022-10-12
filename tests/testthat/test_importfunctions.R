@@ -107,8 +107,8 @@ test_that("read_blocks reads data correctly", {
                                              sep = ""),
                         type1 = example_dfs_list[[i]][8, 8],
                         type2 = example_dfs_list[[i]][4, 7]))
-    row.names(my_blockcurves1_expected[[i]]$data) <-
-      as.character(row.names(my_blockcurves1_expected[[i]]$data))
+    # row.names(my_blockcurves1_expected[[i]]$data) <-
+    #   as.character(row.names(my_blockcurves1_expected[[i]]$data))
   }
   expect_equal(my_blockcurves1, my_blockcurves1_expected)
   

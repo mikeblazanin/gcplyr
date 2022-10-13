@@ -1642,8 +1642,8 @@ trans_tidy_to_wide <- function() {
 #' with measures data, or to use the collapse functionality of this 
 #' function to merge a list of dataframes into a single dataframe 
 #'  
-#' @param x First data.frame to be joined
-#' @param y Second data.frame to be joined
+#' @param x First data.frame, or list of data frames, to be joined
+#' @param y Second data.frame, or list of data frames, to be joined
 #' @param by A character vector of variables to join by, passed directly
 #'           to \code{dplyr::full_join}
 #' @param drop Should only \code{complete_cases} of the resulting
@@ -1652,7 +1652,8 @@ trans_tidy_to_wide <- function() {
 #'                 data frames that should be merged together before
 #'                 being merged with the other
 #' @param names_to Column name for where \code{names(x)} or \code{names(y)} 
-#'                 will be entered in if \code{collapse = TRUE}
+#'                 will be entered in if \code{collapse = TRUE}.
+#'                 
 #'                 If a value of \code{NA} then \code{names(x)} or 
 #'                 \code{names(y)} will not be put into a column in the
 #'                 returned data.frame

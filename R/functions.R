@@ -1005,11 +1005,19 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'
 #' @param files Vector of filenames (as strings), each of which is a 
 #'              block-shaped designs file. Inputs can be .csv, .xls, or .xlsx
-#' @param into  Vector of column names for design elements after
-#'              separation by \code{separate_tidys}. Should be in the same
-#'              order as elements listed within \code{files} and/or same order
+#' @param block_names
+#'              Vector of names for design elements. These will be the
+#'              resulting column names in the output data frame. Should be 
+#'              in the same order as \code{files} and/or same order
 #'              as corresponding \code{files} themselves. If \code{NULL},
-#'              column names will simply be "Design_1", "Design_2", etc.
+#'              file names will be used as column names.
+#' @param sep   If block design files are already pasted,
+#'              sep specifies the string separating design elements
+#'              
+#'              If NULL, \code{import_blockdesigns} will assume no elements
+#'              are already pasted together and attempt to find a character
+#'              not used in the imported files to paste and later separate
+#'              design elements.
 #' @param ...   Other arguments to pass to \code{read_blocks}, 
 #'              \code{paste_blocks}, \code{trans_block_to_wide},
 #'              \code{trans_wide_to_tidy}, or \code{separate_tidy}.
@@ -1022,33 +1030,61 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              location of design information inside \code{files} to 
 #'              \code{read_blocks}
 #'              
-#'              sep - string separating separate design elements for
-#'              \code{separate_tidys} in block design files that are already
-#'              pasted
+#'              Note that \code{import_blockdesigns} cannot currently handle
+#'              metadata speficified via the \code{metadata} argument of
+#'              \code{read_blocks}
 #' 
 #' @export
-import_blockdesigns <- function(files, into = NULL, ...) {
-  blocks <- dots_parser(read_blocks, files = files, ...)
+import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
+  blocks <- dots_parser(read_blocks, 
+                        block_names = block_names, files = files, ...)
   
   if(length(files) > 1) {
-    blocks_pasted <- dots_parser(paste_blocks, blocks = blocks, 
-                                 nested_metadata = TRUE, ...)
+    if(is.null(sep)) {
+      #No sep provided, so look for a character that is not present
+      # in the data/metadata and so can be used as a separator
+      sep <- c("_", " ", "-", ",", ";")
+      
+      not_in_blocks <-
+        sapply(
+          X = sep,
+          FUN = function(y) {
+            !any(grepl(pattern = y, fixed = TRUE,
+                       x = unlist(
+                         lapply(X = blocks,
+                                FUN = function(x) {
+                                  c(unlist(x[1]), unlist(x[2]))
+                                }))))
+          })
+      
+      if(!any(not_in_blocks)) {
+        stop("all of '_', ' ', '-', ',', and ';' are found in the files,
+              specify a sep not found in the files")
+      } else {sep <- sep[which(not_in_blocks)[1]]}
+    }
+
+    blocks_pasted <- dots_parser(paste_blocks, blocks = blocks,
+                                 sep = sep, nested_metadata = TRUE, ...)
   } else {blocks_pasted <- blocks}
   
   wides <- dots_parser(trans_block_to_wide, blocks = blocks_pasted,
                        nested_metadata = TRUE, ...)
   
-  tidys <- dots_parser(trans_wide_to_tidy, wides = wides, 
-                       id_cols = "block_name", 
-                       values_to = "Design", values_to_numeric = FALSE,
-                       ...)
+  #Transform to tidy, dropping the block_name column and using it
+  # as the column name for the values column
+  vals_colname <- wides$block_name[1]
+    
+  tidys <- dots_parser(
+    trans_wide_to_tidy, 
+    wides = wides[, -which("block_name" == colnames(wides))], 
+    data_cols = colnames(wides)[colnames(wides) != "block_name", ], 
+    values_to = vals_colname, values_to_numeric = FALSE,
+    ...)
   
-  if(!is.null(into)) {nfields <- length(into)
-  } else {nfields <- length(strsplit(tidys[1, "Design"], split = "_")[[1]])}
-  if(nfields > 1) {
-    if(is.null(into)) {into = paste("Design", 1:nfields, sep = "_")}
-    tidy_sep <- dots_parser(separate_tidy, data = tidys, 
-                            col = "Design", into = into, ...)
+  into <- strsplit(vals_colname, split = "_")[[1]]
+  if(length(into) > 1) {
+    tidy_sep <- dots_parser(separate_tidy, data = tidys,
+                            col = vals_colname, into = into)
   } else {tidy_sep <- tidys}
     
   return(tidy_sep)

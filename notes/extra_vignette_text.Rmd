@@ -7,6 +7,18 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Additionally, some plate readers might output growth curve data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
+
+```{r, eval = FALSE}
+imported_blockdata <- read_blocks(
+  files = "example_file.csv",
+  startrow = c(1, 10, 19, 28, 37, 46, 55),
+  endrow = c(8, 17, 26, 35, 44, 53, 62))
+```
+
+
+
+
 # Overview of gcplyr functions
 *This figure needs updating*
 ![General overview of gcplyr workflow](pkg-workflow.png){#id .class width=7in height=2.45in}

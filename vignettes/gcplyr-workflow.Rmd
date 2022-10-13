@@ -229,16 +229,6 @@ imported_blockdata <- read_blocks(
   startrow = 4, startcol = "A")
 ```
 
-Additionally, some plate readers might output growth curve data in a block shape but in a single file. For instance, the file may contain the block from lines 1 - 8, then an empty line, then the next block from lines 10 - 17, etc. Since `read_blocks` is vectorized on most of its input arguments, including `startrow`, `startcol`, `endrow`, and `endcol`, such a layout can be specified by passing a vector of startrows and endrows to `read_blocks`:
-
-```{r, eval = FALSE}
-imported_blockdata <- read_blocks(
-  files = "example_file.csv",
-  startrow = c(1, 10, 19, 28, 37, 46, 55),
-  endrow = c(8, 17, 26, 35, 44, 53, 62))
-```
-
-
 ### Specifying metadata
 
 Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `read_blocks` can include that information as well via the `metadata` argument. 

@@ -1081,9 +1081,9 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
     values_to = vals_colname, values_to_numeric = FALSE,
     ...)
   
-  into <- strsplit(vals_colname, split = "_")[[1]]
-  if(length(into) > 1) {
-    tidy_sep <- dots_parser(separate_tidy, data = tidys,
+  if(length(files) > 1) {
+    into <- strsplit(vals_colname, split = sep)[[1]]
+    tidy_sep <- dots_parser(separate_tidy, data = tidys, sep = sep,
                             col = vals_colname, into = into)
   } else {tidy_sep <- tidys}
     

@@ -1077,7 +1077,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
   tidys <- dots_parser(
     trans_wide_to_tidy, 
     wides = wides[, -which("block_name" == colnames(wides))], 
-    data_cols = colnames(wides)[colnames(wides) != "block_name", ], 
+    data_cols = colnames(wides)[colnames(wides) != "block_name"], 
     values_to = vals_colname, values_to_numeric = FALSE,
     ...)
   

@@ -1252,16 +1252,47 @@ head(example_data_and_designs_sum)
 
 As you approach the end of your growth curves analyses, you have likely summarized the dynamics of your growth curves into one or a few metrics. At this point, you may wish to pull in other sources of data to compare to your growth curves metrics. Just like merging multiple growth curves data frames together, this can be achieved with `merge_dfs`.
 
-```{r}
+Let's use the `example_data_and_designs_sum` from the previous section, where we've summarized our growth curves using area-under-the-curve (although this approach would work with any number of summarized metrics). Now imagine that, separately, we've measured the resistance of each of these bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth.
 
+We're just going to focus on the bacterial growth in the absence of phage, so let's use `dplyr::filter` to remove the phage added rows.
+
+```{r}
+example_data_and_designs_sum <-
+  dplyr::filter(example_data_and_designs_sum, Phage == "No Phage")
+head(example_data_and_designs_sum)
 ```
 
+Now, let's generate some mock antibiotic resistance data. The file containing the antibiotic resistance data should have the bacterial strain names under the same header `Bacterial_strain`, so that merge_dfs knows to match those two columns. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected.
 
+```{r}
+set.seed(123)
+antibiotic_dat <- 
+  data.frame(
+    Bacteria_strain = paste("Strain", 1:48),
+    Antibiotic_resis = 
+      example_data_and_designs_sum$auc[
+        match(paste("Strain", 1:48), 
+              example_data_and_designs_sum$Bacteria_strain)] * 
+      runif(48, 0.5, 1.5) < mean(example_data_and_designs_sum$auc))
 
+head(antibiotic_dat)
+```
 
+Great, now we merge our two data frames.
 
+```{r}
+growth_and_antibiotics <- merge_dfs(example_data_and_designs_sum,
+                                    antibiotic_dat)
+head(growth_and_antibiotics)
+```
 
+And now let's see if there's a relationship!
 
+```{r}
+library(ggplot2)
+ggplot(data = growth_and_antibiotics, 
+       aes(x = Antibiotic_resis, y = auc)) +
+  geom_point()
+```
 
-
-
+There is! We can see that the antibiotic resistant strains (`TRUE`) have a smaller area-under-the-curve than the antibiotic sensitive strains (`FALSE`).

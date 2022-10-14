@@ -1315,4 +1315,4 @@ ggplot(data = growth_and_antibiotics,
   geom_point()
 ```
 
-There is! We can see that the antibiotic resistant strains (`TRUE`) have a smaller area-under-the-curve than the antibiotic sensitive strains (`FALSE`).
+There is! We can see that the antibiotic resistant strains (`TRUE`) have a smaller area-under-the-curve than the antibiotic sensitive strains (`FALSE`) (although, to be fair, we did simulate the data so we'd get that result).

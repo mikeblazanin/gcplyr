@@ -1082,9 +1082,8 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
     ...)
   
   if(length(files) > 1) {
-    into <- strsplit(vals_colname, split = sep)[[1]]
-    tidy_sep <- dots_parser(separate_tidy, data = tidys, sep = sep,
-                            col = vals_colname, into = into)
+    tidy_sep <- dots_parser(separate_tidy, 
+                            data = tidys, sep = sep, col = vals_colname)
   } else {tidy_sep <- tidys}
     
   return(tidy_sep)

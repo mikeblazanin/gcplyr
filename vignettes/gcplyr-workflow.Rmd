@@ -810,7 +810,10 @@ Once you have your spectrophotometric and design data merged, you're ready to mo
 
 There are a number of functions in `gcplyr` that can help pre-process, process, and analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Pre-processing**, **Processing**, and **Analyzing** sections of this document, therefore, are written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
 
-# Pre-processing: excluding data
+# Pre-processing
+Pre-processing includes some necessary steps before we start calculating anything about the growth curves. For instance, excluding wells, converting time formats, and smoothing spectrophotometric data.
+
+## Pre-processing: excluding data
 In some cases, we want to remove some of the wells from our growth curves data before we carry on with downstream analyses. For instance, they may have been left empty, contained negative controls, or were contaminated. We can use `dplyr`'s `filter` function to remove those wells that meet criteria we want to exclude.
 
 For instance, let's imagine that we realized that we put the wrong media into Well B1, and so we should remove it from our analyses. In that case, we can simply:
@@ -830,7 +833,7 @@ example_data_and_designs_filtered <-
 ```
 
 
-# Pre-processing: converting dates & times into numeric with lubridate
+## Pre-processing: converting dates & times into numeric with lubridate
 Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
 
 First we have to create a data frame with time saved as it might be by a plate reader. As usual, **don't worry how this code works**, since it's just creating the output as if you had saved it from the plate reader.
@@ -883,7 +886,7 @@ unique(example_data_and_designs$Time)
 
 And now we can see that we've gotten our nice numeric `Time` values back! So we can proceed with the next steps of the analysis.
 
-# Pre-processing: smoothing
+## Pre-processing: smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
 
 First, let's add some noise to the example data we've been working with:
@@ -918,7 +921,7 @@ Since your dataframe likely includes data from multiple wells (or even plates), 
 * For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. 
 * For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument, and altered tuning parameters (e.g. `k`, `sp`, `bs`) would be included in `formula`.
 
-## Smoothing with moving-average
+### Smoothing with moving-average
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -940,7 +943,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-## Smoothing with moving-median
+### Smoothing with moving-median
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -962,7 +965,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-## Smoothing with LOESS
+### Smoothing with LOESS
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -983,7 +986,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-## Smoothing with GAM
+### Smoothing with GAM
 
 ```{r}
 example_data_and_designs$smoothed <-

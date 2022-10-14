@@ -810,6 +810,26 @@ Once you have your spectrophotometric and design data merged, you're ready to mo
 
 There are a number of functions in `gcplyr` that can help pre-process, process, and analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Pre-processing**, **Processing**, and **Analyzing** sections of this document, therefore, are written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
 
+# Pre-processing: excluding data
+In some cases, we want to remove some of the wells from our growth curves data before we carry on with downstream analyses. For instance, they may have been left empty, contained negative controls, or were contaminated. We can use `dplyr`'s `filter` function to remove those wells that meet criteria we want to exclude.
+
+For instance, let's imagine that we realized that we put the wrong media into Well B1, and so we should remove it from our analyses. In that case, we can simply:
+
+```{r}
+library(dplyr)
+example_data_and_designs_filtered <- 
+  filter(example_data_and_designs, Well != "B1")
+```
+
+Now we can see that all rows from Well B1 have been excluded. We could do something similar if we realized that a Bacterial strain was contaminated. For instance, if strain 13 was contaminated, we could exclude it (and Well B1) as follows:
+
+```{r}
+example_data_and_designs_filtered <- 
+  filter(example_data_and_designs, 
+         Well != "B1", Bacteria_strain != "Strain 13")
+```
+
+
 # Pre-processing: converting dates & times into numeric with lubridate
 Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
 

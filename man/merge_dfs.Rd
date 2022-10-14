@@ -15,9 +15,9 @@ merge_dfs(
 )
 }
 \arguments{
-\item{x}{First data.frame to be joined}
+\item{x}{First data.frame, or list of data frames, to be joined}
 
-\item{y}{Second data.frame to be joined}
+\item{y}{Second data.frame, or list of data frames, to be joined}
 
 \item{by}{A character vector of variables to join by, passed directly
 to \code{dplyr::full_join}}
@@ -30,7 +30,8 @@ data frames that should be merged together before
 being merged with the other}
 
 \item{names_to}{Column name for where \code{names(x)} or \code{names(y)} 
-will be entered in if \code{collapse = TRUE}
+will be entered in if \code{collapse = TRUE}.
+
 If a value of \code{NA} then \code{names(x)} or 
 \code{names(y)} will not be put into a column in the
 returned data.frame}

@@ -4,17 +4,25 @@
 \alias{import_blockdesigns}
 \title{Import blockdesigns}
 \usage{
-import_blockdesigns(files, into = NULL, ...)
+import_blockdesigns(files, block_names = NULL, sep = NULL, ...)
 }
 \arguments{
 \item{files}{Vector of filenames (as strings), each of which is a 
 block-shaped designs file. Inputs can be .csv, .xls, or .xlsx}
 
-\item{into}{Vector of column names for design elements after
-separation by \code{separate_tidys}. Should be in the same
-order as elements listed within \code{files} and/or same order
+\item{block_names}{Vector of names for design elements. These will be the
+resulting column names in the output data frame. Should be 
+in the same order as \code{files} and/or same order
 as corresponding \code{files} themselves. If \code{NULL},
-column names will simply be "Design_1", "Design_2", etc.}
+file names will be used as column names.}
+
+\item{sep}{If block design files are already pasted,
+sep specifies the string separating design elements
+
+If NULL, \code{import_blockdesigns} will assume no elements
+are already pasted together and attempt to find a character
+not used in the imported files to paste and later separate
+design elements.}
 
 \item{...}{Other arguments to pass to \code{read_blocks}, 
 \code{paste_blocks}, \code{trans_block_to_wide},
@@ -35,7 +43,7 @@ Common arguments that you may want to provide include:
              location of design information inside \code{files} to 
              \code{read_blocks}
              
-             sep - string separating separate design elements for
-             \code{separate_tidys} in block design files that are already
-             pasted
+             Note that \code{import_blockdesigns} cannot currently handle
+             metadata speficified via the \code{metadata} argument of
+             \code{read_blocks}
 }

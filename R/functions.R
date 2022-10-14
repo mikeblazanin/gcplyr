@@ -952,7 +952,7 @@ read_tidys <- function(files, extension = NULL,
 }
 
 
-## Import block-shaped (read, uninterleave, transform to wide) ----
+# Import block-shaped (read, uninterleave, transform to wide) ----
 
 #' Import blockmeasures
 #' 
@@ -2748,7 +2748,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 }
 
 
-##Legacy Code ----
+# Legacy Code ----
 
 #' Turn tidydesign into block format
 #'

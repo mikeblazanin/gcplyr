@@ -13,7 +13,7 @@ Description: This is a package containing functions for use in importing,
     can then be processed and analyzed using the functions provided. This 
     package also contains functions enabling the association of experimental 
     design factors with the imported data, for ease of downstream analysis.
-License: MIT + file LICENSE
+License: MIT + file LICENSE.md
 Encoding: UTF-8
 Suggests: 
     knitr,

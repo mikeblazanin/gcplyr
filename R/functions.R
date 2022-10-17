@@ -1170,21 +1170,18 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #' Note that either \code{nrows} or \code{block_row_names} must be provided
 #' and that either \code{ncols} or \code{block_col_names} must be provided
 #' 
-#' Examples:
-#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
-#'         design_element_name = list(c("Value1", "Value2", "Value3"),
-#'                           rowstart:rowend, colstart:colend,
-#'                           "111222333000", TRUE)
-#' To make it easier to pass arguments, use make_designpattern:
-#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
-#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
-#'                                                 rows = 2:7, cols = 2:11,
-#'                                                 pattern = "11223300",
-#'                                                 byrow = TRUE))
 #' 
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
+#' @param output_format One of c("blocks", "blocks_pasted", "wide", "tidy")
+#'                      denoting the format of the resulting data.frame
+#'                      
+#'                      For easy merging with tidymeasures, leave as default
+#'                      of 'tidy'. For human-readability to confirm design
+#'                      is correct, choose 'blocks' or 'blocks_pasted'. For
+#'                      writing to block-shaped file(s), choose 'blocks' or
+#'                      'blocks_pasted'.
 #' @param wellnames_sep A string used when concatenating rownames and column
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
@@ -1223,15 +1220,27 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'               defaults to every character
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
-#'              
+#'
+#' @examples
+#' make_tidydesign(nrows = 8, ncols = 12,
+#'         design_element_name = list(c("Value1", "Value2", "Value3"),
+#'                           rowstart:rowend, colstart:colend,
+#'                           "111222333000", TRUE)
+#' 
+#' #To make it easier to pass arguments, use make_designpattern:
+#' make_tidydesign(nrows = 8, ncols = 12,
+#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
+#'                                                 rows = 2:7, cols = 2:11,
+#'                                                 pattern = "11223300",
+#'                                                 byrow = TRUE))              
 #' 
 #' @export         
 make_design <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
-                        wellnames_sep = "", wellnames_colname = "Well",
+                        output_format = "tidy",
+                        wellnames_sep = "_", wellnames_colname = "Well",
                         wellnames_Excel = TRUE, lookup_tbl_start = 1,
-                        pattern_split = "", colnames_first = FALSE,
-                        output_format = "block", ...) {
+                        pattern_split = "", colnames_first = FALSE, ...) {
   
   #Do we need to include a plate_name argument?
   #(old comment) the plates have to be identified uniquely
@@ -1265,6 +1274,11 @@ make_design <- function(nrows = NULL, ncols = NULL,
   }
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}
+  
+  if(length(output_format) > 1) {stop("output_format must be a sinle string")}
+  if(!output_format %in% c("blocks", "blocks_pasted", "wide", "tidy")) {
+    stop("output_format must be one of c('blocks', 'blocks_pasted', 'wide', 'tidy')")
+  }
   
   dot_args <- list(...)
   
@@ -1331,9 +1345,10 @@ make_design <- function(nrows = NULL, ncols = NULL,
   }
   
   if(output_format %in% c("blocks_pasted", "wide", "tidy")) {
-    sep <- sep_finder(output, nested_metadata = TRUE)[1]
-    
-    output <- paste_blocks(output, nested_metadata = TRUE, sep = sep)
+    if(length(dot_args) > 1) {
+      sep <- sep_finder(output, nested_metadata = TRUE)[1]
+      output <- paste_blocks(output, nested_metadata = TRUE, sep = sep)
+    }
     if(output_format %in% c("wide", "tidy")) {
       output <- trans_block_to_wide(output, wellnames_sep = wellnames_sep,
                                     nested_metadata = TRUE,
@@ -1348,8 +1363,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
             values_to = vals_colname,
             values_to_numeric = FALSE)
         if(length(dot_args) > 1) {
-          dots_parser(separate_tidy, 
-                      data = tidys, sep = sep, col = vals_colname)
+          output <- separate_tidy(data = output, sep = sep, col = vals_colname)
         }
       }
     }

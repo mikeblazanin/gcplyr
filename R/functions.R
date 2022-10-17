@@ -1161,6 +1161,205 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 
 # Make designs ----
 
+#' Make design data.frame(s)
+#' 
+#' This is a function to easily input experimental design elements
+#' for later merging with read data
+#' 
+#' @details 
+#' Note that either \code{nrows} or \code{block_row_names} must be provided
+#' and that either \code{ncols} or \code{block_col_names} must be provided
+#' 
+#' Examples:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'         design_element_name = list(c("Value1", "Value2", "Value3"),
+#'                           rowstart:rowend, colstart:colend,
+#'                           "111222333000", TRUE)
+#' To make it easier to pass arguments, use make_designpattern:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
+#'                                                 rows = 2:7, cols = 2:11,
+#'                                                 pattern = "11223300",
+#'                                                 byrow = TRUE))
+#' 
+#' @param nrows,ncols Number of rows and columns in the plate data
+#' @param block_row_names,block_col_names Names of the rows, columns
+#'                                     of the plate blockmeasures data
+#' @param wellnames_sep A string used when concatenating rownames and column
+#'                      names to create well names
+#' @param wellnames_colname Header for newly-created column containing the
+#'                          well names
+#' @param wellnames_Excel If \code{block_row_names} or \code{block_col_names}
+#'                        are not specified, should rows and columns be named
+#'                        using Excel-style base-26 lettering for rows
+#'                        and numbering for columns? If FALSE, rows and columns
+#'                        will be numbered with "R" and "C" prefix.
+#' @param pattern_split character to split pattern elements provided in
+#'                      \code{...} by
+#' @param lookup_tbl_start Value in the lookup table for the split pattern values
+#'                         that corresponds to the first value in the vector.
+#'                         
+#'                         Lookup table by default is 
+#'                         c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
+#'                         for example, lookup_tbl_start = "A", then the lookup
+#'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
+#' @param colnames_first  In the wellnames created by \code{paste}-ing the
+#'                        rownames and column names, should the column names
+#'                        come first
+#' @param ... Each \code{...} argument must be a list with five elements:
+#' 
+#'              1. a vector of the values
+#'              
+#'              2. a vector of the rows the pattern should be applied to
+#'              
+#'              3. a vector of the columns the pattern should be applied to
+#'              
+#'              4. a string of the pattern itself, where numbers refer to
+#'               the indices in the values vector
+#'               
+#'               0's refer to NA
+#'               
+#'               This pattern will be split using pattern_split, which
+#'               defaults to every character
+#'               
+#'              5. a Boolean for whether this pattern should be filled byrow
+#'              
+#' 
+#' @export         
+make_design <- function(nrows = NULL, ncols = NULL,
+                        block_row_names = NULL, block_col_names = NULL,
+                        wellnames_sep = "", wellnames_colname = "Well",
+                        wellnames_Excel = TRUE, lookup_tbl_start = 1,
+                        pattern_split = "", colnames_first = FALSE,
+                        output_format = "block", ...) {
+  
+  #Do we need to include a plate_name argument?
+  #(old comment) the plates have to be identified uniquely
+  
+  #(old comment on other ways inputs could be taken)
+  #       Vectors can be formatted in several ways:
+  #         they can simply be numbers of the wells
+  #         they can be row-column based
+  #         they can be pattern based (within limits)
+  #   example:
+  #   make_layout("Treatment" = list("Local" = 1:5, "Global" = 6:10,
+  #                                   "Control" = 11:15),
+  #               "Isolate" = list("A" = c(1, 6, 11),
+  #                                 "B" = c(2, 7, 12), etc))
+  #               "Rep" = list("1" = 
+  
+  #Check inputs
+  if(is.null(nrows) & is.null(block_row_names)) {
+    stop("nrows or block_row_names must be provided")
+  }
+  if(is.null(ncols) & is.null(block_col_names)) {
+    stop("ncols or block_col_names must be provided")
+  }
+  if (is.null(block_row_names)) {
+    if (wellnames_Excel) {block_row_names <- to_excel(1:nrows)
+    } else {block_row_names <- paste("R", 1:nrows, sep = "")}
+  }
+  if (is.null(block_col_names)) {
+    if (wellnames_Excel) {block_col_names <- 1:ncols
+    } else {block_col_names <- paste("C", 1:ncols, sep = "")}
+  }
+  if (is.null(nrows)) {nrows <- length(block_row_names)}
+  if (is.null(ncols)) {ncols <- length(block_col_names)}
+  
+  dot_args <- list(...)
+  
+  #Make empty output list
+  output <- rep(list(list(
+    "data" = matrix(NA, nrow = nrows, ncol = ncols,
+                    dimnames = list(block_row_names, block_col_names)),
+                    "metadata" = c("block_name" = "NA"))),
+    length(unique(names(dot_args))))
+  
+  #Note dot_args structure
+  #dot_args[[i]] = list(values = c("A", "B", "C"),
+  #                     rows = rowstart:rowend, cols = colstart:colend
+  #                     pattern = "111222333000", byrow = TRUE)
+  
+  #Loop through input arguments & fill into output dataframe
+  for (i in 1:length(dot_args)) {
+    pattern_list <- strsplit(dot_args[[i]][[4]],
+                             split = pattern_split)[[1]]
+    if (any(nchar(pattern_list) > 1)) {
+      if (any(is.na(suppressWarnings(as.numeric(pattern_list))))) {
+        stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
+      } else { #they're all numeric
+        pattern_list <- as.numeric(pattern_list)
+        pattern_list[pattern_list==0] <- NA
+      }
+    } else { #they're all single-character pattern values
+      lookup_table <- c(1:9, LETTERS, letters) #Note since 0 not included, 0's become NA
+      lookup_table <- lookup_table[match(lookup_tbl_start, lookup_table):
+                                     length(lookup_table)]
+      if (any(!pattern_list[pattern_list != "0"] %in% lookup_table)) {
+        stop("Some values in pattern are not in lookup table. Check that you 
+             have lookup_tbl_start correct and that you're only using 
+             alphanumeric values")
+      }
+      pattern_list <- match(pattern_list, lookup_table)
+    }
+    
+    if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
+         length(pattern_list)) != 0) {
+      warning(paste("Total number of wells is not a multiple of pattern length for",
+                    names(dot_args)[i]))
+    }
+    
+    #Byrow is optional, if not provided default is byrow = TRUE
+    if (length(dot_args[[i]]) < 5) {
+      dot_args[[i]][[5]] <- TRUE
+    }
+    
+    #Create list of values following pattern (which is replicated as needed
+    # to reach the necessary length)
+    vals_list <- dot_args[[i]][[1]][
+      rep(pattern_list, length.out = (length(dot_args[[i]][[2]])*
+                                        length(dot_args[[i]][[3]])))]
+    
+    #Fill values into blocks
+    output_idx <- match(names(dot_args)[i], unique(names(dot_args)))
+    output[[output_idx]]$data[dot_args[[i]][[2]], dot_args[[i]][[3]]] <-
+      matrix(vals_list,
+             nrow = length(dot_args[[i]][[2]]),
+             ncol = length(dot_args[[i]][[3]]),
+             byrow = dot_args[[i]][[5]])
+    output[[output_idx]]$metadata["block_name"] <- names(dot_args)[i]
+  }
+  
+  if(output_format %in% c("blocks_pasted", "wide", "tidy")) {
+    sep <- sep_finder(output, nested_metadata = TRUE)[1]
+    
+    output <- paste_blocks(output, nested_metadata = TRUE, sep = sep)
+    if(output_format %in% c("wide", "tidy")) {
+      output <- trans_block_to_wide(output, wellnames_sep = wellnames_sep,
+                                    nested_metadata = TRUE,
+                                    colnames_first = colnames_first)
+      if (output_format == "tidy") {
+        vals_colname <- output$block_name[1]
+        
+        output <- 
+          trans_wide_to_tidy(
+            output[, -which("block_name" == colnames(output))], 
+            data_cols = colnames(output)[colnames(output) != "block_name"],
+            values_to = vals_colname,
+            values_to_numeric = FALSE)
+        if(length(dot_args) > 1) {
+          dots_parser(separate_tidy, 
+                      data = tidys, sep = sep, col = vals_colname)
+        }
+      }
+    }
+  }
+  
+  return(output)
+}
+
+
+
 #' Make tidy design data.frames
 #' 
 #' This is a function to easily input experimental design elements
@@ -1399,15 +1598,7 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "_",
   
   #Infer nestedness if nested_metadata is set to NULL
   if (is.null(nested_metadata)) {
-    if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
-      nested_metadata <- FALSE
-      warning("Inferring nested_metadata to be FALSE")
-    } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
-      nested_metadata <- TRUE
-      warning("Inferring nested_metadata to be TRUE")
-    } else {
-      stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
-    }
+    nested_metadata <- infer_block_metadata(blocks)
   }
   
   #Check that all blocks have same dimensions

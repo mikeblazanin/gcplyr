@@ -29,7 +29,9 @@ knitr::opts_knit$set(root.dir = tempdir())
 ```
 
 # Getting started
-`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). This document gives a walkthrough of how to use `gcplyr`'s most common functions.
+`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). `gcplyr` turns steps that previously took many lines of code into a command that requires only a single line of code.
+
+This document gives a walkthrough of how to use `gcplyr`'s most common functions.
 
 To get started, all you need is the data file with the growth curve measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
@@ -444,14 +446,16 @@ print(head(imported_blocks_now_tidy), row.names = FALSE)
 ```
 
 # Including design elements
-Often during analysis of growth curve data, we'd like to incorporate information on the experimental design. For example, which bacteria are present in which wells, or which wells have received some treatment. `gcplyr` enables incorporation of design elements in two ways:
+During analysis of growth curve data, we often want to incorporate information about the experimental design. For example, which bacteria are present in which wells, or which wells have received certain treatments. `gcplyr` enables incorporation of design elements in two ways:
+
 1. Design elements can be imported from files
 2. Design elements can be generated programmatically using `make_tidydesign`
 
 ## Reading design elements from files
-Users have two options for how to read design elements from files, depending on the shape of the design files they have created:
+Users have two options for how to read design elements from files, depending on the shape of the design files that they have created:
+
 * If design files are block-shaped, they can be read with `import_blockdesigns`
-* If design files are tidy-shaped, they can simply be read with `read_tidys`.
+* If design files are tidy-shaped, they can simply be read with `read_tidys`
 
 ### Importing block-shaped design files
 To import block-shaped design files, you can use the `import_blockdesigns` function, which will return a tidy-shaped designs data frame (or list of data frames).
@@ -460,13 +464,13 @@ To import block-shaped design files, you can use the `import_blockdesigns` funct
 
 #### A basic example
 
-Let's take a look at an example. First, we need to create an example file. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
+Let's take a look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
 temp_filename <- tempfile(fileext = ".csv")
 write.csv(
   file = temp_filename,
-  x = matrix(rep(c("Treat 1", "Treat 2"), each = 48),
+  x = matrix(rep(c("Tr1", "Tr2"), each = 48),
              nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)))
 ```
 
@@ -486,15 +490,15 @@ head(my_design, 20)
 
 #### Importing multiple block-shaped design elements
 
-What do you do if you have multiple design components? For instance, what if you have several different bacterial strains each grown in several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
+What do you do if you have multiple design components? For instance, what if you have several different bacterial strains each with several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
 
-First, let's create another example designs file file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
+First, let's create another example designs file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
 temp_filename2 <- tempfile(fileext = ".csv")
 write.csv(
   file = temp_filename2,
-  x = matrix(rep(c("Strain A", "Strain B", "Strain C", "Strain D"), each = 24),
+  x = matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),
              nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
              byrow = TRUE))
 ```
@@ -508,7 +512,7 @@ print_df(read.csv(temp_filename2, header = FALSE,
 
 Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
 
-Let's import this design using `import_blockdesigns`. Since our two blocks contains the treatment numbers and then the strain letters, we've given the `block_names` as `c("Treatment_numbers", "Strain_letters")`. If no `block_names` is provided, read_blocks will automatically name it according to the file name.
+Let's now import both designs using `import_blockdesigns`. Since our two blocks contain the treatment numbers and then the strain letters, we've given the `block_names` as `c("Treatment_numbers", "Strain_letters")`. If no `block_names` is provided, read_blocks will automatically name it according to the file name.
 
 ```{r}
 my_design <- 
@@ -822,6 +826,7 @@ For instance, let's imagine that we realized that we put the wrong media into We
 library(dplyr)
 example_data_and_designs_filtered <- 
   filter(example_data_and_designs, Well != "B1")
+head(example_data_and_designs_filtered)
 ```
 
 Now we can see that all rows from Well B1 have been excluded. We could do something similar if we realized that a Bacterial strain was contaminated. For instance, if strain 13 was contaminated, we could exclude it (and Well B1) as follows:
@@ -830,10 +835,11 @@ Now we can see that all rows from Well B1 have been excluded. We could do someth
 example_data_and_designs_filtered <- 
   filter(example_data_and_designs, 
          Well != "B1", Bacteria_strain != "Strain 13")
+head(example_data_and_designs_filtered)
 ```
 
 
-## Pre-processing: converting dates & times into numeric with lubridate
+## Pre-processing: converting dates & times into numeric
 Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
 
 First we have to create a data frame with time saved as it might be by a plate reader. As usual, **don't worry how this code works**, since it's just creating the output as if you had saved it from the plate reader.

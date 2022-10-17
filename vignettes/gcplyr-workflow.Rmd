@@ -29,11 +29,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 ```
 
 # Getting started
-<<<<<<< HEAD
 `gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). Without `gcplyr`, importing and analyzing plate reader data can be a complicated process that has to be tailored for each experiment, requiring many lines of code. With `gcplyr` many of those steps are now just a single line of code.
-=======
-`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). `gcplyr` turns steps that previously took many lines of code into a command that requires only a single line of code.
->>>>>>> 0d2ca1ed58553c00afae90dc1f0136d87292d914
 
 This document gives a walkthrough of how to use `gcplyr`'s most common functions.
 

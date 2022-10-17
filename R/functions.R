@@ -155,6 +155,75 @@ dots_parser <- function(FUN, ...) {
   return(do.call(FUN, dots[names(dots) %in% argnames]))
 }
 
+#' A function that infers whether blocks have nested metadata
+#' 
+#' @param blocks The list of blocks
+#' 
+#' @return TRUE or FALSE whether the blocks contain metadata
+#'         (also passes warning when inferring, or error when unable to)
+#' 
+infer_block_metadata <- function(blocks) {
+  #Infer nestedness if nested_metadata is set to NULL
+  if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
+    warning("Inferring nested_metadata to be FALSE")
+    return(FALSE)
+  } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
+    warning("Inferring nested_metadata to be TRUE")
+    return(TRUE)
+  } else {
+    stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
+  }
+}
+
+#' A function that finds a character not present in block data nor metadata
+#' 
+#' Typically this is used to find a separator that can be used without
+#' accidentally implying separations in the data that shouldn't be there
+#' 
+#' @param blocks The list of blocks
+#' @param nested_metadata A Boolean for if there is nested metadata in
+#'                        \code{blocks}. Will attempt to infer if left NULL
+#' 
+#' @return vector of characters not found in the blocks that can be used
+#'         as a separator without issue (or error if none can be found)
+#' 
+
+sep_finder <- function(blocks, nested_metadata = NULL) {
+  if (is.null(nested_metadata)) {
+    nested_metadata <- infer_block_metadata(blocks)
+  }
+  
+  #Look for a character that is not present
+  # in the data/metadata and so can be used as a separator
+  sep <- c("_", " ", "-", ",", ";")
+  if(nested_metadata == TRUE) {
+    not_in_blocks <-
+      sapply(X = sep,
+             FUN = function(y) {
+               !any(grepl(pattern = y, fixed = TRUE,
+                          x = unlist(
+                            lapply(X = blocks,
+                                   FUN = function(x) {
+                                     c(unlist(x[1]), unlist(x[2]))
+                                   }))))
+             })
+  } else if (nested_metadata == FALSE) {
+    not_in_blocks <-
+      sapply(X = sep,
+             FUN = function(y) {
+               !any(grepl(pattern = y, fixed = TRUE,
+                          x = unlist(
+                            lapply(X = blocks,FUN = function(x) {unlist(x[1])}))))
+             })
+  }
+  
+  if(!any(not_in_blocks)) {
+    stop("all of '_', ' ', '-', ',', and ';' are found in the files,
+              specify a sep not found in the files")
+  } else {return(sep[which(not_in_blocks)])}
+}
+
+
 # Read files ----
 
 #' An internal function that handles name inference logic for other functions

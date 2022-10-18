@@ -387,7 +387,7 @@ infer_names <- function(df,
 #'                        and numbers for rows. 
 #'                        If \code{wellnames_Excel} is FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
-#' @param ...   Other arguments passed to \code{utils::read_csv},
+#' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'              or \code{utils::read.table}
 #'
@@ -663,7 +663,7 @@ read_blocks <- function(files, extension = NULL,
 #'                             If FALSE, names will be numbered with "R" and "C"
 #'                             prefixes for row and column.
 #'                             (e.g. R4C7 is the 4th column, 7th row)
-#' @param ...   Other arguments passed to \code{utils::read_csv},
+#' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
 #'              
@@ -883,7 +883,7 @@ read_wides <- function(files, extension = NULL,
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
 #'                     
-#' @param ...   Other arguments passed to \code{utils::read_csv},
+#' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
 #'              sheet

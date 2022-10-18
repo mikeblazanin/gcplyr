@@ -1970,8 +1970,10 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
 #'            \code{moving_average}, or \code{moving_median}.
 #'            
-#'            For \code{moving_average} and \code{moving_median}, window_width_n
-#'            is required. For \code{loess} and \code{gam}, see details.
+#'            For \code{moving_average} and \code{moving_median}, 
+#'            \code{window_width_n} is required. 
+#'            
+#'            For \code{loess} and \code{gam}, see details.
 #'
 #' @details For smoothing using \code{loess} or \code{gam} that depends on 
 #'          more than one predictor, \code{formula} and \code{data} can be

@@ -1099,6 +1099,11 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              location of design information inside \code{files} to 
 #'              \code{read_blocks}
 #'              
+#'              wellnames_sep - specifying what character (or "" for none)
+#'              should be used when pasting together the rownames and
+#'              column names. Note that this should be chosen to match
+#'              the wellnames in your measures.
+#'              
 #'              Note that \code{import_blockdesigns} cannot currently handle
 #'              metadata speficified via the \code{metadata} argument of
 #'              \code{read_blocks}

@@ -809,6 +809,7 @@ Let's generate our design:
 
 ```{r}
 example_design <- make_design(
+  wellnames_sep = "",
   pattern_split = ",", nrows = 8, ncols = 12,
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),

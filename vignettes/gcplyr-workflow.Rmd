@@ -449,7 +449,7 @@ print(head(imported_blocks_now_tidy), row.names = FALSE)
 During analysis of growth curve data, we often want to incorporate information about the experimental design. For example, which bacteria are present in which wells, or which wells have received certain treatments. `gcplyr` enables incorporation of design elements in two ways:
 
 1. Design elements can be imported from files
-2. Design elements can be generated programmatically using `make_tidydesign`
+2. Design elements can be generated programmatically using `make_design`
 
 ## Reading design elements from files
 Users have two options for how to read design elements from files, depending on the shape of the design files that they have created:
@@ -538,12 +538,15 @@ Just like measures data, to import tidy-shaped designs you could use the built-i
 
 Once these design elements have been read into the R environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **Merging spectrophotometric and design data** section.
 
-## Generating tidy-shaped design elements programmatically
-If you don't have your experimental design information saved in a file, you can directly create such a `data.frame` using the `gcplyr` function `make_tidydesign`. `make_tidydesign` uses the spatial location of design elements in a multiwell plate as input arguments, but outputs a tidy-shaped `data.frame` that can be easily merged with your tidy-shaped data.
+## Generating designs in R
+If you'd rather make your design data.frames in R, `gcplyr` has a helper function that makes it easy to do so: `make_design`. `make_design` can create:
+
+* block-shaped data.frames with your design information (e.g. for outputting to files)
+* tidy-shaped data.frames with your design information (e.g. for merging with tidy-shaped plate reader data)
 
 ### An example with a single design
 
-Let's start with a simple example demonstrating the basic use of `make_tidydesign` (we'll move on to more complicated designs afterwards).
+Let's start with a simple example demonstrating the basic use of `make_design` (we'll move on to more complicated designs afterwards).
 
 For example, let's imagine a growth curve experiment where a 96 well plate (12 columns and 8 rows) has a different bacterial strain in each row, but the first and last columns and first and last rows were left empty.
 
@@ -557,61 +560,65 @@ Row G     | Blank    | Strain #5 | Strain #5 | ... | Strain #5 | Blank
 Row G     | Blank    | Strain #6 | Strain #6 | ... | Strain #6 | Blank
 Row H     | Blank    | Blank     | Blank     | ... | Blank     | Blank
 
-To generate a tidy-shaped design `data.frame` representing this information, we can use `make_tidydesign`:
+Typing a design like this manually into a spreadsheet can be tedious. But `make_design` makes it easier. To generate a design `data.frame` representing this information, we can use `make_design`. 
+
+`make_design` first needs some general information, like the `output_format` you'd like and the `nrows` and `ncols` in the plate. Allowed `output_format`s include: `blocks`, `blocks_pasted`, `wide`, and `tidy`
+
+Then, for each different design component, `make_design` needs five different pieces of information:
+
+* a vector containing the possible values
+* a vector specifying which rows these values should be applied to
+* a vector specifying which columns these values should be applied to
+* a string of the pattern of these values
+* a Boolean for whether this pattern should be filled byrow (defaults to TRUE)
 
 ```{r}
-my_design <- make_tidydesign(
-  nrows = 8, ncols = 12,
-  Bacteria = list(
-    c("Strain 1", "Strain 2", "Strain 3", 
-      "Strain 4", "Strain 5", "Strain 6"),
-    2:7,
-    2:11,
-    "123456",
-    FALSE)
+my_design <- make_design(
+  output_format = "blocks",
+  nrows = 8, ncols = 12, 
+  Bacteria = list(c("Str1", "Str2", "Str3", 
+                    "Str4", "Str5", "Str6"),
+                  2:7,
+                  2:11,
+                  "123456",
+                  FALSE)
 )
 ```
-
-Now, what are each of the things we've specified for our "Bacteria" design component?
-
-Well, make_tidydesign expects five things for each design component:
-* a vector containing the possible values
-* a vector containing all the rows these values should be applied to
-* a vector containing all the columns these values should be applied to
-* a string of the pattern itself within those rows and columns
-* a Boolean for whether this pattern should be filled byrow (defaults to TRUE)
 
 So for our example above, we can see:
 * the possible values are `c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6")`
 * the rows these values should be applied to are rows `2:7`
 * the columns these values should be applied to are columns `2:11`
 * the pattern these values should be filled in by is `"123456"`
-* and these values should *not* be filled byrow
+* and these values should *not* be filled byrow, they should be filled by column
 
 This entire list is passed with a name (here, "Bacteria"), that will be used as the resulting column header.
 
-What does the resulting `data.frame` look like?
+What does the result look like?
 
 ```{r}
-head(my_design, 20)
+my_design
 ```
 
-### A few notes on the pattern string
-The fourth element of every argument passed to `make_tidydesign` is the string specifying the pattern of values.
+We can see that `make_design` has created a block-shaped `data.frame` containing the design elements as requested, and has attached a `metadata` containing the `block_name` (this is useful for later transformation to tidy-shaped, or if you're generating multiple design elements).
 
-Oftentimes, it will be most convenient to simply use single-characters to correspond to the values. This is the default behavior of `make_tidydesign`, which splits the pattern string into individual characters, and then uses those characters to correspond to the indices of the values you provided.
+### A few notes on the pattern string
+One of the most important elements of every argument passed to `make_design` is the string specifying the pattern of values. 
+
+Oftentimes, it will be most convenient to simply use single-characters to correspond to the values. This is the default behavior of `make_design`, which splits the pattern string into individual characters, and then uses those characters to correspond to the indices of the values you provided.
 
 For instance, in our example above, we used the numbers 1 through 6 to correspond to the values `"Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"`.
 
 It's important to **note that the "0" character is reserved for `NA` values.** There is an example of this later.
 
-If you have more than 9 values, you can use letters (uppercase and/or lowercase) and specify to `make_tidydesign` what letter you'd like the indices to start with. By default, the order goes from 1 to 9, then A to Z (uppercase), then a to z (lowercase). For instance, in the previous example, we could have done:
+If you have more than 9 values, you can use letters (uppercase and/or lowercase). In that case, you just have to specify a `lookup_tbl_start` so that the function knows what letter you're using as the `1` index. If no `lookup_tbl_start` is specified, the default is to count numbers first, then uppercase letters, then lowercase letters. For instance, in the previous example, we could have done:
 
 ```{r}
-my_design <- make_tidydesign(
+my_design <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "A",
   Bacteria = list(
-    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
     2:7,
     2:11,
     "ABCDEF",
@@ -622,10 +629,11 @@ my_design <- make_tidydesign(
 Or we could have done:
 
 ```{r}
-my_design <- make_tidydesign(
+my_design <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = list(
-    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
     2:7,
     2:11,
     "abcdef",
@@ -636,10 +644,10 @@ my_design <- make_tidydesign(
 Alternatively, you can use a separating character like a comma to delineate your indices. If you are doing so in order to use multicharacter indices (like numbers with more than one digit), all your indices will have to be numeric.
 
 ```{r}
-my_design <- make_tidydesign(
+my_design <- make_design(
   nrows = 8, ncols = 12, pattern_split = ",",
   Bacteria = list(
-    c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"),
+    c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
     2:7,
     2:11,
     "1,2,3,4,5,6",
@@ -658,82 +666,116 @@ Row B     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
 Row G     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
 Row H     | Blank    | Blank    | Blank    | ... | Blank     | Blank
 
-We can generate that design by adding an additional argument to our make_tidydesign call.
+We can generate both the bacterial strain design and the media design simply by adding an additional argument to our make_design call.
 
 ```{r}
-my_design <- make_tidydesign(
+my_design <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
-                    "Strain 4", "Strain 5", "Strain 6"),
+  Bacteria = list(c("Str1", "Str2", "Str3", 
+                    "Str4", "Str5", "Str6"),
                   2:7,
                   2:11,
                   "abcdef",
                   FALSE),
-  Media = list(c("Media 1", "Media 2", "Media 3",
-                 "Media 4", "Media 5", "Media 6",
-                 "Media 7", "Media 8", "Media 9",
-                 "Media 10", "Media 11", "Media 12"),
+  Media = list(c("Med1", "Med2", "Med3",
+                 "Med4", "Med5", "Med6",
+                 "Med7", "Med8", "Med9",
+                 "Med10", "Med11", "Med12"),
                2:7,
                2:11,
                "abcdefghij")
   )
-head(my_design, 20)
+
+my_design
 ```
+
+Here we can see that two blocks have been created, one with our bacterial strains, and one with our media.
 
 Now, imagine after the experiment we discover that Bacterial Strain 4 and Media #6 were contaminated, and we'd like to exclude them from our analyses by marking them as `NA` in the design. We can simply modify our pattern string, placing a 0 anywhere we would like an `NA` to be filled in.
 
 ```{r}
-my_design <- make_tidydesign(
+my_design <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Media = list(c("Media 1", "Media 2", "Media 3",
-                 "Media 4", "Media 5", "Media 6",
-                 "Media 7", "Media 8", "Media 9",
-                 "Media 10", "Media 11", "Media 12"),
-               2:7,
-               2:11,
-               "abcde0ghij"),
-  Bacteria = list(c("Strain 1", "Strain 2", "Strain 3",
-                    "Strain 4", "Strain 5", "Strain 6"),
+  Bacteria = list(c("Str1", "Str2", "Str3", 
+                    "Str4", "Str5", "Str6"),
                   2:7,
                   2:11,
                   "abc0ef",
-                  FALSE))
-head(my_design, 20)
-```
-
-Note that `make_tidydesign` is not limited to simple alternating patterns. The pattern string specified can be any pattern, which `make_tidydesign` will replicate sufficient times to cover the entire set of listed wells.
-
-```{r}
-my_design <- make_tidydesign(
-  nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Media = list(c("Media 1", "Media 2", "Media 3"),
+                  FALSE),
+  Media = list(c("Med1", "Med2", "Med3",
+                 "Med4", "Med5", "Med6",
+                 "Med7", "Med8", "Med9",
+                 "Med10", "Med11", "Med12"),
                2:7,
                2:11,
-               "aabbbc000abc"),
-  Bacteria = list(c("Strain 1", "Strain 2"),
+               "abcde0ghij")
+  )
+
+my_design
+```
+
+Now we can see that our design has been easily modified to place NA's for those wells, which we can use after merging our designs with our data to exclude all of those wells from analyses.
+
+However, the real strength of `make_design` is that it is not limited to simple alternating patterns. The pattern string specified can be any pattern, which `make_design` will replicate sufficient times to cover the entire set of listed wells.
+
+```{r}
+my_design <- make_design(
+  output_format = "blocks",
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Bacteria = list(c("Str1", "Str2"),
                   2:7,
                   2:11,
                   "abaaabbbab",
-                  FALSE))
-head(my_design, 20)
+                  FALSE),
+  Media = list(c("Med1", "Med2", "Med3"),
+               2:7,
+               2:11,
+               "aabbbc000abc"))
+
+my_design
 ```
 
-`gcplyr` also includes an optional helper function for `make_tidydesign` called `make_designpattern`. `make_designpattern` just helps by reminding the user what arguments are necessary for each design and ensuring they're in the correct order. For example, the following produces the same `data.frame` as the above code:
+`gcplyr` also includes an optional helper function for `make_design` called `make_designpattern`. `make_designpattern` just helps by reminding the user what arguments are necessary for each design and ensuring they're in the correct order. For example, the following produces the same `data.frame` as the above code:
 
 ```{r}
-my_design <- make_tidydesign(
+my_design <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Media = make_designpattern(
-    values = c("Media 1", "Media 2", "Media 3",
-               "Media 4", "Media 5", "Media 6",
-               "Media 7", "Media 8", "Media 9",
-               "Media 10", "Media 11", "Media 12"),
-    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"),
   Bacteria = make_designpattern(
-    values = c("Strain 1", "Strain 2", "Strain 3",
-               "Strain 4", "Strain 5", "Strain 6"),
+    values = c("Str1", "Str2", "Str3", 
+               "Str4", "Str5", "Str6"),
     rows = 2:7, cols = 2:11, pattern = "abc0ef",
-    byrow = FALSE))
+    byrow = FALSE),
+  Media = make_designpattern(
+    values = c("Med1", "Med2", "Med3",
+               "Med4", "Med5", "Med6",
+               "Med7", "Med8", "Med9",
+               "Med10", "Med11", "Med12"),
+    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
+
+my_design
+```
+
+So far, we've been using the `blocks` option for `output_format`, because it's easy to see that our design matches what we'd intended with that format. However, for merging our designs with plate reader data, we need it tidy-shaped. Luckily, there's no need to transform it yourself, simply change the `output_format` argument option to `tidy` (or even leave it out, since the default is tidy-shaped).
+
+```{r}
+my_design <- make_design(
+  output_format = "tidy",
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Bacteria = make_designpattern(
+    values = c("Str1", "Str2", "Str3", 
+               "Str4", "Str5", "Str6"),
+    rows = 2:7, cols = 2:11, pattern = "abc0ef",
+    byrow = FALSE),
+  Media = make_designpattern(
+    values = c("Med1", "Med2", "Med3",
+               "Med4", "Med5", "Med6",
+               "Med7", "Med8", "Med9",
+               "Med10", "Med11", "Med12"),
+    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
+
 head(my_design, 20)
 ```
 
@@ -766,7 +808,7 @@ Row H     |No Phage | ... | No Phage | Phage Added | ... |  Phage Added
 Let's generate our design:
 
 ```{r}
-example_design <- make_tidydesign(
+example_design <- make_design(
   pattern_split = ",", nrows = 8, ncols = 12,
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
@@ -809,6 +851,7 @@ example_data_and_designs <-
 
 head(example_data_and_designs)
 ```
+
 # How to pre-process, processing, and analyze your data
 Once you have your spectrophotometric and design data merged, you're ready to move on to the next steps: pre-processing, processing, and analyzing.
 

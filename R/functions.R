@@ -1840,6 +1840,12 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     #Join x and y
     output <- dplyr::full_join(x, y,
                              by = by, ...)
+    if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
+      warning("\nmerged_df has more rows than x or y, this may indicate
+               mis-matched values in the shared column(s) used to merge 
+              (e.g. 'Well')")
+    }
+    
     if (drop) {output <- output[stats::complete.cases(output), ]}
   } else {output <- x}
   
@@ -2175,22 +2181,27 @@ moving_average <- function(formula, data, window_width_n) {
     data[, response_var] <- as.numeric(data[, response_var])
   }
   
-  #Calculate moving average
-  window_radius <- (window_width_n - 1)/2
-  results <- c(rep(NA, window_radius),
-               rep(0, (nrow(data)-2*window_radius)),
-               rep(NA, window_radius))
-  
-  for (i in 1:window_width_n) {
-    offset <- i - 1 - window_radius
+  #Check that there is sufficient data
+  if(nrow(data) < window_width_n) {
+    results <- rep(NA, nrow(data))
+    warning("not enough data given window_width_n, returning NA's\n")
+  } else { #there is sufficient data so calculate moving average
+    window_radius <- (window_width_n - 1)/2
+    results <- c(rep(NA, window_radius),
+                 rep(0, (nrow(data)-2*window_radius)),
+                 rep(NA, window_radius))
     
-    results[(1 + window_radius):(length(results) - window_radius)] <-
-      results[(1 + window_radius):(length(results) - window_radius)] +
-      data[(1 + window_radius + offset):
-             (length(results) - window_radius + offset), 
-           response_var]
+    for (i in 1:window_width_n) {
+      offset <- i - 1 - window_radius
+      
+      results[(1 + window_radius):(length(results) - window_radius)] <-
+        results[(1 + window_radius):(length(results) - window_radius)] +
+        data[(1 + window_radius + offset):
+               (length(results) - window_radius + offset), 
+             response_var]
+    }
+    results <- results/window_width_n
   }
-  results <- results/window_width_n
 
   return(results)
 }
@@ -2234,15 +2245,20 @@ moving_median <- function(formula, data, window_width_n) {
     data[, response_var] <- as.numeric(data[, response_var])
   }
   
-  #Calculate moving average
-  window_radius <- (window_width_n - 1)/2
-  results <- c(rep(NA, window_radius),
-               rep(0, (nrow(data)-2*window_radius)),
-               rep(NA, window_radius))
-  
-  for (i in (window_radius+1):(length(results) - window_radius)) {
-    results[i] <- stats::median(data[(i - window_radius):(i + window_radius), 
-                              response_var])
+  #Check that there is sufficient data
+  if(nrow(data) < window_width_n) {
+    results <- rep(NA, nrow(data))
+    warning("not enough data given window_width_n, returning NA's\n")
+  } else { #there is sufficient data so calculate moving median
+    window_radius <- (window_width_n - 1)/2
+    results <- c(rep(NA, window_radius),
+                 rep(0, (nrow(data)-2*window_radius)),
+                 rep(NA, window_radius))
+    
+    for (i in (window_radius+1):(length(results) - window_radius)) {
+      results[i] <- stats::median(data[(i - window_radius):(i + window_radius), 
+                                       response_var])
+    }
   }
   
   return(results)

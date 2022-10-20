@@ -78,7 +78,7 @@ and numbers for rows.
 If \code{wellnames_Excel} is FALSE, rows and columns
 will be numbered with "R" and "C" prefixes, respectively.}
 
-\item{...}{Other arguments passed to \code{utils::read_csv},
+\item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx},
 or \code{utils::read.table}}
 }

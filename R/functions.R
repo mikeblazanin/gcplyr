@@ -2911,13 +2911,15 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
 #'              
-#' 
+#' @export
 make_tidydesign <- function(nrows = NULL, ncols = NULL,
                             block_row_names = NULL, block_col_names = NULL,
                             wellnames_sep = "", wellnames_colname = "Well",
                             wellnames_Excel = TRUE, lookup_tbl_start = 1,
                             pattern_split = "", colnames_first = FALSE,
                             ...) {
+  
+  .Deprecated("make_design")
   
   #Do we need to include a plate_name argument?
   #(old comment) the plates have to be identified uniquely

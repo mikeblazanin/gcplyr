@@ -1183,9 +1183,12 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                      denoting the format of the resulting data.frame
 #'                      
 #'                      For easy merging with tidymeasures, leave as default
-#'                      of 'tidy'. For human-readability to confirm design
-#'                      is correct, choose 'blocks' or 'blocks_pasted'. For
-#'                      writing to block-shaped file(s), choose 'blocks' or
+#'                      of 'tidy'. 
+#'                      
+#'                      For human-readability to confirm design
+#'                      is correct, choose 'blocks' or 'blocks_pasted'. 
+#'                      
+#'                      For writing to block-shaped file(s), choose 'blocks' or
 #'                      'blocks_pasted'.
 #' @param wellnames_sep A string used when concatenating rownames and column
 #'                      names to create well names
@@ -1406,8 +1409,9 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 
 #' Write block designs to csv
 #' 
-#' This function is basically just a wrapper for write.csv that also works
-#' when handed a list of matrices/dataframes
+#' This function is basically just a wrapper for write.csv that works
+#'  for block-shaped data.frames
+#'
 #' If \code{designs} is a list, \code{names(designs)} will be placed in the
 #' 1,1 cell of each block
 #' 
@@ -1418,16 +1422,24 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #' @param ... Other arguments passed to \code{write.csv}
 #' @return Nothing, but R objects are written to files
 #' 
-write_blockdesign <- function(designs, file, ...) {
+write_blocks <- function(blocks, file, ...) {
+  #If saving to a single file, will put metadata in rows above
+  #If saving to multiple files, will put block_name in filename
+  #   if any other metadata, will put metadata in rows above
+  
+  
+  
+  
+  
   #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
-  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
-  if (is.data.frame(designs)) {
-    utils::write.csv(x = designs, file = file, ...)
-  } else if (is.list(designs)) {
-    for (i in 1:length(designs)) {
-      tmp <- cbind(data.frame(row.names(designs[[i]])),
-                   designs[[i]])
-      colnames(tmp)[1] <- names(designs)[i]
+  #Also puts the names of the blocks in 1,1 cell (as is the case for block blocks
+  if (is.data.frame(blocks)) {
+    utils::write.csv(x = blocks, file = file, ...)
+  } else if (is.list(blocks)) {
+    for (i in 1:length(blocks)) {
+      tmp <- cbind(data.frame(row.names(blocks[[i]])),
+                   blocks[[i]])
+      colnames(tmp)[1] <- names(blocks)[i]
       utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
     }   
   }

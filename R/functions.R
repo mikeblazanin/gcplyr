@@ -1404,6 +1404,36 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
   return(list(values, rows, cols, pattern, byrow))
 }
 
+#' Write block designs to csv
+#' 
+#' This function is basically just a wrapper for write.csv that also works
+#' when handed a list of matrices/dataframes
+#' If \code{designs} is a list, \code{names(designs)} will be placed in the
+#' 1,1 cell of each block
+#' 
+#' @param designs data.frame or matrix (if one design), or list of data.frames
+#'                or matrices, to be written to file
+#' @param file The filename (if a single design), or vector of file names
+#'             (if multiple designs)
+#' @param ... Other arguments passed to \code{write.csv}
+#' @return Nothing, but R objects are written to files
+#' 
+write_blockdesign <- function(designs, file, ...) {
+  #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
+  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
+  if (is.data.frame(designs)) {
+    utils::write.csv(x = designs, file = file, ...)
+  } else if (is.list(designs)) {
+    for (i in 1:length(designs)) {
+      tmp <- cbind(data.frame(row.names(designs[[i]])),
+                   designs[[i]])
+      colnames(tmp)[1] <- names(designs)[i]
+      utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
+    }   
+  }
+}
+
+
 # Reshape (including merge) ----
 
 #' Transform blocks to wides
@@ -3095,34 +3125,4 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
   }
   
   return(output)
-}
-
-
-#' Write block designs to csv
-#' 
-#' This function is basically just a wrapper for write.csv that also works
-#' when handed a list of matrices/dataframes
-#' If \code{designs} is a list, \code{names(designs)} will be placed in the
-#' 1,1 cell of each block
-#' 
-#' @param designs data.frame or matrix (if one design), or list of data.frames
-#'                or matrices, to be written to file
-#' @param file The filename (if a single design), or vector of file names
-#'             (if multiple designs)
-#' @param ... Other arguments passed to \code{write.csv}
-#' @return Nothing, but R objects are written to files
-#' 
-write_blockdesign <- function(designs, file, ...) {
-  #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
-  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
-  if (is.data.frame(designs)) {
-    utils::write.csv(x = designs, file = file, ...)
-  } else if (is.list(designs)) {
-    for (i in 1:length(designs)) {
-      tmp <- cbind(data.frame(row.names(designs[[i]])),
-                   designs[[i]])
-      colnames(tmp)[1] <- names(designs)[i]
-      utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
-    }   
-  }
 }

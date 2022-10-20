@@ -1093,7 +1093,7 @@ plot(example_data_and_designs$Time[
 
 ## Per-capita derivative
 
-`calc_deriv` can also return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`
+`calc_deriv` can also return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, your **y-values need to have been normalized** so that 0 corresponds to a population density of 0 (e.g. by subtracting the measurement value for a blank)
 
 ```{r}
 example_data_and_designs$deriv_percap <-

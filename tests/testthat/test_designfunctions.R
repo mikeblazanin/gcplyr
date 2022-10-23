@@ -94,3 +94,149 @@ test_that("make_tidydesign works as expected for alpha pattern strings", {
                NA, "a", "hello", NA))
   )
 })
+
+test_that("write_blocks works for output_format = 'single'", {
+  example_dfs_list <- rep(list(NA), 4)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- 
+      as.data.frame(matrix(as.character(i*(1:96)), nrow = 8, byrow = T))
+  }
+  
+  my_blockcurves_allmetad <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves_allmetad)) {
+    my_blockcurves_allmetad[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste(formatC(i, width = 3, flag = "0"),
+                                           sep = ""),
+                        type1 = example_dfs_list[[i]][8, 8],
+                        type2 = example_dfs_list[[i]][4, 7]))
+  }
+  
+  my_blockcurves_namesonly <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves_namesonly)) {
+    my_blockcurves_namesonly[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste(formatC(i, width = 3, flag = "0"),
+                                           sep = "")))
+  }
+  
+  #For block_name_location = "file"
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+               output_format = "single",
+               block_name_location = "file")
+  
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+               output_format = "single",
+               block_name_location = "file")
+  
+  #For block_name_location = "filename"
+  fil <- tempfile(fileext = ".csv")
+  expect_warning(
+    write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+               output_format = "single",
+               block_name_location = "filename"))
+  
+  fil <- tempfile(fileext = ".csv")
+  expect_warning(
+    write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+               output_format = "single",
+               block_name_location = "filename"))
+})
+
+test_that("write_blocks works for output_format = 'pasted'", {
+  example_dfs_list <- rep(list(NA), 4)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- 
+      as.data.frame(matrix(as.character(i*(1:96)), nrow = 8, byrow = T))
+  }
+  
+  my_blockcurves_allmetad <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves_allmetad)) {
+    my_blockcurves_allmetad[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste(formatC(i, width = 3, flag = "0"),
+                                           sep = ""),
+                        type1 = example_dfs_list[[i]][8, 8],
+                        type2 = example_dfs_list[[i]][4, 7]))
+  }
+  
+  my_blockcurves_namesonly <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves_namesonly)) {
+    my_blockcurves_namesonly[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste(formatC(i, width = 3, flag = "0"),
+                                           sep = "")))
+  }
+  
+  #For block_name_location = "file"
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+               output_format = "pasted",
+               block_name_location = "file")
+  
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+               output_format = "pasted",
+               block_name_location = "file")
+  
+  #For block_name_location = "filename"
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+                 output_format = "pasted",
+                 block_name_location = "filename")
+  
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+                 output_format = "pasted",
+                 block_name_location = "filename")
+})
+
+test_that("write_blocks works for output_format = 'multiple'", {
+  example_dfs_list <- rep(list(NA), 4)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- 
+      as.data.frame(matrix(as.character(i*(1:96)), nrow = 8, byrow = T))
+  }
+  
+  my_blockcurves_allmetad <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves_allmetad)) {
+    my_blockcurves_allmetad[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste(formatC(i, width = 3, flag = "0"),
+                                           sep = ""),
+                        type1 = example_dfs_list[[i]][8, 8],
+                        type2 = example_dfs_list[[i]][4, 7]))
+  }
+  
+  my_blockcurves_namesonly <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves_namesonly)) {
+    my_blockcurves_namesonly[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = paste(formatC(i, width = 3, flag = "0"),
+                                           sep = "")))
+  }
+  
+  #For block_name_location = "file"
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+               output_format = "multiple",
+               block_name_location = "file")
+  
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+               output_format = "multiple",
+               block_name_location = "file")
+  
+  #For block_name_location = "filename"
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+               output_format = "multiple",
+               block_name_location = "filename")
+  
+  fil <- tempfile(fileext = ".csv")
+  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+               output_format = "multiple",
+               block_name_location = "filename")
+})

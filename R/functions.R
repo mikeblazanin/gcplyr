@@ -1484,21 +1484,18 @@ write_blocks <- function(blocks, file = NULL,
       warning("appending '.csv' to filename")
       file <- paste(file, ".csv", sep = "")
     }
-    
-    #Figure out how many columns our output file needs
-    # at least 2 (since the metadata itself takes 2 columns)
-    # at least 1+number of columns in largest block (extra one for rownames)
-    numcols <- max(2, 1+sapply(X = blocks, FUN = function(x) {ncol(x[[1]])}))
-    #Figure out how many rows our output file needs
-    #One row for each metadata item, one row for each row of data,
-    # one row for column headers for data, one row for space after each block
-    numrows <- 2+sum(sapply(blocks, 
-                            FUN = function(x) {nrow(x[[1]]) + length(x[[2]])}))
-    
     if(metadata_location == "filename") {
       warning("metadata_location can only be 'file' when output_format = 'single'
               saving with metadata_location = 'file'")
-    } 
+    }
+    
+    #Figure out needed # cols: 2 for metadata, 1 for rownames, ncol for data
+    numcols <- max(2, 1+sapply(X = blocks, FUN = function(x) {ncol(x[[1]])}))
+    #Figure out needed # rows: 1 ea metadata, 1 ea row of data,
+    #                          1 col header, 1 space after ea block
+    numrows <- 2+sum(sapply(blocks, 
+                            FUN = function(x) {nrow(x[[1]]) + length(x[[2]])}))
+    
     output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
     
     rs <- 1 #row start index
@@ -1508,7 +1505,9 @@ write_blocks <- function(blocks, file = NULL,
       output <- temp[[1]]
       rs <- temp[[2]]
     }
-
+    #Write file
+    utils::write.table(output, file = file, sep = ",", na = "",
+                       col.names = FALSE, row.names = FALSE, ...)
   } else if (output_format == "pasted") {
     #going to paste all the blocks together then save a single file
     blocks <- paste_blocks(blocks, sep = paste_sep)
@@ -1522,10 +1521,8 @@ write_blocks <- function(blocks, file = NULL,
             paste(blocks[[1]]$metadata["block_name"], ".csv", sep = ""))
       }
       
-      #Figure out how many rows our output file needs
-      #One row for each metadata item besides block_name (-1)
-      # one row for each row of data
-      # one row for column headers for data (+1)
+      #Figure out needed # rows: 1 ea metadata except block_name (-1), 
+      #                          1 ea row of data, 1 col header (+1)
       numrows <- sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
       
       if(length(blocks[[1]]$metadata) > 1) {
@@ -1534,9 +1531,7 @@ write_blocks <- function(blocks, file = NULL,
                  metadata entries. Putting block_names in filename
                  and writing remaining metadata into file")
         
-        #Figure out how many columns our output file needs
-        # at least 2 (since the metadata itself takes 2 columns)
-        # at least 1+number of columns in largest block (extra one for rownames)
+        #Figure out needed # cols: 2 for metadata, 1 for rownames, ncol for data
         numcols <- max(2, 1+ncol(blocks[[1]]$data))
         
         #Set up for saving
@@ -1549,12 +1544,9 @@ write_blocks <- function(blocks, file = NULL,
             metadata_include = 
               which(names(blocks[[1]]$metadata) != "block_name"))[[1]]
         
-      } else { 
-        #metadata contains only block_names
+      } else {#metadata contains only block_names
         
-        #Figure out how many columns our output file needs
-        # at least 2 (since the metadata itself takes 2 columns)
-        # at least 1+number of columns in largest block (extra one for rownames)
+        #Figure out needed # cols: 1 for rownames, ncol for data
         numcols <- 1+ncol(blocks[[1]]$data)
         
         #Set up for saving
@@ -1562,9 +1554,8 @@ write_blocks <- function(blocks, file = NULL,
         
         #Use sub-function to fill block & non-blocknames metadata into output df
         output <- 
-          fill_data_metadata(
-            output = output, input = blocks[[1]], rs = 1,
-            metadata_include = NULL)[[1]]
+          fill_data_metadata(output = output, input = blocks[[1]], 
+                             rs = 1, metadata_include = NULL)[[1]]
       }
     } else { #metadata_location == 'file'
       #put pasted metadata in rows above block
@@ -1576,14 +1567,10 @@ write_blocks <- function(blocks, file = NULL,
         file <- paste(file, ".csv", sep = "")
       }
       
-      #Figure out how many columns our output file needs
-      # at least 2 (since the metadata itself takes 2 columns)
-      # at least 1+number of columns in largest block (extra one for rownames)
+      #Figure out needed # cols: 2 for metadata, 1 for rownames, ncol for data
       numcols <- max(2, 1+ncol(blocks[[1]]$data))
-      #Figure out how many rows our output file needs
-      #One row for each metadata item, one row for each row of data,
-      # one row for column headers for data, one row for space after each block
-      numrows <- 2+sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
+      #Figure out needed # rows: 1 ea metadata, 1 ea row of data, 1 col header
+      numrows <- 1+sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
       
       output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
       
@@ -1591,21 +1578,65 @@ write_blocks <- function(blocks, file = NULL,
       output <- 
         fill_data_metadata(output = output, input = blocks[[1]], rs = 1)[[1]]
     }
+    #Write file
+    utils::write.table(output, file = file, sep = ",", na = "",
+                       col.names = FALSE, row.names = FALSE, ...)
   } else if (output_format == "multiple") {
     #going to save each block as its own file
-    #if metadata_location = filename
-    # if there are multiple metadata, put block names in filename
-    #  and rest in rows above with WARNING
-    # if there are only block names, put metadata in each file name
-    #if metadata_location = file, put metadata in rows at top of each file
-    #filename = file_arg (+ pasted blockname if specified)
-    # here file_arg could be NULL
-    
+    for (i in 1:length(blocks)) {
+      if(metadata_location == "filename") {
+        #Put block names in filename
+        if(is.null(file)) {
+          file <- paste(blocks[[i]]$metadata["block_name"], ".csv", sep = "")
+        } else {
+          sub("\\.csv", x = file,
+              paste(blocks[[i]]$metadata["block_name"], ".csv", sep = ""))
+        }
+        
+        #there are other metadata, put them in rows above with WARNING
+        warning("metadata_location = 'filename' but there are multiple
+                 metadata entries. Putting block_names in filename
+                 and writing remaining metadata into file")
+        
+        #Figure out needed # cols: 2 for metadata, 1 for rownames, ncol for data
+        numcols <- max(2, 1+ncol(blocks[[i]]$data))
+        
+        #Set up for saving
+        output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+        
+        #Use sub-function to fill block & non-blocknames metadata into output df
+        output <- 
+          fill_data_metadata(
+            output = output, input = blocks[[i]], rs = 1,
+            metadata_include = 
+              which(names(blocks[[i]]$metadata) != "block_name"))[[1]]
+        
+      } else { #metadata_location == 'file'
+        #put metadata in rows at top of each file
+        if(is.null(file)) {
+          stop("file is required when output_format = 'multiple' and metadata_location = 'file'")
+        }
+        if(substr(file, nchar(file)-4, nchar(file)) != ".csv") {
+          warning("appending '.csv' to filename")
+          file <- paste(file, ".csv", sep = "")
+        }
+        
+        #Figure out needed # cols: 2 for metadata, 1 for rownames, ncol for data
+        numcols <- max(2, 1+ncol(blocks[[1]]$data))
+        #Figure out needed # rows: 1 ea metadata, 1 ea row of data, 1 col header
+        numrows <- 1+sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
+        
+        output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+        
+        #Use sub-function to fill block & non-blocknames metadata into output df
+        output <- 
+          fill_data_metadata(output = output, input = blocks[[i]], rs = 1)[[1]]
+      }
+      #Write file
+      utils::write.table(output, file = file, sep = ",", na = "",
+                         col.names = FALSE, row.names = FALSE, ...)
+    }
   } else {stop("output_format must be one of c('single', 'pasted', 'multiple')")}
-  
-  #Write file
-  utils::write.table(output, file = file, sep = ",", na = "",
-                     col.names = FALSE, row.names = FALSE, ...)
 }
 
 

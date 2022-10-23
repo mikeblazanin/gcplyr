@@ -4,25 +4,56 @@
 \alias{write_blocks}
 \title{Write block designs to csv}
 \usage{
-write_blocks(blocks, file, ...)
+write_blocks(
+  blocks,
+  file = NULL,
+  output_format = "multiple",
+  block_name_location = "filename",
+  paste_sep = "_",
+  filename_sep = "_",
+  ...
+)
 }
 \arguments{
-\item{file}{The filename (if a single design), or vector of file names
-(if multiple designs)}
+\item{blocks}{list of block-shaped data to be written to file}
+
+\item{file}{The filename or filenames}
+
+\item{output_format}{One of "single", "pasted", "multiple".
+
+                     "single" will write all blocks into a single
+                     csv file, with an empty row between successive
+                     blocks
+                     
+                     "pasted" will paste all blocks together using a
+                     \code{paste_sep}, and then write that now-pasted
+                     block to a single csv file
+                     
+                     "multiple" will write each block to its own csv file}
+
+\item{block_name_location}{Either 'filename' or 'file'.
+
+                          If 'filename', the \code{block_name} metadata 
+                          will be used as the output file name(s) when
+                          no file name(s) are provided, or appended to
+                          file name(s) when they have been provided.
+                          
+                          If 'file', the \code{block_name} metadata will be
+                          included as a row in the output file.}
+
+\item{paste_sep}{When \code{output_format = 'pasted'}, what character
+will be used to paste together blocks.}
+
+\item{filename_sep}{What character will be used to paste together 
+filenames when block_name_location = 'filename'.}
 
 \item{...}{Other arguments passed to \code{write.csv}}
-
-\item{designs}{data.frame or matrix (if one design), or list of data.frames
-or matrices, to be written to file}
 }
 \value{
 Nothing, but R objects are written to files
 }
 \description{
-This function is basically just a wrapper for write.csv that works
- for block-shaped data.frames
-}
-\details{
-If \code{designs} is a list, \code{names(designs)} will be placed in the
-1,1 cell of each block
+This function writes block-shaped lists (as created by
+\code{read_blocks} or \code{make_design}) to csv files, including
+both \code{data} and \code{metadata} in a variety of output formats
 }

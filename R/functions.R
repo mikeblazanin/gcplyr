@@ -1407,8 +1407,25 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
   return(list(values, rows, cols, pattern, byrow))
 }
 
-#This is an internal function that just does the fill data and metadata
-#step
+#' Fill output data.frame with \code{data} and \code{metadata}
+#'
+#' This is an internal function used by \code{write_blocks} that does the 
+#' fill data and metadata step
+#' 
+#' @param output Data frame for data and metadata to be filled into
+#' @param input One data and metadata to fill into \code{output}
+#' @param rs index of the row in \code{output} where data and metadata should
+#'           start being filled in
+#' @param metadata_include Indices of which metadata items should be included
+#'                         
+#'                         Use NULL for no metadata inclusion
+#'                         
+#' @return A list, where [[1]] is \code{output} containing the data and
+#'         metadata from \code{input} but properly formatted for writing.
+#'         
+#'         And [[2]] is the updated \code{rs} to be used for subsequent
+#'         calls to \code{fill_data_metadata}
+#' 
 fill_data_metadata <- function(output, input, rs, 
                                metadata_include = 1:length(input[[1]]$metadata)) {
   data <- input[[1]]$data
@@ -1442,34 +1459,42 @@ fill_data_metadata <- function(output, input, rs,
 
 #' Write block designs to csv
 #' 
-#' This function is basically just a wrapper for write.csv that works
-#'  for lists of block-shaped data.frames as created by
-#'  \code{read_blocks} or \code{make_design}
-#'
-#' If \code{designs} is a list, \code{names(designs)} will be placed in the
-#' 1,1 cell of each block
+#' This function writes block-shaped lists (as created by
+#' \code{read_blocks} or \code{make_design}) to csv files, including
+#' both \code{data} and \code{metadata} in a variety of output formats
 #' 
-#' @param designs data.frame or matrix (if one design), or list of data.frames
-#'                or matrices, to be written to file
-#' @param file The filename (if a single design), or vector of file names
-#'             (if multiple designs)
-#' @param output_format One of "single", "pasted", "multiple"
-#' @param blockname_location Either 'filename' or 'file' for whether the 
-#'                           \code{block_name} metadata should be saved as
-#'                           the file name or as a row in the output file,
-#'                           respectively.
+#' 
+#' @param blocks list of block-shaped data to be written to file
+#' @param file The filename or filenames
+#' @param output_format One of "single", "pasted", "multiple".
+#' 
+#'                      "single" will write all blocks into a single
+#'                      csv file, with an empty row between successive
+#'                      blocks
+#'                      
+#'                      "pasted" will paste all blocks together using a
+#'                      \code{paste_sep}, and then write that now-pasted
+#'                      block to a single csv file
+#'                      
+#'                      "multiple" will write each block to its own csv file
+#' @param block_name_location Either 'filename' or 'file'.
+#' 
+#'                           If 'filename', the \code{block_name} metadata 
+#'                           will be used as the output file name(s) when
+#'                           no file name(s) are provided, or appended to
+#'                           file name(s) when they have been provided.
 #'                           
-#'                           If \code{file} is specified and
-#'                           \code{blockname_location} is 'filename',
-#'                           block names will be appended to the provided
-#'                           file names
-#'                          
+#'                           If 'file', the \code{block_name} metadata will be
+#'                           included as a row in the output file.
+#' @param paste_sep When \code{output_format = 'pasted'}, what character
+#'                  will be used to paste together blocks.                          
 #' @param ... Other arguments passed to \code{write.csv}
 #' @return Nothing, but R objects are written to files
 #' 
+#' @export
 write_blocks <- function(blocks, file = NULL, 
                          output_format = "multiple",
-                         metadata_location = "filename",
+                         block_name_location = "filename",
                          paste_sep = "_", ...) {
   if(!metadata_location %in% c('filename', 'file')) {
     stop("metadata_location must be one of c('filename', 'file')")

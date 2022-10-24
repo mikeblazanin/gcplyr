@@ -2,7 +2,7 @@ context("Design functions")
 library(testthat)
 library(gcplyr)
 
-test_that("make_tidydesign issues errors when expected for invalid pattern strings", {
+test_that("make_design issues errors when expected for invalid pattern strings", {
   expect_error(
     make_design(nrows = 8, ncols = 12, lookup_tbl_start = "A",
                     "design_elem" = list(c("test1", "test2", "test3"),
@@ -21,7 +21,7 @@ test_that("make_tidydesign issues errors when expected for invalid pattern strin
     regexp = "Pattern values are multi-character after splitting, but not all pattern values are numeric")
 })
 
-test_that("make_tidydesign works as expected for numerical pattern strings", {
+test_that("make_design works as expected for numerical pattern strings", {
   expect_equal(
     make_design(wellnames_sep = "",
                 nrows = 4, ncols = 4, colnames_first = TRUE,
@@ -38,7 +38,7 @@ test_that("make_tidydesign works as expected for numerical pattern strings", {
   )
 })
 
-test_that("make_tidydesign works with 0's in numerical pattern string", {
+test_that("make_design works with 0's in numerical pattern string", {
   expect_equal(
     make_design(wellnames_sep = "",
                 nrows = 4, ncols = 4, colnames_first = TRUE,
@@ -55,7 +55,7 @@ test_that("make_tidydesign works with 0's in numerical pattern string", {
     )
 })
 
-test_that("make_tidydesign works for multiple design elements", {
+test_that("make_design works for multiple design elements", {
   expect_equal(
     make_design(wellnames_sep = "", nrows = 4, ncols = 4, colnames_first = TRUE,
                     "name" = list(c(1, "a", "hello"), 
@@ -77,7 +77,7 @@ test_that("make_tidydesign works for multiple design elements", {
   )
 })
 
-test_that("make_tidydesign works as expected for alpha pattern strings", {
+test_that("make_design works as expected for alpha pattern strings", {
   expect_equal(
     make_design(wellnames_sep = "",
                 nrows = 4, ncols = 4, colnames_first = TRUE,

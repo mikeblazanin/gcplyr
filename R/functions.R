@@ -423,7 +423,7 @@ infer_names <- function(df,
 #'  \code{trans_block_to_wide} integrates this metadata into the
 #'  wide-shaped dataframe it produces
 #' 
-#' @return A list where each entry is a list containing the block measures data
+#' @return A list where each entry is a list containing the block data frame
 #'         followed by the block_names (or filenames, if block_names is not 
 #'         provided) and any specified metadata.
 #'
@@ -435,50 +435,56 @@ read_blocks <- function(files, extension = NULL,
                         block_names = NULL,
                         header = NA, sider = NA,
                         wellnames_Excel = TRUE, ...) {
+  nblocks <- max(length(files), length(startrow), length(endrow),
+                 length(startcol), length(endcol), length(sheet),
+                 na.rm = TRUE)
+  
+  files <- checkdim_inputs(files, "files", nblocks)
+  
   if (is.null(startrow)) {
-    startrow <- rep(NA, length(files))
+    startrow <- rep(NA, nblocks)
   } else {
     if (!all(is.numeric(startrow))) {
       startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
       startrow <- as.numeric(startrow)
     }
-    startrow <- checkdim_inputs(startrow, "startrow", length(files))
+    startrow <- checkdim_inputs(startrow, "startrow", nblocks)
   }
   if (is.null(endrow)) {
-    endrow <- rep(NA, length(files))
+    endrow <- rep(NA, nblocks)
   } else {
     if (!all(is.numeric(endrow))) {
       endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
       endrow <- as.numeric(endrow)
     }
-    endrow <- checkdim_inputs(endrow, "endrow", length(files))
+    endrow <- checkdim_inputs(endrow, "endrow", nblocks)
   }
   if (is.null(startcol)) {
-    startcol <- rep(NA, length(files))
+    startcol <- rep(NA, nblocks)
   } else {
     if (!all(is.numeric(startcol))) {
       startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
       startcol <- as.numeric(startcol)
     }
-    startcol <- checkdim_inputs(startcol, "startcol", length(files))
+    startcol <- checkdim_inputs(startcol, "startcol", nblocks)
   }
   if (is.null(endcol)) {
-    endcol <- rep(NA, length(files))
+    endcol <- rep(NA, nblocks)
   } else {
     if (!all(is.numeric(endcol))) {
       endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
       endcol <- as.numeric(endcol)
     }
-    endcol <- checkdim_inputs(endcol, "endcol", length(files))
+    endcol <- checkdim_inputs(endcol, "endcol", nblocks)
   }
   if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", length(files))
+    sheet <- checkdim_inputs(sheet, "sheet", nblocks)
   }
-  header <- checkdim_inputs(header, "infer_colnames", length(files))
-  sider <- checkdim_inputs(sider, "infer_rownames", length(files))
+  header <- checkdim_inputs(header, "infer_colnames", nblocks)
+  sider <- checkdim_inputs(sider, "infer_rownames", nblocks)
   
-  if (!is.null(block_names)) {
-    stopifnot(length(block_names) == length(files))
+  if (!is.null(block_names) & length(block_names) != nblocks) {
+      stop("block_names must be the same length as the number of blocks")
   }
   
   #Determine file extension(s)
@@ -489,7 +495,7 @@ read_blocks <- function(files, extension = NULL,
       warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
     }
   } else {
-    extension <- checkdim_inputs(extension, "extension", length(files))
+    extension <- checkdim_inputs(extension, "extension", nblocks)
     if(any(!extension %in% c("csv", "xls", "xlsx", "tbl"))) {
       stop("Extension provided by user must be one of: csv, xls, xlsx, tbl")
     }
@@ -500,7 +506,7 @@ read_blocks <- function(files, extension = NULL,
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
                              "metadata" = c("block_name" = "NA"))), 
-                   length(files))
+                   nblocks)
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
     names(metadata_vector) <- c("block_name", names(metadata))
@@ -512,11 +518,11 @@ read_blocks <- function(files, extension = NULL,
     # (with a named list of c(row, column) combinations)
     outputs <- rep(list(list("data" = NA, 
                              "metadata" = metadata_vector)), 
-                   length(files))
+                   nblocks)
   }
 
   #Import data
-  for (i in 1:length(files)) {
+  for (i in 1:nblocks) {
     ##Read file & save in temp
     if (extension[i] == "tbl") {
       temp <- dots_parser(utils::read.table, file = files[i], ...)

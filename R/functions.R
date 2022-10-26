@@ -1528,14 +1528,14 @@ fill_data_metadata <- function(output, input, rs,
     rs <- rs+length(metadata)
   }
   #Save colnames
-  output[rs, 2:numcols] <- colnames(data)
+  output[rs, 2:ncol(output)] <- colnames(data)
   rs <- rs+1
   
   #Save rownames
   output[rs:(rs+nrow(data)-1), 1] <- row.names(data)
   
   #Save data
-  output[rs:(rs+nrow(data)-1), 2:numcols] <- data
+  output[rs:(rs+nrow(data)-1), 2:ncol(output)] <- data
   
   rs <- rs+nrow(data)+1 #add spacer empty row
   

@@ -83,7 +83,7 @@ will be numbered with "R" and "C" prefixes, respectively.}
 or \code{utils::read.table}}
 }
 \value{
-A list where each entry is a list containing the block measures data
+A list where each entry is a list containing the block data frame
         followed by the block_names (or filenames, if block_names is not 
         provided) and any specified metadata.
 }

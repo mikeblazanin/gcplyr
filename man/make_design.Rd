@@ -91,13 +91,13 @@ Note that either \code{nrows} or \code{block_row_names} must be provided
 and that either \code{ncols} or \code{block_col_names} must be provided
 }
 \examples{
-make_tidydesign(nrows = 8, ncols = 12,
+make_design(nrows = 8, ncols = 12,
         design_element_name = list(c("Value1", "Value2", "Value3"),
                           rowstart:rowend, colstart:colend,
-                          "111222333000", TRUE)
-
-#To make it easier to pass arguments, use make_designpattern:
-make_tidydesign(nrows = 8, ncols = 12,
+                          "111222333000", TRUE))
+                          
+## To make it easier to pass arguments, use make_designpattern:
+make_design(nrows = 8, ncols = 12,
       design_element_name = make_designpattern(values = c("L", "G", "C"),
                                                 rows = 2:7, cols = 2:11,
                                                 pattern = "11223300",

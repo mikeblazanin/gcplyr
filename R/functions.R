@@ -790,19 +790,12 @@ read_wides <- function(files, extension = NULL,
     run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
   }
   
-  #If metadata unnamed, assign names
   if (!is.null(metadata)) {
+    #If metadata unnamed, assign names
     if (is.null(names(metadata))) {
       names(metadata) <- rep("", length(metadata))}
     for (i in 1:length(metadata)) {
-      #Convert to numeric if provided Excel-style
-      if(is.na(suppressWarnings(as.numeric(metadata[[i]][1])))) {
-        metadata[[i]][1] <- from_excel(metadata[[i]][1])
-      }
-      if(is.na(suppressWarnings(as.numeric(metadata[[i]][2])))) {
-        metadata[[i]][2] <- from_excel(metadata[[i]][2])
-      }
-      #Then make names
+      #Then make names as specified
       if (names(metadata)[i] == "") {
         if (metadata_Excel_names) {
           names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
@@ -811,6 +804,19 @@ read_wides <- function(files, extension = NULL,
           names(metadata)[i] <- paste("R", metadata[[i]][1], 
                                       "C", metadata[[i]][2], sep = "")
         }
+      }
+      #Check metadata for any list entries, if there are and they're not
+      # the right length, pass error. Otherwise, replicate as needed
+      if(length(metadata[[i]]) != 2) {
+        stop(paste("metadata", names(metadata)[i], "is not a vector or a list of length 2"))
+      }
+      if(is.list(metadata[[i]])) {
+        metadata[[i]][[1]] <- 
+          checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
+                          nblocks, "the number of blocks")
+        metadata[[i]][[2]] <- 
+          checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
+                          nblocks, "the number of blocks")
       }
     }
   }
@@ -851,7 +857,7 @@ read_wides <- function(files, extension = NULL,
       colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
       outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-      colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
+      colnames(outputs[[i]]) <- paste("V", 1:ncol(outputs[[i]]), sep = "")
     }
     
     #Get metadata
@@ -859,10 +865,32 @@ read_wides <- function(files, extension = NULL,
       metadata_vector <- rep(NA, times = length(metadata))
       names(metadata_vector) <- names(metadata)
       for (j in 1:length(metadata)) {
-        metadata_vector[j] <- 
-          temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+        if(!is.list(metadata[[j]])) { #metadata item is a vector
+          #Convert to numeric if provided Excel-style
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
+            metadata[[j]][1] <- from_excel(metadata[[j]][1])
+          }
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
+            metadata[[j]][2] <- from_excel(metadata[[j]][2])
+          }
+          metadata_vector[j] <- 
+            temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+        } else {  #metadata item is a list (presumably of two vectors)
+          #the first vector is the rows for each ith block
+          #the second vector is the columns for each ith block
+          #Convert from Excel-style formatting if needed
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[1]][i])))) {
+            metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
+          }
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[2]][i])))) {
+            metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
+          }
+          metadata_vector[j] <- temp[as.numeric(metadata[[j]][[1]][i]), 
+                                     as.numeric(metadata[[j]][[2]][i])]
+        }
       }
     } else {metadata_vector <- NULL}
+    
     #Add run_names if requested as column
     if(!is.null(names_to_col)) {
       metadata_vector <- c(run_names[i], metadata_vector)

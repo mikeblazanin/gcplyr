@@ -150,6 +150,57 @@ test_that("read_blocks reads data correctly", {
   unlink("./test_blockcurves_data_xlsx", recursive = TRUE)
 })
 
+test_that("read_blocks reads data correctly for multiple blocks in one file", {
+  #Make test blockcurves data
+  setwd(tempdir())
+  dir.create("./test_blockcurves_data_csv/", showWarnings = F)
+
+  example_dfs_list <- rep(list(NA), 3)
+  for (i in 1:length(example_dfs_list)) {
+    example_dfs_list[[i]] <- as.data.frame(matrix(as.character(i*(1:96)), 
+                                                  nrow = 8, byrow = T))
+  }
+  
+  output <- 
+    rbind(c(NA, colnames(example_dfs_list[[1]])),
+          cbind(row.names(example_dfs_list[[1]]),
+                example_dfs_list[[1]]),
+          rep(NA, 13))
+
+  for (i in 2:length(example_dfs_list)) {
+    temp <- rbind(c(NA, colnames(example_dfs_list[[i]])),
+                        cbind(row.names(example_dfs_list[[i]]),
+                              example_dfs_list[[i]]),
+                  rep(NA, 13))
+    colnames(temp) <- colnames(output)
+    
+    output <- rbind(output, temp)
+  }
+  write.table(output, "./test_multblocks_onefile.csv", sep = ",",
+              row.names = FALSE, col.names = FALSE, na = "")
+                  
+  #Read csv with all rows/cols specified, metadata included
+  my_blockcurves1 <- read_blocks(
+    files = "./test_multblocks_onefile.csv",
+    startrow = c(1, 11, 21), startcol = 1, endrow = c(9, 19, 29), endcol = "M",
+    metadata = list("type1" = list(c(3, 13, 23), c("B", "B", "B")),
+                    "type2" = c(5, 8)))
+  
+  my_blockcurves1_expected <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves1_expected)) {
+    my_blockcurves1_expected[[i]] <- 
+      list(data = example_dfs_list[[i]],
+           metadata = c(block_name = "test_multblocks_onefile",
+                        type1 = example_dfs_list[[i]][2, 1],
+                        type2 = example_dfs_list[[1]][4, 7]))
+    # row.names(my_blockcurves1_expected[[i]]$data) <-
+    #   as.character(row.names(my_blockcurves1_expected[[i]]$data))
+  }
+  expect_equal(my_blockcurves1, my_blockcurves1_expected)
+  
+  unlink("./test_blockcurves_data_csv", recursive = TRUE)
+})
+
 test_that("read_wides works correctly", {
   #Make test data
   library(xlsx)

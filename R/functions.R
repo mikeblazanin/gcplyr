@@ -807,12 +807,24 @@ read_wides <- function(files, extension = NULL,
       #Make names as specified if needed
       if (names(metadata)[i] == "") {
         if (metadata_Excel_names) {
-          if(!is.list(metadata[[i]])) { #is a list
-            names(metadata)[i] <- paste(to_excel(metadata[[i]][2]), 
-                                        metadata[[i]][1], sep = "")
+          if(!is.list(metadata[[i]])) { #is not a list
+            if(is.numeric(metadata[[i]][2])) {
+              #col name needs to be converted to excel format
+              names(metadata)[i] <- paste(to_excel(metadata[[i]][2]), 
+                                          metadata[[i]][1], sep = "")
+            } else { #colname is already excel format
+              names(metadata)[i] <- paste(metadata[[i]][2], 
+                                          metadata[[i]][1], sep = "")
+            }
           } else { #is a list
-            names(metadata)[i] <- paste(to_excel(metadata[[i]][[2]][1]), 
-                                        metadata[[i]][[1]][1], sep = "")
+            if(is.numeric(metadata[[i]][2])) {
+              #col name needs to be converted to excel format
+              names(metadata)[i] <- paste(to_excel(metadata[[i]][[2]][1]), 
+                                          metadata[[i]][[1]][1], sep = "")
+            } else { #colname is already excel format
+              names(metadata)[i] <- paste(metadata[[i]][[2]][1], 
+                                          metadata[[i]][[1]][1], sep = "")
+            }
             warning("auto-naming metadata according to first row & column values")
           }
         } else {

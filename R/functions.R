@@ -729,34 +729,44 @@ read_wides <- function(files, extension = NULL,
   #           if header FALSE
   #             columns numbered V1...Vn
   
+  nwides <- max(length(files), length(startrow), length(endrow),
+                length(startcol), length(endcol), length(sheet),
+                na.rm = TRUE)
+  
+  files <- checkdim_inputs(files, "files", nwides, "the number of wides")
+  
+  if(is.null(startrow)) {startrow <- NA}
   if (!is.null(startrow) & !is.numeric(startrow)) {
     startrow <- from_excel(startrow)}
+  startrow <- checkdim_inputs(startrow, "startrow", nwides,
+                              "the number of wides")
+  
+  if (is.null(endrow)) {endrow <- NA}
   if (!is.null(endrow) & !is.numeric(endrow)) {
     endrow <- from_excel(endrow)}
+  endrow <- checkdim_inputs(endrow, "endrow", nwides,
+                            "the number of wides")
+
+  if (is.null(startcol)) {startcol <- NA}
   if (!is.null(startcol) & !is.numeric(startcol)) {
     startcol <- from_excel(startcol)}
+  startcol <- checkdim_inputs(startcol, "startcol", nwides,
+                              "the number of wides")
+  
+  if (is.null(endcol)) {endcol <- NA}
   if (!is.null(endcol) & !is.numeric(endcol)) {
     endcol <- from_excel(endcol)}
+  endcol <- checkdim_inputs(endcol, "endcol", nwides,
+                            "the number of wides")
+  
+  if (!is.null(sheet)) {
+    sheet <- checkdim_inputs(sheet, "sheet", nwides,
+                             "the number of wides")
+  }
   
   if (!is.null(startrow) & header == TRUE & any(startrow <= 1)) {
     warning("startrow <= 1 but header is TRUE, treating header as FALSE")
     header <- FALSE
-  }
-  
-  if(is.null(startrow)) {startrow <- NA}
-  startrow <- checkdim_inputs(startrow, "startrow", length(files))
-  
-  if (is.null(endrow)) {endrow <- NA}
-  endrow <- checkdim_inputs(endrow, "endrow", length(files))
-
-  if (is.null(startcol)) {startcol <- NA}
-  startcol <- checkdim_inputs(startcol, "startcol", length(files))
-  
-  if (is.null(endcol)) {endcol <- NA}
-  endcol <- checkdim_inputs(endcol, "endcol", length(files))
-  
-  if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", length(files))
   }
   
   #Determine file extension(s)
@@ -767,12 +777,13 @@ read_wides <- function(files, extension = NULL,
       warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
     }
   } else {
-    extension <- checkdim_inputs(extension, "extension", length(files))
+    extension <- checkdim_inputs(extension, "extension", nwides,
+                                 "the number of wides")
     stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
   }
   
   #Check for names error
-  if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}
+  if (!is.null(run_names)) {stopifnot(length(run_names) == nwides)}
   
   #If run_names not provided, infer from filenames
   if (is.null(run_names)) {
@@ -807,10 +818,10 @@ read_wides <- function(files, extension = NULL,
   }
   
   #Create empty recipient list
-  outputs <- rep(list(NA), length(files))
+  outputs <- rep(list(NA), nwides)
   
   #Import data
-  for (i in 1:length(files)) {
+  for (i in 1:nwides) {
     #Read file & save in temp
     if (extension[i] == "tbl") {
       temp <- dots_parser(utils::read.table, file = files[i], ...)

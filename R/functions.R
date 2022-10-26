@@ -1330,16 +1330,20 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'
 #' @examples
 #' make_design(nrows = 8, ncols = 12,
-#'         design_element_name = list(c("Value1", "Value2", "Value3"),
-#'                           rowstart:rowend, colstart:colend,
-#'                           "111222333000", TRUE))
+#'             design_element_name = list(c("A", "B", "C"),
+#'                                        2:7,
+#'                                        2:11,
+#'                                        "11223300", 
+#'                                        TRUE))
 #'                           
-#' ## To make it easier to pass arguments, use make_designpattern:
+#' ## To be reminded what arguments are needed, use make_designpattern:
 #' make_design(nrows = 8, ncols = 12,
-#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
-#'                                                 rows = 2:7, cols = 2:11,
-#'                                                 pattern = "11223300",
-#'                                                 byrow = TRUE))              
+#'             design_element_name = make_designpattern(
+#'                  values = c("A", "B", "C"),
+#'                  rows = 2:7, 
+#'                  cols = 2:11,
+#'                  pattern = "11223300",
+#'                  byrow = TRUE))              
 #' 
 #' @export         
 make_design <- function(nrows = NULL, ncols = NULL,

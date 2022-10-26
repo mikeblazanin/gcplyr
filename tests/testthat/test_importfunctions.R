@@ -268,3 +268,37 @@ test_that("read_wides works correctly", {
   unlink("./test_widecurves_data", recursive = TRUE)
 })
 
+test_that("read_wides works correctly with multiple from one file", {
+  #Make test data
+
+  setwd(tempdir())
+  dir.create("./test_widecurves_data/", showWarnings = F)
+  
+  set.seed(1)
+  data <- data.frame("time" = as.character(1:100),
+                     "dens1" = as.character(1/(1+exp(-.1*((1:100) - 50))) + 
+                                              rnorm(100, sd = 0.5)),
+                     "dens2" = as.character(2/(1+exp(-.1*((1:100) - 50))) + 
+                                              rnorm(100, sd = 0.5)),
+                     "dens3" = as.character(3/(1+exp(-.1*((1:100) - 50))) + 
+                                              rnorm(100, sd = 0.5)),
+                     "dens4" = as.character(4/(1+exp(-.1*((1:100) - 50))) + 
+                                              rnorm(100, sd = 0.5)))
+  row.names(data) <- 2:101
+  
+  temp <- rbind(data,
+                rep(NA, ncol(data)),
+                colnames(data),
+                data)
+  write.csv(temp, "test_multwideonefile.csv", row.names = FALSE, na = "")
+  
+  data_in_excel <- read_wides(
+    files = "test_multwideonefile.csv",
+    startrow = c(1, 103), endrow = c(101, 203),
+    metadata = list(c("E", 5), 
+                    "row12col2" = list(c(13, 115), c("B", "B"))))
+  expect_equal(data_in_excel,
+               list("test_multwideonefile" = data))
+  
+  unlink("./test_widecurves_data", recursive = TRUE)
+})

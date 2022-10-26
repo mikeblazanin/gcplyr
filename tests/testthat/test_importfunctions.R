@@ -260,7 +260,7 @@ test_that("read_wides works correctly", {
   data_in3_excel <- read_wides(
     files = c("./test_widecurves_data/test.csv",
               "./test_widecurves_data/test.xlsx"),
-    metadata = list(c("E", 5), "row12col2" = c(12, "B")))
+    metadata = list(c(5, "E"), "row12col2" = c(12, "B")))
   expect_equal(data_in3_excel,
                list("test_widecurves_data/test" = data3,
                     "test_widecurves_data/test" = data3))
@@ -294,21 +294,19 @@ test_that("read_wides works correctly with multiple from one file", {
   data_in <- read_wides(
     files = "test_multwideonefile.csv",
     startrow = c(1, 103), endrow = c(101, 203),
-    metadata = list(c("E", 5), 
+    metadata = list(c(5, "E"), 
                     "row12col2" = list(c(13, 114), c("B", "B"))))
   
   temp1 <- cbind("file" = "test_multwideonefile",
-                 "EE" = "-0.152008845676564",
+                 "E5" = "-0.152008845676564",
                  "row12col2" = "0.216802889141846",
                  data)
   temp2 <- cbind("file" = "test_multwideonefile",
-                 "EE" = "-0.152008845676564",
+                 "E5" = "-0.152008845676564",
                  "row12col2" = "0.775730889959501",
                  data)
   row.names(temp2) <- 104:203
   expect_equal(data_in,
                list("test_multwideonefile" = temp1,
                  "test_multwideonefile" = temp2))
-  
-  unlink("./test_widecurves_data", recursive = TRUE)
 })

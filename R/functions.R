@@ -441,34 +441,34 @@ read_blocks <- function(files, extension = NULL,
   
   files <- checkdim_inputs(files, "files", nblocks, "the number of blocks")
   
-  if(is.null(startrow)) {startrow <- rep(NA, nblocks)} 
   if(!is.null(startrow) & !all(is.numeric(startrow))) {
     startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
     startrow <- as.numeric(startrow)
   }
+  if(is.null(startrow)) {startrow <- rep(NA, nblocks)} 
   startrow <- checkdim_inputs(startrow, "startrow", nblocks, 
                               "the number of blocks")
   
-  if(is.null(endrow)) {endrow <- rep(NA, nblocks)}
   if(!is.null(endrow) & !all(is.numeric(endrow))) {
     endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
     endrow <- as.numeric(endrow)
   }
+  if(is.null(endrow)) {endrow <- rep(NA, nblocks)}
   endrow <- checkdim_inputs(endrow, "endrow", nblocks, "the number of blocks")
   
-  if(is.null(startcol)) {startcol <- rep(NA, nblocks)}
   if(!is.null(startcol) & !all(is.numeric(startcol))) {
     startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
     startcol <- as.numeric(startcol)
   }
+  if(is.null(startcol)) {startcol <- rep(NA, nblocks)}
   startcol <- checkdim_inputs(startcol, "startcol", nblocks, 
                               "the number of blocks")
   
-  if(is.null(endcol)) {endcol <- rep(NA, nblocks)}
   if(!is.null(endcol) & !all(is.numeric(endcol))) {
     endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
     endcol <- as.numeric(endcol)
   }
+  if(is.null(endcol)) {endcol <- rep(NA, nblocks)}
   endcol <- checkdim_inputs(endcol, "endcol", nblocks, "the number of blocks")
   
   if (!is.null(sheet)) {
@@ -725,35 +725,35 @@ read_wides <- function(files, extension = NULL,
   
   files <- checkdim_inputs(files, "files", nwides, "the number of wides")
   
-  if(is.null(startrow)) {startrow <- NA}
   if(!is.null(startrow) & !all(is.numeric(startrow))) {
     startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
     startrow <- as.numeric(startrow)
   }
+  if(is.null(startrow)) {startrow <- NA}
   startrow <- checkdim_inputs(startrow, "startrow", nwides,
                               "the number of wides")
   
-  if(is.null(endrow)) {endrow <- NA}
   if(!is.null(endrow) & !all(is.numeric(endrow))) {
     endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
     endrow <- as.numeric(endrow)
   }
+  if(is.null(endrow)) {endrow <- NA}
   endrow <- checkdim_inputs(endrow, "endrow", nwides,
                             "the number of wides")
 
-  if(is.null(startcol)) {startcol <- NA}
   if(!is.null(startcol) & !all(is.numeric(startcol))) {
     startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
     startcol <- as.numeric(startcol)
   }
+  if(is.null(startcol)) {startcol <- NA}
   startcol <- checkdim_inputs(startcol, "startcol", nwides,
                               "the number of wides")
   
-  if(is.null(endcol)) {endcol <- NA}
   if(!is.null(endcol) & !all(is.numeric(endcol))) {
     endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
     endcol <- as.numeric(endcol)
   }
+  if(is.null(endcol)) {endcol <- NA}
   endcol <- checkdim_inputs(endcol, "endcol", nwides,
                             "the number of wides")
   

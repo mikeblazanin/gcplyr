@@ -1167,6 +1167,8 @@ library(dplyr)
 grouped_example_data_and_designs <- 
   group_by(example_data_and_designs,
            Bacteria_strain, Phage, Well)
+
+head(grouped_example_data_and_designs)
 ```
 
 Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns, and the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.

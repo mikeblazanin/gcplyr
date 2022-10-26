@@ -439,7 +439,7 @@ read_blocks <- function(files, extension = NULL,
                  length(startcol), length(endcol), length(sheet),
                  na.rm = TRUE)
   
-  files <- checkdim_inputs(files, "files", nblocks)
+  files <- checkdim_inputs(files, "files", nblocks, "the number of blocks")
   
   if (is.null(startrow)) {
     startrow <- rep(NA, nblocks)
@@ -448,7 +448,8 @@ read_blocks <- function(files, extension = NULL,
       startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
       startrow <- as.numeric(startrow)
     }
-    startrow <- checkdim_inputs(startrow, "startrow", nblocks)
+    startrow <- checkdim_inputs(startrow, "startrow", nblocks, 
+                                "the number of blocks")
   }
   if (is.null(endrow)) {
     endrow <- rep(NA, nblocks)
@@ -457,7 +458,7 @@ read_blocks <- function(files, extension = NULL,
       endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
       endrow <- as.numeric(endrow)
     }
-    endrow <- checkdim_inputs(endrow, "endrow", nblocks)
+    endrow <- checkdim_inputs(endrow, "endrow", nblocks, "the number of blocks")
   }
   if (is.null(startcol)) {
     startcol <- rep(NA, nblocks)
@@ -466,7 +467,8 @@ read_blocks <- function(files, extension = NULL,
       startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
       startcol <- as.numeric(startcol)
     }
-    startcol <- checkdim_inputs(startcol, "startcol", nblocks)
+    startcol <- checkdim_inputs(startcol, "startcol", nblocks, 
+                                "the number of blocks")
   }
   if (is.null(endcol)) {
     endcol <- rep(NA, nblocks)
@@ -475,13 +477,15 @@ read_blocks <- function(files, extension = NULL,
       endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
       endcol <- as.numeric(endcol)
     }
-    endcol <- checkdim_inputs(endcol, "endcol", nblocks)
+    endcol <- checkdim_inputs(endcol, "endcol", nblocks, "the number of blocks")
   }
   if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", nblocks)
+    sheet <- checkdim_inputs(sheet, "sheet", nblocks, "the number of blocks")
   }
-  header <- checkdim_inputs(header, "infer_colnames", nblocks)
-  sider <- checkdim_inputs(sider, "infer_rownames", nblocks)
+  header <- checkdim_inputs(header, "infer_colnames", nblocks, 
+                            "the number of blocks")
+  sider <- checkdim_inputs(sider, "infer_rownames", nblocks, 
+                           "the number of blocks")
   
   if (!is.null(block_names) & length(block_names) != nblocks) {
       stop("block_names must be the same length as the number of blocks")
@@ -495,12 +499,30 @@ read_blocks <- function(files, extension = NULL,
       warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
     }
   } else {
-    extension <- checkdim_inputs(extension, "extension", nblocks)
+    extension <- checkdim_inputs(extension, "extension", nblocks, 
+                                 "the number of blocks")
     if(any(!extension %in% c("csv", "xls", "xlsx", "tbl"))) {
       stop("Extension provided by user must be one of: csv, xls, xlsx, tbl")
     }
   }
   
+  #Check metadata for any list entries, if there are and they're not
+  # the right length, pass error. Otherwise, replicate as needed
+  if (!is.null(metadata)) {
+    for (i in 1:length(metadata)) {
+      if(length(metadata[[i]]) != 2) {
+        stop(paste("metadata", names(metadata)[i], "is not a vector or a list of length 2"))
+      }
+      if(is.list(metadata[[i]])) {
+        metadata[[i]][[1]] <- 
+          checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
+                          nblocks, "the number of blocks")
+        metadata[[i]][[2]] <- 
+          checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
+                          nblocks, "the number of blocks")
+      }
+    }
+  }
   
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
@@ -591,15 +613,29 @@ read_blocks <- function(files, extension = NULL,
     #Add user-specified metadata (if any)
     if (!is.null(metadata)) {
       for (j in 1:length(metadata)) {
-        #Convert from Excel-style formatting if needed
-        if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
-          metadata[[j]][1] <- from_excel(metadata[[j]][1])
+        if(!is.list(metadata[[j]])) { #metadata item is a vector
+          #Convert from Excel-style formatting if needed
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
+            metadata[[j]][1] <- from_excel(metadata[[j]][1])
+          }
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
+            metadata[[j]][2] <- from_excel(metadata[[j]][2])
+          }
+          outputs[[i]]$metadata[j+1] <- 
+            temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+        } else { #metadata item is a list (presumably of two vectors)
+                 #the first vector is the rows for each ith block
+                 #the second vector is the columns for each ith block
+          #Convert from Excel-style formatting if needed
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[1]][i])))) {
+            metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
+          }
+          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[2]][i])))) {
+            metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
+          }
+          outputs[[i]]$metadata[j+1] <- temp[as.numeric(metadata[[j]][[1]][i]), 
+                                             as.numeric(metadata[[j]][[2]][i])]
         }
-        if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
-          metadata[[j]][2] <- from_excel(metadata[[j]][2])
-        }
-        outputs[[i]]$metadata[j+1] <- 
-          temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
       }
     }
   }

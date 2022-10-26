@@ -718,7 +718,7 @@ read_wides <- function(files, extension = NULL,
   #             if startrow not provided, header is 1
   #           if header FALSE
   #             columns numbered V1...Vn
-  
+
   nwides <- max(length(files), length(startrow), length(endrow),
                 length(startcol), length(endcol), length(sheet),
                 na.rm = TRUE)
@@ -762,11 +762,6 @@ read_wides <- function(files, extension = NULL,
                              "the number of wides")
   }
   
-  if(!is.null(startrow) & header == TRUE & any(startrow <= 1)) {
-    warning("startrow <= 1 but header is TRUE, treating header as FALSE")
-    header <- FALSE
-  }
-  
   #Determine file extension(s)
   if(is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
@@ -795,16 +790,6 @@ read_wides <- function(files, extension = NULL,
     if (is.null(names(metadata))) {
       names(metadata) <- rep("", length(metadata))}
     for (i in 1:length(metadata)) {
-      #Then make names as specified
-      if (names(metadata)[i] == "") {
-        if (metadata_Excel_names) {
-          names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
-                                      metadata[[i]][2], sep = "")
-        } else {
-          names(metadata)[i] <- paste("R", metadata[[i]][1], 
-                                      "C", metadata[[i]][2], sep = "")
-        }
-      }
       #Check metadata for any list entries, if there are and they're not
       # the right length, pass error. Otherwise, replicate as needed
       if(length(metadata[[i]]) != 2) {
@@ -813,10 +798,33 @@ read_wides <- function(files, extension = NULL,
       if(is.list(metadata[[i]])) {
         metadata[[i]][[1]] <- 
           checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
-                          nblocks, "the number of blocks")
+                          nwides, "the number of blocks")
         metadata[[i]][[2]] <- 
           checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
-                          nblocks, "the number of blocks")
+                          nwides, "the number of blocks")
+      }
+      
+      #Make names as specified if needed
+      if (names(metadata)[i] == "") {
+        if (metadata_Excel_names) {
+          if(!is.list(metadata[[i]])) { #is a list
+            names(metadata)[i] <- paste(to_excel(metadata[[i]][2]), 
+                                        metadata[[i]][1], sep = "")
+          } else { #is a list
+            names(metadata)[i] <- paste(to_excel(metadata[[i]][[2]][1]), 
+                                        metadata[[i]][[1]][1], sep = "")
+            warning("auto-naming metadata according to first row & column values")
+          }
+        } else {
+          if(!is.list(metadata[[i]])) { #is a vector
+            names(metadata)[i] <- paste("R", metadata[[i]][1], 
+                                        "C", metadata[[i]][2], sep = "")
+          } else { #is a list
+            names(metadata)[i] <- paste("R", metadata[[i]][[1]][1], 
+                                        "C", metadata[[i]][[2]][1], sep = "")
+            warning("auto-naming metadata according to first row & column values")
+          }
+        }
       }
     }
   }

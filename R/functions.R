@@ -631,10 +631,10 @@ read_blocks <- function(files, extension = NULL,
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           #Convert from Excel-style formatting if needed
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
+          if(!canbe.numeric(metadata[[j]][1])) {
             metadata[[j]][1] <- from_excel(metadata[[j]][1])
           }
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
+          if(!canbe.numeric(metadata[[j]][2])) {
             metadata[[j]][2] <- from_excel(metadata[[j]][2])
           }
           outputs[[i]]$metadata[j+1] <- 
@@ -643,10 +643,10 @@ read_blocks <- function(files, extension = NULL,
                  #the first vector is the rows for each ith block
                  #the second vector is the columns for each ith block
           #Convert from Excel-style formatting if needed
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[1]][i])))) {
+          if(!canbe.numeric(metadata[[j]][[1]][i])) {
             metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
           }
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[2]][i])))) {
+          if(!canbe.numeric(metadata[[j]][[2]][i])) {
             metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
           }
           outputs[[i]]$metadata[j+1] <- temp[as.numeric(metadata[[j]][[1]][i]), 
@@ -913,10 +913,10 @@ read_wides <- function(files, extension = NULL,
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           #Convert to numeric if provided Excel-style
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
+          if(!canbe.numeric(metadata[[j]][1])) {
             metadata[[j]][1] <- from_excel(metadata[[j]][1])
           }
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
+          if(!canbe.numeric(metadata[[j]][2])) {
             metadata[[j]][2] <- from_excel(metadata[[j]][2])
           }
           metadata_vector[j] <- 
@@ -925,10 +925,10 @@ read_wides <- function(files, extension = NULL,
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
           #Convert from Excel-style formatting if needed
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[1]][i])))) {
+          if(!canbe.numeric(metadata[[j]][[1]][i])) {
             metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
           }
-          if(is.na(suppressWarnings(as.numeric(metadata[[j]][[2]][i])))) {
+          if(!canbe.numeric(metadata[[j]][[2]][i])) {
             metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
           }
           metadata_vector[j] <- temp[as.numeric(metadata[[j]][[1]][i]), 
@@ -1436,7 +1436,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
     pattern_list <- strsplit(dot_args[[i]][[4]],
                              split = pattern_split)[[1]]
     if (any(nchar(pattern_list) > 1)) {
-      if (any(is.na(suppressWarnings(as.numeric(pattern_list))))) {
+      if (!canbe.numeric(pattern_list)) {
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
       } else { #they're all numeric
         pattern_list <- as.numeric(pattern_list)
@@ -2592,7 +2592,7 @@ moving_average <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  if (!is.numeric(data[, predictor_var])) {
+  if (!canbe.numeric(data[, predictor_var])) {
     warning(paste("data is being sorted by order(", predictor_var,
             "), but ", predictor_var, " is not numeric\n", sep = ""))
   }
@@ -2656,7 +2656,7 @@ moving_median <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  if (!is.numeric(data[, predictor_var])) {
+  if (!canbe.numeric(data[, predictor_var])) {
     warning(paste("data is being sorted by order(", predictor_var,
                   "), but ", predictor_var, " is not numeric\n", sep = ""))
   }
@@ -3203,9 +3203,9 @@ first_below <- function(y, x = NULL, threshold,
   }
   if(return == "x" & is.null(x)) {stop("return = x but x is not provided")}
   
-  if(any(is.na(suppressWarnings(as.numeric(y))))) {stop("y must be numeric")}
+  if(!canbe.numeric(y)) {stop("y must be numeric")}
   if(!is.null(x)) {
-    if(any(is.na(suppressWarnings(as.numeric(x))))) {stop("x must be numeric")}
+    if(!canbe.numeric(x)) {stop("x must be numeric")}
     y <- y[order(x)]
     x <- x[order(x)]
   }
@@ -3460,7 +3460,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     pattern_list <- strsplit(dot_args[[i]][[4]],
                              split = pattern_split)[[1]]
     if (any(nchar(pattern_list) > 1)) {
-      if (any(is.na(suppressWarnings(as.numeric(pattern_list))))) {
+      if (!canbe.numeric(pattern_list)) {
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
       } else { #they're all numeric
         pattern_list <- as.numeric(pattern_list)

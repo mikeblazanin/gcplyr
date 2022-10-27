@@ -762,7 +762,7 @@ my_design <- make_design(
 my_design
 ```
 
-So far, we've been using the `blocks` option for `output_format`, because it's easy to see that our design matches what we'd intended with that format. However, for merging our designs with plate reader data, we need it tidy-shaped. Luckily, there's no need to transform it yourself, simply change the `output_format` argument option to `tidy` (or even leave it out, since the default is tidy-shaped).
+So far, we've been using the `blocks` option for `output_format`, because it's easy to see that our design matches what we'd intended with that format. However, **for merging our designs with plate reader data, we need it tidy-shaped**. Luckily, there's no need to transform it yourself, simply change the `output_format` argument option to `tidy` (or even leave it out, since the default is tidy-shaped).
 
 ```{r}
 my_design <- make_design(
@@ -783,9 +783,91 @@ my_design <- make_design(
 head(my_design, 20)
 ```
 
+### Saving designs to files
+If you'd like to save your designs to files, you have two options.
+
+For **saving tidy-shaped designs** that are less human-readable but easier to import and merge, simply use the built-in `write.csv` function.
+
+```{r}
+my_design <- make_design(
+  output_format = "tidy",
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Bacteria = make_designpattern(
+    values = c("Str1", "Str2", "Str3", 
+               "Str4", "Str5", "Str6"),
+    rows = 2:7, cols = 2:11, pattern = "abc0ef",
+    byrow = FALSE),
+  Media = make_designpattern(
+    values = c("Med1", "Med2", "Med3",
+               "Med4", "Med5", "Med6",
+               "Med7", "Med8", "Med9",
+               "Med10", "Med11", "Med12"),
+    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
+
+write.csv(x = my_design, file = tempfile(fileext = ".csv"),
+          row.names = FALSE)
+```
+
+For **saving block-shaped designs** that are more human-readable but harder to import and merge, use the `gcplyr` function `write_blocks`. `write_blocks` has three options for output format:
+
+* `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
+* `pasted` - all the blocks will be pasted together, then saved to a single `.csv` file
+* `multiple` - each block will be saved to its own `.csv` file
+
+Additionally, for the `pasted` and `multiple` formats, you can specify whether you want the `block_names` metadata to be saved in:
+
+* the `filename`
+* a cell in the `file` itself
+
+Let's demonstrate some of these options. First, let's create our block-shaped design.
+
+```{r}
+my_design <- make_design(
+  output_format = "blocks",
+  nrows = 8, ncols = 12, lookup_tbl_start = "a",
+  Bacteria = make_designpattern(
+    values = c("Str1", "Str2", "Str3", 
+               "Str4", "Str5", "Str6"),
+    rows = 2:7, cols = 2:11, pattern = "abc0ef",
+    byrow = FALSE),
+  Media = make_designpattern(
+    values = c("Med1", "Med2", "Med3",
+               "Med4", "Med5", "Med6",
+               "Med7", "Med8", "Med9",
+               "Med10", "Med11", "Med12"),
+    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
+```
+
+Now, let's save this design using `write_blocks`. The default settings are for `multiple` and `block_names` to be saved as the `filename`s.
+
+```{r}
+write_blocks(my_design)
+
+#Let's see what the files look like
+print_df(read.csv("Bacteria.csv", header = FALSE))
+
+print_df(read.csv("Media.csv", header = FALSE))
+```
+
+Let's now see what the `single` output format looks like. Note that with `output_format = "single"`, the `block_name_location` must be `file`:
+
+```{r}
+write_blocks(my_design, file = "Design.csv", 
+             output_format = "single", block_name_location = "file")
+
+#Let's see what the file looks like
+print_df(read.csv("Design.csv", header = FALSE))
+```
+
+Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
+
+Saving your design information in a file like this ensures that an easily human-readable format is available anytime you or others want to understand the design layout. Additionally, files that have been created by `write_blocks` can be easily imported back into R using `import_blockdesigns`. Thus, you have two options for how to use `make_design` and `write_blocks`:
+
+1. Use `make_design` to create block-shaped designs. Save these designs to files using `write_blocks`. Import the designs from those files using `import_blockdesigns`.
+2. Use `make_design` to create block-shaped designs. Save these designs to files using `write_blocks`. Copy-paste your original `make_design` command but with `output_format = "tidy"` to create tidy-shaped designs.
 
 # Merging spectrophotometric and design data
-Once we have both our design and data in the R environment, we can merge them using `merge_dfs`.
+Once we have both our design and data in the R environment and tidy-shaped, we can merge them using `merge_dfs`.
 
 For this, we'll use the data in the `example_widedata` dataset that is included with `gcplyr`, and which was the source for our previous examples with `read_blocks` and `read_wides`.
 

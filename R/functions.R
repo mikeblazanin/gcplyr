@@ -2690,71 +2690,94 @@ moving_median <- function(formula, data, window_width_n) {
 
 #' Calculate derivatives of vector of data
 #' 
-#' Provided a vector of y values, this function returns the difference
-#' between sequential values, derivative between sequential values,
-#' or per-capita derivative between sequential values
+#' Provided a vector of y values, this function returns either the plain
+#' or per-capita difference or derivative between sequential values
 #' 
 #' @param y       Data to calculate difference or derivative of
-#' @param x Vector of x values provided as a simple numeric
-#'          (e.g. if time, in number of seconds, not POSIX).
+#' @param x       Vector of x values provided as a simple numeric.
+#' @param return One of c("difference", "derivative") for whether the
+#'               differences in \code{y} should be returned, or the
+#'               derivative of \code{y} with respect to \code{x}
+#' @param percapita When percapita = TRUE, the differences of y are 
+#'                  divided by y
 #' @param x_scale Factor to scale x by in denominator of derivative calculation
 #'                
-#'                When \code{x_scale = NA}, \code{calc_deriv} returns 
-#'                differences in \code{y}
-#'                
-#'                When \code{x_scale = 1}, \code{calc_deriv} returns the 
-#'                standard derivative in the same units as y/x
-#'                
-#'                For other units, set x_scale to the ratio of the the units of 
+#'                Set x_scale to the ratio of the the units of 
 #'                x to the desired units. E.g. if x is in seconds, but the 
 #'                desired derivative is in units of /minute, set 
 #'                \code{x_scale = 60} (since there are 60 seconds in 1 minute).
-#' @param percapita When percapita = TRUE, the differences of y are 
-#'                  divided by y
+#' @param blank   y-value associated with a "blank" where the density is 0.
+#'                Is required when \code{percapita = TRUE}.
+#'                
+#'                If a vector of blank values is specified, blank values are
+#'                assumed to be in the same order as unique(subset_by)  
 #' @param subset_by if subset_by is provided, it should be a vector (same 
 #'                  length as y), the unique values of which will 
 #'                  separate calculations
-#' @return A vector of values for the difference (if \code{x_scale = NA}, 
-#'         derivative (if \code{x_scale} is a number), or per-capita derivative
-#'         (if \code{percapita = TRUE}) between \code{y} values. Vector
+#' @return A vector of values for the plain (if \code{percapita = FALSE})
+#'         or per-capita (if \code{percapita = TRUE}) difference 
+#'         (if \code{return = "difference"} or derivative 
+#'         (if \code{return = "derivative"}) between \code{y} values. Vector
 #'         will be the same length as \code{y},  with \code{NA} appended 
 #'         to the end
 #' 
 #' @export   
-calc_deriv <- function(y, x = NULL, x_scale = 1,
-                       percapita = FALSE, subset_by = NULL) {
-  
+calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
+                       x_scale = 1, blank = NULL, subset_by = NULL) {
   #Check inputs
-  if (is.null(y)) {stop("y must be provided")}
-  if (length(x_scale) > 1) {stop("x_scale must be NA or a single value")}
-  if (!is.na(x_scale)) {
-    if (!is.numeric(x_scale)) {stop("x_scale is not numeric")}
-    if (is.null(x)) {stop("x_scale is specified, but x is not provided")}
+  if(!return %in% c("derivative", "difference")) {
+    stop("return must be one of c('derivative', 'difference')")
   }
-  if (!is.null(x) & !is.numeric(x)) {
-    stop("x is not numeric")
+  
+  if(is.null(y)) {stop("y must be provided")}
+  if(length(x_scale) > 1) {stop("x_scale must be a single value")}
+  
+  if(!is.numeric(x_scale)) {
+    if(!canbe.numeric(x_scale)) {stop("x_scale must be numeric")
+    } else {x_scale <- as.numeric(x_scale)}
+  }
+  if(is.na(x_scale)) {stop("x_scale cannot be NA")}
+  
+  if (!is.null(x)) {
+    if(!canbe.numeric(x)) {stop("x is not numeric")
+    } else {x <- as.numeric(x)}
   }
   if(!is.numeric(y)) {y <- as.numeric(y)}
   
+  #Set up subset_by
+  if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
+  
+  #Set up blank values
+  if(is.null(blank)) {
+    if(percapita == TRUE) {stop("percapita == TRUE but blank is NULL")}
+  } else { #blank is not NULL
+    blank <- checkdim_inputs(
+      blank, "blank", needed_len = length(unique(subset_by)),
+      needed_name = "the number of unique subset_by values") 
+  }
+  
   #Calc derivative
   ans <- rep(NA, length(y))
-  if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
   for (i in 1:length(unique(subset_by))) {
     indices <- which(subset_by == unique(subset_by)[i])
     sub_y <- y[indices]
     if(!is.null(x)) {
+      #Save orig order info so we can put things back at the end
       sub_x <- x[indices]
-      start_order <- order(sub_x) #so we can put things back at the end
+      start_order <- order(sub_x) 
       #Reorder
       sub_y <- sub_y[start_order]
       sub_x <- sub_x[start_order]
     } else {start_order <- 1:length(sub_y)}
+    
+    #Blank subtraction
+    if(!is.null(blank)) {sub_y <- sub_y - blank[i]}
     #Calculate differences
     sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
     #Percapita (if specified)
     if(percapita) {sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
     #Derivative & rescale (if specified)
-    if(!is.na(x_scale)) {
+    if(return == "derivative") {
       sub_ans <- sub_ans/
         ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
     }

@@ -2592,15 +2592,26 @@ moving_average <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  if (!canbe.numeric(data[, predictor_var])) {
-    warning(paste("data is being sorted by order(", predictor_var,
-            "), but ", predictor_var, " is not numeric\n", sep = ""))
+  #Check x for being correct format
+  if(!is.numeric(data[, predictor_var])) {
+    if (!canbe.numeric(data[, predictor_var])) {
+      warning(paste("data is being sorted by order(", predictor_var,
+                    "), but ", predictor_var, " is not numeric\n", sep = ""))
+    } else { #it can be coerced
+      warning(paste("Coercing", predictor_var, "to numeric\n"))
+      data[, predictor_var] <- as.numeric(data[, predictor_var])
+    }
   }
   data <- data[order(data[, predictor_var]), ]
   
+  #Check y for being the correct format
   if(!is.numeric(data[, response_var]) ) {
-    warning(paste("Coercing", response_var, "to numeric\n"))
-    data[, response_var] <- as.numeric(data[, response_var])
+    if(!canbe.numeric(data[, response_var])) {
+      stop(paste(response_var, "cannot be coerced to numeric"))
+    } else { #it can be coerced
+      warning(paste("Coercing", response_var, "to numeric\n"))
+      data[, response_var] <- as.numeric(data[, response_var])
+    }
   }
   
   #Check that there is sufficient data
@@ -2656,15 +2667,26 @@ moving_median <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  if (!canbe.numeric(data[, predictor_var])) {
-    warning(paste("data is being sorted by order(", predictor_var,
-                  "), but ", predictor_var, " is not numeric\n", sep = ""))
+  #Check x for being correct format
+  if(!is.numeric(data[, predictor_var])) {
+    if (!canbe.numeric(data[, predictor_var])) {
+      warning(paste("data is being sorted by order(", predictor_var,
+                    "), but ", predictor_var, " is not numeric\n", sep = ""))
+    } else { #it can be coerced
+      warning(paste("Coercing", predictor_var, "to numeric\n"))
+      data[, predictor_var] <- as.numeric(data[, predictor_var])
+    }
   }
   data <- data[order(data[, predictor_var]), ]
   
+  #Check y for being the correct format
   if(!is.numeric(data[, response_var]) ) {
-    warning(paste("Coercing", response_var, "to numeric\n"))
-    data[, response_var] <- as.numeric(data[, response_var])
+    if(!canbe.numeric(data[, response_var])) {
+      stop(paste(response_var, "cannot be coerced to numeric"))
+    } else { #it can be coerced
+      warning(paste("Coercing", response_var, "to numeric\n"))
+      data[, response_var] <- as.numeric(data[, response_var])
+    }
   }
   
   #Check that there is sufficient data

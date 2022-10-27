@@ -3314,6 +3314,21 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   if(!is.vector(y)) {
     stop(paste("y is not a vector, it is class:", class(y)))
   }
+  
+  if(!is.numeric(x)) {
+    if(!canbe.numeric(x)) {stop("x cannot be coerced to numeric")
+    } else {
+      warning("coercing x to numeric\n")
+      x <- as.numeric(x)
+    }
+  }
+  if(!is.numeric(y)) {
+    if(!canbe.numeric(y)) {stop("y cannot be coerced to numeric")
+    } else {
+      warning("coercing y to numeric\n")
+      y <- as.numeric(y)
+    }
+  }
 
   to_keep <- which(!(is.na(x) | is.na(y)))
   x <- x[to_keep]

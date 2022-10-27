@@ -2598,7 +2598,6 @@ moving_average <- function(formula, data, window_width_n) {
       warning(paste("data is being sorted by order(", predictor_var,
                     "), but ", predictor_var, " is not numeric\n", sep = ""))
     } else { #it can be coerced
-      warning(paste("Coercing", predictor_var, "to numeric\n"))
       data[, predictor_var] <- as.numeric(data[, predictor_var])
     }
   }
@@ -2609,7 +2608,6 @@ moving_average <- function(formula, data, window_width_n) {
     if(!canbe.numeric(data[, response_var])) {
       stop(paste(response_var, "cannot be coerced to numeric"))
     } else { #it can be coerced
-      warning(paste("Coercing", response_var, "to numeric\n"))
       data[, response_var] <- as.numeric(data[, response_var])
     }
   }
@@ -2673,7 +2671,6 @@ moving_median <- function(formula, data, window_width_n) {
       warning(paste("data is being sorted by order(", predictor_var,
                     "), but ", predictor_var, " is not numeric\n", sep = ""))
     } else { #it can be coerced
-      warning(paste("Coercing", predictor_var, "to numeric\n"))
       data[, predictor_var] <- as.numeric(data[, predictor_var])
     }
   }
@@ -2684,7 +2681,6 @@ moving_median <- function(formula, data, window_width_n) {
     if(!canbe.numeric(data[, response_var])) {
       stop(paste(response_var, "cannot be coerced to numeric"))
     } else { #it can be coerced
-      warning(paste("Coercing", response_var, "to numeric\n"))
       data[, response_var] <- as.numeric(data[, response_var])
     }
   }
@@ -3318,14 +3314,12 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   if(!is.numeric(x)) {
     if(!canbe.numeric(x)) {stop("x cannot be coerced to numeric")
     } else {
-      warning("coercing x to numeric\n")
       x <- as.numeric(x)
     }
   }
   if(!is.numeric(y)) {
     if(!canbe.numeric(y)) {stop("y cannot be coerced to numeric")
     } else {
-      warning("coercing y to numeric\n")
       y <- as.numeric(y)
     }
   }

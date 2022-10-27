@@ -165,10 +165,10 @@ dots_parser <- function(FUN, ...) {
 infer_block_metadata <- function(blocks) {
   #Infer nestedness if nested_metadata is set to NULL
   if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
-    warning("Inferring nested_metadata to be FALSE")
+    warning("Inferring nested_metadata to be FALSE\n")
     return(FALSE)
   } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
-    warning("Inferring nested_metadata to be TRUE")
+    warning("Inferring nested_metadata to be TRUE\n")
     return(TRUE)
   } else {
     stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
@@ -486,7 +486,7 @@ read_blocks <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", nblocks, 
@@ -634,12 +634,12 @@ read_blocks <- function(files, extension = NULL,
   if (length(outputs) > 1 &
       stats::var(sapply(outputs, simplify = TRUE, 
                  FUN = function(x) {dim(x$data)[1]})) != 0) {
-    warning("Not all blockmeasures have the same number of rows of data")
+    warning("Not all blockmeasures have the same number of rows of data\n")
   }
   if (length(outputs) > 1 &
       stats::var(sapply(outputs, simplify = TRUE,
                  FUN = function(x) {dim(x$data)[2]})) != 0) {
-    warning("Not all blockmeasures have the same number of columns of data")
+    warning("Not all blockmeasures have the same number of columns of data\n")
   }
   
   return(outputs)
@@ -767,7 +767,7 @@ read_wides <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", nwides,
@@ -825,7 +825,7 @@ read_wides <- function(files, extension = NULL,
               names(metadata)[i] <- paste(metadata[[i]][[2]][1], 
                                           metadata[[i]][[1]][1], sep = "")
             }
-            warning("auto-naming metadata according to first row & column values")
+            warning("auto-naming metadata according to first row & column values\n")
           }
         } else {
           if(!is.list(metadata[[i]])) { #is a vector
@@ -834,7 +834,7 @@ read_wides <- function(files, extension = NULL,
           } else { #is a list
             names(metadata)[i] <- paste("R", metadata[[i]][[1]][1], 
                                         "C", metadata[[i]][[2]][1], sep = "")
-            warning("auto-naming metadata according to first row & column values")
+            warning("auto-naming metadata according to first row & column values\n")
           }
         }
       }
@@ -1034,7 +1034,7 @@ read_tidys <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
@@ -1431,7 +1431,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
     if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
          length(pattern_list)) != 0) {
       warning(paste("Total number of wells is not a multiple of pattern length for",
-                    names(dot_args)[i]))
+                    names(dot_args)[i], "\n"))
     }
     
     #Byrow is optional, if not provided default is byrow = TRUE
@@ -1624,12 +1624,12 @@ write_blocks <- function(blocks, file = NULL,
     
     if(is.null(file)) {stop("file is required when output_format = 'single'")}
     if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
-      warning("appending '.csv' to filename")
+      warning("appending '.csv' to filename\n")
       file <- paste(file, ".csv", sep = "")
     }
     if(block_name_location == "filename") {
       warning("block_name_location can only be 'file' when output_format = 'single'
-              saving with block_name_location = 'file'")
+              saving with block_name_location = 'file'\n")
     }
     
     #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
@@ -1680,7 +1680,7 @@ write_blocks <- function(blocks, file = NULL,
         #there are other metadata, put them in rows above with WARNING
         warning("block_name_location = 'filename' but there are multiple
                  metadata entries. Putting block_names in filename
-                 and writing remaining metadata into file")
+                 and writing remaining metadata into file\n")
         
         #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
         numcols <- max(2, 1+ncol(blocks[[1]]$data))
@@ -1714,7 +1714,7 @@ write_blocks <- function(blocks, file = NULL,
         stop("file is required when output_format = 'pasted' and block_name_location = 'file'")
       }
       if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
-        warning("appending '.csv' to filename")
+        warning("appending '.csv' to filename\n")
         file <- paste(file, ".csv", sep = "")
       }
       
@@ -1739,7 +1739,7 @@ write_blocks <- function(blocks, file = NULL,
         #Add .csv suffix as needed
         for (i in 1:length(file)) {
           if(substr(file[i], nchar(file[i])-3, nchar(file[i])) != ".csv") {
-            warning("appending '.csv' to filename")
+            warning("appending '.csv' to filename\n")
             file[i] <- paste(file[i], ".csv", sep = "")
           }
         }
@@ -1767,7 +1767,7 @@ write_blocks <- function(blocks, file = NULL,
           #there are other metadata, put them in rows above with WARNING
           warning("block_name_location = 'filename' but there are multiple
                  metadata entries. Putting block_names in filename
-                 and writing remaining metadata into file")
+                 and writing remaining metadata into file\n")
           
           #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
           numcols <- max(2, 1+ncol(blocks[[i]]$data))
@@ -1805,14 +1805,14 @@ write_blocks <- function(blocks, file = NULL,
         #Add .csv suffix as needed
         for (i in 1:length(file)) {
           if(substr(file[i], nchar(file[i])-3, nchar(file[i])) != ".csv") {
-            warning("appending '.csv' to filename")
+            warning("appending '.csv' to filename\n")
             file[i] <- paste(file[i], ".csv", sep = "")
           }
         }
         #Replicate file vector as needed
         if (length(file) < length(blocks)) {
           file <- rep_len(file, length.out = length(blocks))
-          warning("appending numeric suffix to files in order of 'blocks'")
+          warning("appending numeric suffix to files in order of 'blocks'\n")
           for (i in 1:length(file)) {
             file[i] <- gsub("\\.csv", paste(filename_sep, i, ".csv", sep = ""), 
                             file[i])
@@ -2105,7 +2105,7 @@ trans_wide_to_tidy <- function(wides,
   
   #Check cols inputs
   if (any(!is.na(data_cols) & !is.na(id_cols))) {
-    warning("Cannot provide both data_cols and id_cols for a given wides, using data_cols only")
+    warning("Cannot provide both data_cols and id_cols for a given wides, using data_cols only\n")
   }
   
   names_to <- checkdim_inputs(names_to, "names_to", length(wides))
@@ -2115,7 +2115,7 @@ trans_wide_to_tidy <- function(wides,
   if("values_transform" %in% names(list(...))) {
     if(values_to_numeric) {
       warning("values_to_numeric is TRUE but values_transform is supplied in ..., 
-              values_transform will override values_to_numeric")}
+              values_transform will override values_to_numeric\n")}
   } else {
     if(values_to_numeric) {
       values_transform = rep(list(list(temp = as.numeric)), length(values_to))
@@ -2218,7 +2218,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     
     #Then collapse x and collapse y into dfs as needed
     if (is.data.frame(x) & is.data.frame(y)) {
-      warning("collapse = TRUE, but both x and y are data.frames already")
+      warning("collapse = TRUE, but both x and y are data.frames already\n")
     } else {
       if (!is.data.frame(x)) {
         if (!is.list(x)) {stop("x is neither a list nor a data.frame")}
@@ -2239,7 +2239,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
       warning("\nmerged_df has more rows than x or y, this may indicate
                mis-matched values in the shared column(s) used to merge 
-              (e.g. 'Well')")
+              (e.g. 'Well')\n")
     }
     
     if (drop) {output <- output[stats::complete.cases(output), ]}
@@ -2278,10 +2278,10 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
   if (is.null(nested_metadata)) {
     if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
       nested_metadata <- FALSE
-      warning("Inferring nested_metadata to be FALSE")
+      warning("Inferring nested_metadata to be FALSE\n")
     } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
       nested_metadata <- TRUE
-      warning("Inferring nested_metadata to be TRUE")
+      warning("Inferring nested_metadata to be TRUE\n")
     } else {
       stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
     }
@@ -2457,7 +2457,7 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
   #Parse x and y, or ... args, into formula and data
   if (any(c("formula", "data") %in% names(list(...)))) {
     if(!all(c("formula", "data") %in% names(list(...)))) {
-      warning("both or neither formula and data must be specified, reverting to smoothing y on x")
+      warning("both or neither formula and data must be specified, reverting to smoothing y on x\n")
     } else {
       formula <- list(...)$formula
       data <- list(...)$data
@@ -2471,7 +2471,7 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
   }
   
   if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
-    warning("gam method is called without 's()' to smooth")}
+    warning("gam method is called without 's()' to smooth\n")}
   
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
   } else if (length(subset_by) != nrow(data)) {
@@ -2568,12 +2568,12 @@ moving_average <- function(formula, data, window_width_n) {
   
   if (!is.numeric(data[, predictor_var])) {
     warning(paste("data is being sorted by order(", predictor_var,
-            "), but ", predictor_var, " is not numeric", sep = ""))
+            "), but ", predictor_var, " is not numeric\n", sep = ""))
   }
   data <- data[order(data[, predictor_var]), ]
   
   if(!is.numeric(data[, response_var]) ) {
-    warning(paste("Coercing", response_var, "to numeric"))
+    warning(paste("Coercing", response_var, "to numeric\n"))
     data[, response_var] <- as.numeric(data[, response_var])
   }
   
@@ -2632,12 +2632,12 @@ moving_median <- function(formula, data, window_width_n) {
   
   if (!is.numeric(data[, predictor_var])) {
     warning(paste("data is being sorted by order(", predictor_var,
-                  "), but ", predictor_var, " is not numeric", sep = ""))
+                  "), but ", predictor_var, " is not numeric\n", sep = ""))
   }
   data <- data[order(data[, predictor_var]), ]
   
   if(!is.numeric(data[, response_var]) ) {
-    warning(paste("Coercing", response_var, "to numeric"))
+    warning(paste("Coercing", response_var, "to numeric\n"))
     data[, response_var] <- as.numeric(data[, response_var])
   }
   
@@ -2986,7 +2986,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   }
   if (!is.null(width_limit_n)) {
     if (width_limit_n%%2 == 0) {
-      warning("width_limit_n must be odd, will use ", width_limit_n-1, " as width_limit_n")
+      warning("width_limit_n must be odd, will use ", width_limit_n-1, " as width_limit_n\n")
       width_limit_n <- width_limit_n - 1
     }
   }
@@ -3256,7 +3256,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     if(is.na(xlim[1])) {xlim[1] <- x[1]}
     if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
     if(xlim[1] < x[1]) {
-      warning("xlim specifies lower limit below the range of x")
+      warning("xlim specifies lower limit below the range of x\n")
       xlim[1] <- x[1]
     } else { #add lower xlim to the x vector and the interpolated y to y vector
       if (!(xlim[1] %in% x)) {
@@ -3273,7 +3273,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     }
        
     if(xlim[2] > x[length(x)]) {
-      warning("xlim specifies upper limit above the range of x")
+      warning("xlim specifies upper limit above the range of x\n")
       xlim[2] <- x[length(x)]
     } else { #add upper xlim to the x vector and the interpolated y to y vector
       if (!(xlim[2] %in% x)) {
@@ -3455,7 +3455,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
          length(pattern_list)) != 0) {
       warning(paste("Total number of wells is not a multiple of pattern length for",
-                    names(dot_args)[i]))
+                    names(dot_args)[i], "\n"))
     }
     
     #Byrow is optional, if not provided default is byrow = TRUE

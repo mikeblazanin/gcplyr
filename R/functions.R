@@ -1530,7 +1530,7 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #'         calls to \code{fill_data_metadata}
 #' 
 fill_data_metadata <- function(output, input, rs, 
-                               metadata_include = 1:length(input[[1]]$metadata)) {
+                               metadata_include = 1:length(input$metadata)) {
   data <- input$data
   if(!is.null(metadata_include)) {
     metadata <- input$metadata[metadata_include]
@@ -1566,7 +1566,17 @@ fill_data_metadata <- function(output, input, rs,
 #' 
 #' 
 #' @param blocks list of block-shaped data to be written to file
-#' @param file The filename or filenames
+#' @param file The filename or filenames. 
+#' 
+#'             Required when: \code{output_format = "single"}
+#'             
+#'             Optional when:
+#'             \code{block_name_location = "filename"}
+#'             
+#'             and
+#'             
+#'             \code{output_format = "pasted"} or \code{output_format = "multiple"}
+#'             
 #' @param output_format One of "single", "pasted", "multiple".
 #' 
 #'                      "single" will write all blocks into a single
@@ -1599,6 +1609,11 @@ write_blocks <- function(blocks, file = NULL,
                          output_format = "multiple",
                          block_name_location = "filename",
                          paste_sep = "_", filename_sep = "_", ...) {
+  if(!all(sapply(X = blocks, FUN = length) == 2) |
+     !all(unlist(lapply(X = blocks, FUN = names)) %in% c("data", "metadata"))) {
+    stop("blocks is incorrectly formatted")
+  }
+  
   if(!block_name_location %in% c('filename', 'file')) {
     stop("block_name_location must be one of c('filename', 'file')")
   }

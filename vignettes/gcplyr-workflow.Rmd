@@ -54,6 +54,96 @@ print_df <- function(df, col.names = FALSE) {
 }
 ```
 
+# A quick demonstration
+To provide an example of what using gcplyr looks like, here's a script that imports data, combines it with design information, smooths the data, then calculates the maximum density, area-under-the-curve, and maximum per-capita growth rate. Don't worry about understanding all the details of how the code works right now. Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing data with `gcplyr` can look like.
+
+```{r, include = FALSE}
+#This code just creates a wide-shaped example file
+#Don't worry about how it works - when working with real growth
+#curves data, this file would be created by the plate reader
+temp_filename <- paste(tempfile(), ".csv", sep = "")
+temp_filename <- strsplit(temp_filename, split = "\\\\")[[1]][
+  length(strsplit(temp_filename, split = "\\\\")[[1]])]
+write.csv(example_widedata, file = temp_filename, row.names = FALSE)
+
+#This code just creates our block designs
+example_design <- make_design(
+  output_format = "blocks",
+  wellnames_sep = "",
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6,
+    pattern = paste(1:48, collapse = ","),
+    byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12,
+    pattern = paste(1:48, collapse = ","),
+    byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"),
+    rows = 1:8, cols = 1:6,
+    pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"),
+    rows = 1:8, cols = 7:12,
+    pattern = "1"))
+write_blocks(example_design)
+```
+
+```{r}
+#Here we have saved our plate reader file name in the variable temp_filename
+data_wide <- read_wides(files = temp_filename)
+
+#Now we transform our data to be tidy-shaped
+data_tidy <- 
+  trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
+
+#Now we import our designs, which we'd previously saved in files named
+# Bacteria_strain.csv and Phage.csv
+designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"),
+                               wellnames_sep = "")
+
+#Merge our designs and data
+data_merged <- merge_dfs(data_tidy, designs)
+
+#Smooth our measurements
+data_merged$smoothed <- smooth_data(x = data_merged$Time,
+                                    y = data_merged$Measurements,
+                                    subset_by = data_merged$Well,
+                                    method = "moving-average",
+                                    window_width_n = 5)
+
+#Plot the data (points) and smoothed data (lines)
+ggplot(data = data_merged,
+       aes(x = as.numeric(Time), y = Measurements, color = Well)) +
+  geom_point() + 
+  geom_line(aes(y = smoothed)) +
+  guides(color = "none")
+
+#Calculate per-capita growth rate
+data_merged$percap <- calc_deriv(y = data_merged$smoothed,
+                                 x = data_merged$Time,
+                                 percapita = TRUE, blank = 0,
+                                 subset_by = data_merged$Well)
+
+#Calculate the maximum density, area-under-the-curve, and 
+#  maximum per-capita growth rate
+data_sum <- summarize(
+  group_by(data_merged, file, Well, Bacteria_strain, Phage),
+  maxdens = max(smoothed, na.rm = TRUE),
+  auc = auc(y = smoothed, x = as.numeric(Time)),
+  maxpercap = max(percap[!is.infinite(percap)], na.rm = TRUE))
+
+#Print results
+print(data_sum)
+
+#Plot summarized results for maxdens and auc in presence vs absence of phage
+ggplot(data = data_sum,
+       aes(x = maxdens, y = auc, color = Phage)) +
+  geom_point()
+```
 
 # Data layouts
 Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.

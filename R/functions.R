@@ -187,7 +187,6 @@ infer_block_metadata <- function(blocks) {
 #' @return vector of characters not found in the blocks that can be used
 #'         as a separator without issue (or error if none can be found)
 #' 
-
 sep_finder <- function(blocks, nested_metadata = NULL) {
   if (is.null(nested_metadata)) {
     nested_metadata <- infer_block_metadata(blocks)
@@ -221,6 +220,33 @@ sep_finder <- function(blocks, nested_metadata = NULL) {
     stop("all of '_', ' ', '-', ',', and ';' are found in the files,
               specify a sep not found in the files")
   } else {return(sep[which(not_in_blocks)])}
+}
+
+#' A better version of is.numeric
+#' 
+#' This function works like is.numeric but also checks if x can be coerced to 
+#' numeric without warnings. If is.numeric or can be coerced to numeric, 
+#' returns TRUE. Otherwise, returns
+#' 
+#' @param x Vector to check
+#' @return TRUE if \code{x} is numeric or can be converted to numeric without
+#'         warnings. Otherwise, FALSE
+#' 
+canbe.numeric <- function(x) {
+  if(is.numeric(x) | 
+     tryCatch(
+       {
+         as.numeric(x)
+         #This only gets executed if the line above doesn't warn or error
+         TRUE 
+       }, 
+       warning = function(w) {FALSE},
+       error = function(e) {stop(e)}
+     )) {
+      return(TRUE) 
+  } else {
+      return(FALSE)
+  }
 }
 
 

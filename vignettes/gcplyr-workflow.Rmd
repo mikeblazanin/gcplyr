@@ -715,7 +715,7 @@ Then, for each different design component, `make_design` needs five different pi
 * a vector containing the possible values
 * a vector specifying which rows these values should be applied to
 * a vector specifying which columns these values should be applied to
-* a string of the pattern of these values
+* a string or vector of the pattern of these values
 * a Boolean for whether this pattern should be filled byrow (defaults to TRUE)
 
 ```{r}
@@ -748,8 +748,8 @@ my_design
 
 We can see that `make_design` has created a block-shaped `data.frame` containing the design elements as requested, and has attached a `metadata` containing the `block_name` (this is useful for later transformation to tidy-shaped, or if you're generating multiple design elements).
 
-### A few notes on the pattern string
-One of the most important elements of every argument passed to `make_design` is the string specifying the pattern of values. 
+### A few notes on the pattern
+One of the most important elements of every argument passed to `make_design` is the string or vector specifying the pattern of values. 
 
 Oftentimes, it will be most convenient to simply use single-characters to correspond to the values. This is the default behavior of `make_design`, which splits the pattern string into individual characters, and then uses those characters to correspond to the indices of the values you provided.
 
@@ -797,6 +797,20 @@ my_design <- make_design(
     2:7,
     2:11,
     "1,2,3,4,5,6",
+    FALSE)
+)
+```
+
+If you find it easier to input the pattern as a vector rather than as a string that needs to be split, you can do that too:
+
+```{r}
+my_design <- make_design(
+  nrows = 8, ncols = 12, pattern_split = ",",
+  Bacteria = list(
+    c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
+    2:7,
+    2:11,
+    c(1,2,3,4,5,6),
     FALSE)
 )
 ```
@@ -1044,12 +1058,12 @@ example_design <- make_design(
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
     rows = 1:8, cols = 1:6,
-    pattern = paste(1:48, collapse = ","),
+    pattern = 1:48,
     byrow = TRUE),
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
     rows = 1:8, cols = 7:12,
-    pattern = paste(1:48, collapse = ","),
+    pattern = 1:48,
     byrow = TRUE),
   "Phage" = make_designpattern(
     values = c("No Phage"),

@@ -184,7 +184,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
 
-Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of `R` packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014.
+Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of `R` packages, including `ggplot`, where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014.
 
 
 Timepoint | Well | Measurement | 
@@ -198,16 +198,16 @@ Timepoint | Well | Measurement |
 7         | H12      | 1.394   | 
 
 # Importing data
-Once you've determined what format your data is in, you can begin importing it using the `read_*` functions of `gcplyr`. 
+Once you've determined what format your data is in, you can begin importing it using the `read_*` or `import_*` functions of `gcplyr`. 
 
-If your data is block-shaped, you'll use `read_blocks` and you can start in the next section: **[Importing block-shaped data]**. 
+If your data is block-shaped, you'll use `import_blockmeasures` and you can start in the next section: **[Importing block-shaped data]**. 
 
 If your data is wide-shaped, you'll use `read_wides` and you can skip down to the **[Importing wide-shaped data]** section. 
 
 In the unlikely event your data is already tidy, you'll use `read_tidys` and you can skip down to the **[Importing tidy-shaped data]** section.
 
 ## Importing block-shaped data
-To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames (with each `data.frame` corresponding to a single block) that you can save in R. 
+To import block-shaped data, use the `import_blockmeasures` function. `import_blockmeasures` only requires a list of filenames (or relative file paths) and **will return a wide-shaped data.frame** that you can save in R. 
 
 ### A basic example
 
@@ -248,15 +248,17 @@ print_df(read.csv(temp_filenames[10], header = FALSE,
 
 This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look extra small here because `R` doesn't know that the first row is a header yet.
 
-If we want to read these files into R, we simply provide `read_blocks` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`).
+If we want to read these files into R, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`).
 
 ```{r}
-imported_blockdata <- read_blocks(files = temp_filenames)
+imported_blockdata <- import_blockmeasures(files = temp_filenames)
+
+head(imported_blockdata[, 1:10])
 ```
 
 ### Specifying the location of your block-shaped data
 
-However, running `read_blocks` with only the filenames only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `read_blocks` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `read_blocks` also needs to know where your data ends). 
+However, running `import_blockmeasures` with only the filenames only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `import_blockmeasures` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `import_blockmeasures` also needs to know where your data ends). 
 
 To show how this works, first let's create some example files where the data doesn't begin in the first row/column. In these example files, the plate reader saved the time that each plate was read in the 2nd row of the file, and started saving the data itself with a header in the 4th row.
 
@@ -300,27 +302,27 @@ print_df(read.csv(temp_filenames2[10], header = FALSE,
                   colClasses = "character"))
 ```
 
-In the above example, the column names are in row 4 and the rownames are in column 1. To specify that to `read_blocks`, we simply do:
+In the above example, the column names are in row 4 and the rownames are in column 1. To specify that to `import_blockmeasures`, we simply do:
 
 ```{r}
-#Now let's read it with read_blocks
-imported_blockdata <- read_blocks(
+#Now let's read it with import_blockmeasures
+imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
   startrow = 4, startcol = 1)
 ```
 
-If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_blocks` will translate that to a number for you!
+If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `import_blockmeasures` will translate that to a number for you!
 
 ```{r}
-#Now let's read it with read_blocks
-imported_blockdata <- read_blocks(
+#Now let's read it with import_blockmeasures
+imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
   startrow = 4, startcol = "A")
 ```
 
 ### Specifying metadata
 
-Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `read_blocks` can include that information as well via the `metadata` argument. 
+Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `import_blockmeasures` can include that information as well via the `metadata` argument. 
 
 For example, let's return to our most-recent example files:
 
@@ -329,11 +331,11 @@ print_df(read.csv(temp_filenames2[10], header = FALSE,
                   colClasses = "character"))
 ```
 
-In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `read_blocks` command:
+In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `import_blockmeasures` command:
 
 ```{r}
 #Reading the blockcurves files with metadata included
-imported_blockdata <- read_blocks(
+imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
   startrow = 4, startcol = "A",
   metadata = list("time" = c(2, 3)))
@@ -345,14 +347,14 @@ And just like how you can specify `startrow`, `startcol`, etc. with Excel-style 
 
 ```{r}
 #Reading the blockcurves files with metadata included
-imported_blockdata <- read_blocks(
+imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
   startrow = 4, startcol = "A",
   metadata = list("time" = c(2, "C")))
 ```
 
 ### Reading multiple blocks from a single file
-`read_blocks` can also import multiple blocks from a single file, which some plate readers may output. In this case, you simply have to specify a vector of rows and columns that define the location of each block within the file.
+`import_blockmeasures` can also import multiple blocks from a single file, which some plate readers may output. In this case, you simply have to specify a vector of rows and columns that define the location of each block within the file.
 
 First, let's create an example file. **Don't worry about how this code works**, normally this file would be created by the plate reader.
 
@@ -360,7 +362,9 @@ First, let's create an example file. **Don't worry about how this code works**, 
 #This code just creates an example file with multiple blocks
 #Don't worry about how it works - when working with real growth
 #curves data, this would be created by the plate reader
-write_blocks(imported_blockdata,
+write_blocks(read_blocks(files = temp_filenames2,
+                         startrow = 4, startcol = "A",
+                         metadata = list("time" = c(2, "C"))),
              file = "blocks_single.csv",
              output_format = "single",
              block_name_location = "file")
@@ -373,27 +377,28 @@ print_df(head(read.csv("blocks_single.csv", header = FALSE,
                   colClasses = "character"), 20))
 ```
 
-We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `read_blocks`!
+We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `import_blockmeasures`:
 
 ```{r}
-imported_blockdata <- read_blocks(
+imported_blockdata <- import_blockmeasures(
   "blocks_single.csv",
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13)
 ```
 
-Here we've used the built-in `R` function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look at the first block, we can see that it's been read successfully:
+Here we've used the built-in `R` function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look, we can see that it's been read successfully:
 
 ```{r}
-print(imported_blockdata[[1]])
+head(imported_blockdata[, 1:10])
 ```
+
 Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector for the row,column location, it's going to be a list of two vectors, one with the rows and one with the columns.
 
 Going back to the file, we can see that the time of the block is saved in the second column, in rows 2, 14, 26, 38, ... through 1154.
 
 ```{r}
-imported_blockdata <- read_blocks(
+imported_blockdata <- import_blockmeasures(
   "blocks_single.csv",
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
@@ -404,8 +409,13 @@ imported_blockdata <- read_blocks(
 And now if we take a look at the resulting object, we can see that the time metadata has been incorporated.
 
 ```{r}
-print(imported_blockdata[[1]])
+head(imported_blockdata[, 1:10])
 ```
+
+### Notes for more advanced use
+Note that `import_blockmeasures` is essentially a wrapper function that calls `read_blocks`, `uninterleave`, and `trans_block_to_wide`. Any arguments for those functions can be passed to `import_blockmeasures`. 
+
+If you find yourself needing even more control over the process of importing block-shaped measures files, each of the functions is available for users to call themselves. So you can run the steps manually, first reading with `read_blocks`, separating plates as needed with `uninterleave`, then transforming to wide with `trans_block_to_wide`.
 
 ### What to do next
 Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Jump directly to the **[Transforming data]** section.
@@ -535,7 +545,7 @@ imported_widedata <- read_wides(files = temp_filename2,
 ```
 
 ### Reading multiple wides from a single file
-In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `read_blocks`.
+In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
 
 ### What to do next
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **[Transforming data]** section.
@@ -551,22 +561,6 @@ If you've read in your tidy-shaped data, you won't need to transform it, so you 
 Now that you've gotten your data into the `R` environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
 
 You can transform your `data.frame`s using the `trans_*` functions in `gcplyr`.
-
-## Transforming from block-shaped to wide-shaped
-
-If the data you've read into the`R`environment is block-shaped, you'll need to transform it from block-shaped to wide-shaped, and then wide-shaped to tidy-shaped. For the first step, you'll use `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the`R`object you saved when you used `read_blocks`.
-
-```{r}
-imported_blocks_now_wide <- trans_block_to_wide(imported_blockdata)
-```
-
-Note that `trans_block_to_wide` automatically detected the metadata that `read_blocks` had pulled from our files, and has stored each piece of metadata as a column in our output file.
-
-```{r}
-print(head(imported_blocks_now_wide, c(6, 12)), row.names = FALSE)
-```
-
-Now that your block-shaped data has been transformed to wide-shaped data, you can use `trans_wide_to_tidy` (below) to further transform it into the tidy-shaped data we need for our analyses.
 
 ## Transforming from wide-shaped to tidy-shaped
 
@@ -627,7 +621,7 @@ print_df(read.csv(temp_filename, header = FALSE,
                   colClasses = "character"))
 ```
 
-Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`. Since this block contains the treatment numbers, we've given the `block_names` as "Treatment_numbers". If no `block_names` is provided, read_blocks will automatically name it according to the file name.
+Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`. Since this block contains the treatment numbers, we've given the `block_names` as "Treatment_numbers". If no `block_names` is provided, `import_blockdesigns` will automatically name it according to the file name.
 
 ```{r}
 my_design <- import_blockdesigns(files = temp_filename, block_names = "Treatment_numbers")
@@ -658,7 +652,7 @@ print_df(read.csv(temp_filename2, header = FALSE,
 
 Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
 
-Let's now import both designs using `import_blockdesigns`. Since our two blocks contain the treatment numbers and then the strain letters, we've given the `block_names` as `c("Treatment_numbers", "Strain_letters")`. If no `block_names` is provided, read_blocks will automatically name it according to the file name.
+Let's now import both designs using `import_blockdesigns`. Since our two blocks contain the treatment numbers and then the strain letters, we've given the `block_names` as `c("Treatment_numbers", "Strain_letters")`. If no `block_names` is provided, `import_blockdesigns` will automatically name it according to the file name.
 
 ```{r}
 my_design <- 
@@ -1027,7 +1021,7 @@ Saving your design information in a file like this ensures that an easily human-
 # Merging spectrophotometric and design data
 Once we have both our design and data in the`R`environment and tidy-shaped, we can merge them using `merge_dfs`.
 
-For this, we'll use the data in the `example_widedata` dataset that is included with `gcplyr`, and which was the source for our previous examples with `read_blocks` and `read_wides`.
+For this, we'll use the data in the `example_widedata` dataset that is included with `gcplyr`, and which was the source for our previous examples with `import_blockmeasures` and `read_wides`.
 
 In the `example_widedata` dataset, we have 48 different bacterial strains. The left side of the plate has all 48 strains in a single well each, and the right side of the plate also has all 48 strains in a single well each:
 

@@ -38,6 +38,23 @@ test_that("make_design works as expected for numerical pattern strings", {
   )
 })
 
+test_that("make_design works as expected for patterns that are vectors", {
+  expect_equal(
+    make_design(wellnames_sep = "",
+                nrows = 4, ncols = 4, colnames_first = TRUE,
+                "name" = list(c(1, "a", "hello"),
+                              2:3, 2:4,
+                              pattern = c(1, 2, 2, 3, 3, 3))),
+    expected = data.frame(
+      Well = paste(rep(1:4, each = 4),
+                   rep(LETTERS[1:4], 4), sep = ""),
+      name = c(NA, NA, NA, NA,
+               NA, "1", "hello", NA,
+               NA, "a", "hello", NA,
+               NA, "a", "hello", NA))
+  )
+})
+
 test_that("make_design works with 0's in numerical pattern string", {
   expect_equal(
     make_design(wellnames_sep = "",

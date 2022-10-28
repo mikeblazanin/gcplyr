@@ -35,3 +35,15 @@ test_that("from_excel returns as expected", {
 test_that("to_excel and from_excel values match each other", {
   expect_equal(from_excel(to_excel(1:10000)), 1:10000)
 })
+
+test_that("canbe_numeric works as expected", {
+  expect_equal(canbe.numeric(c(5, 6, 7)), TRUE)
+  
+  expect_equal(canbe.numeric(c(5, "6", "7")), TRUE)
+  
+  expect_equal(canbe.numeric(c("5", "6", "7")), TRUE)
+  
+  expect_equal(canbe.numeric(c(5, "6", "hello")), FALSE)
+  
+  expect_error(canbe.numeric(list("a" = 5, "x" = c(6, 7))))
+})

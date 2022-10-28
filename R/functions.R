@@ -155,6 +155,101 @@ dots_parser <- function(FUN, ...) {
   return(do.call(FUN, dots[names(dots) %in% argnames]))
 }
 
+#' A function that infers whether blocks have nested metadata
+#' 
+#' @param blocks The list of blocks
+#' 
+#' @return TRUE or FALSE whether the blocks contain metadata
+#'         (also passes warning when inferring, or error when unable to)
+#' 
+infer_block_metadata <- function(blocks) {
+  #Infer nestedness if nested_metadata is set to NULL
+  if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
+    warning("Inferring nested_metadata to be FALSE\n")
+    return(FALSE)
+  } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
+    warning("Inferring nested_metadata to be TRUE\n")
+    return(TRUE)
+  } else {
+    stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
+  }
+}
+
+#' A function that finds a character not present in block data nor metadata
+#' 
+#' Typically this is used to find a separator that can be used without
+#' accidentally implying separations in the data that shouldn't be there
+#' 
+#' @param blocks The list of blocks
+#' @param nested_metadata A Boolean for if there is nested metadata in
+#'                        \code{blocks}. Will attempt to infer if left NULL
+#' 
+#' @return vector of characters not found in the blocks that can be used
+#'         as a separator without issue (or error if none can be found)
+#' 
+sep_finder <- function(blocks, nested_metadata = NULL) {
+  if (is.null(nested_metadata)) {
+    nested_metadata <- infer_block_metadata(blocks)
+  }
+  
+  #Look for a character that is not present
+  # in the data/metadata and so can be used as a separator
+  sep <- c("_", " ", "-", ",", ";")
+  if(nested_metadata == TRUE) {
+    not_in_blocks <-
+      sapply(X = sep,
+             FUN = function(y) {
+               !any(grepl(pattern = y, fixed = TRUE,
+                          x = unlist(
+                            lapply(X = blocks,
+                                   FUN = function(x) {
+                                     c(unlist(x[1]), unlist(x[2]))
+                                   }))))
+             })
+  } else if (nested_metadata == FALSE) {
+    not_in_blocks <-
+      sapply(X = sep,
+             FUN = function(y) {
+               !any(grepl(pattern = y, fixed = TRUE,
+                          x = unlist(
+                            lapply(X = blocks,FUN = function(x) {unlist(x[1])}))))
+             })
+  }
+  
+  if(!any(not_in_blocks)) {
+    stop("all of '_', ' ', '-', ',', and ';' are found in the files,
+              specify a sep not found in the files")
+  } else {return(sep[which(not_in_blocks)])}
+}
+
+#' A better version of is.numeric
+#' 
+#' This function works like is.numeric but also checks if x can be coerced to 
+#' numeric without warnings. If is.numeric or can be coerced to numeric, 
+#' returns TRUE. Otherwise, returns
+#' 
+#' @param x Vector to check
+#' @return TRUE if \code{x} is numeric or can be converted to numeric without
+#'         warnings. Otherwise, FALSE
+#' 
+canbe.numeric <- function(x) {
+  if(is.numeric(x) | 
+     tryCatch(
+       {
+         as.numeric(x)
+         #This only gets executed if the line above doesn't warn or error
+         TRUE 
+       }, 
+       warning = function(w) {FALSE},
+       error = function(e) {stop(e)}
+     )) {
+      return(TRUE) 
+  } else {
+      return(FALSE)
+  }
+}
+
+
 # Read files ----
 
 #' An internal function that handles name inference logic for other functions
@@ -318,7 +413,7 @@ infer_names <- function(df,
 #'                        and numbers for rows. 
 #'                        If \code{wellnames_Excel} is FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
-#' @param ...   Other arguments passed to \code{utils::read_csv},
+#' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'              or \code{utils::read.table}
 #'
@@ -354,7 +449,7 @@ infer_names <- function(df,
 #'  \code{trans_block_to_wide} integrates this metadata into the
 #'  wide-shaped dataframe it produces
 #' 
-#' @return A list where each entry is a list containing the block measures data
+#' @return A list where each entry is a list containing the block data frame
 #'         followed by the block_names (or filenames, if block_names is not 
 #'         provided) and any specified metadata.
 #'
@@ -366,50 +461,50 @@ read_blocks <- function(files, extension = NULL,
                         block_names = NULL,
                         header = NA, sider = NA,
                         wellnames_Excel = TRUE, ...) {
-  if (is.null(startrow)) {
-    startrow <- rep(NA, length(files))
-  } else {
-    if (!all(is.numeric(startrow))) {
-      startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
-      startrow <- as.numeric(startrow)
-    }
-    startrow <- checkdim_inputs(startrow, "startrow", length(files))
-  }
-  if (is.null(endrow)) {
-    endrow <- rep(NA, length(files))
-  } else {
-    if (!all(is.numeric(endrow))) {
-      endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
-      endrow <- as.numeric(endrow)
-    }
-    endrow <- checkdim_inputs(endrow, "endrow", length(files))
-  }
-  if (is.null(startcol)) {
-    startcol <- rep(NA, length(files))
-  } else {
-    if (!all(is.numeric(startcol))) {
-      startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
-      startcol <- as.numeric(startcol)
-    }
-    startcol <- checkdim_inputs(startcol, "startcol", length(files))
-  }
-  if (is.null(endcol)) {
-    endcol <- rep(NA, length(files))
-  } else {
-    if (!all(is.numeric(endcol))) {
-      endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
-      endcol <- as.numeric(endcol)
-    }
-    endcol <- checkdim_inputs(endcol, "endcol", length(files))
-  }
-  if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", length(files))
-  }
-  header <- checkdim_inputs(header, "infer_colnames", length(files))
-  sider <- checkdim_inputs(sider, "infer_rownames", length(files))
+  nblocks <- max(length(files), length(startrow), length(endrow),
+                 length(startcol), length(endcol), length(sheet),
+                 na.rm = TRUE)
   
-  if (!is.null(block_names)) {
-    stopifnot(length(block_names) == length(files))
+  files <- checkdim_inputs(files, "files", nblocks, "the number of blocks")
+  
+  if(!is.null(startrow) & !all(is.numeric(startrow))) {
+    startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
+    startrow <- as.numeric(startrow)
+  }
+  if(is.null(startrow)) {startrow <- rep(NA, nblocks)} 
+  startrow <- checkdim_inputs(startrow, "startrow", nblocks, 
+                              "the number of blocks")
+  
+  if(!is.null(endrow) & !all(is.numeric(endrow))) {
+    endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
+    endrow <- as.numeric(endrow)
+  }
+  if(is.null(endrow)) {endrow <- rep(NA, nblocks)}
+  endrow <- checkdim_inputs(endrow, "endrow", nblocks, "the number of blocks")
+  
+  if(!is.null(startcol) & !all(is.numeric(startcol))) {
+    startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
+    startcol <- as.numeric(startcol)
+  }
+  if(is.null(startcol)) {startcol <- rep(NA, nblocks)}
+  startcol <- checkdim_inputs(startcol, "startcol", nblocks, 
+                              "the number of blocks")
+  
+  if(!is.null(endcol) & !all(is.numeric(endcol))) {
+    endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
+    endcol <- as.numeric(endcol)
+  }
+  if(is.null(endcol)) {endcol <- rep(NA, nblocks)}
+  endcol <- checkdim_inputs(endcol, "endcol", nblocks, "the number of blocks")
+  
+  if (!is.null(sheet)) {
+    sheet <- checkdim_inputs(sheet, "sheet", nblocks, "the number of blocks")
+  }
+  header <- checkdim_inputs(header, "header", nblocks, "the number of blocks")
+  sider <- checkdim_inputs(sider, "sider", nblocks, "the number of blocks")
+  
+  if (!is.null(block_names) & length(block_names) != nblocks) {
+      stop("block_names must be the same length as the number of blocks")
   }
   
   #Determine file extension(s)
@@ -417,21 +512,39 @@ read_blocks <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
     }
   } else {
-    extension <- checkdim_inputs(extension, "extension", length(files))
+    extension <- checkdim_inputs(extension, "extension", nblocks, 
+                                 "the number of blocks")
     if(any(!extension %in% c("csv", "xls", "xlsx", "tbl"))) {
       stop("Extension provided by user must be one of: csv, xls, xlsx, tbl")
     }
   }
   
+  #Check metadata for any list entries, if there are and they're not
+  # the right length, pass error. Otherwise, replicate as needed
+  if (!is.null(metadata)) {
+    for (i in 1:length(metadata)) {
+      if(length(metadata[[i]]) != 2) {
+        stop(paste("metadata", names(metadata)[i], "is not a vector or a list of length 2"))
+      }
+      if(is.list(metadata[[i]])) {
+        metadata[[i]][[1]] <- 
+          checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
+                          nblocks, "the number of blocks")
+        metadata[[i]][[2]] <- 
+          checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
+                          nblocks, "the number of blocks")
+      }
+    }
+  }
   
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
                              "metadata" = c("block_name" = "NA"))), 
-                   length(files))
+                   nblocks)
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
     names(metadata_vector) <- c("block_name", names(metadata))
@@ -443,11 +556,11 @@ read_blocks <- function(files, extension = NULL,
     # (with a named list of c(row, column) combinations)
     outputs <- rep(list(list("data" = NA, 
                              "metadata" = metadata_vector)), 
-                   length(files))
+                   nblocks)
   }
 
   #Import data
-  for (i in 1:length(files)) {
+  for (i in 1:nblocks) {
     ##Read file & save in temp
     if (extension[i] == "tbl") {
       temp <- dots_parser(utils::read.table, file = files[i], ...)
@@ -516,15 +629,29 @@ read_blocks <- function(files, extension = NULL,
     #Add user-specified metadata (if any)
     if (!is.null(metadata)) {
       for (j in 1:length(metadata)) {
-        #Convert from Excel-style formatting if needed
-        if(is.na(suppressWarnings(as.numeric(metadata[[j]][1])))) {
-          metadata[[j]][1] <- from_excel(metadata[[j]][1])
+        if(!is.list(metadata[[j]])) { #metadata item is a vector
+          #Convert from Excel-style formatting if needed
+          if(!canbe.numeric(metadata[[j]][1])) {
+            metadata[[j]][1] <- from_excel(metadata[[j]][1])
+          }
+          if(!canbe.numeric(metadata[[j]][2])) {
+            metadata[[j]][2] <- from_excel(metadata[[j]][2])
+          }
+          outputs[[i]]$metadata[j+1] <- 
+            temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+        } else { #metadata item is a list (presumably of two vectors)
+                 #the first vector is the rows for each ith block
+                 #the second vector is the columns for each ith block
+          #Convert from Excel-style formatting if needed
+          if(!canbe.numeric(metadata[[j]][[1]][i])) {
+            metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
+          }
+          if(!canbe.numeric(metadata[[j]][[2]][i])) {
+            metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
+          }
+          outputs[[i]]$metadata[j+1] <- temp[as.numeric(metadata[[j]][[1]][i]), 
+                                             as.numeric(metadata[[j]][[2]][i])]
         }
-        if(is.na(suppressWarnings(as.numeric(metadata[[j]][2])))) {
-          metadata[[j]][2] <- from_excel(metadata[[j]][2])
-        }
-        outputs[[i]]$metadata[j+1] <- 
-          temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
       }
     }
   }
@@ -533,12 +660,12 @@ read_blocks <- function(files, extension = NULL,
   if (length(outputs) > 1 &
       stats::var(sapply(outputs, simplify = TRUE, 
                  FUN = function(x) {dim(x$data)[1]})) != 0) {
-    warning("Not all blockmeasures have the same number of rows of data")
+    warning("Not all blockmeasures have the same number of rows of data\n")
   }
   if (length(outputs) > 1 &
       stats::var(sapply(outputs, simplify = TRUE,
                  FUN = function(x) {dim(x$data)[2]})) != 0) {
-    warning("Not all blockmeasures have the same number of columns of data")
+    warning("Not all blockmeasures have the same number of columns of data\n")
   }
   
   return(outputs)
@@ -594,7 +721,7 @@ read_blocks <- function(files, extension = NULL,
 #'                             If FALSE, names will be numbered with "R" and "C"
 #'                             prefixes for row and column.
 #'                             (e.g. R4C7 is the 4th column, 7th row)
-#' @param ...   Other arguments passed to \code{utils::read_csv},
+#' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
 #'              
@@ -617,51 +744,65 @@ read_wides <- function(files, extension = NULL,
   #             if startrow not provided, header is 1
   #           if header FALSE
   #             columns numbered V1...Vn
-  
-  if (!is.null(startrow) & !is.numeric(startrow)) {
-    startrow <- from_excel(startrow)}
-  if (!is.null(endrow) & !is.numeric(endrow)) {
-    endrow <- from_excel(endrow)}
-  if (!is.null(startcol) & !is.numeric(startcol)) {
-    startcol <- from_excel(startcol)}
-  if (!is.null(endcol) & !is.numeric(endcol)) {
-    endcol <- from_excel(endcol)}
-  
-  if (!is.null(startrow) & header == TRUE & any(startrow <= 1)) {
-    warning("startrow <= 1 but header is TRUE, treating header as FALSE")
-    header <- FALSE
-  }
-  
-  if(is.null(startrow)) {startrow <- NA}
-  startrow <- checkdim_inputs(startrow, "startrow", length(files))
-  
-  if (is.null(endrow)) {endrow <- NA}
-  endrow <- checkdim_inputs(endrow, "endrow", length(files))
 
-  if (is.null(startcol)) {startcol <- NA}
-  startcol <- checkdim_inputs(startcol, "startcol", length(files))
+  nwides <- max(length(files), length(startrow), length(endrow),
+                length(startcol), length(endcol), length(sheet),
+                na.rm = TRUE)
   
-  if (is.null(endcol)) {endcol <- NA}
-  endcol <- checkdim_inputs(endcol, "endcol", length(files))
+  files <- checkdim_inputs(files, "files", nwides, "the number of wides")
   
-  if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", length(files))
+  if(!is.null(startrow) & !all(is.numeric(startrow))) {
+    startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
+    startrow <- as.numeric(startrow)
+  }
+  if(is.null(startrow)) {startrow <- NA}
+  startrow <- checkdim_inputs(startrow, "startrow", nwides,
+                              "the number of wides")
+  
+  if(!is.null(endrow) & !all(is.numeric(endrow))) {
+    endrow[!is.numeric(endrow)] <- from_excel(endrow[!is.numeric(endrow)])
+    endrow <- as.numeric(endrow)
+  }
+  if(is.null(endrow)) {endrow <- NA}
+  endrow <- checkdim_inputs(endrow, "endrow", nwides,
+                            "the number of wides")
+
+  if(!is.null(startcol) & !all(is.numeric(startcol))) {
+    startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
+    startcol <- as.numeric(startcol)
+  }
+  if(is.null(startcol)) {startcol <- NA}
+  startcol <- checkdim_inputs(startcol, "startcol", nwides,
+                              "the number of wides")
+  
+  if(!is.null(endcol) & !all(is.numeric(endcol))) {
+    endcol[!is.numeric(endcol)] <- from_excel(endcol[!is.numeric(endcol)])
+    endcol <- as.numeric(endcol)
+  }
+  if(is.null(endcol)) {endcol <- NA}
+  endcol <- checkdim_inputs(endcol, "endcol", nwides,
+                            "the number of wides")
+  
+  if(!is.null(sheet)) {
+    sheet <- checkdim_inputs(sheet, "sheet", nwides,
+                             "the number of wides")
   }
   
   #Determine file extension(s)
-  if (is.null(extension)) {
+  if(is.null(extension)) {
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
     }
   } else {
-    extension <- checkdim_inputs(extension, "extension", length(files))
+    extension <- checkdim_inputs(extension, "extension", nwides,
+                                 "the number of wides")
     stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
   }
   
   #Check for names error
-  if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}
+  if (!is.null(run_names)) {stopifnot(length(run_names) == nwides)}
   
   #If run_names not provided, infer from filenames
   if (is.null(run_names)) {
@@ -670,36 +811,67 @@ read_wides <- function(files, extension = NULL,
     run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
   }
   
-  #If metadata unnamed, assign names
   if (!is.null(metadata)) {
+    #If metadata unnamed, assign names
     if (is.null(names(metadata))) {
       names(metadata) <- rep("", length(metadata))}
     for (i in 1:length(metadata)) {
-      #Convert to numeric if provided Excel-style
-      if(is.na(suppressWarnings(as.numeric(metadata[[i]][1])))) {
-        metadata[[i]][1] <- from_excel(metadata[[i]][1])
+      #Check metadata for any list entries, if there are and they're not
+      # the right length, pass error. Otherwise, replicate as needed
+      if(length(metadata[[i]]) != 2) {
+        stop(paste("metadata", names(metadata)[i], "is not a vector or a list of length 2"))
       }
-      if(is.na(suppressWarnings(as.numeric(metadata[[i]][2])))) {
-        metadata[[i]][2] <- from_excel(metadata[[i]][2])
+      if(is.list(metadata[[i]])) {
+        metadata[[i]][[1]] <- 
+          checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
+                          nwides, "the number of blocks")
+        metadata[[i]][[2]] <- 
+          checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
+                          nwides, "the number of blocks")
       }
-      #Then make names
+      
+      #Make names as specified if needed
       if (names(metadata)[i] == "") {
         if (metadata_Excel_names) {
-          names(metadata)[i] <- paste(to_excel(metadata[[i]][1]), 
-                                      metadata[[i]][2], sep = "")
+          if(!is.list(metadata[[i]])) { #is not a list
+            if(is.numeric(metadata[[i]][2])) {
+              #col name needs to be converted to excel format
+              names(metadata)[i] <- paste(to_excel(metadata[[i]][2]), 
+                                          metadata[[i]][1], sep = "")
+            } else { #colname is already excel format
+              names(metadata)[i] <- paste(metadata[[i]][2], 
+                                          metadata[[i]][1], sep = "")
+            }
+          } else { #is a list
+            if(is.numeric(metadata[[i]][2])) {
+              #col name needs to be converted to excel format
+              names(metadata)[i] <- paste(to_excel(metadata[[i]][[2]][1]), 
+                                          metadata[[i]][[1]][1], sep = "")
+            } else { #colname is already excel format
+              names(metadata)[i] <- paste(metadata[[i]][[2]][1], 
+                                          metadata[[i]][[1]][1], sep = "")
+            }
+            warning("auto-naming metadata according to first row & column values\n")
+          }
         } else {
-          names(metadata)[i] <- paste("R", metadata[[i]][1], 
-                                      "C", metadata[[i]][2], sep = "")
+          if(!is.list(metadata[[i]])) { #is a vector
+            names(metadata)[i] <- paste("R", metadata[[i]][1], 
+                                        "C", metadata[[i]][2], sep = "")
+          } else { #is a list
+            names(metadata)[i] <- paste("R", metadata[[i]][[1]][1], 
+                                        "C", metadata[[i]][[2]][1], sep = "")
+            warning("auto-naming metadata according to first row & column values\n")
+          }
         }
       }
     }
   }
   
   #Create empty recipient list
-  outputs <- rep(list(NA), length(files))
+  outputs <- rep(list(NA), nwides)
   
   #Import data
-  for (i in 1:length(files)) {
+  for (i in 1:nwides) {
     #Read file & save in temp
     if (extension[i] == "tbl") {
       temp <- dots_parser(utils::read.table, file = files[i], ...)
@@ -731,7 +903,7 @@ read_wides <- function(files, extension = NULL,
       colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
       outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-      colnames(outputs[[i]]) <- paste("V", 1:ncol(temp), sep = "")
+      colnames(outputs[[i]]) <- paste("V", 1:ncol(outputs[[i]]), sep = "")
     }
     
     #Get metadata
@@ -739,10 +911,32 @@ read_wides <- function(files, extension = NULL,
       metadata_vector <- rep(NA, times = length(metadata))
       names(metadata_vector) <- names(metadata)
       for (j in 1:length(metadata)) {
-        metadata_vector[j] <- 
-          temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+        if(!is.list(metadata[[j]])) { #metadata item is a vector
+          #Convert to numeric if provided Excel-style
+          if(!canbe.numeric(metadata[[j]][1])) {
+            metadata[[j]][1] <- from_excel(metadata[[j]][1])
+          }
+          if(!canbe.numeric(metadata[[j]][2])) {
+            metadata[[j]][2] <- from_excel(metadata[[j]][2])
+          }
+          metadata_vector[j] <- 
+            temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+        } else {  #metadata item is a list (presumably of two vectors)
+          #the first vector is the rows for each ith block
+          #the second vector is the columns for each ith block
+          #Convert from Excel-style formatting if needed
+          if(!canbe.numeric(metadata[[j]][[1]][i])) {
+            metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
+          }
+          if(!canbe.numeric(metadata[[j]][[2]][i])) {
+            metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
+          }
+          metadata_vector[j] <- temp[as.numeric(metadata[[j]][[1]][i]), 
+                                     as.numeric(metadata[[j]][[2]][i])]
+        }
       }
     } else {metadata_vector <- NULL}
+    
     #Add run_names if requested as column
     if(!is.null(names_to_col)) {
       metadata_vector <- c(run_names[i], metadata_vector)
@@ -814,7 +1008,7 @@ read_wides <- function(files, extension = NULL,
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
 #'                     
-#' @param ...   Other arguments passed to \code{utils::read_csv},
+#' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
 #'              sheet
@@ -866,7 +1060,7 @@ read_tidys <- function(files, extension = NULL,
     extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl")
+      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
@@ -952,7 +1146,7 @@ read_tidys <- function(files, extension = NULL,
 }
 
 
-## Import block-shaped (read, uninterleave, transform to wide) ----
+# Import block-shaped (read, uninterleave, transform to wide) ----
 
 #' Import blockmeasures
 #' 
@@ -1026,12 +1220,17 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              
 #' @details     Common arguments that you may want to provide include:
 #' 
-#'              startrow, endrow, startcol, endcol, sheet - specifying the
-#'              location of design information inside \code{files} to 
-#'              \code{read_blocks}
+#'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
+#'              \code{sheet} - specifying the location of design information 
+#'              inside \code{files} to \code{read_blocks}
+#'              
+#'              \code{wellnames_sep} - specifying what character (or "" for none)
+#'              should be used when pasting together the rownames and
+#'              column names. Note that this should be chosen to match
+#'              the wellnames in your measures.
 #'              
 #'              Note that \code{import_blockdesigns} cannot currently handle
-#'              metadata speficified via the \code{metadata} argument of
+#'              metadata specified via the \code{metadata} argument of
 #'              \code{read_blocks}
 #' 
 #' @export
@@ -1092,7 +1291,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 
 # Make designs ----
 
-#' Make tidy design data.frames
+#' Make design data.frame(s)
 #' 
 #' This is a function to easily input experimental design elements
 #' for later merging with read data
@@ -1101,21 +1300,21 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #' Note that either \code{nrows} or \code{block_row_names} must be provided
 #' and that either \code{ncols} or \code{block_col_names} must be provided
 #' 
-#' Examples:
-#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
-#'         design_element_name = list(c("Value1", "Value2", "Value3"),
-#'                           rowstart:rowend, colstart:colend,
-#'                           "111222333000", TRUE)
-#' To make it easier to pass arguments, use make_designpattern:
-#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
-#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
-#'                                                 rows = 2:7, cols = 2:11,
-#'                                                 pattern = "11223300",
-#'                                                 byrow = TRUE))
 #' 
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
+#' @param output_format One of c("blocks", "blocks_pasted", "wide", "tidy")
+#'                      denoting the format of the resulting data.frame
+#'                      
+#'                      For easy merging with tidymeasures, leave as default
+#'                      of 'tidy'. 
+#'                      
+#'                      For human-readability to confirm design
+#'                      is correct, choose 'blocks' or 'blocks_pasted'. 
+#'                      
+#'                      For writing to block-shaped file(s), choose 'blocks' or
+#'                      'blocks_pasted'.
 #' @param wellnames_sep A string used when concatenating rownames and column
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
@@ -1154,18 +1353,34 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'               defaults to every character
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
-#'              
+#'
+#' @examples
+#' make_design(nrows = 8, ncols = 12,
+#'             design_element_name = list(c("A", "B", "C"),
+#'                                        2:7,
+#'                                        2:11,
+#'                                        "11223300", 
+#'                                        TRUE))
+#'                           
+#' ## To be reminded what arguments are needed, use make_designpattern:
+#' make_design(nrows = 8, ncols = 12,
+#'             design_element_name = make_designpattern(
+#'                  values = c("A", "B", "C"),
+#'                  rows = 2:7, 
+#'                  cols = 2:11,
+#'                  pattern = "11223300",
+#'                  byrow = TRUE))              
 #' 
 #' @export         
-make_tidydesign <- function(nrows = NULL, ncols = NULL,
+make_design <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
-                        wellnames_sep = "", wellnames_colname = "Well",
+                        output_format = "tidy",
+                        wellnames_sep = "_", wellnames_colname = "Well",
                         wellnames_Excel = TRUE, lookup_tbl_start = 1,
-                        pattern_split = "", colnames_first = FALSE,
-                        ...) {
-
+                        pattern_split = "", colnames_first = FALSE, ...) {
+  
   #Do we need to include a plate_name argument?
-    #(old comment) the plates have to be identified uniquely
+  #(old comment) the plates have to be identified uniquely
   
   #(old comment on other ways inputs could be taken)
   #       Vectors can be formatted in several ways:
@@ -1197,21 +1412,19 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}
   
-  dot_args <- list(...)
-  
-  #Make base output dataframe
-  output <- as.data.frame(matrix(NA, nrow = nrows*ncols, 
-                                 ncol = 1+length(unique(names(dot_args)))))
-  if(colnames_first) {
-    output[,1] <- paste(block_col_names,
-                        rep(block_row_names, each = ncols),
-                        sep = wellnames_sep)
-  } else {
-    output[,1] <- paste(rep(block_row_names, each = ncols),
-                        block_col_names, sep = wellnames_sep)
+  if(length(output_format) > 1) {stop("output_format must be a sinle string")}
+  if(!output_format %in% c("blocks", "blocks_pasted", "wide", "tidy")) {
+    stop("output_format must be one of c('blocks', 'blocks_pasted', 'wide', 'tidy')")
   }
   
-  colnames(output)[1] <- wellnames_colname
+  dot_args <- list(...)
+  
+  #Make empty output list
+  output <- rep(list(list(
+    "data" = matrix(NA, nrow = nrows, ncol = ncols,
+                    dimnames = list(block_row_names, block_col_names)),
+                    "metadata" = c("block_name" = "NA"))),
+    length(unique(names(dot_args))))
   
   #Note dot_args structure
   #dot_args[[i]] = list(values = c("A", "B", "C"),
@@ -1223,7 +1436,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     pattern_list <- strsplit(dot_args[[i]][[4]],
                              split = pattern_split)[[1]]
     if (any(nchar(pattern_list) > 1)) {
-      if (any(is.na(suppressWarnings(as.numeric(pattern_list))))) {
+      if (!canbe.numeric(pattern_list)) {
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
       } else { #they're all numeric
         pattern_list <- as.numeric(pattern_list)
@@ -1232,7 +1445,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     } else { #they're all single-character pattern values
       lookup_table <- c(1:9, LETTERS, letters) #Note since 0 not included, 0's become NA
       lookup_table <- lookup_table[match(lookup_tbl_start, lookup_table):
-                                   length(lookup_table)]
+                                     length(lookup_table)]
       if (any(!pattern_list[pattern_list != "0"] %in% lookup_table)) {
         stop("Some values in pattern are not in lookup table. Check that you 
              have lookup_tbl_start correct and that you're only using 
@@ -1244,7 +1457,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
     if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
          length(pattern_list)) != 0) {
       warning(paste("Total number of wells is not a multiple of pattern length for",
-                    names(dot_args)[i]))
+                    names(dot_args)[i], "\n"))
     }
     
     #Byrow is optional, if not provided default is byrow = TRUE
@@ -1258,21 +1471,44 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
       rep(pattern_list, length.out = (length(dot_args[[i]][[2]])*
                                         length(dot_args[[i]][[3]])))]
     
-    #Fill values into "blockcurve"
-    block_out <- matrix(NA, nrow = nrows, ncol = ncols)
-    block_out[dot_args[[i]][[2]], dot_args[[i]][[3]]] <-
-      matrix(vals_list, 
-             nrow = length(dot_args[[i]][[2]]), 
+    #Fill values into blocks
+    output_idx <- match(names(dot_args)[i], unique(names(dot_args)))
+    output[[output_idx]]$data[dot_args[[i]][[2]], dot_args[[i]][[3]]] <-
+      matrix(vals_list,
+             nrow = length(dot_args[[i]][[2]]),
              ncol = length(dot_args[[i]][[3]]),
              byrow = dot_args[[i]][[5]])
-    block_mlt <- c(t(block_out))
-    #Put values into output dataframe
-    mycol <- match(names(dot_args)[i], unique(names(dot_args)))+1
-    output[which(!is.na(block_mlt)), mycol] <- block_mlt[which(!is.na(block_mlt))]
-    colnames(output)[mycol] <- names(dot_args)[i]
+    output[[output_idx]]$metadata["block_name"] <- names(dot_args)[i]
   }
+  
+  if(output_format %in% c("blocks_pasted", "wide", "tidy")) {
+    if(length(dot_args) > 1) {
+      sep <- sep_finder(output, nested_metadata = TRUE)[1]
+      output <- paste_blocks(output, nested_metadata = TRUE, sep = sep)
+    }
+    if(output_format %in% c("wide", "tidy")) {
+      output <- trans_block_to_wide(output, wellnames_sep = wellnames_sep,
+                                    nested_metadata = TRUE,
+                                    colnames_first = colnames_first)
+      if (output_format == "tidy") {
+        vals_colname <- output$block_name[1]
+        
+        output <- 
+          trans_wide_to_tidy(
+            output[, -which("block_name" == colnames(output))], 
+            data_cols = colnames(output)[colnames(output) != "block_name"],
+            values_to = vals_colname,
+            values_to_numeric = FALSE)
+        if(length(dot_args) > 1) {
+          output <- separate_tidy(data = output, sep = sep, col = vals_colname)
+        }
+      }
+    }
+  }
+  
   return(output)
 }
+
 
 #' Make design pattern
 #' 
@@ -1299,6 +1535,338 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
             is.character(pattern), is.logical(byrow))
   return(list(values, rows, cols, pattern, byrow))
 }
+
+#' Fill output data.frame with \code{data} and \code{metadata}
+#'
+#' This is an internal function used by \code{write_blocks} that does the 
+#' fill data and metadata step
+#' 
+#' @param output Data frame for data and metadata to be filled into
+#' @param input One data and metadata to fill into \code{output}
+#' @param rs index of the row in \code{output} where data and metadata should
+#'           start being filled in
+#' @param metadata_include Indices of which metadata items should be included
+#'                         
+#'                         Use NULL for no metadata inclusion
+#'                         
+#' @return A list, where [[1]] is \code{output} containing the data and
+#'         metadata from \code{input} but properly formatted for writing.
+#'         
+#'         And [[2]] is the updated \code{rs} to be used for subsequent
+#'         calls to \code{fill_data_metadata}
+#' 
+fill_data_metadata <- function(output, input, rs, 
+                               metadata_include = 1:length(input$metadata)) {
+  data <- input$data
+  if(!is.null(metadata_include)) {
+    metadata <- input$metadata[metadata_include]
+    
+    #Save metadata names
+    output[rs:(rs+length(metadata)-1), 1] <- names(metadata)
+    #Save metadata values
+    output[rs:(rs+length(metadata)-1), 2] <- metadata
+    
+    #Update row counter
+    rs <- rs+length(metadata)
+  }
+  #Save colnames
+  output[rs, 2:ncol(output)] <- colnames(data)
+  rs <- rs+1
+  
+  #Save rownames
+  output[rs:(rs+nrow(data)-1), 1] <- row.names(data)
+  
+  #Save data
+  output[rs:(rs+nrow(data)-1), 2:ncol(output)] <- data
+  
+  rs <- rs+nrow(data)+1 #add spacer empty row
+  
+  return(list(output, rs))
+}
+
+#' Write block designs to csv
+#' 
+#' This function writes block-shaped lists (as created by
+#' \code{read_blocks} or \code{make_design}) to csv files, including
+#' both \code{data} and \code{metadata} in a variety of output formats
+#' 
+#' 
+#' @param blocks list of block-shaped data to be written to file
+#' @param file The filename or filenames. 
+#' 
+#'             Required when: \code{output_format = "single"}
+#'             
+#'             Optional when:
+#'             \code{block_name_location = "filename"}
+#'             
+#'             and
+#'             
+#'             \code{output_format = "pasted"} or \code{output_format = "multiple"}
+#'             
+#' @param output_format One of "single", "pasted", "multiple".
+#' 
+#'                      "single" will write all blocks into a single
+#'                      csv file, with an empty row between successive
+#'                      blocks
+#'                      
+#'                      "pasted" will paste all blocks together using a
+#'                      \code{paste_sep}, and then write that now-pasted
+#'                      block to a single csv file
+#'                      
+#'                      "multiple" will write each block to its own csv file
+#' @param block_name_location Either 'filename' or 'file'.
+#' 
+#'                           If 'filename', the \code{block_name} metadata 
+#'                           will be used as the output file name(s) when
+#'                           no file name(s) are provided, or appended to
+#'                           file name(s) when they have been provided.
+#'                           
+#'                           If 'file', the \code{block_name} metadata will be
+#'                           included as a row in the output file.
+#' @param paste_sep When \code{output_format = 'pasted'}, what character
+#'                  will be used to paste together blocks.   
+#' @param filename_sep What character will be used to paste together 
+#'                     filenames when block_name_location = 'filename'.   
+#' @param ... Other arguments passed to \code{write.csv}
+#' @return Nothing, but R objects are written to files
+#' 
+#' @export
+write_blocks <- function(blocks, file = NULL, 
+                         output_format = "multiple",
+                         block_name_location = "filename",
+                         paste_sep = "_", filename_sep = "_", ...) {
+  if(!all(sapply(X = blocks, FUN = length) == 2) |
+     !all(unlist(lapply(X = blocks, FUN = names)) %in% c("data", "metadata"))) {
+    stop("blocks is incorrectly formatted")
+  }
+  
+  if(!block_name_location %in% c('filename', 'file')) {
+    stop("block_name_location must be one of c('filename', 'file')")
+  }
+  
+  if(output_format == "single") {
+    #basically going to put all the blocks in one file one on top
+    # of another with filename = file argument
+    
+    if(is.null(file)) {stop("file is required when output_format = 'single'")}
+    if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
+      warning("appending '.csv' to filename\n")
+      file <- paste(file, ".csv", sep = "")
+    }
+    if(block_name_location == "filename") {
+      warning("block_name_location can only be 'file' when output_format = 'single'
+              saving with block_name_location = 'file'\n")
+    }
+    
+    #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
+    numcols <- max(2, 1+sapply(X = blocks, FUN = function(x) {ncol(x[[1]])}))
+    #Calc needed # rows: 1 ea metadata, 1 ea row of data,
+    #                          1 col header, 1 space after ea block
+    numrows <- 2+sum(sapply(blocks, 
+                            FUN = function(x) {nrow(x[[1]]) + length(x[[2]])}))
+    
+    output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+    
+    rs <- 1 #row start index
+    for (i in 1:length(blocks)) {
+      #Use sub-function to fill all blocks into output df
+      temp <- fill_data_metadata(output = output, input = blocks[[i]], rs = rs)
+      output <- temp[[1]]
+      rs <- temp[[2]]
+    }
+    #Write file
+    utils::write.table(output, file = file, sep = ",", na = "",
+                       col.names = FALSE, row.names = FALSE, ...)
+  } else if (output_format == "pasted") {
+    #going to paste all the blocks together then save a single file
+    blocks <- paste_blocks(blocks, sep = paste_sep)
+    
+    if(block_name_location == "filename") {
+      #Put pasted block names in filename
+      if(is.null(file)) {
+        file <- paste(blocks[[1]]$metadata["block_name"], ".csv", sep = "")
+      } else {
+        if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
+          file <- 
+            paste(file, filename_sep, blocks[[1]]$metadata["block_name"], 
+                  ".csv", sep = "")
+        } else {
+          file <- 
+            sub("\\.csv", x = file,
+                paste(filename_sep, blocks[[1]]$metadata["block_name"], 
+                      ".csv", sep = ""))
+        }
+      }
+      
+      #Calc needed # rows: 1 ea metadata except block_name (-1), 
+      #                          1 ea row of data, 1 col header (+1)
+      numrows <- sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
+      
+      if(length(blocks[[1]]$metadata) > 1) {
+        #there are other metadata, put them in rows above with WARNING
+        warning("block_name_location = 'filename' but there are multiple
+                 metadata entries. Putting block_names in filename
+                 and writing remaining metadata into file\n")
+        
+        #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
+        numcols <- max(2, 1+ncol(blocks[[1]]$data))
+        
+        #Set up for saving
+        output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+
+        #Use sub-function to fill block & non-blocknames metadata into output df
+        output <- 
+          fill_data_metadata(
+            output = output, input = blocks[[1]], rs = 1,
+            metadata_include = 
+              which(names(blocks[[1]]$metadata) != "block_name"))[[1]]
+        
+      } else {#metadata contains only block_names
+        
+        #Calc needed # cols: 1 for rownames, ncol for data
+        numcols <- 1+ncol(blocks[[1]]$data)
+        
+        #Set up for saving
+        output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+        
+        #Use sub-function to fill block & non-blocknames metadata into output df
+        output <- 
+          fill_data_metadata(output = output, input = blocks[[1]], 
+                             rs = 1, metadata_include = NULL)[[1]]
+      }
+    } else { #block_name_location == 'file'
+      #put pasted metadata in rows above block
+      if(is.null(file)) {
+        stop("file is required when output_format = 'pasted' and block_name_location = 'file'")
+      }
+      if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
+        warning("appending '.csv' to filename\n")
+        file <- paste(file, ".csv", sep = "")
+      }
+      
+      #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
+      numcols <- max(2, 1+ncol(blocks[[1]]$data))
+      #Calc needed # rows: 1 ea metadata, 1 ea row of data, 1 col header
+      numrows <- 1+sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
+      
+      output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+      
+      #Use sub-function to fill block & non-blocknames metadata into output df
+      output <- 
+        fill_data_metadata(output = output, input = blocks[[1]], rs = 1)[[1]]
+    }
+    #Write file
+    utils::write.table(output, file = file, sep = ",", na = "",
+                       col.names = FALSE, row.names = FALSE, ...)
+  } else if (output_format == "multiple") {
+    #going to save each block as its own file
+    if(block_name_location == "filename") {
+      if(!is.null(file)) {
+        #Add .csv suffix as needed
+        for (i in 1:length(file)) {
+          if(substr(file[i], nchar(file[i])-3, nchar(file[i])) != ".csv") {
+            warning("appending '.csv' to filename\n")
+            file[i] <- paste(file[i], ".csv", sep = "")
+          }
+        }
+        #Replicate file vector as needed
+        if (length(file) < length(blocks)) {
+          file <- rep_len(file, length.out = length(blocks))
+        }
+      }
+      
+      for (i in 1:length(blocks)) {
+        #Put block names in filename
+        if(is.null(file)) {
+          filenm <- paste(blocks[[i]]$metadata["block_name"], ".csv", sep = "")
+        } else {
+          filenm <- sub("\\.csv", x = file[i],
+                        paste(filename_sep, blocks[[i]]$metadata["block_name"], 
+                              ".csv", sep = ""))
+        }
+        
+        #Calc needed # rows: 1 ea metadata except block_name (-1), 
+        #                    1 ea row of data, 1 col header (+1)
+        numrows <- sum(nrow(blocks[[i]]$data) + length(blocks[[i]]$metadata))
+        
+        if(length(blocks[[i]]$metadata) > 1) {
+          #there are other metadata, put them in rows above with WARNING
+          warning("block_name_location = 'filename' but there are multiple
+                 metadata entries. Putting block_names in filename
+                 and writing remaining metadata into file\n")
+          
+          #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
+          numcols <- max(2, 1+ncol(blocks[[i]]$data))
+          
+          #Set up for saving
+          output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+          
+          #Use sub-function to fill block & non-blocknames metadata into output df
+          output <- 
+            fill_data_metadata(
+              output = output, input = blocks[[i]], rs = 1,
+              metadata_include = 
+                which(names(blocks[[i]]$metadata) != "block_name"))[[1]]
+        } else { #metadata contains only block_names
+          
+          #Calc needed # cols: 1 for rownames, ncol for data
+          numcols <- 1+ncol(blocks[[i]]$data)
+          
+          #Set up for saving
+          output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+          
+          #Use sub-function to fill block & non-blocknames metadata into output df
+          output <- 
+            fill_data_metadata(output = output, input = blocks[[i]], 
+                               rs = 1, metadata_include = NULL)[[1]]
+        }
+        #Write file
+        utils::write.table(output, file = filenm, sep = ",", na = "",
+                           col.names = FALSE, row.names = FALSE, ...)
+      }
+    } else { #block_name_location == 'file'
+      if(is.null(file)) {
+        stop("file is required when output_format = 'multiple' and block_name_location = 'file'")
+      } else {
+        #Add .csv suffix as needed
+        for (i in 1:length(file)) {
+          if(substr(file[i], nchar(file[i])-3, nchar(file[i])) != ".csv") {
+            warning("appending '.csv' to filename\n")
+            file[i] <- paste(file[i], ".csv", sep = "")
+          }
+        }
+        #Replicate file vector as needed
+        if (length(file) < length(blocks)) {
+          file <- rep_len(file, length.out = length(blocks))
+          warning("appending numeric suffix to files in order of 'blocks'\n")
+          for (i in 1:length(file)) {
+            file[i] <- gsub("\\.csv", paste(filename_sep, i, ".csv", sep = ""), 
+                            file[i])
+          }
+        }
+      }
+      for (i in 1:length(blocks)) {
+        #put metadata in rows at top of each file
+        
+        #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
+        numcols <- max(2, 1+ncol(blocks[[1]]$data))
+        #Calc needed # rows: 1 ea metadata, 1 ea row of data, 1 col header
+        numrows <- 1+sum(nrow(blocks[[1]]$data) + length(blocks[[1]]$metadata))
+        
+        output <- as.data.frame(matrix(nrow = numrows, ncol = numcols))
+        
+        #Use sub-function to fill block & non-blocknames metadata into output df
+        output <- 
+          fill_data_metadata(output = output, input = blocks[[i]], rs = 1)[[1]]
+        
+        #Write file
+        utils::write.table(output, file = file[i], sep = ",", na = "",
+                           col.names = FALSE, row.names = FALSE, ...)
+      }
+    }
+  } else {stop("output_format must be one of c('single', 'pasted', 'multiple')")}
+}
+
 
 # Reshape (including merge) ----
 
@@ -1330,15 +1898,7 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "_",
   
   #Infer nestedness if nested_metadata is set to NULL
   if (is.null(nested_metadata)) {
-    if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
-      nested_metadata <- FALSE
-      warning("Inferring nested_metadata to be FALSE")
-    } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
-      nested_metadata <- TRUE
-      warning("Inferring nested_metadata to be TRUE")
-    } else {
-      stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
-    }
+    nested_metadata <- infer_block_metadata(blocks)
   }
   
   #Check that all blocks have same dimensions
@@ -1571,7 +2131,7 @@ trans_wide_to_tidy <- function(wides,
   
   #Check cols inputs
   if (any(!is.na(data_cols) & !is.na(id_cols))) {
-    warning("Cannot provide both data_cols and id_cols for a given wides, using data_cols only")
+    warning("Cannot provide both data_cols and id_cols for a given wides, using data_cols only\n")
   }
   
   names_to <- checkdim_inputs(names_to, "names_to", length(wides))
@@ -1581,7 +2141,7 @@ trans_wide_to_tidy <- function(wides,
   if("values_transform" %in% names(list(...))) {
     if(values_to_numeric) {
       warning("values_to_numeric is TRUE but values_transform is supplied in ..., 
-              values_transform will override values_to_numeric")}
+              values_transform will override values_to_numeric\n")}
   } else {
     if(values_to_numeric) {
       values_transform = rep(list(list(temp = as.numeric)), length(values_to))
@@ -1684,7 +2244,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     
     #Then collapse x and collapse y into dfs as needed
     if (is.data.frame(x) & is.data.frame(y)) {
-      warning("collapse = TRUE, but both x and y are data.frames already")
+      warning("collapse = TRUE, but both x and y are data.frames already\n")
     } else {
       if (!is.data.frame(x)) {
         if (!is.list(x)) {stop("x is neither a list nor a data.frame")}
@@ -1702,6 +2262,12 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     #Join x and y
     output <- dplyr::full_join(x, y,
                              by = by, ...)
+    if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
+      warning("\nmerged_df has more rows than x or y, this may indicate
+               mis-matched values in the shared column(s) used to merge 
+              (e.g. 'Well')\n")
+    }
+    
     if (drop) {output <- output[stats::complete.cases(output), ]}
   } else {output <- x}
   
@@ -1738,10 +2304,10 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
   if (is.null(nested_metadata)) {
     if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
       nested_metadata <- FALSE
-      warning("Inferring nested_metadata to be FALSE")
+      warning("Inferring nested_metadata to be FALSE\n")
     } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
       nested_metadata <- TRUE
-      warning("Inferring nested_metadata to be TRUE")
+      warning("Inferring nested_metadata to be TRUE\n")
     } else {
       stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
     }
@@ -1874,8 +2440,10 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
 #'            \code{moving_average}, or \code{moving_median}.
 #'            
-#'            For \code{moving_average} and \code{moving_median}, window_width_n
-#'            is required. For \code{loess} and \code{gam}, see details.
+#'            For \code{moving_average} and \code{moving_median}, 
+#'            \code{window_width_n} is required. 
+#'            
+#'            For \code{loess} and \code{gam}, see details.
 #'
 #' @details For smoothing using \code{loess} or \code{gam} that depends on 
 #'          more than one predictor, \code{formula} and \code{data} can be
@@ -1915,7 +2483,7 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
   #Parse x and y, or ... args, into formula and data
   if (any(c("formula", "data") %in% names(list(...)))) {
     if(!all(c("formula", "data") %in% names(list(...)))) {
-      warning("both or neither formula and data must be specified, reverting to smoothing y on x")
+      warning("both or neither formula and data must be specified, reverting to smoothing y on x\n")
     } else {
       formula <- list(...)$formula
       data <- list(...)$data
@@ -1929,7 +2497,7 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
   }
   
   if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
-    warning("gam method is called without 's()' to smooth")}
+    warning("gam method is called without 's()' to smooth\n")}
   
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
   } else if (length(subset_by) != nrow(data)) {
@@ -2024,33 +2592,47 @@ moving_average <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  if (!is.numeric(data[, predictor_var])) {
-    warning(paste("data is being sorted by order(", predictor_var,
-            "), but ", predictor_var, " is not numeric", sep = ""))
+  #Check x for being correct format
+  if(!is.numeric(data[, predictor_var])) {
+    if (!canbe.numeric(data[, predictor_var])) {
+      warning(paste("data is being sorted by order(", predictor_var,
+                    "), but ", predictor_var, " is not numeric\n", sep = ""))
+    } else { #it can be coerced
+      data[, predictor_var] <- as.numeric(data[, predictor_var])
+    }
   }
   data <- data[order(data[, predictor_var]), ]
   
+  #Check y for being the correct format
   if(!is.numeric(data[, response_var]) ) {
-    warning(paste("Coercing", response_var, "to numeric"))
-    data[, response_var] <- as.numeric(data[, response_var])
+    if(!canbe.numeric(data[, response_var])) {
+      stop(paste(response_var, "cannot be coerced to numeric"))
+    } else { #it can be coerced
+      data[, response_var] <- as.numeric(data[, response_var])
+    }
   }
   
-  #Calculate moving average
-  window_radius <- (window_width_n - 1)/2
-  results <- c(rep(NA, window_radius),
-               rep(0, (nrow(data)-2*window_radius)),
-               rep(NA, window_radius))
-  
-  for (i in 1:window_width_n) {
-    offset <- i - 1 - window_radius
+  #Check that there is sufficient data
+  if(nrow(data) < window_width_n) {
+    results <- rep(NA, nrow(data))
+    warning("not enough data given window_width_n, returning NA's\n")
+  } else { #there is sufficient data so calculate moving average
+    window_radius <- (window_width_n - 1)/2
+    results <- c(rep(NA, window_radius),
+                 rep(0, (nrow(data)-2*window_radius)),
+                 rep(NA, window_radius))
     
-    results[(1 + window_radius):(length(results) - window_radius)] <-
-      results[(1 + window_radius):(length(results) - window_radius)] +
-      data[(1 + window_radius + offset):
-             (length(results) - window_radius + offset), 
-           response_var]
+    for (i in 1:window_width_n) {
+      offset <- i - 1 - window_radius
+      
+      results[(1 + window_radius):(length(results) - window_radius)] <-
+        results[(1 + window_radius):(length(results) - window_radius)] +
+        data[(1 + window_radius + offset):
+               (length(results) - window_radius + offset), 
+             response_var]
+    }
+    results <- results/window_width_n
   }
-  results <- results/window_width_n
 
   return(results)
 }
@@ -2083,26 +2665,40 @@ moving_median <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  if (!is.numeric(data[, predictor_var])) {
-    warning(paste("data is being sorted by order(", predictor_var,
-                  "), but ", predictor_var, " is not numeric", sep = ""))
+  #Check x for being correct format
+  if(!is.numeric(data[, predictor_var])) {
+    if (!canbe.numeric(data[, predictor_var])) {
+      warning(paste("data is being sorted by order(", predictor_var,
+                    "), but ", predictor_var, " is not numeric\n", sep = ""))
+    } else { #it can be coerced
+      data[, predictor_var] <- as.numeric(data[, predictor_var])
+    }
   }
   data <- data[order(data[, predictor_var]), ]
   
+  #Check y for being the correct format
   if(!is.numeric(data[, response_var]) ) {
-    warning(paste("Coercing", response_var, "to numeric"))
-    data[, response_var] <- as.numeric(data[, response_var])
+    if(!canbe.numeric(data[, response_var])) {
+      stop(paste(response_var, "cannot be coerced to numeric"))
+    } else { #it can be coerced
+      data[, response_var] <- as.numeric(data[, response_var])
+    }
   }
   
-  #Calculate moving average
-  window_radius <- (window_width_n - 1)/2
-  results <- c(rep(NA, window_radius),
-               rep(0, (nrow(data)-2*window_radius)),
-               rep(NA, window_radius))
-  
-  for (i in (window_radius+1):(length(results) - window_radius)) {
-    results[i] <- stats::median(data[(i - window_radius):(i + window_radius), 
-                              response_var])
+  #Check that there is sufficient data
+  if(nrow(data) < window_width_n) {
+    results <- rep(NA, nrow(data))
+    warning("not enough data given window_width_n, returning NA's\n")
+  } else { #there is sufficient data so calculate moving median
+    window_radius <- (window_width_n - 1)/2
+    results <- c(rep(NA, window_radius),
+                 rep(0, (nrow(data)-2*window_radius)),
+                 rep(NA, window_radius))
+    
+    for (i in (window_radius+1):(length(results) - window_radius)) {
+      results[i] <- stats::median(data[(i - window_radius):(i + window_radius), 
+                                       response_var])
+    }
   }
   
   return(results)
@@ -2112,71 +2708,94 @@ moving_median <- function(formula, data, window_width_n) {
 
 #' Calculate derivatives of vector of data
 #' 
-#' Provided a vector of y values, this function returns the difference
-#' between sequential values, derivative between sequential values,
-#' or per-capita derivative between sequential values
+#' Provided a vector of y values, this function returns either the plain
+#' or per-capita difference or derivative between sequential values
 #' 
 #' @param y       Data to calculate difference or derivative of
-#' @param x Vector of x values provided as a simple numeric
-#'          (e.g. if time, in number of seconds, not POSIX).
+#' @param x       Vector of x values provided as a simple numeric.
+#' @param return One of c("difference", "derivative") for whether the
+#'               differences in \code{y} should be returned, or the
+#'               derivative of \code{y} with respect to \code{x}
+#' @param percapita When percapita = TRUE, the differences of y are 
+#'                  divided by y
 #' @param x_scale Factor to scale x by in denominator of derivative calculation
 #'                
-#'                When \code{x_scale = NA}, \code{calc_deriv} returns 
-#'                differences in \code{y}
-#'                
-#'                When \code{x_scale = 1}, \code{calc_deriv} returns the 
-#'                standard derivative in the same units as y/x
-#'                
-#'                For other units, set x_scale to the ratio of the the units of 
+#'                Set x_scale to the ratio of the the units of 
 #'                x to the desired units. E.g. if x is in seconds, but the 
 #'                desired derivative is in units of /minute, set 
 #'                \code{x_scale = 60} (since there are 60 seconds in 1 minute).
-#' @param percapita When percapita = TRUE, the differences of y are 
-#'                  divided by y
+#' @param blank   y-value associated with a "blank" where the density is 0.
+#'                Is required when \code{percapita = TRUE}.
+#'                
+#'                If a vector of blank values is specified, blank values are
+#'                assumed to be in the same order as unique(subset_by)  
 #' @param subset_by if subset_by is provided, it should be a vector (same 
 #'                  length as y), the unique values of which will 
 #'                  separate calculations
-#' @return A vector of values for the difference (if \code{x_scale = NA}, 
-#'         derivative (if \code{x_scale} is a number), or per-capita derivative
-#'         (if \code{percapita = TRUE}) between \code{y} values. Vector
+#' @return A vector of values for the plain (if \code{percapita = FALSE})
+#'         or per-capita (if \code{percapita = TRUE}) difference 
+#'         (if \code{return = "difference"} or derivative 
+#'         (if \code{return = "derivative"}) between \code{y} values. Vector
 #'         will be the same length as \code{y},  with \code{NA} appended 
 #'         to the end
 #' 
 #' @export   
-calc_deriv <- function(y, x = NULL, x_scale = 1,
-                       percapita = FALSE, subset_by = NULL) {
-  
+calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
+                       x_scale = 1, blank = NULL, subset_by = NULL) {
   #Check inputs
-  if (is.null(y)) {stop("y must be provided")}
-  if (length(x_scale) > 1) {stop("x_scale must be NA or a single value")}
-  if (!is.na(x_scale)) {
-    if (!is.numeric(x_scale)) {stop("x_scale is not numeric")}
-    if (is.null(x)) {stop("x_scale is specified, but x is not provided")}
+  if(!return %in% c("derivative", "difference")) {
+    stop("return must be one of c('derivative', 'difference')")
   }
-  if (!is.null(x) & !is.numeric(x)) {
-    stop("x is not numeric")
+  
+  if(is.null(y)) {stop("y must be provided")}
+  if(length(x_scale) > 1) {stop("x_scale must be a single value")}
+  
+  if(!is.numeric(x_scale)) {
+    if(!canbe.numeric(x_scale)) {stop("x_scale must be numeric")
+    } else {x_scale <- as.numeric(x_scale)}
+  }
+  if(is.na(x_scale)) {stop("x_scale cannot be NA")}
+  
+  if (!is.null(x)) {
+    if(!canbe.numeric(x)) {stop("x is not numeric")
+    } else {x <- as.numeric(x)}
   }
   if(!is.numeric(y)) {y <- as.numeric(y)}
   
+  #Set up subset_by
+  if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
+  
+  #Set up blank values
+  if(is.null(blank)) {
+    if(percapita == TRUE) {stop("percapita == TRUE but blank is NULL")}
+  } else { #blank is not NULL
+    blank <- checkdim_inputs(
+      blank, "blank", needed_len = length(unique(subset_by)),
+      needed_name = "the number of unique subset_by values") 
+  }
+  
   #Calc derivative
   ans <- rep(NA, length(y))
-  if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
   for (i in 1:length(unique(subset_by))) {
     indices <- which(subset_by == unique(subset_by)[i])
     sub_y <- y[indices]
     if(!is.null(x)) {
+      #Save orig order info so we can put things back at the end
       sub_x <- x[indices]
-      start_order <- order(sub_x) #so we can put things back at the end
+      start_order <- order(sub_x) 
       #Reorder
       sub_y <- sub_y[start_order]
       sub_x <- sub_x[start_order]
     } else {start_order <- 1:length(sub_y)}
+    
+    #Blank subtraction
+    if(!is.null(blank)) {sub_y <- sub_y - blank[i]}
     #Calculate differences
     sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
     #Percapita (if specified)
     if(percapita) {sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
     #Derivative & rescale (if specified)
-    if(!is.na(x_scale)) {
+    if(return == "derivative") {
       sub_ans <- sub_ans/
         ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
     }
@@ -2434,7 +3053,7 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   }
   if (!is.null(width_limit_n)) {
     if (width_limit_n%%2 == 0) {
-      warning("width_limit_n must be odd, will use ", width_limit_n-1, " as width_limit_n")
+      warning("width_limit_n must be odd, will use ", width_limit_n-1, " as width_limit_n\n")
       width_limit_n <- width_limit_n - 1
     }
   }
@@ -2625,9 +3244,9 @@ first_below <- function(y, x = NULL, threshold,
   }
   if(return == "x" & is.null(x)) {stop("return = x but x is not provided")}
   
-  if(any(is.na(suppressWarnings(as.numeric(y))))) {stop("y must be numeric")}
+  if(!canbe.numeric(y)) {stop("y must be numeric")}
   if(!is.null(x)) {
-    if(any(is.na(suppressWarnings(as.numeric(x))))) {stop("x must be numeric")}
+    if(!canbe.numeric(x)) {stop("x must be numeric")}
     y <- y[order(x)]
     x <- x[order(x)]
   }
@@ -2691,6 +3310,19 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   if(!is.vector(y)) {
     stop(paste("y is not a vector, it is class:", class(y)))
   }
+  
+  if(!is.numeric(x)) {
+    if(!canbe.numeric(x)) {stop("x cannot be coerced to numeric")
+    } else {
+      x <- as.numeric(x)
+    }
+  }
+  if(!is.numeric(y)) {
+    if(!canbe.numeric(y)) {stop("y cannot be coerced to numeric")
+    } else {
+      y <- as.numeric(y)
+    }
+  }
 
   to_keep <- which(!(is.na(x) | is.na(y)))
   x <- x[to_keep]
@@ -2704,7 +3336,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     if(is.na(xlim[1])) {xlim[1] <- x[1]}
     if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
     if(xlim[1] < x[1]) {
-      warning("xlim specifies lower limit below the range of x")
+      warning("xlim specifies lower limit below the range of x\n")
       xlim[1] <- x[1]
     } else { #add lower xlim to the x vector and the interpolated y to y vector
       if (!(xlim[1] %in% x)) {
@@ -2721,7 +3353,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     }
        
     if(xlim[2] > x[length(x)]) {
-      warning("xlim specifies upper limit above the range of x")
+      warning("xlim specifies upper limit above the range of x\n")
       xlim[2] <- x[length(x)]
     } else { #add upper xlim to the x vector and the interpolated y to y vector
       if (!(xlim[2] %in% x)) {
@@ -2748,7 +3380,191 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 }
 
 
-##Legacy Code ----
+# Legacy Code ----
+
+#' Make tidy design data.frames
+#' 
+#' This is a function to easily input experimental design elements
+#' for later merging with read data
+#' 
+#' @details 
+#' Note that either \code{nrows} or \code{block_row_names} must be provided
+#' and that either \code{ncols} or \code{block_col_names} must be provided
+#' 
+#' Examples:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'         design_element_name = list(c("Value1", "Value2", "Value3"),
+#'                           rowstart:rowend, colstart:colend,
+#'                           "111222333000", TRUE)
+#' To make it easier to pass arguments, use make_designpattern:
+#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
+#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
+#'                                                 rows = 2:7, cols = 2:11,
+#'                                                 pattern = "11223300",
+#'                                                 byrow = TRUE))
+#' 
+#' @param nrows,ncols Number of rows and columns in the plate data
+#' @param block_row_names,block_col_names Names of the rows, columns
+#'                                     of the plate blockmeasures data
+#' @param wellnames_sep A string used when concatenating rownames and column
+#'                      names to create well names
+#' @param wellnames_colname Header for newly-created column containing the
+#'                          well names
+#' @param wellnames_Excel If \code{block_row_names} or \code{block_col_names}
+#'                        are not specified, should rows and columns be named
+#'                        using Excel-style base-26 lettering for rows
+#'                        and numbering for columns? If FALSE, rows and columns
+#'                        will be numbered with "R" and "C" prefix.
+#' @param pattern_split character to split pattern elements provided in
+#'                      \code{...} by
+#' @param lookup_tbl_start Value in the lookup table for the split pattern values
+#'                         that corresponds to the first value in the vector.
+#'                         
+#'                         Lookup table by default is 
+#'                         c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
+#'                         for example, lookup_tbl_start = "A", then the lookup
+#'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
+#' @param colnames_first  In the wellnames created by \code{paste}-ing the
+#'                        rownames and column names, should the column names
+#'                        come first
+#' @param ... Each \code{...} argument must be a list with five elements:
+#' 
+#'              1. a vector of the values
+#'              
+#'              2. a vector of the rows the pattern should be applied to
+#'              
+#'              3. a vector of the columns the pattern should be applied to
+#'              
+#'              4. a string of the pattern itself, where numbers refer to
+#'               the indices in the values vector
+#'               
+#'               0's refer to NA
+#'               
+#'               This pattern will be split using pattern_split, which
+#'               defaults to every character
+#'               
+#'              5. a Boolean for whether this pattern should be filled byrow
+#'              
+#' @export
+make_tidydesign <- function(nrows = NULL, ncols = NULL,
+                            block_row_names = NULL, block_col_names = NULL,
+                            wellnames_sep = "", wellnames_colname = "Well",
+                            wellnames_Excel = TRUE, lookup_tbl_start = 1,
+                            pattern_split = "", colnames_first = FALSE,
+                            ...) {
+  
+  .Deprecated("make_design")
+  
+  #Do we need to include a plate_name argument?
+  #(old comment) the plates have to be identified uniquely
+  
+  #(old comment on other ways inputs could be taken)
+  #       Vectors can be formatted in several ways:
+  #         they can simply be numbers of the wells
+  #         they can be row-column based
+  #         they can be pattern based (within limits)
+  #   example:
+  #   make_layout("Treatment" = list("Local" = 1:5, "Global" = 6:10,
+  #                                   "Control" = 11:15),
+  #               "Isolate" = list("A" = c(1, 6, 11),
+  #                                 "B" = c(2, 7, 12), etc))
+  #               "Rep" = list("1" = 
+  
+  #Check inputs
+  if(is.null(nrows) & is.null(block_row_names)) {
+    stop("nrows or block_row_names must be provided")
+  }
+  if(is.null(ncols) & is.null(block_col_names)) {
+    stop("ncols or block_col_names must be provided")
+  }
+  if (is.null(block_row_names)) {
+    if (wellnames_Excel) {block_row_names <- to_excel(1:nrows)
+    } else {block_row_names <- paste("R", 1:nrows, sep = "")}
+  }
+  if (is.null(block_col_names)) {
+    if (wellnames_Excel) {block_col_names <- 1:ncols
+    } else {block_col_names <- paste("C", 1:ncols, sep = "")}
+  }
+  if (is.null(nrows)) {nrows <- length(block_row_names)}
+  if (is.null(ncols)) {ncols <- length(block_col_names)}
+  
+  dot_args <- list(...)
+  
+  #Make base output dataframe
+  output <- as.data.frame(matrix(NA, nrow = nrows*ncols, 
+                                 ncol = 1+length(unique(names(dot_args)))))
+  if(colnames_first) {
+    output[,1] <- paste(block_col_names,
+                        rep(block_row_names, each = ncols),
+                        sep = wellnames_sep)
+  } else {
+    output[,1] <- paste(rep(block_row_names, each = ncols),
+                        block_col_names, sep = wellnames_sep)
+  }
+  
+  colnames(output)[1] <- wellnames_colname
+  
+  #Note dot_args structure
+  #dot_args[[i]] = list(values = c("A", "B", "C"),
+  #                     rows = rowstart:rowend, cols = colstart:colend
+  #                     pattern = "111222333000", byrow = TRUE)
+  
+  #Loop through input arguments & fill into output dataframe
+  for (i in 1:length(dot_args)) {
+    pattern_list <- strsplit(dot_args[[i]][[4]],
+                             split = pattern_split)[[1]]
+    if (any(nchar(pattern_list) > 1)) {
+      if (!canbe.numeric(pattern_list)) {
+        stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")
+      } else { #they're all numeric
+        pattern_list <- as.numeric(pattern_list)
+        pattern_list[pattern_list==0] <- NA
+      }
+    } else { #they're all single-character pattern values
+      lookup_table <- c(1:9, LETTERS, letters) #Note since 0 not included, 0's become NA
+      lookup_table <- lookup_table[match(lookup_tbl_start, lookup_table):
+                                     length(lookup_table)]
+      if (any(!pattern_list[pattern_list != "0"] %in% lookup_table)) {
+        stop("Some values in pattern are not in lookup table. Check that you 
+             have lookup_tbl_start correct and that you're only using 
+             alphanumeric values")
+      }
+      pattern_list <- match(pattern_list, lookup_table)
+    }
+    
+    if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 
+         length(pattern_list)) != 0) {
+      warning(paste("Total number of wells is not a multiple of pattern length for",
+                    names(dot_args)[i], "\n"))
+    }
+    
+    #Byrow is optional, if not provided default is byrow = TRUE
+    if (length(dot_args[[i]]) < 5) {
+      dot_args[[i]][[5]] <- TRUE
+    }
+    
+    #Create list of values following pattern (which is replicated as needed
+    # to reach the necessary length)
+    vals_list <- dot_args[[i]][[1]][
+      rep(pattern_list, length.out = (length(dot_args[[i]][[2]])*
+                                        length(dot_args[[i]][[3]])))]
+    
+    #Fill values into "blockcurve"
+    block_out <- matrix(NA, nrow = nrows, ncol = ncols)
+    block_out[dot_args[[i]][[2]], dot_args[[i]][[3]]] <-
+      matrix(vals_list, 
+             nrow = length(dot_args[[i]][[2]]), 
+             ncol = length(dot_args[[i]][[3]]),
+             byrow = dot_args[[i]][[5]])
+    block_mlt <- c(t(block_out))
+    #Put values into output dataframe
+    mycol <- match(names(dot_args)[i], unique(names(dot_args)))+1
+    output[which(!is.na(block_mlt)), mycol] <- block_mlt[which(!is.na(block_mlt))]
+    colnames(output)[mycol] <- names(dot_args)[i]
+  }
+  return(output)
+}
+
 
 #' Turn tidydesign into block format
 #'
@@ -2813,34 +3629,4 @@ block_tidydesign <- function(tidydesign, collapse = NULL,
   }
   
   return(output)
-}
-
-
-#' Write block designs to csv
-#' 
-#' This function is basically just a wrapper for write.csv that also works
-#' when handed a list of matrices/dataframes
-#' If \code{designs} is a list, \code{names(designs)} will be placed in the
-#' 1,1 cell of each block
-#' 
-#' @param designs data.frame or matrix (if one design), or list of data.frames
-#'                or matrices, to be written to file
-#' @param file The filename (if a single design), or vector of file names
-#'             (if multiple designs)
-#' @param ... Other arguments passed to \code{write.csv}
-#' @return Nothing, but R objects are written to files
-#' 
-write_blockdesign <- function(designs, file, ...) {
-  #Basically just a wrapper for write.csv when handed a list of matrices/dataframes
-  #Also puts the names of the designs in 1,1 cell (as is the case for block designs
-  if (is.data.frame(designs)) {
-    utils::write.csv(x = designs, file = file, ...)
-  } else if (is.list(designs)) {
-    for (i in 1:length(designs)) {
-      tmp <- cbind(data.frame(row.names(designs[[i]])),
-                   designs[[i]])
-      colnames(tmp)[1] <- names(designs)[i]
-      utils::write.csv(x = tmp, file = file[i], row.names = FALSE, ...)
-    }   
-  }
 }

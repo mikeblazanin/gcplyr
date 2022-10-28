@@ -71,7 +71,7 @@ If FALSE, names will be numbered with "R" and "C"
 prefixes for row and column.
 (e.g. R4C7 is the 4th column, 7th row)}
 
-\item{...}{Other arguments passed to \code{utils::read_csv},
+\item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 \code{utils::read.table}}
 }

@@ -33,8 +33,10 @@ just fitted values are returned.}
 \item{...}{Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
 \code{moving_average}, or \code{moving_median}.
 
-For \code{moving_average} and \code{moving_median}, window_width_n
-is required. For \code{loess} and \code{gam}, see details.}
+For \code{moving_average} and \code{moving_median}, 
+\code{window_width_n} is required. 
+
+For \code{loess} and \code{gam}, see details.}
 }
 \value{
 If return_fitobject == FALSE:

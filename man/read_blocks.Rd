@@ -78,12 +78,12 @@ and numbers for rows.
 If \code{wellnames_Excel} is FALSE, rows and columns
 will be numbered with "R" and "C" prefixes, respectively.}
 
-\item{...}{Other arguments passed to \code{utils::read_csv},
+\item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx},
 or \code{utils::read.table}}
 }
 \value{
-A list where each entry is a list containing the block measures data
+A list where each entry is a list containing the block data frame
         followed by the block_names (or filenames, if block_names is not 
         provided) and any specified metadata.
 }

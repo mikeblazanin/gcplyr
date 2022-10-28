@@ -17,7 +17,16 @@ write_blocks(
 \arguments{
 \item{blocks}{list of block-shaped data to be written to file}
 
-\item{file}{The filename or filenames}
+\item{file}{The filename or filenames. 
+
+            Required when: \code{output_format = "single"}
+            
+            Optional when:
+            \code{block_name_location = "filename"}
+            
+            and
+            
+            \code{output_format = "pasted"} or \code{output_format = "multiple"}}
 
 \item{output_format}{One of "single", "pasted", "multiple".
 

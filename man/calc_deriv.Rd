@@ -4,43 +4,54 @@
 \alias{calc_deriv}
 \title{Calculate derivatives of vector of data}
 \usage{
-calc_deriv(y, x = NULL, x_scale = 1, percapita = FALSE, subset_by = NULL)
+calc_deriv(
+  y,
+  x = NULL,
+  return = "derivative",
+  percapita = FALSE,
+  x_scale = 1,
+  blank = NULL,
+  subset_by = NULL
+)
 }
 \arguments{
 \item{y}{Data to calculate difference or derivative of}
 
-\item{x}{Vector of x values provided as a simple numeric
-(e.g. if time, in number of seconds, not POSIX).}
+\item{x}{Vector of x values provided as a simple numeric.}
+
+\item{return}{One of c("difference", "derivative") for whether the
+differences in \code{y} should be returned, or the
+derivative of \code{y} with respect to \code{x}}
+
+\item{percapita}{When percapita = TRUE, the differences of y are 
+divided by y}
 
 \item{x_scale}{Factor to scale x by in denominator of derivative calculation
 
-When \code{x_scale = NA}, \code{calc_deriv} returns 
-differences in \code{y}
-
-When \code{x_scale = 1}, \code{calc_deriv} returns the 
-standard derivative in the same units as y/x
-
-For other units, set x_scale to the ratio of the the units of 
+Set x_scale to the ratio of the the units of 
 x to the desired units. E.g. if x is in seconds, but the 
 desired derivative is in units of /minute, set 
 \code{x_scale = 60} (since there are 60 seconds in 1 minute).}
 
-\item{percapita}{When percapita = TRUE, the differences of y are 
-divided by y}
+\item{blank}{y-value associated with a "blank" where the density is 0.
+Is required when \code{percapita = TRUE}.
+
+If a vector of blank values is specified, blank values are
+assumed to be in the same order as unique(subset_by)}
 
 \item{subset_by}{if subset_by is provided, it should be a vector (same 
 length as y), the unique values of which will 
 separate calculations}
 }
 \value{
-A vector of values for the difference (if \code{x_scale = NA}, 
-        derivative (if \code{x_scale} is a number), or per-capita derivative
-        (if \code{percapita = TRUE}) between \code{y} values. Vector
+A vector of values for the plain (if \code{percapita = FALSE})
+        or per-capita (if \code{percapita = TRUE}) difference 
+        (if \code{return = "difference"} or derivative 
+        (if \code{return = "derivative"}) between \code{y} values. Vector
         will be the same length as \code{y},  with \code{NA} appended 
         to the end
 }
 \description{
-Provided a vector of y values, this function returns the difference
-between sequential values, derivative between sequential values,
-or per-capita derivative between sequential values
+Provided a vector of y values, this function returns either the plain
+or per-capita difference or derivative between sequential values
 }

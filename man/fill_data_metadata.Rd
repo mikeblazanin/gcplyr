@@ -8,7 +8,7 @@ fill_data_metadata(
   output,
   input,
   rs,
-  metadata_include = 1:length(input[[1]]$metadata)
+  metadata_include = 1:length(input$metadata)
 )
 }
 \arguments{

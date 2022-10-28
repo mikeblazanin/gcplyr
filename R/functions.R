@@ -1325,7 +1325,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                        and numbering for columns? If FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefix.
 #' @param pattern_split character to split pattern elements provided in
-#'                      \code{...} by
+#'                      \code{...} by, if they're not already a vector
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
 #'                         that corresponds to the first value in the vector.
 #'                         
@@ -1344,13 +1344,13 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'              
 #'              3. a vector of the columns the pattern should be applied to
 #'              
-#'              4. a string of the pattern itself, where numbers refer to
-#'               the indices in the values vector
+#'              4. a string or vector denoting the pattern in which the
+#'                 values should be filled into the rows and columns specified.
+#'                 
+#'                 If it's a string, will be split by \code{pattern_split}.
+#'                 Pattern will be used as the indices of the values vector.
 #'               
-#'               0's refer to NA
-#'               
-#'               This pattern will be split using pattern_split, which
-#'               defaults to every character
+#'                 0's refer to NA
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
 #'
@@ -1412,7 +1412,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}
   
-  if(length(output_format) > 1) {stop("output_format must be a sinle string")}
+  if(length(output_format) > 1) {stop("output_format must be a single string")}
   if(!output_format %in% c("blocks", "blocks_pasted", "wide", "tidy")) {
     stop("output_format must be one of c('blocks', 'blocks_pasted', 'wide', 'tidy')")
   }
@@ -1430,11 +1430,16 @@ make_design <- function(nrows = NULL, ncols = NULL,
   #dot_args[[i]] = list(values = c("A", "B", "C"),
   #                     rows = rowstart:rowend, cols = colstart:colend
   #                     pattern = "111222333000", byrow = TRUE)
+  #                     
+  #                     (or pattern can be an already-split vector)
   
   #Loop through input arguments & fill into output dataframe
   for (i in 1:length(dot_args)) {
-    pattern_list <- strsplit(dot_args[[i]][[4]],
-                             split = pattern_split)[[1]]
+    if(is.character(dot_args[[i]][[4]])) {
+      pattern_list <- strsplit(dot_args[[i]][[4]], split = pattern_split)[[1]]
+    } else if (is.vector(dot_args[[i]][[4]])) {
+      pattern_list <- dot_args[[i]][[4]]
+    } else {stop("pattern is not a string nor a vector")}
     if (any(nchar(pattern_list) > 1)) {
       if (!canbe.numeric(pattern_list)) {
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")

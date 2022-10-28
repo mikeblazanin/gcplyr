@@ -66,4 +66,4 @@ vignette("gcplyr-workflow")
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulation and analysis of growth
-curves data.’ R package version 0.9
+curves data.’ R package version 0.10

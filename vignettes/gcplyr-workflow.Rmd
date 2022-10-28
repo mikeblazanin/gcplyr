@@ -253,7 +253,7 @@ print_df(read.csv(temp_filenames[10], header = FALSE,
                   colClasses = "character"))
 ```
 
-This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look small here because R doesn't know that the first row is a header yet.
+This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look extra small here because R doesn't know that the first row is a header yet.
 
 If we want to read these files into R, we simply provide `read_blocks` with the vector of file names, and save the result to some R object (here, `imported_blockdata`).
 
@@ -356,6 +356,62 @@ imported_blockdata <- read_blocks(
   files = temp_filenames2,
   startrow = 4, startcol = "A",
   metadata = list("time" = c(2, "C")))
+```
+
+### Reading multiple blocks from a single file
+`read_blocks` can also import multiple blocks from a single file, which some plate readers may output. In this case, you simply have to specify a vector of rows and columns that define the location of each block within the file.
+
+First, let's create an example file. **Don't worry about how this code works**, normally this file would be created by the plate reader.
+
+```{r}
+#This code just creates an example file with multiple blocks
+#Don't worry about how it works - when working with real growth
+#curves data, this would be created by the plate reader
+write_blocks(imported_blockdata,
+             file = "blocks_single.csv",
+             output_format = "single",
+             block_name_location = "file")
+```
+
+Let's take a look at what the file looks like:
+
+```{r}
+print_df(head(read.csv("blocks_single.csv", header = FALSE,
+                  colClasses = "character"), 20))
+```
+
+We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `read_blocks`!
+
+```{r}
+imported_blockdata <- read_blocks(
+  "blocks_single.csv",
+  startrow = seq(from = 3, to = 1155, by = 12),
+  endrow = seq(from = 11, to = 1163, by = 12),
+  startcol = 1, endcol = 13)
+```
+
+Here we've used the built-in R function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look at the first block, we can see that it's been read successfully:
+
+```{r}
+print(imported_blockdata[[1]])
+```
+Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector for the row,column location, it's going to be a list of two vectors, one with the rows and one with the columns.
+
+Going back to the file, we can see that the time of the block is saved in the second column, in rows 2, 14, 26, 38, ... through 1154.
+
+```{r}
+imported_blockdata <- read_blocks(
+  "blocks_single.csv",
+  startrow = seq(from = 3, to = 1155, by = 12),
+  endrow = seq(from = 11, to = 1163, by = 12),
+  startcol = 1, endcol = 13,
+  metadata = list("time" = list(seq(from = 2, to = 1154, by = 12), 2)))
+```
+
+And now if we take a look at the resulting object, we can see that the time metadata has been incorporated.
+
+```{r}
+print(imported_blockdata[[1]])
 ```
 
 ### What to do next
@@ -484,6 +540,9 @@ imported_widedata <- read_wides(files = temp_filename2,
                                 metadata = list("experiment_name" = c(1, "B"),
                                                 "start_date" = c(2, "B")))
 ```
+
+### Reading multiple wides from one file
+In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **Reading multiple blocks from one file**, since the syntax for such operations is the same for `read_wides` as it is for `read_blocks`.
 
 ### What to do next
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **Transforming data** section.

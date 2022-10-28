@@ -1388,7 +1388,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
                         wellnames_sep = "_", wellnames_colname = "Well",
                         wellnames_Excel = TRUE, lookup_tbl_start = 1,
                         pattern_split = "", colnames_first = FALSE, ...) {
-  
+
   #Do we need to include a plate_name argument?
   #(old comment) the plates have to be identified uniquely
   
@@ -1445,11 +1445,14 @@ make_design <- function(nrows = NULL, ncols = NULL,
   
   #Loop through input arguments & fill into output dataframe
   for (i in 1:length(dot_args)) {
-    if (is.vector(dot_args[[i]][[4]])) {
+    if(!is.vector(dot_args[[i]][[4]]) & !is.character(dot_args[[i]][[4]])) {
+      stop("pattern is not a string nor a vector")
+    }
+    if (length(dot_args[[i]][[4]]) > 1) {
       pattern_list <- dot_args[[i]][[4]]
-    } else if(is.character(dot_args[[i]][[4]])) {
+    } else if(length(dot_args[[i]][[4]]) == 1) {
       pattern_list <- strsplit(dot_args[[i]][[4]], split = pattern_split)[[1]]
-    } else {stop("pattern is not a string nor a vector")}
+    }
     if (any(nchar(pattern_list) > 1)) {
       if (!canbe.numeric(pattern_list)) {
         stop("Pattern values are multi-character after splitting, but not all pattern values are numeric")

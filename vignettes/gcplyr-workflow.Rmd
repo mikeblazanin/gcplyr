@@ -1329,14 +1329,14 @@ plot(example_data_and_designs$Time[
 
 ## Per-capita derivative
 
-`calc_deriv` can also return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, your **y-values need to have been normalized** so that 0 corresponds to a population density of 0 (e.g. by subtracting the measurement value for a blank)
+`calc_deriv` can also return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your Measurements that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}
 example_data_and_designs$deriv_percap <-
   calc_deriv(x = example_data_and_designs$Time,
              y = example_data_and_designs$smoothed,
              subset_by = example_data_and_designs$Well,
-             percapita = TRUE)
+             percapita = TRUE, blank = 0)
 
 #Now let's plot the per-capita derivative
 plot(example_data_and_designs$Time[
@@ -1348,13 +1348,13 @@ plot(example_data_and_designs$Time[
 
 ## Finite differences
 
-If, instead of derivatives, you simply want the difference between each subsequent y value, you can set `scale_x = NA` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
+If, instead of derivatives, you simply want the difference between each subsequent y value, you can set `return = 'difference'` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
 
 ```{r}
 example_data_and_designs$difference <-
   calc_deriv(y = example_data_and_designs$smoothed,
              subset_by = example_data_and_designs$Well,
-             x_scale = NA)
+             return = "difference")
 
 #Now let's plot the finite differences
 plot(example_data_and_designs$Time[
@@ -1366,7 +1366,7 @@ plot(example_data_and_designs$Time[
 
 ## Changing the derivative units
 
-Finally, if you want your derivative in units different from those that x is provided in, you can specify the ratio of your x units to the desired units with `x_scale` as well. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
+Finally, if you want your derivative in units different from those that x is provided in, you can specify the ratio of your x units to the desired units with `x_scale`. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
 
 ```{r}
 example_data_and_designs$deriv_hr <-

@@ -74,12 +74,12 @@ example_design <- make_design(
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
     rows = 1:8, cols = 1:6,
-    pattern = paste(1:48, collapse = ","),
+    pattern = 1:48,
     byrow = TRUE),
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
     rows = 1:8, cols = 7:12,
-    pattern = paste(1:48, collapse = ","),
+    pattern = 1:48,
     byrow = TRUE),
   "Phage" = make_designpattern(
     values = c("No Phage"),
@@ -808,7 +808,7 @@ If you find it easier to input the pattern as a vector rather than as a string t
 
 ```{r}
 my_design <- make_design(
-  nrows = 8, ncols = 12, pattern_split = ",",
+  nrows = 8, ncols = 12,
   Bacteria = list(
     c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
     2:7,

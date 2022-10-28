@@ -55,7 +55,7 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 # A quick demonstration
-To provide an example of what using gcplyr looks like, here's a script that imports data, combines it with design information, smooths the data, then calculates the maximum density, area-under-the-curve, and maximum per-capita growth rate. Don't worry about understanding all the details of how the code works right now. Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing data with `gcplyr` can look like.
+To provide an example of what using gcplyr looks like, here's a script that imports data, combines it with design information, smooths the data, then calculates the maximum density and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing data with `gcplyr` can look like.
 
 ```{r, include = FALSE}
 #This code just creates a wide-shaped example file
@@ -93,15 +93,16 @@ write_blocks(example_design)
 ```
 
 ```{r}
-#Here we have saved our plate reader file name in the variable temp_filename
+#Read in our data
+# (our plate reader file name is saved in the variable temp_filename)
 data_wide <- read_wides(files = temp_filename)
 
-#Now we transform our data to be tidy-shaped
+#Transform our data to be tidy-shaped
 data_tidy <- 
   trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
 
-#Now we import our designs, which we'd previously saved in files named
-# Bacteria_strain.csv and Phage.csv
+#Import our designs
+# (saved in files named Bacteria_strain.csv and Phage.csv)
 designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"),
                                wellnames_sep = "")
 
@@ -122,19 +123,11 @@ ggplot(data = data_merged,
   geom_line(aes(y = smoothed)) +
   guides(color = "none")
 
-#Calculate per-capita growth rate
-data_merged$percap <- calc_deriv(y = data_merged$smoothed,
-                                 x = data_merged$Time,
-                                 percapita = TRUE, blank = 0,
-                                 subset_by = data_merged$Well)
-
-#Calculate the maximum density, area-under-the-curve, and 
-#  maximum per-capita growth rate
+#Calculate the maximum density and area-under-the-curve
 data_sum <- summarize(
-  group_by(data_merged, file, Well, Bacteria_strain, Phage),
+  group_by(data_merged, Well, Bacteria_strain, Phage),
   maxdens = max(smoothed, na.rm = TRUE),
-  auc = auc(y = smoothed, x = as.numeric(Time)),
-  maxpercap = max(percap[!is.infinite(percap)], na.rm = TRUE))
+  auc = auc(y = smoothed, x = as.numeric(Time)))
 
 #Print results
 print(data_sum)
@@ -935,7 +928,8 @@ head(my_design, 20)
 ### Saving designs to files
 If you'd like to save your designs to files, you have two options.
 
-For **saving tidy-shaped designs** that are less human-readable but easier to import and merge, simply use the built-in `write.csv` function.
+#### Saving tidy-shaped designs
+These design files will be less human-readable, but easier to import and merge. For these, simply use the built-in `write.csv` function.
 
 ```{r}
 my_design <- make_design(
@@ -957,7 +951,8 @@ write.csv(x = my_design, file = tempfile(fileext = ".csv"),
           row.names = FALSE)
 ```
 
-For **saving block-shaped designs** that are more human-readable but harder to import and merge, use the `gcplyr` function `write_blocks`. `write_blocks` has three options for output format:
+#### Saving block-shaped designs
+These design files will be more human-readable but require slightly more computational steps to import and merge. For these, use the `gcplyr` function `write_blocks`. `write_blocks` has three options for output format:
 
 * `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
 * `pasted` - all the blocks will be pasted together, then saved to a single `.csv` file

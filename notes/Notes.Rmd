@@ -1,20 +1,121 @@
-##Name options:
-#gcplyr
-#growthcurvalyzer
-#gcanalyzer
-#gcer
+# Name options:
+gcplyr
+growthcurvalyzer
+gcanalyzer
+gcer
 
 #Managing master & develop branches:
-# https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github
+https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github
+
+## Creating a git develop branch
+You can list all of your current branches like this:
+
+```{bash}
+git branch -a
+```
+
+This shows all of the local and remote branches. Assuming you only have a single master branch, you'd see the following:
+
+```{bash}
+* master
+  remotes/origin/master
+```
+The * means the current branch.
+
+To create a new branch named develop, use the following command:
+
+```{bash}
+git checkout -b develop
+```
+
+The -b flag creates the branch. Listing the branches now should show:
+
+```{bash}
+* develop
+  master
+  remotes/origin/master
+```
+
+## Changing branches
+You shouldn't commit anything directly to the master branch. Instead do all your work on the develop branch and then merge develop into master whenever you have a new public release.
+
+You are already in your develop branch, but if you weren't, the way to switch is as follows:
+
+```{bash}
+git checkout develop
+```
+
+That's the same way you create a branch but without the -b.
+
+## Making changes on develop
+When making changes, add and commit as usual:
+
+```{bash}
+git add .
+git commit -m "whatever"
+```
+
+The first time you push to your remote do it like so:
+
+```{bash}
+git push -u origin develop
+```
+
+The -u flag stands for --set-upstream. After the first time you only need to do it like this:
+
+```{bash}
+git push
+```
+
+## Merging develop to master
+Once your develop is ready to merge into master you can do it like so:
+
+First switch to your local master branch:
+
+```{bash}
+git checkout master
+```
+
+To merge develop into master do the following:
+
+```{bash}
+git merge develop
+```
+
+Then push the changes in local master to the remote master:
+
+```{bash}
+git push
+```
+
+Done.
+
+## Deleting a branch
+If you don't need the develop branch anymore, or you just want to delete it and start over, you can do the following:
+
+Delete the remote develop branch:
+
+```{bash}
+git push -d origin develop
+```
+
+Then delete the local branch:
+
+```{bash}
+git branch -d develop
+```
+
+The -d means delete.
+
 
 #General pipeline:
-# 1.  import_blockmeasures OR
-#       (read_blocks -> uninterleave (optional) -> widen_blocks)
-#     import_widemeasures
-# 2.  pivot_wide_longer
-# 3.  make_tidydesign OR
-#     import_blockdesign OR
-#     use plater::read_plate with ONLY the design elements
-# 4.  merge_tidydesign_tidymeasures
-# 5.  [pre-process: smoothing, normalization]
-# 6.  [process: derivs, peak-finding, curve fitting]
+ 1.  import_blockmeasures OR
+       (read_blocks -> uninterleave (optional) -> widen_blocks)
+     import_widemeasures
+ 2.  pivot_wide_longer
+ 3.  make_tidydesign OR
+     import_blockdesign OR
+     use plater::read_plate with ONLY the design elements
+ 4.  merge_tidydesign_tidymeasures
+ 5.  [pre-process: smoothing, normalization]
+ 6.  [process: derivs, peak-finding, curve fitting]

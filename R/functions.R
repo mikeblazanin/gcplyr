@@ -1403,7 +1403,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   #               "Isolate" = list("A" = c(1, 6, 11),
   #                                 "B" = c(2, 7, 12), etc))
   #               "Rep" = list("1" = 
-  
+
   #Check inputs
   if(is.null(nrows) & is.null(block_row_names)) {
     stop("nrows or block_row_names must be provided")
@@ -1445,10 +1445,10 @@ make_design <- function(nrows = NULL, ncols = NULL,
   
   #Loop through input arguments & fill into output dataframe
   for (i in 1:length(dot_args)) {
-    if(is.character(dot_args[[i]][[4]])) {
-      pattern_list <- strsplit(dot_args[[i]][[4]], split = pattern_split)[[1]]
-    } else if (is.vector(dot_args[[i]][[4]])) {
+    if (is.vector(dot_args[[i]][[4]])) {
       pattern_list <- dot_args[[i]][[4]]
+    } else if(is.character(dot_args[[i]][[4]])) {
+      pattern_list <- strsplit(dot_args[[i]][[4]], split = pattern_split)[[1]]
     } else {stop("pattern is not a string nor a vector")}
     if (any(nchar(pattern_list) > 1)) {
       if (!canbe.numeric(pattern_list)) {
@@ -1547,7 +1547,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
 #' @export
 make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
   stopifnot(is.vector(values), is.vector(rows), is.vector(cols),
-            is.character(pattern), is.logical(byrow))
+            (is.character(pattern) | is.vector(pattern)), is.logical(byrow))
   return(list(values, rows, cols, pattern, byrow))
 }
 

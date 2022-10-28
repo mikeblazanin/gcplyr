@@ -1091,7 +1091,7 @@ There are, broadly speaking, two ways to analyze growth curves data:
 1. directly quantify attributes of the growth dynamics
 2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model.
 
-For analysis, `gcplyr` focuses on the first approach: directly quantifying attributes of observed dynamics. If you're interested in the strengths and weaknesses of model-fitting approaches, as well as `R` packages that implement such methods, check out the **[Other growth curve analysis packages]** section.
+For analysis, `gcplyr` focuses on the first approach: directly quantifying attributes of observed dynamics. If you're interested in the strengths and weaknesses of model-fitting approaches, as well as `R` packages that implement model-fitting methods, check out the **[Other growth curve analysis packages]** section.
 
 `gcplyr` has a number of functions that facilitate pre-processing, processing, and analyzing your growth curves data after you've merged it with your design information. Unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
 
@@ -1610,19 +1610,34 @@ ggplot(data = growth_and_antibiotics,
 There is! We can see that the antibiotic resistant strains (`TRUE`) have a smaller area-under-the-curve than the antibiotic sensitive strains (`FALSE`) (although, to be fair, we did simulate the data so we'd get that result).
 
 # Other growth curve analysis packages
-A number of other `R` packages besides `gcplyr` facilitate analysis of growth curves data. In particular, where `gcplyr` focuses on manipulation of growth curves data and direct quantification of growth curves dynamics, many of these packages focus on fitting the dynamics with a mathematical model.
-
+A number of other `R` packages besides `gcplyr` facilitate analysis of growth curves data.
 
 There are, broadly speaking, two ways to analyze growth curves data:
 
 1. directly quantify attributes of the growth dynamics
 2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model. 
 
-Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully chose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. A number of`R`packages implement fitting-style approaches, which we discuss in the  Given that, `gcplyr` focuses on the first approach to growth curves analysis: directly quantifying attributes of the dynamics.
+While `gcplyr` focuses on manipulation of growth curves data and the first analysis approach (direct quantification of growth curves dynamics), many other `R` packages focus on fitting growth dynamics with a mathematical model.
 
+Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully choose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. 
 
-Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully chose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. A number of`R`packages implement fitting-style approaches, which we discuss in the **Other growth curve analysis packages** section. Given that, `gcplyr` focuses on the first approach to growth curves analysis: directly quantifying attributes of the dynamics.
+A number of`R`packages implement fitting-style approaches, which we list here for readers to explore on their own. At some point in the future, we hope to incorporate more direct examples of how to use tidy-shaped data imported and manipulated by `gcplyr` with these packages.
 
+* `growthcurver`
+* `QurvE`
+* `AUDIT` (including `growr` and `mtpview1`)
+* `growthrates`
+* `drc`
+* `opm`
+* `grofit`
+* `R-Biolog`
+* `growthmodels`
+* `cellGrowth`
+* `grofit`
+* `GCAT`
+* `CarboLogR`
+* `biogrowth`
 
-Because `gcplyr` primarily focuses on 
+Additionally, there are some `R` packages that don't implement fitting-style approaches, but contain useful functionality for plate-reader data analysis:
 
+* `plater`

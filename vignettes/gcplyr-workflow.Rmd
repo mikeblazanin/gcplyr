@@ -251,7 +251,8 @@ This would correspond to all the reads for a single plate taken at the very firs
 If we want to read these files into R, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`).
 
 ```{r}
-imported_blockdata <- import_blockmeasures(files = temp_filenames)
+imported_blockdata <- import_blockmeasures(files = temp_filenames,
+                                           wellnames_sep = "")
 
 head(imported_blockdata[, 1:10])
 ```
@@ -308,7 +309,8 @@ In the above example, the column names are in row 4 and the rownames are in colu
 #Now let's read it with import_blockmeasures
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
-  startrow = 4, startcol = 1)
+  startrow = 4, startcol = 1,
+  wellnames_sep = "")
 ```
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `import_blockmeasures` will translate that to a number for you!
@@ -317,7 +319,8 @@ If you're looking at your data in Excel or a similar spreadsheet program, you'll
 #Now let's read it with import_blockmeasures
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
-  startrow = 4, startcol = "A")
+  startrow = 4, startcol = "A",
+  wellnames_sep = "")
 ```
 
 ### Specifying metadata
@@ -338,7 +341,10 @@ In these files, the timepoint information was located in the 2nd row and 3rd col
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
   startrow = 4, startcol = "A",
+  wellnames_sep = "",
   metadata = list("time" = c(2, 3)))
+
+head(imported_blockdata[, 1:10])
 ```
 
 You can see that the metadata argument must be a list of named vectors. Each vector should have two elements specifying the location of the metadata in the input files: the first element is the row, the second element is the column.
@@ -350,6 +356,7 @@ And just like how you can specify `startrow`, `startcol`, etc. with Excel-style 
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames2,
   startrow = 4, startcol = "A",
+  wellnames_sep = "",
   metadata = list("time" = c(2, "C")))
 ```
 
@@ -384,7 +391,8 @@ imported_blockdata <- import_blockmeasures(
   "blocks_single.csv",
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
-  startcol = 1, endcol = 13)
+  startcol = 1, endcol = 13,
+  wellnames_sep = "")
 ```
 
 Here we've used the built-in `R` function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look, we can see that it's been read successfully:
@@ -393,7 +401,7 @@ Here we've used the built-in `R` function `seq` to generate the full vector of `
 head(imported_blockdata[, 1:10])
 ```
 
-Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector for the row,column location, it's going to be a list of two vectors, one with the rows and one with the columns.
+Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector for the row,column location, it's going to be a list of two vectors, one with the row numbers, and one with the column numbers.
 
 Going back to the file, we can see that the time of the block is saved in the second column, in rows 2, 14, 26, 38, ... through 1154.
 
@@ -403,6 +411,7 @@ imported_blockdata <- import_blockmeasures(
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13,
+  wellnames_sep = "",
   metadata = list("time" = list(seq(from = 2, to = 1154, by = 12), 2)))
 ```
 
@@ -575,7 +584,7 @@ Then, you have to specify one of:
 
 ```{r}
 imported_blocks_now_tidy <- trans_wide_to_tidy(
-  wides = imported_blocks_now_wide,
+  wides = imported_blockdata,
   id_cols = c("block_name", "time"))
 
 imported_wides_now_tidy <- trans_wide_to_tidy(

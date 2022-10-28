@@ -184,7 +184,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
 
-Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of R packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014.
+Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of `R` packages, including ggplot where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014.
 
 
 Timepoint | Well | Measurement | 
@@ -200,18 +200,18 @@ Timepoint | Well | Measurement |
 # Importing data
 Once you've determined what format your data is in, you can begin importing it using the `read_*` functions of `gcplyr`. 
 
-If your data is block-shaped, you'll use `read_blocks` and you can start in the next section. 
+If your data is block-shaped, you'll use `read_blocks` and you can start in the next section: **[Importing block-shaped data]**. 
 
-If your data is wide-shaped, you'll use `read_wides` and you can skip down to the **Importing wide-shaped data** section. 
+If your data is wide-shaped, you'll use `read_wides` and you can skip down to the **[Importing wide-shaped data]** section. 
 
-In the unlikely event your data is already tidy, you'll use `read_tidys` and you can skip down to the **Importing tidy-shaped data** section.
+In the unlikely event your data is already tidy, you'll use `read_tidys` and you can skip down to the **[Importing tidy-shaped data]** section.
 
 ## Importing block-shaped data
 To import block-shaped data, use the `read_blocks` function. `read_blocks` only requires a list of filenames (or relative file paths) and will return a list of data.frames (with each `data.frame` corresponding to a single block) that you can save in R. 
 
 ### A basic example
 
-Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames`.
+Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames`.
 
 ```{r}
 #This code just creates a series of block-shaped example files
@@ -246,9 +246,9 @@ print_df(read.csv(temp_filenames[10], header = FALSE,
                   colClasses = "character"))
 ```
 
-This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look extra small here because R doesn't know that the first row is a header yet.
+This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look extra small here because `R` doesn't know that the first row is a header yet.
 
-If we want to read these files into R, we simply provide `read_blocks` with the vector of file names, and save the result to some R object (here, `imported_blockdata`).
+If we want to read these files into R, we simply provide `read_blocks` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`).
 
 ```{r}
 imported_blockdata <- read_blocks(files = temp_filenames)
@@ -260,7 +260,7 @@ However, running `read_blocks` with only the filenames only works if the data in
 
 To show how this works, first let's create some example files where the data doesn't begin in the first row/column. In these example files, the plate reader saved the time that each plate was read in the 2nd row of the file, and started saving the data itself with a header in the 4th row.
 
-Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file names in `temp_filenames2`.
+Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames2`.
 
 ```{r}
 #This code just creates a series of block-shaped example files
@@ -383,7 +383,7 @@ imported_blockdata <- read_blocks(
   startcol = 1, endcol = 13)
 ```
 
-Here we've used the built-in R function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look at the first block, we can see that it's been read successfully:
+Here we've used the built-in `R` function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look at the first block, we can see that it's been read successfully:
 
 ```{r}
 print(imported_blockdata[[1]])
@@ -408,7 +408,7 @@ print(imported_blockdata[[1]])
 ```
 
 ### What to do next
-Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Skip the next section, **Importing wide-shaped data**, and instead jump to the **Transforming data** section.
+Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Jump directly to the **[Transforming data]** section.
 
 ## Importing wide-shaped data
 To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
@@ -435,7 +435,7 @@ print_df(head(read.csv(temp_filename, header = FALSE),
 
 This would correspond to all the reads for a single plate taken across all timepoints. For instance, we can see that the first column contains the timepoint information, and each subsequent column corresponds to a well in the plate.
 
-If we want to read these files into R, we simply provide `read_wides` with the file name, and save the result to some R object (here, `imported_widedata`).
+If we want to read these files into R, we simply provide `read_wides` with the file name, and save the result to some `R` object (here, `imported_widedata`).
 
 ```{r}
 #Now let's use read_wides to import our wide-shaped data
@@ -462,7 +462,7 @@ However, running `read_wides` with only the filename(s) only works if the data i
 
 To show how this works, first let's create an example file where the data doesn't begin in the first row/column. In this example file, the plate reader started saving the data itself with a header in the 5th row.
 
-Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in R in a vector, here we've stored the file name in `temp_filename2`.
+Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file name in `temp_filename2`.
 
 ```{r}
 #This code just creates a wide-shaped example file where the data doesn't
@@ -534,27 +534,27 @@ imported_widedata <- read_wides(files = temp_filename2,
                                                 "start_date" = c(2, "B")))
 ```
 
-### Reading multiple wides from one file
-In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **Reading multiple blocks from one file**, since the syntax for such operations is the same for `read_wides` as it is for `read_blocks`.
+### Reading multiple wides from a single file
+In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `read_blocks`.
 
 ### What to do next
-Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **Transforming data** section.
+Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **[Transforming data]** section.
 
 ## Importing tidy-shaped data
-To import tidy-shaped data, you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
+To import tidy-shaped data, you could use the built-in `R` functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-If you've read in your tidy-shaped data, you won't need to transform it, so you can skip down to the **Including design elements** section.
+If you've read in your tidy-shaped data, you won't need to transform it, so you can skip down to the **[Including design elements]** section.
 
 # Transforming data
-Now that you've gotten your data into the R environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
+Now that you've gotten your data into the `R` environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
 
 You can transform your `data.frame`s using the `trans_*` functions in `gcplyr`.
 
 ## Transforming from block-shaped to wide-shaped
 
-If the data you've read into the R environment is block-shaped, you'll need to transform it from block-shaped to wide-shaped, and then wide-shaped to tidy-shaped. For the first step, you'll use `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the R object you saved when you used `read_blocks`.
+If the data you've read into the`R`environment is block-shaped, you'll need to transform it from block-shaped to wide-shaped, and then wide-shaped to tidy-shaped. For the first step, you'll use `trans_block_to_wide`. All you need to do is provide `trans_block_to_wide` with the`R`object you saved when you used `read_blocks`.
 
 ```{r}
 imported_blocks_now_wide <- trans_block_to_wide(imported_blockdata)
@@ -570,9 +570,9 @@ Now that your block-shaped data has been transformed to wide-shaped data, you ca
 
 ## Transforming from wide-shaped to tidy-shaped
 
-If the data you've read into the R environment is wide-shaped (or you've gotten wide-shaped data by transforming your originally block-shaped data), you'll transform it to tidy-shaped using `trans_wide_to_tidy`. 
+If the data you've read into the`R`environment is wide-shaped (or you've gotten wide-shaped data by transforming your originally block-shaped data), you'll transform it to tidy-shaped using `trans_wide_to_tidy`. 
 
-First, you need to provide `trans_wide_to_tidy` with the R object created by `read_wides` or by `trans_block_to_wide`. 
+First, you need to provide `trans_wide_to_tidy` with the`R`object created by `read_wides` or by `trans_block_to_wide`. 
 
 Then, you have to specify one of:
 * the columns your data (the spectrophotometric measures) are in via `data_cols`
@@ -678,11 +678,11 @@ Additionally, if you've already pasted together your design elements yourself, t
 If you find yourself needing even more control over the process of importing block-shaped design files, each of the functions is available for users to call themselves. So you can run the steps manually, first reading with `read_blocks`, pasting as needed with `paste_blocks`, transforming to tidy with `trans_block_to_wide` and `trans_wide_to_tidy`, and finally separating design elements with `separate_tidys`.
 
 ### Importing tidy-shaped design files
-Just like measures data, to import tidy-shaped designs you could use the built-in R functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
+Just like measures data, to import tidy-shaped designs you could use the built-in`R`functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-Once these design elements have been read into the R environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **Merging spectrophotometric and design data** section.
+Once these design elements have been read into the`R`environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging spectrophotometric and design data]** section.
 
 ## Generating designs in R
 If you'd rather make your design data.frames in R, `gcplyr` has a helper function that makes it easy to do so: `make_design`. `make_design` can create:
@@ -1005,13 +1005,13 @@ print_df(read.csv("Design.csv", header = FALSE))
 
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
 
-Saving your design information in a file like this ensures that an easily human-readable format is available anytime you or others want to understand the design layout. Additionally, files that have been created by `write_blocks` can be easily imported back into R using `import_blockdesigns`. Thus, you have two options for how to use `make_design` and `write_blocks`:
+Saving your design information in a file like this ensures that an easily human-readable format is available anytime you or others want to understand the design layout. Additionally, files that have been created by `write_blocks` can be easily imported back into`R`using `import_blockdesigns`. Thus, you have two options for how to use `make_design` and `write_blocks`:
 
 1. Use `make_design` to create block-shaped designs. Save these designs to files using `write_blocks`. Import the designs from those files using `import_blockdesigns`.
 2. Use `make_design` to create block-shaped designs. Save these designs to files using `write_blocks`. Copy-paste your original `make_design` command but with `output_format = "tidy"` to create tidy-shaped designs.
 
 # Merging spectrophotometric and design data
-Once we have both our design and data in the R environment and tidy-shaped, we can merge them using `merge_dfs`.
+Once we have both our design and data in the`R`environment and tidy-shaped, we can merge them using `merge_dfs`.
 
 For this, we'll use the data in the `example_widedata` dataset that is included with `gcplyr`, and which was the source for our previous examples with `read_blocks` and `read_wides`.
 
@@ -1084,9 +1084,16 @@ head(example_data_and_designs)
 ```
 
 # How to pre-process, process, and analyze your data
-Once you have your spectrophotometric and design data merged, you're ready to move on to the next steps: pre-processing, processing, and analyzing.
+Now that you have your data and design information merged, you're ready to move on to the next steps. However, unlike the steps so far, it is at this point that your options for what to do next diversify.
 
-There are a number of functions in `gcplyr` that can help pre-process, process, and analyze growth curves data. However, unlike the import and transformation steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **Pre-processing**, **Processing**, and **Analyzing** sections of this document, therefore, are written to highlight the functions available for analysis in `gcplyr`, rather than prescribing a certain series of analysis steps.
+There are, broadly speaking, two ways to analyze growth curves data:
+
+1. directly quantify attributes of the growth dynamics
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model.
+
+For analysis, `gcplyr` focuses on the first approach: directly quantifying attributes of observed dynamics. If you're interested in the strengths and weaknesses of model-fitting approaches, as well as `R` packages that implement such methods, check out the **[Other growth curve analysis packages]** section.
+
+`gcplyr` has a number of functions that facilitate pre-processing, processing, and analyzing your growth curves data after you've merged it with your design information. Unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
 
 # Pre-processing
 Pre-processing includes some necessary steps before we start calculating anything about the growth curves. For instance, excluding wells, converting time formats, and smoothing spectrophotometric data.
@@ -1287,7 +1294,7 @@ lines(example_data_and_designs$Time[
        example_data_and_designs$Well == "A2"])
 ```
 
-# Processing data: calculating derivatives
+# Processing data: calculating derivatives {#Processing}
 
 In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
 
@@ -1378,7 +1385,7 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "derivative (Absorbance/hr)")
 ```
 
-# Analyzing data with summarize
+# Analyzing data with summarize {#Analyzing}
 
 Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. For instance, we may calculate the maximum density, maximum per-capita growth rate, or total area under the curve. `gcplyr` contains a number of functions to assist with these calculations. 
 
@@ -1386,7 +1393,7 @@ However, before we can explore how to use those functions, we need to familiariz
 
 ## A brief primer on dplyr: grouping and summarize
 
-The R package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes, we're going to focus on two particular functions: `group_by` and `summarize` (also available as `summarise`).
+The`R`package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes, we're going to focus on two particular functions: `group_by` and `summarize` (also available as `summarise`).
 
 The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve.
 
@@ -1601,3 +1608,21 @@ ggplot(data = growth_and_antibiotics,
 ```
 
 There is! We can see that the antibiotic resistant strains (`TRUE`) have a smaller area-under-the-curve than the antibiotic sensitive strains (`FALSE`) (although, to be fair, we did simulate the data so we'd get that result).
+
+# Other growth curve analysis packages
+A number of other `R` packages besides `gcplyr` facilitate analysis of growth curves data. In particular, where `gcplyr` focuses on manipulation of growth curves data and direct quantification of growth curves dynamics, many of these packages focus on fitting the dynamics with a mathematical model.
+
+
+There are, broadly speaking, two ways to analyze growth curves data:
+
+1. directly quantify attributes of the growth dynamics
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model. 
+
+Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully chose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. A number of`R`packages implement fitting-style approaches, which we discuss in the  Given that, `gcplyr` focuses on the first approach to growth curves analysis: directly quantifying attributes of the dynamics.
+
+
+Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully chose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. A number of`R`packages implement fitting-style approaches, which we discuss in the **Other growth curve analysis packages** section. Given that, `gcplyr` focuses on the first approach to growth curves analysis: directly quantifying attributes of the dynamics.
+
+
+Because `gcplyr` primarily focuses on 
+

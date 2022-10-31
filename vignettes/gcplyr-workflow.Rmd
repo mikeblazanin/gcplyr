@@ -1321,24 +1321,6 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "per-capita derivative (/sec)")
 ```
 
-## Finite differences
-
-If, instead of derivatives, you simply want the difference between each subsequent y value, you can set `return = 'difference'` (in which case, you also don't need to provide the x values). (This looks very similar to our original derivative plot because in the example data all timepoints are equally spaced)
-
-```{r}
-example_data_and_designs$difference <-
-  calc_deriv(y = example_data_and_designs$smoothed,
-             subset_by = example_data_and_designs$Well,
-             return = "difference")
-
-#Now let's plot the finite differences
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$difference[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "Difference between timesteps (Abs)")
-```
-
 ## Changing the derivative units
 
 To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`

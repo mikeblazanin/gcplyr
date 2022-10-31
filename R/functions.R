@@ -2771,7 +2771,7 @@ moving_median <- function(formula, data, window_width_n) {
 #'                  separate calculations
 #' @return A vector of values for the plain (if \code{percapita = FALSE})
 #'         or per-capita (if \code{percapita = TRUE}) difference 
-#'         (if \code{return = "difference"} or derivative 
+#'         (if \code{return = "difference"}) or derivative 
 #'         (if \code{return = "derivative"}) between \code{y} values. Vector
 #'         will be the same length as \code{y},  with \code{NA} appended 
 #'         to the end

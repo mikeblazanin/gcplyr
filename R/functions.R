@@ -1632,7 +1632,16 @@ fill_data_metadata <- function(output, input, rs,
 #'                      block to a single csv file
 #'                      
 #'                      "multiple" will write each block to its own csv file
-#' @param block_name_location Either 'filename' or 'file'.
+#' @param block_name_location Either NULL, 'filename' or 'file'.
+#' 
+#'                           If NULL, will be automatically selected based
+#'                           on \code{output_format}. For 
+#'                           \code{output_format = 'single'} and 
+#'                           \code{output_format = 'pasted'}, 
+#'                           \code{block_name_location} defaults to \code{file}.
+#'                           For \code{output_format = 'multiple'}, 
+#'                           \code{block_name_location} defaults to 
+#'                           \code{filename}
 #' 
 #'                           If 'filename', the \code{block_name} metadata 
 #'                           will be used as the output file name(s) when
@@ -1651,14 +1660,24 @@ fill_data_metadata <- function(output, input, rs,
 #' @export
 write_blocks <- function(blocks, file = NULL, 
                          output_format = "multiple",
-                         block_name_location = "filename",
+                         block_name_location = NULL,
                          paste_sep = "_", filename_sep = "_", ...) {
   if(!all(sapply(X = blocks, FUN = length) == 2) |
      !all(unlist(lapply(X = blocks, FUN = names)) %in% c("data", "metadata"))) {
     stop("blocks is incorrectly formatted")
   }
   
-  if(!block_name_location %in% c('filename', 'file')) {
+  if(!output_format %in% c("single", "pasted", "multiple")) {
+    stop("output_format must be one of c('single', 'pasted', 'multiple')")
+  }
+  
+  if(is.null(block_name_location)) {
+    if(output_format %in% c("single", "pasted")) {
+      block_name_location <- "file"
+    } else if (output_format == "multiple") {
+      block_name_location <- "filename"
+    }
+  } else if(!block_name_location %in% c('filename', 'file')) {
     stop("block_name_location must be one of c('filename', 'file')")
   }
   
@@ -1882,7 +1901,7 @@ write_blocks <- function(blocks, file = NULL,
                            col.names = FALSE, row.names = FALSE, ...)
       }
     }
-  } else {stop("output_format must be one of c('single', 'pasted', 'multiple')")}
+  }
 }
 
 

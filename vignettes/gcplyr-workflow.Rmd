@@ -54,8 +54,8 @@ print_df <- function(df, col.names = FALSE) {
 }
 ```
 
-# A quick demonstration
-To provide an example of what using gcplyr looks like, here's a script that imports data, combines it with design information, smooths the data, then calculates the maximum density and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing data with `gcplyr` can look like.
+# A quick demo of `gcplyr`
+Before digging into the details of the various options that `gcplyr` provides to users, here's a simple example of what a final `gcplyr` script can look like. This script imports data from files created by a plate reader, combines it with design files created by the user, then calculates the maximum density and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing growth curve data with `gcplyr` can look like.
 
 ```{r, include = FALSE}
 #This code just creates a wide-shaped example file
@@ -102,39 +102,35 @@ data_tidy <-
   trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
 
 #Import our designs
-# (saved in files named Bacteria_strain.csv and Phage.csv)
+# (saved in the files Bacteria_strain.csv and Phage.csv)
 designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"),
                                wellnames_sep = "")
 
 #Merge our designs and data
 data_merged <- merge_dfs(data_tidy, designs)
 
-#Smooth our measurements
-data_merged$smoothed <- smooth_data(x = data_merged$Time,
-                                    y = data_merged$Measurements,
-                                    subset_by = data_merged$Well,
-                                    method = "moving-average",
-                                    window_width_n = 5)
-
-#Plot the data (points) and smoothed data (lines)
+#Plot the data
 ggplot(data = data_merged,
        aes(x = as.numeric(Time), y = Measurements, color = Well)) +
-  geom_point() + 
-  geom_line(aes(y = smoothed)) +
+  geom_line() + 
   guides(color = "none")
 
-#Calculate the maximum density and area-under-the-curve
+#Voila! 8 lines of code and all your data is imported & plotted!
+
+#Calculate the maximum density, save it to a column named 'maxdens'
+#Calculate the area-under-the-curve, save it to a column named 'auc'
+#(these are two common metrics of bacterial growth)
 data_sum <- summarize(
   group_by(data_merged, Well, Bacteria_strain, Phage),
   maxdens = max(smoothed, na.rm = TRUE),
   auc = auc(y = smoothed, x = as.numeric(Time)))
 
-#Print results
-print(data_sum)
+#Print some of the results
+head(data_sum)
 
-#Plot summarized results for maxdens and auc in presence vs absence of phage
+#Plot the results for max density and area under the curve in presence vs absence of phage
 ggplot(data = data_sum,
-       aes(x = maxdens, y = auc, color = Phage)) +
+       aes(x = auc, y = maxdens, color = Phage)) +
   geom_point()
 ```
 
@@ -709,9 +705,9 @@ Row G     | Blank    | Strain #5 | Strain #5 | ... | Strain #5 | Blank
 Row G     | Blank    | Strain #6 | Strain #6 | ... | Strain #6 | Blank
 Row H     | Blank    | Blank     | Blank     | ... | Blank     | Blank
 
-Typing a design like this manually into a spreadsheet can be tedious. But `make_design` makes it easier. To generate a design `data.frame` representing this information, we can use `make_design`. 
+Typing a design like this manually into a spreadsheet can be tedious. But generating a design `data.frame` using `make_design` is easier. 
 
-`make_design` first needs some general information, like the `output_format` you'd like and the `nrows` and `ncols` in the plate. Allowed `output_format`s include: `blocks`, `blocks_pasted`, `wide`, and `tidy`
+`make_design` first needs some general information, like the `nrows` and `ncols` in the plate, and the `output_format` you'd like (typically `blocks` or `tidy`).
 
 Then, for each different design component, `make_design` needs five different pieces of information:
 
@@ -722,7 +718,7 @@ Then, for each different design component, `make_design` needs five different pi
 * a Boolean for whether this pattern should be filled byrow (defaults to TRUE)
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, 
   Bacteria = list(c("Str1", "Str2", "Str3", 
@@ -739,14 +735,14 @@ So for our example above, we can see:
 * the rows these values should be applied to are rows `2:7`
 * the columns these values should be applied to are columns `2:11`
 * the pattern these values should be filled in by is `"123456"`
-* and these values should *not* be filled byrow, they should be filled by column
+* and these values should *not* be filled by row, they should be filled by column
 
 This entire list is passed with a name (here, "Bacteria"), that will be used as the resulting column header.
 
 What does the result look like?
 
 ```{r}
-my_design
+my_design_blk
 ```
 
 We can see that `make_design` has created a block-shaped `data.frame` containing the design elements as requested, and has attached a `metadata` containing the `block_name` (this is useful for later transformation to tidy-shaped, or if you're generating multiple design elements).
@@ -763,7 +759,7 @@ It's important to **note that the "0" character is reserved for `NA` values.** T
 If you have more than 9 values, you can use letters (uppercase and/or lowercase). In that case, you just have to specify a `lookup_tbl_start` so that the function knows what letter you're using as the `1` index. If no `lookup_tbl_start` is specified, the default is to count numbers first, then uppercase letters, then lowercase letters. For instance, in the previous example, we could have done:
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "A",
   Bacteria = list(
@@ -778,7 +774,7 @@ my_design <- make_design(
 Or we could have done:
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = list(
@@ -793,7 +789,8 @@ my_design <- make_design(
 Alternatively, you can use a separating character like a comma to delineate your indices. If you are doing so in order to use multicharacter indices (like numbers with more than one digit), all your indices will have to be numeric.
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12, pattern_split = ",",
   Bacteria = list(
     c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
@@ -804,10 +801,11 @@ my_design <- make_design(
 )
 ```
 
-If you find it easier to input the pattern as a vector rather than as a string that needs to be split, you can do that too:
+If you find it easier to input the pattern as a vector rather than as a string that needs to be split, you can do that too. Just like when passing a string, if you're not using numbers, then uppercase letters, then lowercase letters for your indices, make sure to specify a different `lookup_tbl_start`:
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
+  output_format = "blocks",
   nrows = 8, ncols = 12,
   Bacteria = list(
     c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
@@ -819,7 +817,7 @@ my_design <- make_design(
 ```
 
 ### Continuing with the example: multiple designs
-Now let's return to our example growth curve experiment. Imagine that now, in addition to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
+Now let's return to our example growth curve experiment. Imagine that now, *in addition* to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
 
 Row names | Column 1 | Column 2 | Column 3 | ... | Column 11 | Column 12
 --------- | -------- | -------- | -------- | --- | --------- | --------
@@ -832,7 +830,7 @@ Row H     | Blank    | Blank    | Blank    | ... | Blank     | Blank
 We can generate both the bacterial strain design and the media design simply by adding an additional argument to our make_design call.
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = list(c("Str1", "Str2", "Str3", 
@@ -850,7 +848,7 @@ my_design <- make_design(
                "abcdefghij")
   )
 
-my_design
+my_design_blk
 ```
 
 Here we can see that two blocks have been created, one with our bacterial strains, and one with our media.
@@ -858,7 +856,7 @@ Here we can see that two blocks have been created, one with our bacterial strain
 Now, imagine after the experiment we discover that Bacterial Strain 4 and Media #6 were contaminated, and we'd like to exclude them from our analyses by marking them as `NA` in the design. We can simply modify our pattern string, placing a 0 anywhere we would like an `NA` to be filled in.
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = list(c("Str1", "Str2", "Str3", 
@@ -876,15 +874,15 @@ my_design <- make_design(
                "abcde0ghij")
   )
 
-my_design
+my_design_blk
 ```
 
 Now we can see that our design has been easily modified to place NA's for those wells, which we can use after merging our designs with our data to exclude all of those wells from analyses.
 
-However, the real strength of `make_design` is that it is not limited to simple alternating patterns. The pattern string specified can be any pattern, which `make_design` will replicate sufficient times to cover the entire set of listed wells.
+However, the real strength of `make_design` is that it is not limited to simple alternating patterns. The pattern specified can be any pattern, which `make_design` will replicate sufficient times to cover the entire set of listed wells.
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = list(c("Str1", "Str2"),
@@ -897,13 +895,13 @@ my_design <- make_design(
                2:11,
                "aabbbc000abc"))
 
-my_design
+my_design_blk
 ```
 
 `gcplyr` also includes an optional helper function for `make_design` called `make_designpattern`. `make_designpattern` just helps by reminding the user what arguments are necessary for each design and ensuring they're in the correct order. For example, the following produces the same `data.frame` as the above code:
 
 ```{r}
-my_design <- make_design(
+my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = make_designpattern(
@@ -918,13 +916,13 @@ my_design <- make_design(
                "Med10", "Med11", "Med12"),
     rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
 
-my_design
+my_design_blk
 ```
 
-So far, we've been using the `blocks` option for `output_format`, because it's easy to see that our design matches what we'd intended with that format. However, **for merging our designs with plate reader data, we need it tidy-shaped**. Luckily, there's no need to transform it yourself, simply change the `output_format` argument option to `tidy` (or even leave it out, since the default is tidy-shaped).
+So far, we've been using the `blocks` option for `output_format`, because it's easy to see that our design matches what we'd intended with that format. However, **for merging our designs with plate reader data, we need it tidy-shaped**. Luckily, there's no need to transform it yourself, simply change the `output_format` argument option to `tidy`.
 
 ```{r}
-my_design <- make_design(
+my_design_tdy <- make_design(
   output_format = "tidy",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
   Bacteria = make_designpattern(
@@ -939,70 +937,35 @@ my_design <- make_design(
                "Med10", "Med11", "Med12"),
     rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
 
-head(my_design, 20)
+head(my_design_tdy, 20)
 ```
 
 ### Saving designs to files
-If you'd like to save your designs to files, you have two options.
+Often after generating designs in `R` with `make_design`, you'll want to save those designs to files. This might be so that human-readable files documenting your designs are available without opening `R`. Or perhaps it's because you need to post the design files, for instance to Dryad as part of a manuscript submission.
+
+If you'd like to save your designs to files, you can save them either tidy-shaped or block-shaped. Both formats can easily be read back into `R` by `gcplyr`.
 
 #### Saving tidy-shaped designs
-These design files will be less human-readable, but easier to import and merge. For these, simply use the built-in `write.csv` function.
+These design files will be less human-readable, but easier to import and merge. Additionally, tidy-shaped files are often better for data repositories, like Dryad. To save tidy-shaped designs, simply use the built-in `write.csv` function.
 
 ```{r}
-my_design <- make_design(
-  output_format = "tidy",
-  nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = make_designpattern(
-    values = c("Str1", "Str2", "Str3", 
-               "Str4", "Str5", "Str6"),
-    rows = 2:7, cols = 2:11, pattern = "abc0ef",
-    byrow = FALSE),
-  Media = make_designpattern(
-    values = c("Med1", "Med2", "Med3",
-               "Med4", "Med5", "Med6",
-               "Med7", "Med8", "Med9",
-               "Med10", "Med11", "Med12"),
-    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
-
-write.csv(x = my_design, file = tempfile(fileext = ".csv"),
+#See the previous section where we created my_design_tdy
+write.csv(x = my_design_tdy, file = "tidy_design.csv",
           row.names = FALSE)
 ```
 
 #### Saving block-shaped designs
-These design files will be more human-readable but require slightly more computational steps to import and merge. For these, use the `gcplyr` function `write_blocks`. `write_blocks` has three options for output format:
+These design files will be more human-readable but require slightly more computational steps to import and merge. For these, use the `gcplyr` function `write_blocks`. Typically, you'll use `write_blocks` to save files in one of two formats:
 
 * `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
-* `pasted` - all the blocks will be pasted together, then saved to a single `.csv` file
 * `multiple` - each block will be saved to its own `.csv` file
 
-Additionally, for the `pasted` and `multiple` formats, you can specify whether you want the `block_names` metadata to be saved in:
-
-* the `filename`
-* a cell in the `file` itself
-
-Let's demonstrate some of these options. First, let's create our block-shaped design.
+##### Saving block-shaped designs to multiple files
+The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block.
 
 ```{r}
-my_design <- make_design(
-  output_format = "blocks",
-  nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = make_designpattern(
-    values = c("Str1", "Str2", "Str3", 
-               "Str4", "Str5", "Str6"),
-    rows = 2:7, cols = 2:11, pattern = "abc0ef",
-    byrow = FALSE),
-  Media = make_designpattern(
-    values = c("Med1", "Med2", "Med3",
-               "Med4", "Med5", "Med6",
-               "Med7", "Med8", "Med9",
-               "Med10", "Med11", "Med12"),
-    rows = 2:7, cols = 2:11, pattern = "abcde0ghij"))
-```
-
-Now, let's save this design using `write_blocks`. The default settings are for `multiple` and `block_names` to be saved as the `filename`s.
-
-```{r}
-write_blocks(my_design)
+#See the previous section where we created my_design_blk
+write_blocks(my_design_blk)
 
 #Let's see what the files look like
 print_df(read.csv("Bacteria.csv", header = FALSE))
@@ -1010,11 +973,14 @@ print_df(read.csv("Bacteria.csv", header = FALSE))
 print_df(read.csv("Media.csv", header = FALSE))
 ```
 
-Let's now see what the `single` output format looks like. Note that with `output_format = "single"`, the `block_name_location` must be `file`:
+##### Saving block-shaped designs to a single file
+The other setting for `write_blocks` is `output_format = 'single'`. This creates a single `csv` file that contains all the blocks, putting metadata like `block_names` in rows that precede each block.
+
+Let's take a look what the `single` output format looks like:
 
 ```{r}
-write_blocks(my_design, file = "Design.csv", 
-             output_format = "single", block_name_location = "file")
+#See the previous section where we created my_design_blk
+write_blocks(my_design_blk, file = "Design.csv", output_format = "single")
 
 #Let's see what the file looks like
 print_df(read.csv("Design.csv", header = FALSE))
@@ -1022,10 +988,8 @@ print_df(read.csv("Design.csv", header = FALSE))
 
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
 
-Saving your design information in a file like this ensures that an easily human-readable format is available anytime you or others want to understand the design layout. Additionally, files that have been created by `write_blocks` can be easily imported back into`R`using `import_blockdesigns`. Thus, you have two options for how to use `make_design` and `write_blocks`:
-
-1. Use `make_design` to create block-shaped designs. Save these designs to files using `write_blocks`. Import the designs from those files using `import_blockdesigns`.
-2. Use `make_design` to create block-shaped designs. Save these designs to files using `write_blocks`. Copy-paste your original `make_design` command but with `output_format = "tidy"` to create tidy-shaped designs.
+#### Best practices for saving designs to files
+It's best to leave the `make_design` and `write_blocks` commands in your analysis script, so that every time your analysis is run your design files are kept up to date. Just note that if your `make_design` command has `output_format = blocks`, you'll need to make a version where `output_format = tidy` that you can `merge_dfs` with your plate reader data.
 
 # Merging spectrophotometric and design data
 Once we have both our design and data in the`R`environment and tidy-shaped, we can merge them using `merge_dfs`.
@@ -1106,11 +1070,11 @@ Now that you have your data and design information merged, you're ready to move 
 There are, broadly speaking, two ways to analyze growth curves data:
 
 1. directly quantify attributes of the growth dynamics
-2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model.
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
 
 For analysis, `gcplyr` focuses on the first approach: directly quantifying attributes of observed dynamics. If you're interested in the strengths and weaknesses of model-fitting approaches, as well as `R` packages that implement model-fitting methods, check out the **[Other growth curve analysis packages]** section.
 
-`gcplyr` has a number of functions that facilitate pre-processing, processing, and analyzing your growth curves data after you've merged it with your design information. Unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
+So how do we directly quantify attributes of growth curves? First, we need to carry out any necessary pre-processing steps, like converting data types, excluding missing data, and possibly smoothing. Then, we can process our data by calculating derivatives. Finally, we can analyze it. `gcplyr` has a number of functions that facilitate these steps. However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
 
 # Pre-processing
 Pre-processing includes some necessary steps before we start calculating anything about the growth curves. For instance, excluding wells, converting time formats, and smoothing spectrophotometric data.
@@ -1152,21 +1116,15 @@ example_data_and_designs$Time <-
         sep = ":")
 ```
 
-Let's take a look at this data.frame. You'll notice that we've just modified the Time column from the `example_data_and_designs` file from the previous section.
+Let's take a look at this data.frame. This shows the `Time` column as it might be written by a plate reader.
 
 ```{r}
 head(example_data_and_designs)
 ```
 
-We can see that our `Time` aren't written in an easy numeric. Instead, they're in a format that's easy for a human to understand (but unfortunately not very usable for analysis). What are some of the time strings in the `Time` column?
+We can see that our `Time` aren't written in an easy numeric. Instead, they're in a format that's easy for a human to understand (but unfortunately not very usable for analysis).
 
-```{r}
-unique(example_data_and_designs$Time)
-```
-
-Here we can see that we have timepoints every 15 minutes all the way up to 24 hours. 
-
-Let's use `lubridate` to convert this text back into a usable format. `lubridate` has a whole family of functions that can parse text with hour, minute, and/or second components. You can use `hms` if your text contains hour, minute, and second information, `hm` if it only contains hour and minute information, and `ms` if it only contains minute and second information.
+Let's use `lubridate` to convert this text into a usable format. `lubridate` has a whole family of functions that can parse text with hour, minute, and/or second components. You can use `hms` if your text contains hour, minute, and second information, `hm` if it only contains hour and minute information, and `ms` if it only contains minute and second information.
 
 Since the example has all three, we'll use `hms`:
 
@@ -1178,14 +1136,13 @@ example_data_and_designs$Time <- hms(example_data_and_designs$Time)
 head(example_data_and_designs)
 ```
 
-Great! `hms` has parsed the text for us. However, `hms`, `hm`, and `ms` produce a class specific to the `lubridate` package called a `period`. Unfortunately, `period`s don't work well with some of our downstream analysis steps, so we need to convert it to a pure numeric value. We can use the `lubridate` function `time_length` to do so. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
+Great! `hms` has parsed the text for us. However, `hms`, `hm`, and `ms` produce a class specific to the `lubridate` package called a `period` (printed out here in the `Time` column, e.g. as `0S`). Unfortunately, `period`s don't work well with some of our downstream analysis steps, so we need to convert it to a pure numeric value. We can use the `lubridate` function `time_length` to do so. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
 
 ```{r}
+#Converting the Time column from a period (e.g. 0S) to a numeric
 example_data_and_designs$Time <- time_length(example_data_and_designs$Time)
 
 head(example_data_and_designs)
-
-unique(example_data_and_designs$Time)
 ```
 
 And now we can see that we've gotten our nice numeric `Time` values back! So we can proceed with the next steps of the analysis.
@@ -1330,7 +1287,7 @@ plot(example_data_and_designs$Time[
 
 ## A simple derivative
 
-To calculate a simple derivative using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
+To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
 
 ```{r}
 example_data_and_designs$deriv <-
@@ -1347,8 +1304,7 @@ plot(example_data_and_designs$Time[
 ```
 
 ## Per-capita derivative
-
-`calc_deriv` can also return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your Measurements that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
+To calculate the growth rate of the population, `calc_deriv` can return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your Measurements that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}
 example_data_and_designs$deriv_percap <-
@@ -1385,7 +1341,7 @@ plot(example_data_and_designs$Time[
 
 ## Changing the derivative units
 
-Finally, if you want your derivative in units different from those that x is provided in, you can specify the ratio of your x units to the desired units with `x_scale`. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
+To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
 
 ```{r}
 example_data_and_designs$deriv_hr <-
@@ -1427,7 +1383,7 @@ head(grouped_example_data_and_designs)
 
 Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns, and the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
 
-Then, we run `summarize`, specifying the name of the summarized column and the function that calculates the summary output. For instance, in the code below we've calculated the minimum smoothed absorbance each well reached at any point in its growth.
+Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the minimum smoothed absorbance each well reached at any point in its growth, and saved it in a column named `min_abs`.
 
 ```{r}
 example_data_and_designs_sum <-
@@ -1436,7 +1392,7 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-If you want additional characteristics, you simply add them to the summarize. For instance, we could get the maximum of the per-capita growth rate (note that na.rm is needed to tell `max` to ignore `NA` values):
+If you want additional characteristics, you simply add them to the summarize. For instance, we could get the maximum of the per-capita growth rate (note that na.rm is needed to tell `max` to ignore `NA` values), here saved in a column named `max_percap_deriv`:
 
 ```{r}
 example_data_and_designs_sum <-
@@ -1467,7 +1423,7 @@ plot(example_data_and_designs$Time[
   xlab = "time", ylab = "derivative (Absorbance/hr)")
 ```
 
-Now let's identify the peak in our data. First, we'll group our data using `dplyr::group_by`, then use `first_peak` inside our summarize command. (Remember to load dplyr with `library(dplyr)` if you haven't already)
+Now let's identify the peak in our data. First, we'll group our data using `dplyr::group_by`, then use `first_peak` inside our summarize command. (Remember to load dplyr with `library(dplyr)` if you haven't already). We'll save the index of the first peak in a column titled `first_peak_index`.
 
 ```{r}
 example_data_and_designs_grouped <- 
@@ -1567,7 +1523,7 @@ One other common metric of growth curves is the total area under the curve. `gcp
 
 To use `auc`, simply specify the x and y data you are interested in calculating the area-under-the-curve of. Note that you can also specify a subset of the x-range to calculate the area of, in cases where you do not want the area under the curve from the beginning to the end of your time series.
 
-Here, we calculate the area-under-the-curve of the density data, as well as the area-under-the-curve beginning after 3 hours (10800 seconds)
+Here, we calculate the area-under-the-curve of the density data (saved to the `auc` column), as well as the area-under-the-curve beginning after 3 hours (10800 seconds, saved to the `auc_after3hrs` column)
 
 ```{r}
 example_data_and_designs_sum <-
@@ -1632,13 +1588,13 @@ A number of other `R` packages besides `gcplyr` facilitate analysis of growth cu
 There are, broadly speaking, two ways to analyze growth curves data:
 
 1. directly quantify attributes of the growth dynamics
-2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model. 
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
 
 While `gcplyr` focuses on manipulation of growth curves data and the first analysis approach (direct quantification of growth curves dynamics), many other `R` packages focus on fitting growth dynamics with a mathematical model.
 
 Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully choose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. 
 
-A number of`R`packages implement fitting-style approaches, which we list here for readers to explore on their own. At some point in the future, we hope to incorporate more direct examples of how to use tidy-shaped data imported and manipulated by `gcplyr` with these packages.
+A number of `R` packages implement fitting-style approaches, which we list here for readers to explore on their own. At some point in the future, we hope to incorporate more direct examples of how to use tidy-shaped data imported and manipulated by `gcplyr` with these packages.
 
 * `growthcurver`
 * `QurvE`
@@ -1655,6 +1611,6 @@ A number of`R`packages implement fitting-style approaches, which we list here fo
 * `CarboLogR`
 * `biogrowth`
 
-Additionally, there are some `R` packages that don't implement fitting-style approaches, but contain useful functionality for plate-reader data analysis:
+Additionally, one `R` package doesn't implement fitting-style approaches, but does contain useful functionality for plate-reader data analysis:
 
 * `plater`

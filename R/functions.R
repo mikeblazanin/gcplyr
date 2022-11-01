@@ -1654,14 +1654,16 @@ fill_data_metadata <- function(output, input, rs,
 #'                  will be used to paste together blocks.   
 #' @param filename_sep What character will be used to paste together 
 #'                     filenames when block_name_location = 'filename'.   
-#' @param ... Other arguments passed to \code{write.csv}
+#' @param na The string to use for missing values in the data.
+#' @param ... Other arguments passed to \code{write.table}
 #' @return Nothing, but R objects are written to files
 #' 
 #' @export
 write_blocks <- function(blocks, file = NULL, 
                          output_format = "multiple",
                          block_name_location = NULL,
-                         paste_sep = "_", filename_sep = "_", ...) {
+                         paste_sep = "_", filename_sep = "_", 
+                         na = "", ...) {
   if(!all(sapply(X = blocks, FUN = length) == 2) |
      !all(unlist(lapply(X = blocks, FUN = names)) %in% c("data", "metadata"))) {
     stop("blocks is incorrectly formatted")
@@ -1712,7 +1714,7 @@ write_blocks <- function(blocks, file = NULL,
       rs <- temp[[2]]
     }
     #Write file
-    utils::write.table(output, file = file, sep = ",", na = "",
+    utils::write.table(output, file = file, sep = ",", na = na,
                        col.names = FALSE, row.names = FALSE, ...)
   } else if (output_format == "pasted") {
     #going to paste all the blocks together then save a single file
@@ -1793,7 +1795,7 @@ write_blocks <- function(blocks, file = NULL,
         fill_data_metadata(output = output, input = blocks[[1]], rs = 1)[[1]]
     }
     #Write file
-    utils::write.table(output, file = file, sep = ",", na = "",
+    utils::write.table(output, file = file, sep = ",", na = na,
                        col.names = FALSE, row.names = FALSE, ...)
   } else if (output_format == "multiple") {
     #going to save each block as its own file
@@ -1858,7 +1860,7 @@ write_blocks <- function(blocks, file = NULL,
                                rs = 1, metadata_include = NULL)[[1]]
         }
         #Write file
-        utils::write.table(output, file = filenm, sep = ",", na = "",
+        utils::write.table(output, file = filenm, sep = ",", na = na,
                            col.names = FALSE, row.names = FALSE, ...)
       }
     } else { #block_name_location == 'file'

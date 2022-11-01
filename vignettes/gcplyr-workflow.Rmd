@@ -238,8 +238,7 @@ for (i in 1:length(temp_filenames)) {
 Here's what one of the files looks like (where the values are absorbance/optical density):
 
 ```{r}
-print_df(read.csv(temp_filenames[10], header = FALSE, 
-                  colClasses = "character"))
+print_df(read.csv(temp_filenames[10], header = FALSE, colClasses = "character"))
 ```
 
 This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look extra small here because `R` doesn't know that the first row is a header yet.
@@ -295,8 +294,7 @@ for (i in 1:length(temp_filenames2)) {
 Let's take a look at one of the files:
 
 ```{r}
-print_df(read.csv(temp_filenames2[10], header = FALSE,
-                  colClasses = "character"))
+print_df(read.csv(temp_filenames2[10], header = FALSE, colClasses = "character"))
 ```
 
 In the above example, the column names are in row 4 and the rownames are in column 1. To specify that to `import_blockmeasures`, we simply do:
@@ -326,8 +324,7 @@ Sometimes, your input files will have information you want to import that's not 
 For example, let's return to our most-recent example files:
 
 ```{r}
-print_df(read.csv(temp_filenames2[10], header = FALSE,
-                  colClasses = "character"))
+print_df(read.csv(temp_filenames2[10], header = FALSE, colClasses = "character"))
 ```
 
 In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `import_blockmeasures` command:
@@ -376,8 +373,7 @@ write_blocks(read_blocks(files = temp_filenames2,
 Let's take a look at what the file looks like:
 
 ```{r}
-print_df(head(read.csv("blocks_single.csv", header = FALSE,
-                  colClasses = "character"), 20))
+print_df(head(read.csv("blocks_single.csv", header = FALSE, colClasses = "character"), 20))
 ```
 
 We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `import_blockmeasures`:
@@ -444,7 +440,7 @@ write.csv(example_widedata, file = temp_filename, row.names = FALSE)
 Here's what the start of the file looks like (where the values are absorbance/optical density):
 
 ```{r}
-print_df(head(read.csv(temp_filename, header = FALSE), 
+print_df(head(read.csv(temp_filename, header = FALSE, colClasses = "character"), 
               c(10, 4), row.names = FALSE))
 ```
 
@@ -506,7 +502,8 @@ Let's take a look at the file:
 
 ```{r}
 #Let's take a peek at what this file looks like
-print_df(head(read.csv(temp_filename2, header = FALSE), c(10, 6)))
+print_df(head(read.csv(temp_filename2, header = FALSE, colClasses = "character"), 
+              c(10, 6)))
 ```
 
 Thus, we can see the data header is in row 5, and the data begins in row 6. To specify that to `read_wides`, we simply do (note that `header = TRUE` by default):
@@ -622,8 +619,7 @@ write.csv(
 Now let's take a look at what the file looks like:
 
 ```{r}
-print_df(read.csv(temp_filename, header = FALSE, 
-                  colClasses = "character"))
+print_df(read.csv(temp_filename, header = FALSE, colClasses = "character"))
 ```
 
 Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`. Since this block contains the treatment numbers, we've given the `block_names` as "Treatment_numbers". If no `block_names` is provided, `import_blockdesigns` will automatically name it according to the file name.
@@ -651,8 +647,7 @@ write.csv(
 Now let's take a look at what the file looks like:
 
 ```{r}
-print_df(read.csv(temp_filename2, header = FALSE, 
-                  colClasses = "character"))
+print_df(read.csv(temp_filename2, header = FALSE, colClasses = "character"))
 ```
 
 Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
@@ -968,9 +963,9 @@ The default setting for `write_blocks` is `output_format = 'multiple'`. This cre
 write_blocks(my_design_blk)
 
 #Let's see what the files look like
-print_df(read.csv("Bacteria.csv", header = FALSE))
+print_df(read.csv("Bacteria.csv", header = FALSE, colClasses = "character"))
 
-print_df(read.csv("Media.csv", header = FALSE))
+print_df(read.csv("Media.csv", header = FALSE, colClasses = "character"))
 ```
 
 ##### Saving block-shaped designs to a single file
@@ -983,7 +978,7 @@ Let's take a look what the `single` output format looks like:
 write_blocks(my_design_blk, file = "Design.csv", output_format = "single")
 
 #Let's see what the file looks like
-print_df(read.csv("Design.csv", header = FALSE))
+print_df(read.csv("Design.csv", header = FALSE, colClasses = "character"))
 ```
 
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.

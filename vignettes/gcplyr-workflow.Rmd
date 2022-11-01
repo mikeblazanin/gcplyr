@@ -207,29 +207,32 @@ To import block-shaped data, use the `import_blockmeasures` function. `import_bl
 
 ### A basic example
 
-Here's a simple example. First, we need to create a series of example block-shaped .csv files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames`.
+Here's a simple example. First, we need to create a series of example block-shaped `.csv` files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames`.
 
 ```{r}
 #This code just creates a series of block-shaped example files
 #Don't worry about how it works - when working with real growth
 #curves data, all these files would be created by the plate reader
-temp_filenames <- tempfile(
-      pattern = paste(as.character(example_widedata$Time), "_", sep = ""),
-      fileext = ".csv")
+temp_filenames <- 
+  tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
+                           fileext = ".csv")
 for (i in 1:length(temp_filenames)) {
   temp_filenames[i] <- strsplit(temp_filenames[i], split = "\\\\")[[1]][
     length(strsplit(temp_filenames[i], split = "\\\\")[[1]])]
 }
 for (i in 1:length(temp_filenames)) {
   write.table(
-    cbind(matrix(c("", "A", "B", "C", "D", "E", "F", "G", "H"), nrow = 9),
-          rbind(
+    cbind(
+      matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
+             nrow = 12),
+      rbind(rep("", 12),
+            matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
+            rep("", 12),
             matrix(1:12, ncol = 12),
             matrix(
-                (example_widedata[i, 2:ncol(example_widedata)]/(5*10**8)),
-              ncol = 12)
-            )
-          ), 
+              (example_widedata[i, 2:ncol(example_widedata)]/(5*10**8)),
+              ncol = 12))
+    ), 
     file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
     col.names = FALSE)
 }
@@ -238,81 +241,31 @@ for (i in 1:length(temp_filenames)) {
 Here's what one of the files looks like (where the values are absorbance/optical density):
 
 ```{r}
-print_df(read.csv(temp_filenames[10], header = FALSE, colClasses = "character"))
+print_df(read.csv(temp_filenames[1], header = FALSE, colClasses = "character"))
 ```
 
-This would correspond to all the reads for a single plate taken at the very first timepoint. We can see that the first row contains column headers, and the first column contains row names. The absorbances look extra small here because `R` doesn't know that the first row is a header yet.
+This file corresponds to all the reads for a single plate taken at the very first timepoint. We can see that the second row of the file contains some metadata about the timepoint when this plate read read was taken. Then, the data itself starts with column headers on row 4 and rownames in column 1. 
 
-If we want to read these files into R, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`).
+If we want to read these files into R, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`). Since our data doesn't start on the first row and column of the file, we simply need to specify what row/column is does start on using the `startrow`, `startcol`, `endrow`, and `endcol` arguments. (`import_blockmeasures` assumes that your data starts on the first row and column and ends on the last row and column, so you don't have to specify when your data meets those criteria).
 
 ```{r}
-imported_blockdata <- import_blockmeasures(files = temp_filenames,
-                                           wellnames_sep = "")
+#Now let's read it with import_blockmeasures
+imported_blockdata <- import_blockmeasures(
+  files = temp_filenames,
+  startrow = 4, startcol = 1,
+  wellnames_sep = "")
 
 head(imported_blockdata[, 1:10])
 ```
 
-### Specifying the location of your block-shaped data
-
-However, running `import_blockmeasures` with only the filenames only works if the data in your block-shaped files starts in the first row and column (or has column names in the first row and/or rownames in the first column). If your data starts elsewhere, `import_blockmeasures` needs to know what row/column to start reading on (if your data isn't the last thing in the file, `import_blockmeasures` also needs to know where your data ends). 
-
-To show how this works, first let's create some example files where the data doesn't begin in the first row/column. In these example files, the plate reader saved the time that each plate was read in the 2nd row of the file, and started saving the data itself with a header in the 4th row.
-
-Again, **don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames2`.
-
-```{r}
-#This code just creates a series of block-shaped example files
-#Don't worry about how it works - when working with real growth
-#curves data, all these files would be created by the plate reader
-temp_filenames2 <- 
-  tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
-                           fileext = ".csv")
-for (i in 1:length(temp_filenames2)) {
-  temp_filenames2[i] <- strsplit(temp_filenames2[i], split = "\\\\")[[1]][
-    length(strsplit(temp_filenames2[i], split = "\\\\")[[1]])]
-}
-for (i in 1:length(temp_filenames2)) {
-  write.table(
-    cbind(
-      matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
-             nrow = 12),
-      rbind(
-        rep("", 12),
-        matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
-        rep("", 12),
-        matrix(1:12, ncol = 12),
-        matrix(
-              (example_widedata[i, 2:ncol(example_widedata)]/(5*10**8)),
-                ncol = 12)
-      )
-    ), 
-    file = temp_filenames2[i], quote = FALSE, row.names = FALSE, sep = ",",
-    col.names = FALSE)
-}
-```
-
-Let's take a look at one of the files:
-
-```{r}
-print_df(read.csv(temp_filenames2[10], header = FALSE, colClasses = "character"))
-```
-
-In the above example, the column names are in row 4 and the rownames are in column 1. To specify that to `import_blockmeasures`, we simply do:
-
-```{r}
-#Now let's read it with import_blockmeasures
-imported_blockdata <- import_blockmeasures(
-  files = temp_filenames2,
-  startrow = 4, startcol = 1,
-  wellnames_sep = "")
-```
+Here we can see that import_blockmeasures has created a wide-shaped R object containing the data from all of our reads. It has also added the file names under the `block_name` column, so that we can easily track which row came from which file.
 
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `import_blockmeasures` will translate that to a number for you!
 
 ```{r}
-#Now let's read it with import_blockmeasures
+#We can specify rows or columns by Excel-style letters too
 imported_blockdata <- import_blockmeasures(
-  files = temp_filenames2,
+  files = temp_filenames,
   startrow = 4, startcol = "A",
   wellnames_sep = "")
 ```
@@ -324,7 +277,7 @@ Sometimes, your input files will have information you want to import that's not 
 For example, let's return to our most-recent example files:
 
 ```{r}
-print_df(read.csv(temp_filenames2[10], header = FALSE, colClasses = "character"))
+print_df(read.csv(temp_filenames[1], header = FALSE, colClasses = "character"))
 ```
 
 In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `import_blockmeasures` command:
@@ -332,7 +285,7 @@ In these files, the timepoint information was located in the 2nd row and 3rd col
 ```{r}
 #Reading the blockcurves files with metadata included
 imported_blockdata <- import_blockmeasures(
-  files = temp_filenames2,
+  files = temp_filenames,
   startrow = 4, startcol = "A",
   wellnames_sep = "",
   metadata = list("time" = c(2, 3)))
@@ -340,14 +293,14 @@ imported_blockdata <- import_blockmeasures(
 head(imported_blockdata[, 1:10])
 ```
 
-You can see that the metadata argument must be a list of named vectors. Each vector should have two elements specifying the location of the metadata in the input files: the first element is the row, the second element is the column.
+You can see that the metadata you specified has been added as a column in our output `data.frame`. When specifying metadata, the metadata argument must be a list of named vectors. Each vector should have two elements specifying the location of the metadata in the input files: the first element is the row, the second element is the column.
 
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
 ```{r}
 #Reading the blockcurves files with metadata included
 imported_blockdata <- import_blockmeasures(
-  files = temp_filenames2,
+  files = temp_filenames,
   startrow = 4, startcol = "A",
   wellnames_sep = "",
   metadata = list("time" = c(2, "C")))
@@ -362,7 +315,7 @@ First, let's create an example file. **Don't worry about how this code works**, 
 #This code just creates an example file with multiple blocks
 #Don't worry about how it works - when working with real growth
 #curves data, this would be created by the plate reader
-write_blocks(read_blocks(files = temp_filenames2,
+write_blocks(read_blocks(files = temp_filenames,
                          startrow = 4, startcol = "A",
                          metadata = list("time" = c(2, "C"))),
              file = "blocks_single.csv",
@@ -373,7 +326,8 @@ write_blocks(read_blocks(files = temp_filenames2,
 Let's take a look at what the file looks like:
 
 ```{r}
-print_df(head(read.csv("blocks_single.csv", header = FALSE, colClasses = "character"), 20))
+print_df(head(read.csv("blocks_single.csv", 
+                       header = FALSE, colClasses = "character"), 20))
 ```
 
 We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `import_blockmeasures`:
@@ -393,7 +347,7 @@ Here we've used the built-in `R` function `seq` to generate the full vector of `
 head(imported_blockdata[, 1:10])
 ```
 
-Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector for the row,column location, it's going to be a list of two vectors, one with the row numbers, and one with the column numbers.
+Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector `c(row,column)` with the location, it's going to be a list of two vectors, one with the row numbers, and one with the column numbers.
 
 Going back to the file, we can see that the time of the block is saved in the second column, in rows 2, 14, 26, 38, ... through 1154.
 
@@ -606,6 +560,7 @@ To import block-shaped design files, you can use the `import_blockdesigns` funct
 
 #### A basic example
 
+
 Let's take a look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
@@ -630,6 +585,7 @@ head(my_design, 20)
 ```
 
 #### Importing multiple block-shaped design elements
+
 
 What do you do if you have multiple design components? For instance, what if you have several different bacterial strains each with several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
 
@@ -663,6 +619,7 @@ head(my_design, 20)
 
 #### Notes for more advanced use
 
+
 Note that `import_blockdesigns` is essentially a wrapper function that calls `read_blocks`, `paste_blocks`, `trans_block_to_wide`, `trans_wide_to_tidy`, and then `separate_tidys`. Any arguments for those functions can be passed to `import_blockdesigns`. 
 
 For instance, if your design files do not start on the first row and first column, you can specify a `startrow` or `startcol` just like when you were using `read_blocks`. Or if your designs are located in a sheet other than the first sheet, you can specify `sheet`.
@@ -676,7 +633,7 @@ Just like measures data, to import tidy-shaped designs you could use the built-i
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-Once these design elements have been read into the`R`environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging spectrophotometric and design data]** section.
+Once these design elements have been read into the `R` environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging spectrophotometric and design data]** section.
 
 ## Generating designs in R
 If you'd rather make your design data.frames in R, `gcplyr` has a helper function that makes it easy to do so: `make_design`. `make_design` can create:
@@ -726,6 +683,7 @@ my_design_blk <- make_design(
 ```
 
 So for our example above, we can see:
+
 * the possible values are `c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6")`
 * the rows these values should be applied to are rows `2:7`
 * the columns these values should be applied to are columns `2:11`

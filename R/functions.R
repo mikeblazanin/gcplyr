@@ -413,6 +413,10 @@ infer_names <- function(df,
 #'                        and numbers for rows. 
 #'                        If \code{wellnames_Excel} is FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
+#' @param na.strings A character vector of strings which are to be interpreted
+#'                   as \code{NA} values by \code{utils::read.csv},
+#'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
+#'                   or \code{utils::read.table}
 #' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'              or \code{utils::read.table}
@@ -460,7 +464,8 @@ read_blocks <- function(files, extension = NULL,
                         sheet = NULL, metadata = NULL,
                         block_names = NULL,
                         header = NA, sider = NA,
-                        wellnames_Excel = TRUE, ...) {
+                        wellnames_Excel = TRUE,
+                        na.strings = c("NA", ""), ...) {
   nblocks <- max(length(files), length(startrow), length(endrow),
                  length(startcol), length(endcol), length(sheet),
                  na.rm = TRUE)
@@ -563,24 +568,26 @@ read_blocks <- function(files, extension = NULL,
   for (i in 1:nblocks) {
     ##Read file & save in temp
     if (extension[i] == "tbl") {
-      temp <- dots_parser(utils::read.table, file = files[i], ...)
+      temp <- dots_parser(utils::read.table, file = files[i],
+                          na.strings = na.strings, ...)
     } else if (extension[i] == "csv") {
       temp <- dots_parser(utils::read.csv, file = files[i], 
-                          colClasses = "character", header = FALSE, ...)
+                          colClasses = "character", header = FALSE,
+                          na.strings = na.strings, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
             dots_parser(readxl::read_xls, path = files[i], 
                         col_names = FALSE, col_types = "text", 
-                        sheet = sheet[i], ...)))
+                        sheet = sheet[i], na = na.strings, ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
             dots_parser(readxl::read_xlsx, path = files[i], 
                         col_names = FALSE, col_types = "text", 
-                        sheet = sheet[i], ...)))
+                        sheet = sheet[i], na = na.strings, ...)))
     }
     
     #Infer rows, cols, rownames, colnames
@@ -721,6 +728,10 @@ read_blocks <- function(files, extension = NULL,
 #'                             If FALSE, names will be numbered with "R" and "C"
 #'                             prefixes for row and column.
 #'                             (e.g. R4C7 is the 4th column, 7th row)
+#' @param na.strings A character vector of strings which are to be interpreted
+#'                   as \code{NA} values by \code{utils::read.csv},
+#'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
+#'                   or \code{utils::read.table}
 #' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
@@ -738,6 +749,7 @@ read_wides <- function(files, extension = NULL,
                        names_to_col = "file",
                        metadata = NULL, 
                        metadata_Excel_names = TRUE,
+                       na.strings = c("NA", ""),
                        ...) {
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow
@@ -874,23 +886,27 @@ read_wides <- function(files, extension = NULL,
   for (i in 1:nwides) {
     #Read file & save in temp
     if (extension[i] == "tbl") {
-      temp <- dots_parser(utils::read.table, file = files[i], ...)
+      temp <- dots_parser(utils::read.table, file = files[i],
+                          na.strings = na.strings...)
     } else if (extension[i] == "csv") {
       temp <- 
         dots_parser(utils::read.csv, file = files[i], 
-                    colClasses = "character", header = FALSE, ...)
+                    colClasses = "character", header = FALSE,
+                    na.strings = na.strings, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
             dots_parser(readxl::read_xls, path = files[i], col_names = FALSE, 
-                             col_types = "text", sheet = sheet[i], ...)))
+                        col_types = "text", sheet = sheet[i],
+                        na = na.strings, ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
             dots_parser(readxl::read_xlsx, path = files[i], col_names = FALSE, 
-                              col_types = "text", sheet = sheet[i], ...)))
+                        col_types = "text", sheet = sheet[i],
+                        na = na.strings, ...)))
     }
     
     #Infer colnames/take subsets as needed
@@ -1007,6 +1023,10 @@ read_wides <- function(files, extension = NULL,
 #'                     If \code{names_to_col} is NULL, they only will be 
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
+#' @param na.strings A character vector of strings which are to be interpreted
+#'                   as \code{NA} values by \code{utils::read.csv},
+#'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
+#'                   or \code{utils::read.table}
 #'                     
 #' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
@@ -1029,6 +1049,7 @@ read_tidys <- function(files, extension = NULL,
                        startcol = NULL, endcol = NULL,
                        sheet = NULL, 
                        run_names = NULL, names_to_col = NULL,
+                       na.strings = c("NA", ""),
                        ...) {
   if (!is.null(startrow) & !is.numeric(startrow)) {
     startrow <- from_excel(startrow)}
@@ -1084,23 +1105,27 @@ read_tidys <- function(files, extension = NULL,
   for (i in 1:length(files)) {
     #Read file & save in temp
     if (extension[i] == "tbl") {
-      temp <- dots_parser(utils::read.table, file = files[i], ...)
+      temp <- dots_parser(utils::read.table, file = files[i], 
+                          na.strings = na.strings, ...)
     } else if (extension[i] == "csv") {
       temp <- 
         dots_parser(utils::read.csv, file = files[i], 
-                    colClasses = "character", header = FALSE, ...)
+                    colClasses = "character", header = FALSE,
+                    na.strings = na.strings, ...)
     } else if (extension[i] == "xls") {
       suppressMessages(
         temp <- 
           as.data.frame(
             dots_parser(readxl::read_xls, path = files[i], col_names = FALSE, 
-                             col_types = "text", sheet = sheet[i], ...)))
+                        col_types = "text", sheet = sheet[i],
+                        na = na.strings, ...)))
     } else if (extension[i] == "xlsx") {
       suppressMessages(
         temp <- 
           as.data.frame(
             dots_parser(readxl::read_xlsx, path = files[i], col_names = FALSE, 
-                              col_types = "text", sheet = sheet[i], ...)))
+                        col_types = "text", sheet = sheet[i],
+                        na = na.strings, ...)))
     }
     
     #Infer colnames/take subsets as needed

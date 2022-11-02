@@ -1922,7 +1922,8 @@ write_blocks <- function(blocks, file = NULL,
 #' @param blocks Blocks, either a single data.frame or a list of
 #'                      data.frames
 #' @param wellnames_sep String to use as separator for well names between 
-#'                      rowname and column name
+#'                      rowname and column name (ordered according to
+#'                      \code{colnames_first}
 #' @param nested_metadata A Boolean indicating the existence of nested metadata
 #'                        in the \code{blockmeasures} list, e.g. as is typically
 #'                        output by \code{read_blocks}. If NULL, will attempt to
@@ -1934,7 +1935,7 @@ write_blocks <- function(blocks, file = NULL,
 #' @return A single widemeasures data.frame
 #' 
 #' @export
-trans_block_to_wide <- function(blocks, wellnames_sep = "_", 
+trans_block_to_wide <- function(blocks, wellnames_sep = "", 
                          nested_metadata = NULL, colnames_first = FALSE) {
   
   if(class(blocks) != "list") {

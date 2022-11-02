@@ -420,7 +420,6 @@ infer_names <- function(df,
 #'                        
 #'                        If \code{wellnames_numeric} is TRUE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
-#'                        generated names
 #'                        
 #'                        If \code{wellnames_numeric} is FALSE, rows will be
 #'                        lettered A through Z, while columns will be numbered
@@ -1331,17 +1330,26 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                      
 #'                      For writing to block-shaped file(s), choose 'blocks' or
 #'                      'blocks_pasted'.
+#' @param wellnames_numeric If \code{block_row_names} or \code{block_col_names}
+#'                        are not specified, then names will be generated
+#'                        automatically according to \code{wellnames_numeric}.
+#'                        
+#'                        If \code{wellnames_numeric} is TRUE, rows and columns
+#'                        will be numbered with "R" and "C" prefixes, respectively.
+#'                        
+#'                        If \code{wellnames_numeric} is FALSE, rows will be
+#'                        lettered A through Z, while columns will be numbered
 #' @param wellnames_sep A string used when concatenating rownames and column
-#'                      names to create well names
+#'                      names to create well names, when 
+#'                      \code{output_format = "wide"} or 
+#'                      \code{output_format = "tidy"}
 #' @param wellnames_colname Header for newly-created column containing the
-#'                          well names
-#' @param wellnames_Excel If \code{block_row_names} or \code{block_col_names}
-#'                        are not specified, should rows and columns be named
-#'                        using Excel-style base-26 lettering for rows
-#'                        and numbering for columns? If FALSE, rows and columns
-#'                        will be numbered with "R" and "C" prefix.
-#' @param pattern_split character to split pattern elements provided in
-#'                      \code{...} by, if they're not already a vector
+#'                          well names, when \code{output_format = "tidy"}
+#' @param colnames_first  When wellnames are created for 
+#'                        \code{output_format = "wide"} or 
+#'                        \code{output_format = "tidy"} by \code{paste}-ing the
+#'                        rownames and column names, should the column names
+#'                        come first. 
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
 #'                         that corresponds to the first value in the vector.
 #'                         
@@ -1349,9 +1357,8 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                         c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
 #'                         for example, lookup_tbl_start = "A", then the lookup
 #'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
-#' @param colnames_first  In the wellnames created by \code{paste}-ing the
-#'                        rownames and column names, should the column names
-#'                        come first
+#' @param pattern_split character to split pattern elements provided in
+#'                      \code{...} by, if they're not already a vector
 #' @param ... Each \code{...} argument must be a list with five elements:
 #' 
 #'              1. a vector of the values
@@ -1391,9 +1398,9 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 make_design <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
                         output_format = "tidy",
-                        wellnames_sep = "_", wellnames_colname = "Well",
-                        wellnames_Excel = TRUE, lookup_tbl_start = 1,
-                        pattern_split = "", colnames_first = FALSE, ...) {
+                        wellnames_numeric = FALSE, wellnames_sep = "", 
+                        wellnames_colname = "Well", colnames_first = FALSE,
+                        lookup_tbl_start = 1, pattern_split = "", ...) {
 
   #Do we need to include a plate_name argument?
   #(old comment) the plates have to be identified uniquely
@@ -1418,12 +1425,12 @@ make_design <- function(nrows = NULL, ncols = NULL,
     stop("ncols or block_col_names must be provided")
   }
   if (is.null(block_row_names)) {
-    if (wellnames_Excel) {block_row_names <- to_excel(1:nrows)
-    } else {block_row_names <- paste("R", 1:nrows, sep = "")}
+    if (wellnames_numeric) {block_row_names <- paste("R", 1:nrows, sep = "")
+    } else {block_row_names <- to_excel(1:nrows)}
   }
   if (is.null(block_col_names)) {
-    if (wellnames_Excel) {block_col_names <- 1:ncols
-    } else {block_col_names <- paste("C", 1:ncols, sep = "")}
+    if (wellnames_numeric) {block_col_names <- paste("C", 1:ncols, sep = "")
+    } else {block_col_names <- 1:ncols}
   }
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}

@@ -35,7 +35,7 @@ This document gives a walkthrough of how to use `gcplyr`'s most common functions
 
 To get started, all you need is the data file with the growth curve measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
-Users often want to combine their data with some information on experimental design elements of their growth curve plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well, or you can just keep it handy to enter it directly through a function later on.
+Users often want to combine their data with some information on experimental design elements of their growth curve plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well (see [Reading design elements from files]), or you can just keep it handy to enter it directly through a function later on (see [Generating designs in R]).
 
 Let's get started by loading `gcplyr`. We're also going to load a couple packages we'll need later.
 
@@ -61,10 +61,7 @@ Before digging into the details of the various options that `gcplyr` provides to
 #This code just creates a wide-shaped example file
 #Don't worry about how it works - when working with real growth
 #curves data, this file would be created by the plate reader
-temp_filename <- paste(tempfile(), ".csv", sep = "")
-temp_filename <- strsplit(temp_filename, split = "\\\\")[[1]][
-  length(strsplit(temp_filename, split = "\\\\")[[1]])]
-write.csv(example_widedata, file = temp_filename, row.names = FALSE)
+write.csv(example_widedata, file = "widedata.csv", row.names = FALSE)
 
 #This code just creates our block designs
 example_design <- make_design(
@@ -94,8 +91,8 @@ write_blocks(example_design)
 
 ```{r}
 #Read in our data
-# (our plate reader file name is saved in the variable temp_filename)
-data_wide <- read_wides(files = temp_filename)
+# (our plate reader data is saved in "widedata.csv")
+data_wide <- read_wides(files = "widedata.csv")
 
 #Transform our data to be tidy-shaped
 data_tidy <- 
@@ -112,20 +109,20 @@ data_merged <- merge_dfs(data_tidy, designs)
 #Plot the data
 ggplot(data = data_merged,
        aes(x = as.numeric(Time), y = Measurements, color = Well)) +
-  geom_line() + 
+  geom_line(aes(lty = Phage)) + 
   guides(color = "none")
 
 #Voila! 8 lines of code and all your data is imported & plotted!
 
-#Calculate the maximum density, save it to a column named 'maxdens'
-#Calculate the area-under-the-curve, save it to a column named 'auc'
-#(these are two common metrics of bacterial growth)
+#Calculate two common metrics of bacterial growth:
+# the maximum density, saving it to a column named 'maxdens'
+# the area-under-the-curve, saving it to a column named 'auc'
 data_sum <- summarize(
   group_by(data_merged, Well, Bacteria_strain, Phage),
   maxdens = max(smoothed, na.rm = TRUE),
   auc = auc(y = smoothed, x = as.numeric(Time)))
 
-#Print some of the results
+#Print some of the max densities and auc's
 head(data_sum)
 
 #Plot the results for max density and area under the curve in presence vs absence of phage
@@ -135,7 +132,7 @@ ggplot(data = data_sum,
 ```
 
 # Data layouts
-With that demonstration done, let's dig into some more details of how data can be organized and what `gcplyr` does. Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
+With that demonstration done, let's dig into some more details of how your input data might be organized and what `gcplyr` does. Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 
 Tidy-shaped data is the best layout for analyses, but most plate readers output block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped into wide-shaped data, and wide-shaped data into tidy-shaped data, then running any analyses.
 
@@ -876,10 +873,12 @@ write.csv(x = my_design_tdy, file = "tidy_design.csv",
 #### Saving block-shaped designs
 These design files will be more human-readable but require slightly more computational steps to import and merge. For these, use the `gcplyr` function `write_blocks`. Typically, you'll use `write_blocks` to save files in one of two formats:
 
-* `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
 * `multiple` - each block will be saved to its own `.csv` file
+* `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
 
 ##### Saving block-shaped designs to multiple files
+
+
 The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block.
 
 ```{r}
@@ -893,6 +892,8 @@ print_df(read.csv("Media.csv", header = FALSE, colClasses = "character"))
 ```
 
 ##### Saving block-shaped designs to a single file
+
+
 The other setting for `write_blocks` is `output_format = 'single'`. This creates a single `csv` file that contains all the blocks, putting metadata like `block_names` in rows that precede each block.
 
 Let's take a look what the `single` output format looks like:
@@ -984,16 +985,16 @@ head(example_data_and_designs)
 ```
 
 # How to pre-process, process, and analyze your data
-Now that you have your data and design information merged, you're ready to move on to the next steps. However, unlike the steps so far, it is at this point that your options for what to do next diversify.
+With your data and design information merged, **your dataset is now organized in a way that's easy to export and analyze**. It is also at this point that the next steps for what you can do diversify into many options.
 
-There are, broadly speaking, two ways to analyze growth curves data:
+Broadly speaking, there are two main approaches to analyzing growth curves data:
 
 1. directly quantify attributes of the growth dynamics
 2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
 
-For analysis, `gcplyr` focuses on the first approach: directly quantifying attributes of observed dynamics. If you're interested in the strengths and weaknesses of model-fitting approaches, as well as `R` packages that implement model-fitting methods, check out the **[Other growth curve analysis packages]** section.
+The remaining functions of `gcplyr` can facilitate analyses following the first approach: directly quantifying attributes of the observed dynamics. If you're interested in exploring model-fitting approaches, which can provide enormous analytical power, check out the **[Other growth curve analysis packages]** section. At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based analyses).
 
-So how do we directly quantify attributes of growth curves? First, we need to carry out any necessary pre-processing steps, like converting data types, excluding missing data, and possibly smoothing. Then, we can process our data by calculating derivatives. Finally, we can analyze it. `gcplyr` has a number of functions that facilitate these steps. However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
+So, how do we directly quantify attributes of growth curves? First, we need to carry out any necessary pre-processing steps, like converting data types, excluding missing data, and possibly smoothing. Then, we can process our data by calculating derivatives. Finally, we can analyze it. `gcplyr` has a number of functions that facilitate these steps. However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
 
 # Pre-processing
 Pre-processing includes some necessary steps before we start calculating anything about the growth curves. For instance, excluding wells, converting time formats, and smoothing spectrophotometric data.

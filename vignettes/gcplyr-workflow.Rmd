@@ -1024,7 +1024,7 @@ head(example_data_and_designs_filtered)
 ## Pre-processing: converting dates & times into numeric
 Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
 
-First we have to create a data frame with time saved as it might be by a plate reader. As usual, **don't worry how this code works**, since it's just creating the output as if you had saved it from the plate reader.
+First we have to create a data frame with time saved as it might be by a plate reader. As usual, **don't worry how this block of code works**, since it's just creating an example file in the same format as that output by a plate reader.
 
 ```{r}
 example_data_and_designs$Time <-
@@ -1046,47 +1046,37 @@ We can see that our `Time` aren't written in an easy numeric. Instead, they're i
 
 Let's use `lubridate` to convert this text into a usable format. `lubridate` has a whole family of functions that can parse text with hour, minute, and/or second components. You can use `hms` if your text contains hour, minute, and second information, `hm` if it only contains hour and minute information, and `ms` if it only contains minute and second information.
 
-Since the example has all three, we'll use `hms`:
+Since the example has all three, we'll use `hms`. Once `hms` has parsed the text, we'll use another function to convert the output of `hms` into a pure numeric value: `time_length`. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
 
 ```{r}
 library(lubridate)
 
-example_data_and_designs$Time <- hms(example_data_and_designs$Time)
+example_data_and_designs$Time <- time_length(hms(example_data_and_designs$Time))
 
 head(example_data_and_designs)
 ```
 
-Great! `hms` has parsed the text for us. However, `hms`, `hm`, and `ms` produce a class specific to the `lubridate` package called a `period` (printed out here in the `Time` column, e.g. as `0S`). Unfortunately, `period`s don't work well with some of our downstream analysis steps, so we need to convert it to a pure numeric value. We can use the `lubridate` function `time_length` to do so. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
-
-```{r}
-#Converting the Time column from a period (e.g. 0S) to a numeric
-example_data_and_designs$Time <- time_length(example_data_and_designs$Time)
-
-head(example_data_and_designs)
-```
-
-And now we can see that we've gotten our nice numeric `Time` values back! So we can proceed with the next steps of the analysis.
+And now we can see that we've gotten nice numeric `Time` values! So we can proceed with the next steps of the analysis.
 
 ## Pre-processing: smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
 
-First, let's add some noise to the example data we've been working with:
-
-```{r, include = FALSE}
-set.seed(2)
-```
-
 ```{r}
-#First let's add some simulated noise to our example data
-example_data_and_designs$Measurements <-
-  example_data_and_designs$Measurements + 
-  runif(nrow(example_data_and_designs), min = 0.1, max = 0.2)
+#What does our (noisy) data look like?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "Abs")
 
-#What does this noisy data look like?
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$Measurements[
-       example_data_and_designs$Well == "A2"],
+example_data_and_designs$percap <-
+  calc_deriv(y = example_data_and_designs$Measurements,
+             x = example_data_and_designs$Time,
+             percapita = TRUE, blank = 0,
+             subset_by = example_data_and_designs$Well)
+             
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$percap[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "Abs")
 ```
 

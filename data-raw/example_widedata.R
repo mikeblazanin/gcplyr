@@ -198,8 +198,8 @@ for (i in 1:96) {
   
   #Add noise
   out$OD_noised <- out$OD + 
-    runif(n = nrow(out), min = 0, max = 0.02) +
-    sample(x = c(0, 1), nrow(out), replace = TRUE, prob = c(0.95, 0.05)) *
+    runif(n = nrow(out), min = 0, max = 0.002) +
+    sample(x = c(0, 1), nrow(out), replace = TRUE, prob = c(0.9, 0.1)) *
     rexp(n = nrow(out), rate = 40)
   
   #plot(out$time, log10(out$OD))
@@ -219,6 +219,15 @@ if(F) {
     guides(color = "none", lty = "none") +
     facet_wrap(~Bacteria_strain) +
     #scale_y_continuous(trans = "log10") +
+    NULL
+  dev.off()
+  
+  png("example_wide_log.png", width = 10, height = 10, units = "in", res = 150)
+  ggplot(ex_lng, aes(x = Time, y = Measurements, color = Bacteria_strain)) +
+    geom_line(aes(lty = Phage)) +
+    guides(color = "none", lty = "none") +
+    facet_wrap(~Bacteria_strain) +
+    scale_y_continuous(trans = "log10") +
     NULL
   dev.off()
 }

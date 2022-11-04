@@ -36,6 +36,18 @@ test_that("Moving average returns correctly", {
   expect_equal(moving_average(formula = dens ~ time,
                                   data = data, window_width = 5),
                    expected = manual_expect_win5)
+  
+  #Now test with NA's and out-of-order data
+  data2 <- data.frame(x = c(6:9,NA, 1:5), 
+                      y = c(NA, c(7:9)**2, 50, c(1:5)**2))
+  
+  expect_equal(moving_average(y ~ x, data2, window_width_n = 3),
+               expected = c(NA, (25+49+64)/3, (49+64+81)/3,
+                            NA, NA, NA, (1+4+9)/3,
+                            (4+9+16)/3, (9+16+25)/3, NA))
+  
+  
+  
 })
 
 test_that("smooth_data returns properly for moving-average", {

@@ -274,14 +274,14 @@ rm_nas <- function(x, y = NULL, na.rm, stopifNA = FALSE) {
         stop("x and y for NA removal are not the same length")
       }
       if(any(is.na(x), is.na(y))) {
-        out["nas_indices_removed"] <- which(is.na(x) | is.na(y))
-        out["x"] <- x[-nas_removed_indices]
-        out["y"] <- y[-nas_removed_indices]
+        out[["nas_indices_removed"]] <- which(is.na(x) | is.na(y))
+        out[["x"]] <- x[-out[["nas_indices_removed"]]]
+        out[["y"]] <- y[-out[["nas_indices_removed"]]]
       }
     } else { #y is null, just remove from x
       if(any(is.na(x))) {
-        out["nas_indices_removed"] <- which(is.na(x))
-        out["x"] <- x[-nas_removed_indices]
+        out[["nas_indices_removed"]] <- which(is.na(x))
+        out[["x"]] <- x[-out[["nas_indices_removed"]]]
       }
     }
   } else { #don't remove NA's
@@ -312,7 +312,7 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
     }
     
     return_indices <- 1:length(x)
-    for (index in nas_removed_indices) {
+    for (index in nas_indices_removed) {
       return_indices[return_indices >= index] <-
         return_indices[return_indices >= index] + 1
     }

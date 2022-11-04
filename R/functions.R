@@ -331,6 +331,31 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
   } else {return(list(x = x, y = y))}
 }
 
+#' A function that reorders x and y based on x
+#' 
+#' @param x Vector to reorder based on
+#' @param y Vector to reorder based on x
+#' @return A list containing: the reordered x
+#' 
+#'                            the reordered y
+#'                            
+#'                            the original order, such that 
+#'                            return[["x"]][return[["order"]]] == x and
+#'                            return[["y"]][return[["order"]]] == y
+#' 
+reorder <- function(x = NULL, y) {
+  if(!is.null(x)) {
+    #Save orig order info so we can put things back at the end
+    start_order <- order(x)
+    #Reorder
+    y <- y[start_order]
+    x <- x[start_order]
+  } else {start_order <- 1:length(sub_y)}
+  
+  return(list(x = x, y = y, order = start_order))
+}
+
+
 
 # Read files ----
 

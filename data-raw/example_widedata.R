@@ -14,15 +14,28 @@ library(gcplyr)
 #Define function that returns derivative for simulating pop densities
 derivs <- function(t, y, parms) {
   #dS/dt = u_S * S * a(t) * (1 - ((S+R)/k)^v) - a_S * S * P
+  
+  #S2 is the diauxic-shifted S population growing on the implicit 2nd resource
+  # which increases from transitions from S and growth on 2nd res
+  #dS2/dt = S * x * ((S+R)/k)^v2 
+  #         + u_S2 * S2 * (1 - ((S2 + R2)/k2)) 
+  #         - a_S * S2 * P
+  
   #dR/dt = u_R * R * a(t) * (1 - ((S+R)/k)^v)
+  
+  #R2 is the diauxic-shifted R population growing on the implicit 2nd resource
+  # which increases from transitions from R and growth on 2nd res
+  #dR2/dt = R * x * ((S+R)/k)^v2 
+  #         + u_R2 * R2 * (1 - ((S2 + R2)/k2))
+  
   #dP/dt = b * a_S * S * P
   
   #Note: a(t) = q0/(q0 + e^(-m*t))
   
-  #parms: u_S, u_R, k, a_S, b, q0, m, v
-  #y: S, R, P
+  #parms: u_S, u_R, k, a_S, b, q0, m, v, u_S2, u_R2, k2, x, v2
+  #y: S, R, P, S2, R2
   
-  dY <- c(S = 0, R = 0, P = 0)
+  dY <- c(S = 0, R = 0, P = 0, S2 = 0, R2 = 0)
   
   #For relationship between q0 and a at t0 see:
   # qvals <- seq(from = 0.1, to = 10, by = 0.1)
@@ -44,6 +57,15 @@ derivs <- function(t, y, parms) {
   
   dY["P"] <- parms["b"] * parms["a_S"] * y["S"] * y["P"]
   
+  dY["S2"] <- 
+    y["S"] * parms["x"] * ((y["S"] + y["R"])/parms["k"])**parms["v2"] +
+    parms["u_S2"] * y["S2"] * (1 - ((y["S2"] + y["R2"])/parms["k2"])) -
+    parms["a_S"] * y["S2"] * y["P"]
+  
+  dY["R2"] <- 
+    y["R"] * parms["x"] * ((y["S"] + y["R"])/parms["k"])**parms["v2"] +
+    parms["u_R2"] * y["R2"] * (1 - ((y["S2"] + y["R2"])/parms["k2"]))
+  
   return(list(dY))
 }
 
@@ -51,18 +73,22 @@ derivs <- function(t, y, parms) {
 
 #Rates in ~/minute, densities in ~/mL
 params <- c(u_S = 0.03, u_R = 0.02, k = 10**9, a_S = 5*10**-11, b = 20,
-            q0 = 0.1, m = 0.02, v = .5)
+            q0 = 0.1, m = 0.02, v = .5,
+            u_S2 = 0.006, u_R2 = 0.004, k2 = 0.15*10**9, x = 0.0001, v2 = 50)
 
-Y_init <- c(S = 10**6, R = 1, P = 10)
+Y_init <- c(S = 10**6, R = 1, P = 0, S2 = 0, R2 = 0)
 
 times <- seq(from = 0, to = 24*60, by = 15)
 
 out <- as.data.frame(ode(y = Y_init, times = times, func = derivs, parms = params))
-out$B <- out$S + out$R
+out$B <- out$S + out$R + out$S2 + out$R2
 
 out_tdy <- tidyr::pivot_longer(out, cols = -time,
                                names_to = "pop", values_to = "dens")
 out_tdy$dens[out_tdy$dens <= 1] <- 1
+out_tdy$deriv <- gcplyr::calc_deriv(y = out_tdy$dens,
+                                    x = out_tdy$time,
+                                    subset_by = out_tdy$pop)
 out_tdy$percap <- gcplyr::calc_deriv(y = out_tdy$dens,
                                      x = out_tdy$time,
                                      subset_by = out_tdy$pop,
@@ -71,15 +97,25 @@ out_tdy$percap <- gcplyr::calc_deriv(y = out_tdy$dens,
 ggplot(data = out_tdy,
        aes(x = time/60, y = dens, color = pop)) +
   geom_line() +
-  scale_y_continuous(trans = "log10")
+  scale_y_continuous(trans = "log10") +
+  NULL
 
 ggplot(data = out_tdy[out_tdy$pop == "B", ],
        aes(x = time/60, y = dens, color = pop)) +
   geom_line() +
-  scale_y_continuous(trans = "log10")
+  #scale_y_continuous(trans = "log10") +
+  NULL
 
 ggplot(data = out_tdy,
        aes(x = time/60, y = percap, color = pop)) +
+  geom_line()
+
+ggplot(data = out_tdy[out_tdy$pop == "B", ],
+       aes(x = time/60, y = percap, color = pop)) +
+  geom_line()
+
+ggplot(data = out_tdy,
+       aes(x = time/60, y = deriv, color = pop)) +
   geom_line()
 
 #Generate entire plate of simulated data
@@ -95,14 +131,19 @@ example_widedata$Time <- seq(from = 0, to = 24*60*60,
 
 #Generate vectors of bacterial growth parameters
 set.seed(123)
-uS_vector <- rep(runif(48, min = 0.02, 0.04), 2)
-uR_vector <- uS_vector * 0.6
+uS_vector <- rep(runif(48, min = 0.01, 0.05), 2)
+uR_vector <- uS_vector * 0.66
 k_vector <- rep(10**9, 96)
 q0_vector <- rep(0.1, 96)
 m_vector <- rep(0.02, 96)
 v_vector <- rep(.5, 96)
+uS2_vector <- uS_vector/5
+uR2_vector <- uR_vector/5
+k2_vector <- 0.15*k_vector
+x_vector <- rep(0.0001, 96)
+v2_vector <- rep(50, 96)
 #Generate vectors of parameters for viral growth
-aS_vector <- c(rep(0, 48), runif(48, 0.9, 1.1)*5*10**-11)
+aS_vector <- c(rep(0, 48), runif(48, 0.1, 1)*5*10**-11)
 b_vector <- c(rep(0, 48), rep(20, 48))
 #Generate vectors of initial densities
 Sdens_init_vector <- rep(10**6, 96)
@@ -138,15 +179,19 @@ for (i in 1:96) {
   #Set up parameters
   params <- c(u_S = uS_vector[i], u_R = uR_vector[i], 
               k = k_vector[i], a_S = aS_vector[i], b = b_vector[i],
-              q0 = q0_vector[i], m = m_vector[i], v = v_vector[i])
+              q0 = q0_vector[i], m = m_vector[i], v = v_vector[i],
+              u_S2 = uS2_vector[i], u_R2 = uR2_vector[i], k2 = k2_vector[i],
+              x = x_vector[i], v2 = v2_vector[i])
+  
   Y_init <- c(S = Sdens_init_vector[i], 
               R = Rdens_init_vector[i], 
-              P = Pdens_init_vector[i])
+              P = Pdens_init_vector[i],
+              S2 = 0, R2 = 0)
   times <- seq(from = 0, to = 24*60, by = 15)
   
   #Run simulation
   out <- as.data.frame(ode(y = Y_init, times = times, func = derivs, parms = params))
-  out$B <- out$S + out$R
+  out$B <- out$S + out$R + out$S2 + out$R2
   
   #Convert to OD
   out$OD <- round(out$B/10**9, 3)

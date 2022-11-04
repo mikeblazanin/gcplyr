@@ -249,6 +249,88 @@ canbe.numeric <- function(x) {
   }
 }
 
+#' A function that removes na's values from a vector or pair of vectors
+#' 
+#' Any values of x and y will be removed for indices where x or y are NA
+#' 
+#' @param x Vector to remove NA's from
+#' @param y Optional second vector to remove NA's from
+#' @param na.rm Boolean, should NA's be removed
+#' @param stopifNA Boolean, should an error be passed if na.rm = FALSE
+#'                 and there are NA's in x or y?
+#' @return A list containing: x with NA's removed
+#' 
+#'                            y with NA's removed
+#'                          
+#'                            vector of indices where NA's were removed
+#'                            (NULL when none were removed)
+#' 
+rm_nas <- function(x, y = NULL, na.rm, stopifNA = FALSE) {
+  out <- list("x" = x, "y" = y, "nas_indices_removed" = NULL)
+  
+  if(na.rm == TRUE) {
+    if(!is.null(y)) { #remove from both x and y
+      if (length(x) != length(y)) {
+        stop("x and y for NA removal are not the same length")
+      }
+      if(any(is.na(x), is.na(y))) {
+        out["nas_indices_removed"] <- which(is.na(x) | is.na(y))
+        out["x"] <- x[-nas_removed_indices]
+        out["y"] <- y[-nas_removed_indices]
+      }
+    } else { #y is null, just remove from x
+      if(any(is.na(x))) {
+        out["nas_indices_removed"] <- which(is.na(x))
+        out["x"] <- x[-nas_removed_indices]
+      }
+    }
+  } else { #don't remove NA's
+    if(stopifNA == TRUE & (any(is.na(x)) | !is.null(y) & any(is.na(y)))) {
+      stop("Some values are NA but na.rm = FALSE")
+    }
+  }
+  return(out)
+}
+
+#' A function that adds NA values to a vector or pair of vectors
+#' 
+#' NA's will be added to x and y at indices specified where they had 
+#' been previously removed
+#' 
+#' @param x Vector to add NA's to
+#' @param y Optional second vector to add NA's to
+#' @param nas_indices_removed Indices where NA's had previously been removed
+#'                            (AKA indices where NA's will be in the
+#'                            *output* vector)
+#' @return A list containing: x with NA's added
+#' 
+#'                            y with NA's added
+add_nas <- function(x, y = NULL, nas_indices_removed) {
+  if(!is.null(nas_indices_removed)) {
+    if(!is.null(y) & length(x) != length(y)) {
+      stop("x and y for NA addition are not the same length")
+    }
+    
+    return_indices <- 1:length(x)
+    for (index in nas_removed_indices) {
+      return_indices[return_indices >= index] <-
+        return_indices[return_indices >= index] + 1
+    }
+    
+    out <- list("x" = rep(NA, length(x) + length(nas_indices_removed)),
+                "y" = NULL)
+    out[["x"]][return_indices] <- x
+    
+    if(!is.null(y)) {
+      out[["y"]] <- rep(NA, length(x) + length(nas_indices_removed))
+      out[["y"]][return_indices] <- y
+    }
+    
+    return(out)
+    
+  } else {return(list(x = x, y = y))}
+}
+
 
 # Read files ----
 
@@ -2529,6 +2611,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @export
 smooth_data <- function(x = NULL, y, method, subset_by = NULL,
                         return_fitobject = FALSE, ...) {
+  browser()
   if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("method must be one of: moving-average, moving-median, gam, or loess")
   }

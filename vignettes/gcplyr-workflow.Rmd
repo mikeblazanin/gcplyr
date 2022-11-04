@@ -1061,8 +1061,10 @@ And now we can see that we've gotten nice numeric `Time` values! So we can proce
 ## Pre-processing: smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
 
+Let's take a look at one well from our example data, which is already a little noisy.
+
 ```{r}
-#What does our (noisy) data look like?
+#What does one well of our (noisy) data look like?
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
@@ -1075,28 +1077,10 @@ plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   log10(
     example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"]),
-  xlab = "time", ylab = "Abs")
+  xlab = "time", ylab = "log10(Abs)")
 ```
 
-at the growth rate of the bacteria (yes, yes, I know we haven't covered calculating derivatives yet, so just take my word that's what we're plotting here).
-
-
-
-
-```{r}
-example_data_and_designs$percap <-
-  calc_deriv(y = example_data_and_designs$Measurements,
-             x = example_data_and_designs$Time,
-             percapita = TRUE, blank = 0,
-             subset_by = example_data_and_designs$Well)
-             
-plot(
-  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
-  example_data_and_designs$percap[example_data_and_designs$Well == "A1"],
-  xlab = "time", ylab = "Growth rate (per-capita derivative)")
-```
-
-Oh. That looks really noisy! If we're going to try to find the maximum growth rate from these data, we're going to need to smooth it first. In fact, this is a common occurrence: at low densities, random noise tends to have a much larger effect than at high densities.
+Oh. That looks a lot more noisy! In fact, this is a common occurrence: **at low densities, random noise tends to have a much larger effect** than at high densities. If we're going to be analyzing this data for something like maximum growth rate, we'll need our early density values to fairly smooth.
 
 So, how can we smooth our data? Well, `smooth_data` has four different smoothing algorithms to choose from: moving average, moving median, loess, and gam. 
 
@@ -1105,17 +1089,19 @@ So, how can we smooth our data? Well, `smooth_data` has four different smoothing
 * loess is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
 * gam is also a spline-fitting approach, but uses additive curves that have less smoothly changing derivatives, but tends to better avoid the creation of curvature artifacts
 
-**Additionally, all four smoothing algorithms require a tuning parameter** that controls how "smoothed" the data are.
+**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are.
 
-* For `moving-average` and `moving-median`, this is the `window_width_n` parameter, which controls how wide the moving windows used to calculate the median and average is.
-* For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. 
-* For `gam`, see `mgcv::gam` for details, where tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument, and altered tuning parameters (e.g. `k`, `sp`, `bs`) would be included in `formula`.
+* For `moving-average` and `moving-median`, this is the `window_width_n` parameter, which controls how wide the moving windows used to calculate the median and average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed".
+* For `loess`, this is primarily determined by the `span` argument, which can be passed to `smooth_data` via the `...` argument. Specifying the `span` is best practice, and larger values will be more "smoothed".
+* For `gam`, see `mgcv::gam` for details, where changing from the default tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument, and altered tuning parameters (e.g. `k`, `sp`, `bs`) would be included in `formula`.
+
+For all of these smoothing methods, **you should visualize smoothing results with different values of the tuning parameter**, then choose the value that gives you the least smoothing necessary.
 
 Smoothing data is a step that alters the values you will analyze. Because of that, and because there are so many options for how to smooth your data, it is a step that can be rife with pitfalls. We recommend starting with the simplest and least "smoothed" smoothing, plotting your results, and only increasing your smoothing as much as is needed to enable downstream analyses. Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than treating the smoothed data as your source.
 
 To use `smooth_data`, pass your x and y values, your method of choice, and any additional arguments needed for the method. It will return a vector of your smoothed y values.
 
-Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y whose unique values denote the subset groups. (Note: if you're using an approach like `dplyr::mutate`, `smooth_data` will work within `mutate` on your groups with no need for the `subset_by` argument)
+Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y whose unique values denote the subset groups. (Note: if you're using `smooth_data` within `dplyr::mutate`on a grouped `data.frame`, there's no need for the `subset_by` argument)
 
 ### Smoothing with moving-average
 
@@ -1128,42 +1114,25 @@ example_data_and_designs$smoothed <-
               window_width_n = 5)
 
 #What does the smoothed data look like compared to the noisy original?
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A1"],
-     example_data_and_designs$Measurements[
-       example_data_and_designs$Well == "A1"],
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "Abs")
-lines(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A1"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A1"])
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"])
 
-#On a log scale
+#What does the smoothing look like on log axes?
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   log10(
     example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"]),
-  xlab = "time", ylab = "Abs")
-lines(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A1"],
-     log10(example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A1"]))
-```
-
-What about our derivative plot?
-
-```{r}
-example_data_and_designs$percap <-
-  calc_deriv(y = example_data_and_designs$smoothed,
-             x = example_data_and_designs$Time,
-             percapita = TRUE, blank = 0,
-             subset_by = example_data_and_designs$Well)
-             
-plot(
+  xlab = "time", ylab = "log10(Abs)")
+lines(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
-  example_data_and_designs$percap[example_data_and_designs$Well == "A1"],
-  xlab = "time", ylab = "Growth rate (per-capita derivative)")
+  log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
 ```
+We can see that moving-average has helped reduce the effects of noise somewhat, but it's still fairly noisy. We could try using a wider `window_width_n`, we could try other smoothing methods, or we could try combining two smoothing methods.
 
 ### Smoothing with moving-median
 
@@ -1175,40 +1144,27 @@ example_data_and_designs$smoothed <-
               subset_by = example_data_and_designs$Well,
               window_width_n = 3)
 
-example_data_and_designs$smoothed <-
-  smooth_data(x = example_data_and_designs$Time,
-              y = example_data_and_designs$smoothed,
-              method = "moving-average",
-              subset_by = example_data_and_designs$Well,
-              window_width_n = 3)
-
 #What does the smoothed data look like compared to the noisy original?
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A1"],
-     log10(example_data_and_designs$Measurements[
-       example_data_and_designs$Well == "A1"]),
-  xlab = "time", ylab = "Abs")
-lines(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A1"],
-     log10(example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A1"]))
-```
-
-
-What about our derivative plot?
-
-```{r}
-example_data_and_designs$percap <-
-  calc_deriv(y = example_data_and_designs$smoothed,
-             x = example_data_and_designs$Time,
-             percapita = TRUE, blank = 0,
-             subset_by = example_data_and_designs$Well)
-             
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
-  example_data_and_designs$percap[example_data_and_designs$Well == "A1"],
-  xlab = "time", ylab = "Growth rate (per-capita derivative)")
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "Abs")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"])
+
+#What does the smoothing look like on log axes?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(
+    example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"]),
+  xlab = "time", ylab = "log10(Abs)")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
 ```
+
+We can see that moving-median has really excluded those major outliers, but the smoothed density (line) is still jumping around a lot. **This is common with moving-median**, so often you may need to try other smoothing methods or combining two smoothing methods.
 
 ### Smoothing with LOESS
 
@@ -1217,19 +1173,30 @@ example_data_and_designs$smoothed <-
   smooth_data(x = example_data_and_designs$Time,
               y = example_data_and_designs$Measurements,
               method = "loess",
-              subset_by = example_data_and_designs$Well)
+              subset_by = example_data_and_designs$Well,
+              span = .2)
 
 #What does the smoothed data look like compared to the noisy original?
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$Measurements[
-       example_data_and_designs$Well == "A2"],
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "Abs")
-lines(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A2"])
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"])
+
+#What does the smoothing look like on log axes?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(
+    example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"]),
+  xlab = "time", ylab = "log10(Abs)")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
 ```
+
+We can see that loess has smoothed the data substantially, but those major outliers are still having an effect. You may need to try other smoothing methods or combining two smoothing methods.
 
 ### Smoothing with GAM
 
@@ -1241,16 +1208,65 @@ example_data_and_designs$smoothed <-
               subset_by = example_data_and_designs$Well)
 
 #What does the smoothed data look like compared to the noisy original?
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$Measurements[
-       example_data_and_designs$Well == "A2"],
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "Abs")
-lines(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$smoothed[
-       example_data_and_designs$Well == "A2"])
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"])
+
+#What does the smoothing look like on log axes?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(
+    example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"]),
+  xlab = "time", ylab = "log10(Abs)")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
 ```
+
+We can see that gam has smoothed the data but also introduced substantial biases. In this case you'd likely want to explore combining gam with other smoothing methods, or adjusting the tuning parameters.
+
+### Combining multiple smoothing methods
+
+Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `moving-average`, `loess`, and `gam` work well at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using `moving-median` and `loess`:
+
+```{r}
+example_data_and_designs$smoothed <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "moving-median",
+              subset_by = example_data_and_designs$Well,
+              window_width_n = 3)
+example_data_and_designs$smoothed2 <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$smoothed,
+              method = "loess",
+              subset_by = example_data_and_designs$Well,
+              span = 0.1)
+
+#What does the smoothed data look like compared to the noisy original?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "Abs")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed2[example_data_and_designs$Well == "A1"])
+
+#What does the smoothing look like on log axes?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(
+    example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"]),
+  xlab = "time", ylab = "log10(Abs)")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(example_data_and_designs$smoothed2[example_data_and_designs$Well == "A1"]))
+```
+
 
 # Processing data: calculating derivatives {#Processing}
 

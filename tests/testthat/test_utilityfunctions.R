@@ -47,3 +47,22 @@ test_that("canbe_numeric works as expected", {
   
   expect_error(canbe.numeric(list("a" = 5, "x" = c(6, 7))))
 })
+
+
+test_that("rm_nas returns correctly", {
+  expect_equal(rm_nas(x = c(5, 6, NA, 7), na.rm = TRUE), 
+               list(x = c(5, 6, 7), y = NULL, nas_indices_removed = 3))
+  expect_equal(rm_nas(x = c(5, 6, NA, 7), y = c(5, NA, 6, 7), na.rm = TRUE), 
+               list(x = c(5, 7), y = c(5, 7), nas_indices_removed = c(2, 3)))
+  expect_equal(rm_nas(x = c(5, 6, 7, 8), y = c(5, NA, 6, 7), na.rm = TRUE), 
+               list(x = c(5, 7, 8), y = c(5, 6, 7), nas_indices_removed = 2))
+  expect_equal(rm_nas(x = c(5, 6, 7, NA), y = c(5, 6, 7, 8), na.rm = TRUE), 
+               list(x = c(5, 6, 7), y = c(5, 6, 7), nas_indices_removed = 4))
+})
+
+test_that("add_nas returns correctly", {
+  expect_equal(add_nas(x = c(5, 6, 7, 8), nas_indices_removed = 3), 
+               list(x = c(5, 6, NA, 7, 8), y = NULL))
+  expect_equal(add_nas(x = c(5, 6, 7, 8), y = 1:4, nas_indices_removed = 3), 
+               list(x = c(5, 6, NA, 7, 8), y = c(1, 2, NA, 3, 4)))
+})

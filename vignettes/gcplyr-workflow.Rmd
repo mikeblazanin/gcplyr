@@ -1082,14 +1082,14 @@ plot(
 
 Oh. That looks a lot more noisy! In fact, this is a common occurrence: **at low densities, random noise tends to have a much larger effect** than at high densities. Unfortunately, steps like calculating maximum growth rate can be very sensitive to such noise, so we're going to need to smooth our data to prevent that from being a problem.
 
-So, how can we smooth our data? Well, `smooth_data` has four different smoothing algorithms to choose from: moving average, moving median, loess, and gam. 
+So, how can we smooth our data? Well, `smooth_data` has four different smoothing algorithms to choose from: `moving-average`, `moving-median`, `loess`, and `gam`. 
 
-* Moving average is a simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
-* Moving median is another simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
-* loess is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
-* gam is also a spline-fitting approach that tends to better avoid the creation of curvature artifacts
+* `moving-average` is a simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
+* `moving-median` is another simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
+* `loess` is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
+* `gam` is also a spline-fitting approach that tends to better avoid the creation of curvature artifacts and is often recommended over loess, although you should evaluate its efficacy for your own data
 
-**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should test smoothing with with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise.
+**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should test smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise.
 
 Smoothing data is a step that alters the values you will analyze. Because of that, and because there are so many options for how to smooth your data, it is a step that can be rife with pitfalls. We recommend starting with the simplest and least "smoothed" smoothing, plotting your results, and only increasing your smoothing as much as is needed to enable downstream analyses. Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than treating the smoothed data as your source.
 
@@ -1303,24 +1303,46 @@ Here we can see that `loess` with smaller spans (darker lines) have smoothed the
 
 ### Smoothing with GAM
 
-* For `gam`, see `mgcv::gam` for details, where changing from the default tuning would require passing `formula` and `data` to `smooth_data` via the `...` argument, and altered tuning parameters (e.g. `k`, `sp`, `bs`) would be included in `formula`.
-
+For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"** (note this is opposite the trend with other smoothing methods). Typically `k` must not be larger than the number of data points. Here, we'll show `gam` smoothing with `k` values of 5, 10, and 20.
 
 ```{r}
-example_data_and_designs$smoothed <-
+example_data_and_designs$smoothed20 <-
   smooth_data(x = example_data_and_designs$Time,
               y = example_data_and_designs$Measurements,
               method = "gam",
-              subset_by = example_data_and_designs$Well)
+              subset_by = example_data_and_designs$Well,
+              k = 20)
+example_data_and_designs$smoothed10 <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "gam",
+              subset_by = example_data_and_designs$Well,
+              k = 10)
+example_data_and_designs$smoothed5 <-
+  smooth_data(x = example_data_and_designs$Time,
+              y = example_data_and_designs$Measurements,
+              method = "gam",
+              subset_by = example_data_and_designs$Well,
+              k = 5)
 
 #What does the smoothed data look like compared to the noisy original?
+#Darker lines are wider window_width_n's and more "smoothed"
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "Abs")
 lines(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
-  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"])
+  example_data_and_designs$smoothed20[example_data_and_designs$Well == "A1"],
+  col = "gray20")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed10[example_data_and_designs$Well == "A1"],
+  col = "gray45")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed5[example_data_and_designs$Well == "A1"],
+  col = "gray65")
 
 #What does the smoothing look like on log axes?
 plot(
@@ -1330,14 +1352,26 @@ plot(
   xlab = "time", ylab = "log10(Abs)")
 lines(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
-  log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
+  log10(
+    example_data_and_designs$smoothed20[example_data_and_designs$Well == "A1"]),
+  col = "gray20")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(
+    example_data_and_designs$smoothed10[example_data_and_designs$Well == "A1"]),
+  col = "gray45")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  log10(
+    example_data_and_designs$smoothed5[example_data_and_designs$Well == "A1"]),
+  col = "gray65")
 ```
 
-We can see that gam has smoothed the data but also introduced substantial biases. In this case you'd likely want to explore combining gam with other smoothing methods, or adjusting the tuning parameters.
+Here we can see that `gam` with higher `k` (darkest line) have smoothed the data but are still sensitive to those early outliers. However, `gam` with lower `k` values (lighter lines) have introduced significant bias, with the smallest `k` (lightest line) overestimating early data and adding fluctuations to later data points. To fix this, we might explore other smoothing methods or combining `gam` with other smoothing methods.
 
 ### Combining multiple smoothing methods
 
-Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `moving-average`, `loess`, and `gam` work well at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using `moving-median` and `loess`:
+Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `loess`, and `gam` work well at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using `moving-median` and `gam`:
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -1351,9 +1385,9 @@ example_data_and_designs$smoothed <-
 example_data_and_designs$smoothed <-
   smooth_data(x = example_data_and_designs$Time,
               y = example_data_and_designs$smoothed,
-              method = "loess",
+              method = "gam",
               subset_by = example_data_and_designs$Well,
-              span = 0.1, degree = 1)
+              k = 20)
 
 #What does the smoothed data look like compared to the noisy original?
 plot(
@@ -1374,6 +1408,8 @@ lines(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
 ```
+
+Here we can see that the combination of minimal `moving-median` and minimal `gam` smoothing has produced a curve that is likely to be very easily analyzed with minimal introduction of bias.
 
 # Processing data: calculating derivatives {#Processing}
 

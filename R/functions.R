@@ -2734,6 +2734,8 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
 #' @param data Dataframe containing variables in \code{formula}
 #' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
+#' @param na.rm Boolean whether NA's should be removed before analyzing
+#' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
@@ -2753,16 +2755,12 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  #Make temp vectors of x and y
-  x <- data[, predictor_var]
-  y <- data[, response_var]
-  
   #Check x for being correct format
-  if(!is.numeric(x)) {
-    if (!canbe.numeric(x)) {
+  if(!is.numeric(data[, predictor_var])) {
+    if (!canbe.numeric(data[, predictor_var])) {
       warning(paste("data is being sorted by order(", predictor_var,
                     "), but ", predictor_var, " is not numeric\n", sep = ""))
-    } else {x <- as.numeric(x)} #it can be coerced
+    } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
   }
   
   #Check y for being the correct format
@@ -2775,20 +2773,22 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
   }
   
   #remove nas
-  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
-  x <- narm_temp[["x"]]
-  y <- narm_temp[["y"]]
+  narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
+                      na.rm = na.rm, stopifNA = TRUE)
   
   #Reorder data
-  order_temp <- reorder(x = x, y = y)
-  y <- order_temp[["y"]]
-  x <- order_temp[["x"]]
+  order_temp <- reorder(x = narm_temp[["x"]], y = narm_temp[["y"]])
   
-  #Check that there is sufficient data
+  #Make temp vectors of x and y
+  x <- order_temp[["x"]]
+  y <- order_temp[["y"]]
+  
+    #Check that there is sufficient data
   if(length(x) < window_width_n) {
     results <- rep(NA, nrow(data))
     warning("not enough data given window_width_n, returning NA's\n")
-  } else { #there is sufficient data so calculate moving average
+  } else { 
+    #there is sufficient data so calculate moving average
     window_radius <- (window_width_n - 1)/2
     results <- c(rep(NA, window_radius),
                  rep(0, (nrow(data)-2*window_radius)),
@@ -2807,7 +2807,6 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
   
   #Put back in original order
   results <- results[order(order_temp[["order"]])]
-  
   #Add NA's
   results <- add_nas(x = results, 
                      nas_indices_removed = narm_temp[["nas_indices_removed"]])[["x"]]
@@ -2824,10 +2823,12 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
 #' @param data Dataframe containing variables in \code{formula}
 #' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
+#' @param na.rm Boolean whether NA's should be removed before analyzing
+#' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_median <- function(formula, data, window_width_n) {
+moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
   #Check window width
   if(window_width_n %% 2 == 0) {stop("window_width_n must be an odd number")}
   
@@ -2843,16 +2844,12 @@ moving_median <- function(formula, data, window_width_n) {
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  #Make temp vectors of x and y
-  x <- data[, predictor_var]
-  y <- data[, response_var]
-  
   #Check x for being correct format
-  if(!is.numeric(x)) {
-    if (!canbe.numeric(x)) {
+  if(!is.numeric(data[, predictor_var])) {
+    if (!canbe.numeric(data[, predictor_var])) {
       warning(paste("data is being sorted by order(", predictor_var,
                     "), but ", predictor_var, " is not numeric\n", sep = ""))
-    } else {x <- as.numeric(x)} #it can be coerced
+    } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
   }
   
   #Check y for being the correct format
@@ -2865,20 +2862,21 @@ moving_median <- function(formula, data, window_width_n) {
   }
   
   #remove nas
-  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
-  x <- narm_temp[["x"]]
-  y <- narm_temp[["y"]]
-  
+  narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
+                      na.rm = na.rm, stopifNA = TRUE)  
   #Reorder data
-  order_temp <- reorder(x = x, y = y)
-  y <- order_temp[["y"]]
-  x <- order_temp[["x"]]
+  order_temp <- reorder(x = narm_temp[["x"]], y = narm_temp[["y"]])
   
-  #Check that there is sufficient data
+  #Make temp vectors of x and y
+  x <- order_temp[["x"]]
+  y <- order_temp[["y"]]
+  
+    #Check that there is sufficient data
   if(length(x) < window_width_n) {
     results <- rep(NA, nrow(data))
     warning("not enough data given window_width_n, returning NA's\n")
-  } else { #there is sufficient data so calculate moving median
+  } else { 
+    #there is sufficient data so calculate moving median
     window_radius <- (window_width_n - 1)/2
     results <- c(rep(NA, window_radius),
                  rep(0, (nrow(data)-2*window_radius)),
@@ -2888,6 +2886,13 @@ moving_median <- function(formula, data, window_width_n) {
       results[i] <- stats::median(y[(i - window_radius):(i + window_radius)])
     }
   }
+  
+  #Put back in original order
+  results <- results[order(order_temp[["order"]])]
+  #Add NA's
+  results <- 
+    add_nas(x = results, 
+            nas_indices_removed = narm_temp[["nas_indices_removed"]])[["x"]]
   
   return(results)
 }

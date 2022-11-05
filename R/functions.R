@@ -2677,44 +2677,49 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
     if (method == "moving-average") {
       temp <- 
         list(
-        moving_average(formula = formula, 
-                       data = data[subset_by == unique(subset_by)[i], ],
-                       ...))
+          moving_average(formula = formula, 
+                         data = data[subset_by == unique(subset_by)[i], ],
+                         ...))
       names(temp) <- "fitted"
     } else if (method == "moving-median") {
       temp <-
         list(
           moving_median(formula = formula,
-                       data = data[subset_by == unique(subset_by)[i], ],
-                       ...))
+                        data = data[subset_by == unique(subset_by)[i], ],
+                        ...))
       names(temp) <- "fitted"
-    } else {
-      if (method == "loess") {
-        temp <- 
-          stats::loess(formula = formula, 
-                       data = data[subset_by == unique(subset_by)[i], ], 
-                       ...)
-      } else if (method == "gam") {
-        temp <- 
-          mgcv::gam(formula = formula, 
-                    data = data[subset_by == unique(subset_by)[i], ], 
-                    ...)
+    } else if (method == "loess") {
+      temp <- 
+        stats::loess(formula = formula, 
+                     data = data[subset_by == unique(subset_by)[i], ],
+                     na.action = "na.exclude", ...)
+    } else if (method == "gam") {
+      temp <- 
+        mgcv::gam(formula = formula, 
+                  data = data[subset_by == unique(subset_by)[i], ],
+                  na.action = "na.exclude", ...)
+    }
+    
+    #Store results as requested
+    if (return_fitobject) {
+      if (method == "gam") {
         #Rename fitted.values to fitted
         names(temp)[match("fitted.values", names(temp))] <- "fitted"
       }
       #Reorder elements to have 'fitted' be first, then 'residuals'
       temp <- 
         temp[c("fitted", "residuals", 
-                    names(temp)[which(!names(temp) %in% 
-                                             c("fitted", "residuals"))])]
-    }
-    
-    #Store results as requested
-    if (return_fitobject) {
+               names(temp)[which(!names(temp) %in% 
+                                   c("fitted", "residuals"))])]
       fits_list[[i]] <- temp
     } else {
       #Fill in output if needed
-      out[subset_by == unique(subset_by)[i]] <- temp[["fitted"]]
+      if(method %in% c("gam", "loess")) {
+        out[subset_by == unique(subset_by)[i]] <-
+          predict(temp, newdata = data[subset_by == unique(subset_by)[i], ])
+      } else {
+        out[subset_by == unique(subset_by)[i]] <- temp[["fitted"]]
+      }
     }
   }
   

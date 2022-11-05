@@ -37,17 +37,20 @@ test_that("Moving average returns correctly", {
                                   data = data, window_width = 5),
                    expected = manual_expect_win5)
   
-  #Now test with NA's and out-of-order data
-  data2 <- data.frame(x = c(6:9,NA, 1:5), 
-                      y = c(NA, c(7:9)**2, 50, c(1:5)**2))
-  
+  #Now test with out-of-order data
+  data2 <- data.frame(x = c(6:9, 1:5), y = c(6:9, 1:5)**2)
   expect_equal(moving_average(y ~ x, data2, window_width_n = 3),
+               expected = c((25+36+49)/3, (36+49+64)/3, (49+64+81)/3,
+                            NA, NA, (1+4+9)/3, (4+9+16)/3, (9+16+25)/3,
+                            (16+25+36)/3))
+  
+  #Now test with NA's and out-of-order data
+  data3 <- data.frame(x = c(6:9,NA, 1:5), 
+                      y = c(NA, c(7:9)**2, 50, c(1:5)**2))
+  expect_equal(moving_average(y ~ x, data3, window_width_n = 3),
                expected = c(NA, (25+49+64)/3, (49+64+81)/3,
                             NA, NA, NA, (1+4+9)/3,
-                            (4+9+16)/3, (9+16+25)/3, NA))
-  
-  
-  
+                            (4+9+16)/3, (9+16+25)/3, (16+25+49)/3))
 })
 
 test_that("smooth_data returns properly for moving-average", {

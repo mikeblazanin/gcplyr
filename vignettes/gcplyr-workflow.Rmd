@@ -1089,7 +1089,7 @@ So, how can we smooth our data? Well, `smooth_data` has four different smoothing
 * `loess` is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
 * `gam` is also a spline-fitting approach that tends to better avoid the creation of curvature artifacts and is often recommended over loess, although you should evaluate its efficacy for your own data
 
-**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should test smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise.
+**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should plot smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise.
 
 Smoothing data is a step that alters the values you will analyze. Because of that, and because there are so many options for how to smooth your data, it is a step that can be rife with pitfalls. We recommend starting with the simplest and least "smoothed" smoothing, plotting your results, and only increasing your smoothing as much as is needed to enable downstream analyses. Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than treating the smoothed data as your source.
 
@@ -1409,7 +1409,7 @@ lines(
   log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"]))
 ```
 
-Here we can see that the combination of minimal `moving-median` and minimal `gam` smoothing has produced a curve that is likely to be very easily analyzed with minimal introduction of bias.
+Here we can see that the combination of minimal `moving-median` and minimal `gam` smoothing has produced a curve that is very smooth (and so good for downstream analyses) but has minimal introduction of bias.
 
 # Processing data: calculating derivatives {#Processing}
 
@@ -1419,7 +1419,7 @@ In many cases, identifying features of a growth curve requires looking not only 
 
 ## A simple derivative
 
-To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument)
+To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument) Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point.
 
 ```{r}
 example_data_and_designs$deriv <-
@@ -1433,8 +1433,10 @@ plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "derivative (Absorbance/sec)")
 ```
 
+Here we can clearly see when the slope of the total population was increasing the fastest. But we can also see something that may not have been immediately apparent visually: there is a second, slower, burst of growth later on. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+
 ## Per-capita derivative
-To calculate the growth rate of the population, `calc_deriv` can return the per-capita derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your Measurements that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
+If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}
 example_data_and_designs$deriv_percap <-
@@ -1449,9 +1451,11 @@ plot(example_data_and_designs$Time[example_data_and_designs$Well == "A2"],
   xlab = "time", ylab = "per-capita growth rate (/sec)")
 ```
 
+Here we can see that the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly.
+
 ## Changing the derivative units
 
-To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data x is the number of seconds since the growth curve began. What if we wanted growth rate in per-hour? There are 3600 seconds in an hour, so we set `x_scale = 3600`
+To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data `x` is the number of *seconds* since the growth curve began. What if we wanted growth rate in *per-hour*? There are 3600 seconds in an hour, so we set `x_scale = 3600`
 
 ```{r}
 example_data_and_designs$deriv_hr <-
@@ -1467,7 +1471,7 @@ plot(example_data_and_designs$Time[example_data_and_designs$Well == "A2"],
   xlab = "time", ylab = "per-capita growth rate (/hr)")
 ```
 
-Now we can see the grow rate in more easily-understood units: rate per hour.
+Now we can see the bacterial growth rate in more-understandable units: they're growing just over 1.5 times/hour.
 
 # Analyzing data with summarize {#Analyzing}
 

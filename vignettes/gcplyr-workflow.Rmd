@@ -1089,7 +1089,7 @@ So, how can we smooth our data? Well, `smooth_data` has four different smoothing
 * `loess` is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
 * `gam` is also a spline-fitting approach that tends to better avoid the creation of curvature artifacts and is often recommended over loess, although you should evaluate its efficacy for your own data
 
-**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should plot smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise.
+**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should plot smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise. Make sure to plot the smoothing for every well in your data, so that you're choosing the best setting for all your data and not just one well.
 
 Smoothing data is a step that alters the values you will analyze. Because of that, and because there are so many options for how to smooth your data, it is a step that can be rife with pitfalls. We recommend starting with the simplest and least "smoothed" smoothing, plotting your results, and only increasing your smoothing as much as is needed to enable downstream analyses. Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than treating the smoothed data as your source.
 
@@ -1371,7 +1371,7 @@ Here we can see that `gam` with higher `k` (darkest line) have smoothed the data
 
 ### Combining multiple smoothing methods
 
-Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `loess`, and `gam` work well at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using `moving-median` and `gam`:
+Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `loess`, and `gam` work well at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using `moving-median` and `gam` (note that because `moving-median` removes the outliers, we can use `gam` with even less smoothing than before):
 
 ```{r}
 example_data_and_designs$smoothed <-
@@ -1387,7 +1387,7 @@ example_data_and_designs$smoothed <-
               y = example_data_and_designs$smoothed,
               method = "gam",
               subset_by = example_data_and_designs$Well,
-              k = 20)
+              k = 40)
 
 #What does the smoothed data look like compared to the noisy original?
 plot(
@@ -1446,8 +1446,8 @@ example_data_and_designs$deriv_percap <-
              percapita = TRUE, blank = 0)
 
 #Now let's plot the per-capita derivative
-plot(example_data_and_designs$Time[example_data_and_designs$Well == "A2"],
-     example_data_and_designs$deriv_percap[example_data_and_designs$Well == "A2"],
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+     example_data_and_designs$deriv_percap[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "per-capita growth rate (/sec)")
 ```
 
@@ -1458,7 +1458,7 @@ Here we can see that the per-capita growth rate peaked much earlier in the time-
 To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data `x` is the number of *seconds* since the growth curve began. What if we wanted growth rate in *per-hour*? There are 3600 seconds in an hour, so we set `x_scale = 3600`
 
 ```{r}
-example_data_and_designs$deriv_hr <-
+example_data_and_designs$deriv_percap_hr <-
   calc_deriv(x = example_data_and_designs$Time,
              y = example_data_and_designs$smoothed,
              subset_by = example_data_and_designs$Well,
@@ -1466,8 +1466,8 @@ example_data_and_designs$deriv_hr <-
              x_scale = 3600)
 
 #Now let's plot the derivative in units of Abs/hour
-plot(example_data_and_designs$Time[example_data_and_designs$Well == "A2"],
-     example_data_and_designs$deriv_hr[example_data_and_designs$Well == "A2"],
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+     example_data_and_designs$deriv_percap_hr[example_data_and_designs$Well == "A1"],
   xlab = "time", ylab = "per-capita growth rate (/hr)")
 ```
 
@@ -1475,17 +1475,36 @@ Now we can see the bacterial growth rate in more-understandable units: they're g
 
 # Analyzing data with summarize {#Analyzing}
 
-Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. For instance, we may calculate the maximum density, maximum per-capita growth rate, or total area under the curve. `gcplyr` contains a number of functions to assist with these calculations. 
+Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. For instance, we may calculate metrics like:
 
-However, before we can explore how to use those functions, we need to familiarize ourselves with the `dplyr` functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you're already familiar with `dplyr`, feel free to skip the next section.** If you're not familiar yet, don't worry! Continue to the next section, where we provide a primer on using `group_by` and `summarize` that will teach you all you need to know for.
+* the maximum density
+* the total area under the curve
+* the lag time (approximated as the time from the start until maximum per-capita growth rate is achieved)
+* the maximum per-capita growth rate
+* the density when a diauxic shift occurs
+* the time until diauxic shift occurs
+* the peak per-capita growth rate during a diauxic shift
+* the peak density before a decline from phage predation
+* the time when bacteria drop below some density because of phage predation
 
-## A brief primer on dplyr: grouping and summarize
+`gcplyr` contains a number of functions that make it easier to carry out these calculations, and many others that you might wish to design yourself. In the following sections, we highlight general-use `gcplyr` functions and provide examples using the common metrics above. 
+
+But first, we need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`, feel free to skip to the [Calculating lag time and maximum growth rate] section.** If you’re not familiar yet, don’t worry! Continue to the next section, where we provide a primer that will teach you all you need to know on using `group_by` and `summarize`.
+
+## A brief primer on dplyr
 
 The`R`package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes, we're going to focus on two particular functions: `group_by` and `summarize` (also available as `summarise`).
 
-The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve.
+The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. 
 
-Let's work through an example. First, we need to group our data. `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
+For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve. Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns for `group_by`, along with the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
+
+In the next section, we provide a simple example of how the `max` function is used with `group_by` and `summarize` to calculate lag time and the maximum per-capita growth rate. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the remaining `gcplyr` functions, which (again) have to be used *within* `summarize` to work correctly.
+
+## Using simple summarize functions: maximum and minimum density
+One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built in `max` function.
+
+First, we need to group our data. `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
 
 ```{r}
 library(dplyr)
@@ -1496,30 +1515,153 @@ grouped_example_data_and_designs <-
 head(grouped_example_data_and_designs)
 ```
 
-Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns, and the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
-
-Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the minimum smoothed absorbance each well reached at any point in its growth, and saved it in a column named `min_abs`.
+Notice that this hasn't changed anything about our `data.frame`, but the groups are saved in there under the hood. Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the maximum of the `smoothed` column, and saved it in a column named `max_dens` (note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values).
 
 ```{r}
 example_data_and_designs_sum <-
   summarize(grouped_example_data_and_designs,
-            min_abs = min(smoothed))
+            max_dens = max(smoothed, na.rm = TRUE))
 head(example_data_and_designs_sum)
 ```
 
-If you want additional characteristics, you simply add them to the summarize. For instance, we could get the maximum of the per-capita growth rate (note that na.rm is needed to tell `max` to ignore `NA` values), here saved in a column named `max_percap_deriv`:
+If you want additional characteristics, you simply add them to the summarize. For instance, if we want the minimum density, you just add that as a second argument, here saved in a column named `min_dens`:
 
 ```{r}
 example_data_and_designs_sum <-
   summarize(grouped_example_data_and_designs,
-            min_abs = min(smoothed),
-            max_percap_deriv = max(deriv_percap, na.rm = TRUE))
+            max_dens = max(smoothed, na.rm = TRUE),
+            min_dens = min(smoothed, na.rm = TRUE))
 head(example_data_and_designs_sum)
 ```
 
-That's all you need to know for now! If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use the remaining `gcplyr` functions, which have to be used *within* `summarize` to work correctly.
+## Calculating area under the curve
 
-## Finding local extrema
+One common metric of growth curves is the total area under the curve. `gcplyr` has an `auc` function to easily calculate this area. Just like `min` and `max`, it needs to be used inside `summarize` on a `data.frame` that has been grouped.
+
+To use `auc`, simply specify the x and y data you are interested in calculating the area-under-the-curve of. Note that you can also specify a subset of the x-range to calculate the area of, in cases where you do not want the area under the curve from the beginning to the end of your time series.
+
+Here, we calculate the area-under-the-curve of the density data (saved to the `auc` column), as well as the area-under-the-curve beginning after 3 hours (10800 seconds, saved to the `auc_after3hrs` column)
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(grouped_example_data_and_designs,
+            auc = auc(x = Time, y = smoothed),
+            auc_after3hrs = auc(x = Time, y = smoothed, xlim = c(10800, NA)))
+head(example_data_and_designs_sum)
+```
+
+## Using summarize functions on subsets: lag time and maximum growth rate
+
+Sometimes, we need to provide limits on the data our simple functions will work with. We can demonstrate this in the process of calculating two common metrics we want to identify: 
+
+* the lag time (here we'll use the delay from the start of the run until growth rate peaks as a measure of lag time)
+* the maximum per-capita growth rate. 
+
+Let's take a look at how this might work. What happens if we just try to use `max` on our per-capita growth rates?
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(grouped_example_data_and_designs,
+            growth_rate = max(deriv_percap_hr, na.rm = TRUE))
+head(example_data_and_designs_sum)
+```
+
+Hmm, some of those values seem really extreme. Let's take a peek at what's happening, for instance in Well A7
+
+```{r}
+#What does the smoothed data look like compared to the noisy original?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  example_data_and_designs$Measurements[example_data_and_designs$Well == "A7"],
+  xlab = "time", ylab = "Abs")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A7"])
+
+#What does the smoothing look like on log axes?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  log10(
+    example_data_and_designs$Measurements[example_data_and_designs$Well == "A7"]),
+  xlab = "time", ylab = "log10(Abs)")
+lines(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  log10(example_data_and_designs$smoothed[example_data_and_designs$Well == "A7"]))
+```
+
+Ahh, our smoothing has dipped into the negative territory, which is causing our per-capita growth rate to go haywire. We could try going back and adjusting our smoothing, but because so much of our data is so close to 0 we're unlikely to have much success. What if we just exclude all the values when the density is really low? Since all those values are basically just random noise from when the bacterial densities were really low, excluding them doesn't mean we're losing any information.
+
+Let's plot our per-capita growth rates at different cutoffs:
+
+```{r}
+#What does the original per-capita growth rate over time look like?
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  example_data_and_designs$deriv_percap_hr[
+    example_data_and_designs$Well == "A7"],
+  xlab = "time", ylab = "per-capita growth rate (/hr)",
+  main = "all data")
+
+#What do subsets look like with cutoffs of 0.001, 0.005, and 0.01?
+plot(
+  example_data_and_designs$Time[
+    example_data_and_designs$Well == "A7"  &
+      example_data_and_designs$smoothed > 0.001],
+  example_data_and_designs$deriv_percap_hr[
+    example_data_and_designs$Well == "A7"  &
+      example_data_and_designs$smoothed > 0.001],
+  xlab = "time", ylab = "per-capita growth rate (/hr)",
+  main = "data where OD > 0.001")
+
+
+plot(
+  example_data_and_designs$Time[
+    example_data_and_designs$Well == "A7"  &
+      example_data_and_designs$smoothed > 0.005],
+  example_data_and_designs$deriv_percap_hr[
+    example_data_and_designs$Well == "A7"  &
+      example_data_and_designs$smoothed > 0.005],
+  xlab = "time", ylab = "per-capita growth rate (/hr)",
+  main = "data where OD > 0.005")
+
+plot(
+  example_data_and_designs$Time[
+    example_data_and_designs$Well == "A7"  &
+      example_data_and_designs$smoothed > 0.01],
+  example_data_and_designs$deriv_percap_hr[
+    example_data_and_designs$Well == "A7"  &
+      example_data_and_designs$smoothed > 0.01],
+  xlab = "time", ylab = "per-capita growth rate (/hr)",
+  main = "data where OD > 0.01")
+
+```
+
+We can see with a cutoff of 0.001, many high growth rate points that are basically noise still remain. However, once we use a cutoff of 0.005, they are all basically gone, and no high growth rate values are affected by 0.005 vs 0.01. If we checked this pattern for other wells, we would see a similar result. **Now, let's calculate the maximum growth rate of just the subset** of data points where OD is above 0.005. We can specify that subset directly in the summarize command:
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(grouped_example_data_and_designs,
+            growth_rate = max(deriv_percap_hr[smoothed > 0.005], na.rm = TRUE))
+head(example_data_and_designs_sum)
+```
+
+Now all of our growth rates seem reasonable! How can we calculate the lag time (the time when those peaks occurred)? We can use the `which.max` command, which returns the index of the maximum value, to get the index of the `Time` when the maximum occurs:
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(grouped_example_data_and_designs,
+            growth_rate = max(deriv_percap_hr[smoothed > 0.005], na.rm = TRUE),
+            lag_time = Time[which.max(deriv_percap_hr[smoothed > 0.005])])
+head(example_data_and_designs_sum)
+```
+
+That looks great! Well B10 seems like it's growing at it's fastest rate quite a bit later than the other wells, is something going wrong there? Actually, as we'll see later, that's actually a result! (Spoiler: it has to do with the Phage Added).
+
+
+########################################## Pick up edits here!!!
+
+
+## Finding local extrema: maximum growth rate, diauxic shift
 
 One common analysis step is identifying peaks and valleys in growth curve data, whether it be in the original absorbance data, or in one of the derivatives in the curve. `gcplyr` has several functions to facilitate identifying these local extrema.
 
@@ -1632,21 +1774,6 @@ Additionally, note that with `find_local_extrema`, users must specify at least o
 
 [This section to-be-written]
 
-## Area under the curve
-
-One other common metric of growth curves is the total area under the curve. `gcplyr` has an `auc` function to easily calculate this area. Just like `first_peak` and `find_local_extrema`, it needs to be used inside of a `data.frame` that has been grouped and is being summarized using `dplyr`.
-
-To use `auc`, simply specify the x and y data you are interested in calculating the area-under-the-curve of. Note that you can also specify a subset of the x-range to calculate the area of, in cases where you do not want the area under the curve from the beginning to the end of your time series.
-
-Here, we calculate the area-under-the-curve of the density data (saved to the `auc` column), as well as the area-under-the-curve beginning after 3 hours (10800 seconds, saved to the `auc_after3hrs` column)
-
-```{r}
-example_data_and_designs_sum <-
-  summarize(example_data_and_designs_grouped,
-            auc = auc(x = Time, y = smoothed),
-            auc_after3hrs = auc(x = Time, y = smoothed, xlim = c(10800, NA)))
-head(example_data_and_designs_sum)
-```
 
 # Combining growth curves data with other data
 

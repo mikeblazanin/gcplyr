@@ -340,8 +340,8 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
 #'                            the reordered y
 #'                            
 #'                            the original order, such that 
-#'                            return[["x"]][return[["order"]]] == x and
-#'                            return[["y"]][return[["order"]]] == y
+#'                            return[["x"]][order(return[["order"]])] == x and
+#'                            return[["y"]][order(return[["order"]])] == y
 #' 
 reorder <- function(x = NULL, y) {
   if(!is.null(x)) {
@@ -2635,8 +2635,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' 
 #' @export
 smooth_data <- function(x = NULL, y, method, subset_by = NULL,
-                        return_fitobject = FALSE, ...) {
-  browser()
+                        return_fitobject = FALSE, na.rm = TRUE, ...) {
   if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("method must be one of: moving-average, moving-median, gam, or loess")
   }

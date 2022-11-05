@@ -74,7 +74,7 @@ derivs <- function(t, y, parms) {
 #Rates in ~/minute, densities in ~/mL
 params <- c(u_S = 0.03, u_R = 0.02, k = 10**9, a_S = 5*10**-11, b = 20,
             q0 = 0.1, m = 0.02, v = .5,
-            u_S2 = 0.006, u_R2 = 0.004, k2 = 0.15*10**9, x = 0.0001, v2 = 50)
+            u_S2 = 0.01, u_R2 = 0.0066, k2 = 0.2*10**9, x = 0.0001, v2 = 50)
 
 Y_init <- c(S = 10**6, R = 1, P = 0, S2 = 0, R2 = 0)
 
@@ -107,6 +107,14 @@ ggplot(data = out_tdy[out_tdy$pop == "B", ],
   NULL
 
 ggplot(data = out_tdy,
+       aes(x = time/60, y = deriv, color = pop)) +
+  geom_line()
+
+ggplot(data = out_tdy[out_tdy$pop == "B", ],
+       aes(x = time/60, y = deriv, color = pop)) +
+  geom_line()
+
+ggplot(data = out_tdy,
        aes(x = time/60, y = percap, color = pop)) +
   geom_line()
 
@@ -114,9 +122,6 @@ ggplot(data = out_tdy[out_tdy$pop == "B", ],
        aes(x = time/60, y = percap, color = pop)) +
   geom_line()
 
-ggplot(data = out_tdy,
-       aes(x = time/60, y = deriv, color = pop)) +
-  geom_line()
 
 #Generate entire plate of simulated data
 example_widedata <- as.data.frame(matrix(NA, nrow = 24*4+1, ncol = 97))
@@ -137,9 +142,9 @@ k_vector <- rep(10**9, 96)
 q0_vector <- rep(0.1, 96)
 m_vector <- rep(0.02, 96)
 v_vector <- rep(.5, 96)
-uS2_vector <- uS_vector/5
-uR2_vector <- uR_vector/5
-k2_vector <- 0.15*k_vector
+uS2_vector <- uS_vector/3
+uR2_vector <- uR_vector/3
+k2_vector <- 0.2*k_vector
 x_vector <- rep(0.0001, 96)
 v2_vector <- rep(50, 96)
 #Generate vectors of parameters for viral growth
@@ -194,7 +199,7 @@ for (i in 1:96) {
   out$B <- out$S + out$R + out$S2 + out$R2
   
   #Convert to OD
-  out$OD <- round(out$B/10**9, 3)
+  out$OD <- out$B/10**9
   
   #Add noise
   out$OD_noised <- out$OD + 
@@ -204,6 +209,9 @@ for (i in 1:96) {
   
   #plot(out$time, log10(out$OD))
   #lines(out$time, log10(out$OD_noised))
+  
+  #Round
+  out$OD_noised <- round(out$OD_noised, 3)
   
   example_widedata[, i+1] <- out$OD_noised
 }

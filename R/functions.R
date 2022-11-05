@@ -2806,7 +2806,7 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
   }
   
   #Put back in original order
-  results <- results[order_temp[["order"]]]
+  results <- results[order(order_temp[["order"]])]
   
   #Add NA's
   results <- add_nas(x = results, 

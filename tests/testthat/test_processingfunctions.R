@@ -173,4 +173,13 @@ test_that("smooth_data returns properly for gam", {
   dim(expect3) <- NULL
   expect_equal(smooth_data(x = data3$x, y = data3$y, method = "gam"),
                expected = expect3)
+  
+  #Now test when passing arguments for s() (e.g. k)
+  expect4 <- predict(gam(formula = dens ~ s(time, k = 5), data = data),
+                     data)
+  names(expect4) <- NULL
+  dim(expect4) <- NULL
+  expect_equal(
+    smooth_data(x = data$time, y = data$dens, method = "gam", k = 5),
+    expected = expect4)
 })

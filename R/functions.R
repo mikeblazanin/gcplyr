@@ -2587,7 +2587,8 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' This function calls other functions to smooth growth curve data
 #' 
 #' @param x An (optional) vector of predictor values to smooth along (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density)
+#' @param y A vector of response values to be smoothed (e.g. density). If NULL,
+#'          \code{formula} and \code{data} *must* be provided via \code{...}
 #' @param method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
 #'                  "moving-average", "moving-median', "loess", and "gam"
@@ -2605,18 +2606,22 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'            
 #'            For \code{loess} and \code{gam}, see details.
 #'
-#' @details For smoothing using \code{loess} or \code{gam} that depends on 
-#'          more than one predictor, \code{formula} and \code{data} can be
-#'          passed to \code{smooth_data} via the \code{...} argument and will
-#'          override the \code{x} and \code{y} arguments.
+#' @details Arguments to \code{loess} or \code{gam} methods can be passed
+#'          via the ... argument. Additionally, arguments to \code{s} for
+#'          \code{gam} can be passed via the ... argument.
+#'          
+#'          Alternatively, for more advanced needs with \code{loess} or 
+#'          \code{gam}, \code{formula} and \code{data} can be passed to 
+#'          \code{smooth_data} via the \code{...} argument in lieu of \code{y}.
 #'          
 #'          The formula should specify the response (e.g. density) 
 #'          and predictors. For \code{gam} smoothing, the formula should
 #'          typically be of the format: y ~ s(x), which uses 
-#'          \code{mgcv::s} to smooth the data
-#'          
+#'          \code{mgcv::s} to smooth the data. 
 #'          The data argument should be a \code{data.frame} containing the
-#'          variables in the formula
+#'          variables in the formula.
+#'          In such cases, subset_by can still be specified as a vector
+#'          as long as \code{nrow(data)}
 #' 
 #' @return If return_fitobject == FALSE:
 #' 
@@ -2634,31 +2639,44 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'         fitted values and the input values
 #' 
 #' @export
-smooth_data <- function(x = NULL, y, method, subset_by = NULL,
+smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
                         return_fitobject = FALSE, na.rm = TRUE, ...) {
   if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("method must be one of: moving-average, moving-median, gam, or loess")
   }
   
-  #Parse x and y, or ... args, into formula and data
-  if (any(c("formula", "data") %in% names(list(...)))) {
-    if(!all(c("formula", "data") %in% names(list(...)))) {
-      warning("both or neither formula and data must be specified, reverting to smoothing y on x\n")
-    } else {
-      formula <- list(...)$formula
-      data <- list(...)$data
+  #Parse x and y, and/or ... args, into formula and data
+  if(!is.null(y)) {
+    if (any(c("formula", "data") %in% names(list(...)))) {
+      warning("y is specified, ignoring formula and data arguments")
     }
-  } else {
     if(is.null(x)) {x <- 1:length(y)}
     if(length(x) != length(y)) {stop("x and y must be the same length")}
     data <- data.frame(x, y)
-    if(method == "gam") {formula <- y ~ s(x)
-    } else {formula <- y ~ x}
+    if(method != "gam") {
+      formula <- y ~ x
+    } else {
+      #For gam we detect any args that need to be passed within s() and
+      # paste them into the formula
+      if(any(names(list(...)) %in% names(formals(s)))) {
+        idxs <- which(names(list(...)) %in% names(formals(s)))
+        formula <- as.formula(
+          paste("y ~ s(x, ",
+                paste(paste(names(list(...))[idxs], list(...)[idxs], sep = "="),
+                      collapse = ", "),
+                ")", sep = ""))
+      } else {formula <- y ~ s(x)}
+    }
+  } else { #y is null
+    if(!all(c("formula", "data") %in% names(list(...)))) {
+      stop("specify either y or (via ...) formula and data")
+    }
+    formula <- list(...)$formula
+    data <- list(...)$data
   }
   
   if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
     warning("gam method is called without 's()' to smooth\n")}
-  
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
   } else if (length(subset_by) != nrow(data)) {
     stop("subset_by must be the same length as data")
@@ -2695,9 +2713,10 @@ smooth_data <- function(x = NULL, y, method, subset_by = NULL,
                      na.action = "na.exclude", ...)
     } else if (method == "gam") {
       temp <- 
-        mgcv::gam(formula = formula, 
-                  data = data[subset_by == unique(subset_by)[i], ],
-                  na.action = "na.exclude", ...)
+        dots_parser(
+          FUN = mgcv::gam,
+          formula = formula, data = data[subset_by == unique(subset_by)[i], ],
+          na.action = "na.exclude", ...)
     }
     
     #Store results as requested

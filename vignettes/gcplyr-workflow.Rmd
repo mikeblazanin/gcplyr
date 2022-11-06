@@ -1065,19 +1065,16 @@ Let's take a look at one well from our example data, which is already a little n
 
 ```{r}
 #What does one well of our (noisy) data look like?
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "Abs")
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"],
+     xlab = "time", ylab = "Abs")
 ```
 Well that doesn't look so bad! Let's take a quick peek at the data using a log scale for the y-axis. Log scales are particularly useful for plotting growth curves because exponential growth is a straight line when plotted on a log scale.
 
 ```{r}
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-  xlab = "time", ylab = "log10(Abs)")
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
+     xlab = "time", ylab = "log10(Abs)")
 ```
 
 Oh. That looks a lot more noisy! In fact, this is a common occurrence: **at low densities, random noise tends to have a much larger effect** than at high densities. Unfortunately, steps like calculating maximum growth rate can be very sensitive to such noise, so we're going to need to smooth our data to prevent that from being a problem.
@@ -1102,47 +1099,33 @@ Since your dataframe likely includes data from multiple wells (or even plates), 
 For `moving-average`, the tuning parameter is `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
 
 ```{r}
-ex_dat_mrg$smoothed3 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-average",
-              subset_by = ex_dat_mrg$Well,
+ex_dat_mrg$smoothed3 <- 
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-average", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
-ex_dat_mrg$smoothed7 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-average",
-              subset_by = ex_dat_mrg$Well,
+ex_dat_mrg$smoothed7 <- 
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-average", subset_by = ex_dat_mrg$Well,
               window_width_n = 7)
-ex_dat_mrg$smoothed11 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-average",
-              subset_by = ex_dat_mrg$Well,
+ex_dat_mrg$smoothed11 <- 
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-average", subset_by = ex_dat_mrg$Well,
               window_width_n = 11)
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are wider window_width_n's and more "smoothed"
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-  xlab = "time", ylab = "log10(Abs)")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed3[ex_dat_mrg$Well == "A1"]),
-  col = "gray20")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed7[ex_dat_mrg$Well == "A1"]),
-  col = "gray45")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed11[ex_dat_mrg$Well == "A1"]),
-  col = "gray65")
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
+     xlab = "time", ylab = "log10(Abs)")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed3[ex_dat_mrg$Well == "A1"]),
+      col = "gray20")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed7[ex_dat_mrg$Well == "A1"]),
+      col = "gray45")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed11[ex_dat_mrg$Well == "A1"]),
+      col = "gray65")
 ```
 
 Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, with `window_width_n = 11` (the lightest line), the smoothing has started biasing our later data points to be higher than they actually are. Based on this, we'd probably want to use a `window_width_n` less than 11. Unfortunately, with smaller `window_width_n` our early data is still being affected by that early noise, so we should explore other smoothing methods, or try combining multiple smoothing methods.
@@ -1153,46 +1136,32 @@ For `moving-median`, the tuning parameter is also `window_width_n`, which specif
 
 ```{r}
 ex_dat_mrg$smoothed3 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-median",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
 ex_dat_mrg$smoothed7 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-median",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 7)
 ex_dat_mrg$smoothed11 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-median",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 11)
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are wider window_width_n's and more "smoothed"
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-  xlab = "time", ylab = "log10(Abs)")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed3[ex_dat_mrg$Well == "A1"]),
-  col = "gray20")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed7[ex_dat_mrg$Well == "A1"]),
-  col = "gray45")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed11[ex_dat_mrg$Well == "A1"]),
-  col = "gray65")
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
+     xlab = "time", ylab = "log10(Abs)")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed3[ex_dat_mrg$Well == "A1"]),
+      col = "gray20")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed7[ex_dat_mrg$Well == "A1"]),
+      col = "gray45")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed11[ex_dat_mrg$Well == "A1"]),
+      col = "gray65")
 ```
 
 Here we can see that `moving-median` has really excluded that early noise, even with the smallest `window_width_n = 3`. Additionally, `moving-median` did not bias our later data at all, even with the widest `window_width_n`. However, it has produced a smoothed density that is fairly "jumpy", something that wider `window_width_n` did not fix. **This is common with moving-median**, so often you may need to try other smoothing methods or combining `moving-median` with other methods.
@@ -1203,46 +1172,32 @@ For `loess`, the tuning parameter is the `span` argument. `loess` works by doing
 
 ```{r}
 ex_dat_mrg$smoothed1 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "loess",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "loess", subset_by = ex_dat_mrg$Well,
               span = .1, degree = 1)
 ex_dat_mrg$smoothed2 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "loess",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "loess", subset_by = ex_dat_mrg$Well,
               span = .2, degree = 1)
 ex_dat_mrg$smoothed5 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "loess",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "loess", subset_by = ex_dat_mrg$Well,
               span = .5, degree = 1)
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are larger span's and more "smoothed"
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-  xlab = "time", ylab = "log10(Abs)")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed1[ex_dat_mrg$Well == "A1"]),
-  col = "gray20")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed2[ex_dat_mrg$Well == "A1"]),
-  col = "gray45")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed5[ex_dat_mrg$Well == "A1"]),
-  col = "gray65")
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
+     xlab = "time", ylab = "log10(Abs)")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed1[ex_dat_mrg$Well == "A1"]),
+      col = "gray20")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed2[ex_dat_mrg$Well == "A1"]),
+      col = "gray45")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed5[ex_dat_mrg$Well == "A1"]),
+      col = "gray65")
 ```
 
 Here we can see that `loess` with smaller spans (darker lines) have smoothed the data but are still sensitive to those outliers. However, `loess` with a larger span (lightest line) has introduced significant bias, overestimating early data and underestimating later data points. To fix this, we might explore `span` values between 0.2 and 0.5, other smoothing methods, or combining `loess` with other smoothing methods.
@@ -1253,45 +1208,28 @@ For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doin
 
 ```{r}
 ex_dat_mrg$smoothed20 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "gam",
-              subset_by = ex_dat_mrg$Well,
-              k = 20)
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "gam", subset_by = ex_dat_mrg$Well, k = 20)
 ex_dat_mrg$smoothed10 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "gam",
-              subset_by = ex_dat_mrg$Well,
-              k = 10)
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "gam", subset_by = ex_dat_mrg$Well, k = 10)
 ex_dat_mrg$smoothed5 <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "gam",
-              subset_by = ex_dat_mrg$Well,
-              k = 5)
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "gam", subset_by = ex_dat_mrg$Well, k = 5)
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are smaller k and more "smoothed"
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+  log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
   xlab = "time", ylab = "log10(Abs)")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed20[ex_dat_mrg$Well == "A1"]),
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+  log10(ex_dat_mrg$smoothed20[ex_dat_mrg$Well == "A1"]),
   col = "gray20")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed10[ex_dat_mrg$Well == "A1"]),
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+  log10(ex_dat_mrg$smoothed10[ex_dat_mrg$Well == "A1"]),
   col = "gray45")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$smoothed5[ex_dat_mrg$Well == "A1"]),
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+  log10(ex_dat_mrg$smoothed5[ex_dat_mrg$Well == "A1"]),
   col = "gray65")
 ```
 
@@ -1303,38 +1241,20 @@ Often, combining multiple smoothing methods can provide improved results. For in
 
 ```{r}
 ex_dat_mrg$smoothed <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$Measurements,
-              method = "moving-median",
-              subset_by = ex_dat_mrg$Well,
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+              method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
-#Note that for the second smoothing, we're using the first smoothing results
-# as input
+#Note that for the second round, we're using the first smoothing as input
 ex_dat_mrg$smoothed <-
-  smooth_data(x = ex_dat_mrg$Time,
-              y = ex_dat_mrg$smoothed,
-              method = "gam",
-              subset_by = ex_dat_mrg$Well,
-              k = 40)
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed,
+              method = "gam", subset_by = ex_dat_mrg$Well, k = 40)
 
 #What does the smoothed data look like compared to the noisy original?
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "Abs")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"])
-
-#What does the smoothing look like on log axes?
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-  xlab = "time", ylab = "log10(Abs)")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"]))
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
+     xlab = "time", ylab = "log10(Abs)")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+      log10(ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"]))
 ```
 
 Here we can see that the combination of minimal `moving-median` and minimal `gam` smoothing has produced a curve that is very smooth (and so good for downstream analyses) but has minimal introduction of bias.
@@ -1350,9 +1270,8 @@ In many cases, identifying features of a growth curve requires looking not only 
 To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument) Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point.
 
 ```{r}
-ex_dat_mrg$deriv <-
-  calc_deriv(x = ex_dat_mrg$Time,
-             y = ex_dat_mrg$smoothed,
+ex_dat_mrg$deriv <- 
+  calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed, 
              subset_by = ex_dat_mrg$Well)
 
 #Now let's plot the derivative
@@ -1367,11 +1286,9 @@ Here we can clearly see when the slope of the total population was increasing th
 If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}
-ex_dat_mrg$deriv_percap <-
-  calc_deriv(x = ex_dat_mrg$Time,
-             y = ex_dat_mrg$smoothed,
-             subset_by = ex_dat_mrg$Well,
-             percapita = TRUE, blank = 0)
+ex_dat_mrg$deriv_percap <- 
+  calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed,
+             subset_by = ex_dat_mrg$Well, percapita = TRUE, blank = 0)
 
 #Now let's plot the per-capita derivative
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
@@ -1387,10 +1304,8 @@ To convert your x-axis (time) units in your derivative calculations to a differe
 
 ```{r}
 ex_dat_mrg$deriv_percap_hr <-
-  calc_deriv(x = ex_dat_mrg$Time,
-             y = ex_dat_mrg$smoothed,
-             subset_by = ex_dat_mrg$Well,
-             percapita = TRUE, blank = 0,
+  calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed,
+             subset_by = ex_dat_mrg$Well, percapita = TRUE, blank = 0,
              x_scale = 3600)
 
 #Now let's plot the derivative in units of Abs/hour
@@ -1417,11 +1332,11 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 
 `gcplyr` contains a number of functions that make it easier to carry out these calculations, and many others that you might wish to design yourself. In the following sections, we highlight general-use `gcplyr` functions and provide examples using the common metrics above. 
 
-But first, we need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`, feel free to skip to the [Calculating lag time and maximum growth rate] section.** If you’re not familiar yet, don’t worry! Continue to the next section, where we provide a primer that will teach you all you need to know on using `group_by` and `summarize`.
+But first, we need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`, feel free to skip the primer in the next section.** If you’re not familiar yet, don’t worry! Continue to the next section, where we provide a primer that will teach you all you need to know on using `group_by` and `summarize`.
 
 ## A brief primer on dplyr
 
-The`R`package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes, we're going to focus on two particular functions: `group_by` and `summarize` (also available as `summarise`).
+The `R` package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes, we're going to focus on two particular functions: `group_by` and `summarize` (also available as `summarise`).
 
 The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. 
 
@@ -1436,9 +1351,7 @@ First, we need to group our data. `group_by` simply requires the `data.frame` to
 
 ```{r}
 library(dplyr)
-grouped_ex_dat_mrg <- 
-  group_by(ex_dat_mrg,
-           Bacteria_strain, Phage, Well)
+grouped_ex_dat_mrg <- group_by(ex_dat_mrg, Bacteria_strain, Phage, Well)
 
 head(grouped_ex_dat_mrg)
 ```
@@ -1446,19 +1359,17 @@ head(grouped_ex_dat_mrg)
 Notice that this hasn't changed anything about our `data.frame`, but the groups are saved in there under the hood. Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the maximum of the `smoothed` column, and saved it in a column named `max_dens` (note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values).
 
 ```{r}
-ex_dat_mrg_sum <-
-  summarize(grouped_ex_dat_mrg,
-            max_dens = max(smoothed, na.rm = TRUE))
+ex_dat_mrg_sum <- summarize(grouped_ex_dat_mrg,
+                            max_dens = max(smoothed, na.rm = TRUE))
 head(ex_dat_mrg_sum)
 ```
 
 If you want additional characteristics, you simply add them to the summarize. For instance, if we want the minimum density, you just add that as a second argument, here saved in a column named `min_dens`:
 
 ```{r}
-ex_dat_mrg_sum <-
-  summarize(grouped_ex_dat_mrg,
-            max_dens = max(smoothed, na.rm = TRUE),
-            min_dens = min(smoothed, na.rm = TRUE))
+ex_dat_mrg_sum <- summarize(grouped_ex_dat_mrg,
+                            max_dens = max(smoothed, na.rm = TRUE),
+                            min_dens = min(smoothed, na.rm = TRUE))
 head(ex_dat_mrg_sum)
 ```
 
@@ -1468,13 +1379,12 @@ One common metric of growth curves is the total area under the curve. `gcplyr` h
 
 To use `auc`, simply specify the x and y data you are interested in calculating the area-under-the-curve of. Note that you can also specify a subset of the x-range to calculate the area of, in cases where you do not want the area under the curve from the beginning to the end of your time series.
 
-Here, we calculate the area-under-the-curve of the density data (saved to the `auc` column), as well as the area-under-the-curve beginning after 3 hours (10800 seconds, saved to the `auc_after3hrs` column)
+Here, we calculate the area-under-the-curve of the density data (saved to the `auc` column)
 
 ```{r}
 ex_dat_mrg_sum <-
   summarize(grouped_ex_dat_mrg,
-            auc = auc(x = Time, y = smoothed),
-            auc_after3hrs = auc(x = Time, y = smoothed, xlim = c(10800, NA)))
+            auc = auc(x = Time, y = smoothed))
 head(ex_dat_mrg_sum)
 ```
 
@@ -1497,71 +1407,49 @@ head(ex_dat_mrg_sum)
 Hmm, some of those values seem really extreme. Let's take a peek at what's happening, for instance in Well A7
 
 ```{r}
-#What does the smoothed data look like compared to the noisy original?
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A7"],
-  xlab = "time", ylab = "Abs")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"])
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+     ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "Abs")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+      ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"])
 
-#What does the smoothing look like on log axes?
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  log10(
-    ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A7"]),
-  xlab = "time", ylab = "log10(Abs)")
-lines(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  log10(ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"]))
+#On log axes
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A7"]),
+     xlab = "time", ylab = "log10(Abs)")
+lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+      log10(ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"]))
 ```
 
-Ahh, our smoothing has dipped into the negative territory, which is causing our per-capita growth rate to go haywire. We could try going back and adjusting our smoothing, but because so much of our data is so close to 0 we're unlikely to have much success. What if we just exclude all the values when the density is really low? Since all those values are basically just random noise from when the bacterial densities were really low, excluding them doesn't mean we're losing any information.
+Ahh, our smoothing has dipped into the negative territory, which is causing our per-capita growth rate to go haywire. We could try going back and adjusting our smoothing, but because so much of our data is so close to 0 we're unlikely to have much success. What if we just exclude all the values when the **density** is really low? Since all those values are basically just random noise from when the bacterial densities were really low, excluding them doesn't mean we're losing any information.
 
 Let's plot our per-capita growth rates at different cutoffs:
 
 ```{r}
 #What does the original per-capita growth rate over time look like?
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  ex_dat_mrg$deriv_percap_hr[
-    ex_dat_mrg$Well == "A7"],
-  xlab = "time", ylab = "per-capita growth rate (/hr)",
-  main = "all data")
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+     ex_dat_mrg$deriv_percap_hr[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "per-capita growth rate (/hr)",
+     main = "all data")
 
-#What do subsets look like with cutoffs of 0.001, 0.005, and 0.01?
-plot(
-  ex_dat_mrg$Time[
-    ex_dat_mrg$Well == "A7"  &
-      ex_dat_mrg$smoothed > 0.001],
-  ex_dat_mrg$deriv_percap_hr[
-    ex_dat_mrg$Well == "A7"  &
-      ex_dat_mrg$smoothed > 0.001],
-  xlab = "time", ylab = "per-capita growth rate (/hr)",
-  main = "data where OD > 0.001")
+#What do subsets look like with OD cutoffs of 0.001, 0.005, and 0.01?
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"  & ex_dat_mrg$smoothed > 0.001],
+     ex_dat_mrg$deriv_percap_hr[
+       ex_dat_mrg$Well == "A7"  & ex_dat_mrg$smoothed > 0.001],
+     xlab = "time", ylab = "per-capita growth rate (/hr)",
+     main = "data where OD > 0.001")
 
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"  & ex_dat_mrg$smoothed > 0.005],
+     ex_dat_mrg$deriv_percap_hr[
+       ex_dat_mrg$Well == "A7"  & ex_dat_mrg$smoothed > 0.005],
+     xlab = "time", ylab = "per-capita growth rate (/hr)",
+     main = "data where OD > 0.005")
 
-plot(
-  ex_dat_mrg$Time[
-    ex_dat_mrg$Well == "A7"  &
-      ex_dat_mrg$smoothed > 0.005],
-  ex_dat_mrg$deriv_percap_hr[
-    ex_dat_mrg$Well == "A7"  &
-      ex_dat_mrg$smoothed > 0.005],
-  xlab = "time", ylab = "per-capita growth rate (/hr)",
-  main = "data where OD > 0.005")
-
-plot(
-  ex_dat_mrg$Time[
-    ex_dat_mrg$Well == "A7"  &
-      ex_dat_mrg$smoothed > 0.01],
-  ex_dat_mrg$deriv_percap_hr[
-    ex_dat_mrg$Well == "A7"  &
-      ex_dat_mrg$smoothed > 0.01],
-  xlab = "time", ylab = "per-capita growth rate (/hr)",
-  main = "data where OD > 0.01")
-
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"  & ex_dat_mrg$smoothed > 0.01],
+     ex_dat_mrg$deriv_percap_hr[
+       ex_dat_mrg$Well == "A7"  & ex_dat_mrg$smoothed > 0.01],
+     xlab = "time", ylab = "per-capita growth rate (/hr)",
+     main = "data where OD > 0.01")
 ```
 
 We can see with a cutoff of 0.001, many high growth rate points that are basically noise still remain. However, once we use a cutoff of 0.005, they are all basically gone, and no high growth rate values are affected by 0.005 vs 0.01. If we checked this pattern for other wells, we would see a similar result. **Now, let's calculate the maximum growth rate of just the subset** of data points where OD is above 0.005. We can specify that subset directly in the summarize command:
@@ -1608,26 +1496,20 @@ Let's plot these points from a few wells to confirm they are what we expect:
 
 ```{r}
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
-points(
-  x = ex_dat_mrg_sum$first_peak_x[
-    ex_dat_mrg_sum$Well == "A1"],
-  y = ex_dat_mrg_sum$first_peak_y[
-    ex_dat_mrg_sum$Well == "A1"],
-  pch = 16, cex = 2)
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
+     xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
+points(x = ex_dat_mrg_sum$first_peak_x[ex_dat_mrg_sum$Well == "A1"],
+       y = ex_dat_mrg_sum$first_peak_y[ex_dat_mrg_sum$Well == "A1"],
+       pch = 16, cex = 2)
 ```
 
 ```{r}
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
-  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A7")
-points(
-  x = ex_dat_mrg_sum$first_peak_x[
-    ex_dat_mrg_sum$Well == "A7"],
-  y = ex_dat_mrg_sum$first_peak_y[
-    ex_dat_mrg_sum$Well == "A7"],
-  pch = 16, cex = 2)
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "Smoothed Absorbance", main = "Well A7")
+points(x = ex_dat_mrg_sum$first_peak_x[ex_dat_mrg_sum$Well == "A7"],
+       y = ex_dat_mrg_sum$first_peak_y[ex_dat_mrg_sum$Well == "A7"],
+       pch = 16, cex = 2)
 ```
 
 Hmmm, in Well A1 `first_peak` worked perfectly well, but in Well A7 it seems to have gotten stuck on some earlier fluctuations. Just like in smoothing, **peak-finding also has tuning parameters**. For `first_peak` and `find_local_extrema`, these are `width_limit_n`, `width_limit` and `height_limit`:
@@ -1647,14 +1529,11 @@ ex_dat_mrg_sum <-
                                       width_limit_n = 39))
 
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-  ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
-  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A7")
-points(
-  x = ex_dat_mrg_sum$first_peak_x[
-    ex_dat_mrg_sum$Well == "A7"],
-  y = ex_dat_mrg_sum$first_peak_y[
-    ex_dat_mrg_sum$Well == "A7"],
-  pch = 16, cex = 2)
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "Smoothed Absorbance", main = "Well A7")
+points(x = ex_dat_mrg_sum$first_peak_x[ex_dat_mrg_sum$Well == "A7"],
+       y = ex_dat_mrg_sum$first_peak_y[ex_dat_mrg_sum$Well == "A7"],
+       pch = 16, cex = 2)
 ```
 
 That worked great! But what if you want to find an extrema that's *not* the first peak? In the next section, we'll learn how to use `find_local_extrema` to identify all kinds of local extrema.
@@ -1672,7 +1551,7 @@ Let's dig into an example: identifying diauxic shifts. To refresh your memory on
 ```{r}
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
      ex_dat_mrg$deriv[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "derivative (Absorbance/sec)")
+     xlab = "time", ylab = "derivative (Absorbance/sec)")
 ```
 
 Here we can clearly see there is a second, slower, burst of growth after the first wave of growth. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
@@ -1690,10 +1569,8 @@ ex_dat_mrg_sum <-
 #Plot data with vertical line at detected diauxie
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
      ex_dat_mrg$deriv[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "derivative (Absorbance/sec)")
-abline(
-  v = ex_dat_mrg_sum$diauxie_x[
-    ex_dat_mrg_sum$Well == "A1"])
+     xlab = "time", ylab = "derivative (Absorbance/sec)")
+abline(v = ex_dat_mrg_sum$diauxie_x[ex_dat_mrg_sum$Well == "A1"])
 ```
 
 Now that we've found the point where the bacteria switch, we could quite easily find the density where that happens. To make it easier to follow, we'll save the *index* where the diauxic shift occurs to a column titled `diaxuie_idx`. To get that, we simple run `find_local_extrema` with `return = "index"`. Then, we can get the `smoothed` value at that index:
@@ -1712,14 +1589,11 @@ ex_dat_mrg_sum <-
 
 #Now let's plot it on the original density data
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
-points(
-  x = ex_dat_mrg_sum$diauxie_x[
-    ex_dat_mrg_sum$Well == "A1"],
-  y = ex_dat_mrg_sum$diauxie_dens[
-    ex_dat_mrg_sum$Well == "A1"],
-  pch = 16, cex = 2)
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
+     xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
+points(x = ex_dat_mrg_sum$diauxie_x[ex_dat_mrg_sum$Well == "A1"],
+       y = ex_dat_mrg_sum$diauxie_dens[ex_dat_mrg_sum$Well == "A1"],
+       pch = 16, cex = 2)
 ```
 
 Something that was hard to see on the density plot has now been easily quantified and can be visualized exactly where the shift occurs.
@@ -1740,18 +1614,13 @@ ex_dat_mrg_sum <-
       Time[Time >= diauxie_x][which.max(deriv_percap_hr[Time >= diauxie_x])])
 
 #Plot per-capita growth with a point at diauxie_percap_time, diauxie_percap
-plot(
-  ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  ex_dat_mrg$deriv_percap_hr[
-    ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "per-capita growth rate (/hr)",
-  main = "Well A1")
-points(
-  x = ex_dat_mrg_sum$diauxie_percap_time[
-    ex_dat_mrg_sum$Well == "A1"],
-  y = ex_dat_mrg_sum$diauxie_percap[
-    ex_dat_mrg_sum$Well == "A1"],
-  pch = 16, cex = 2)
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     ex_dat_mrg$deriv_percap_hr[ex_dat_mrg$Well == "A1"],
+     xlab = "time", ylab = "per-capita growth rate (/hr)",
+     main = "Well A1")
+points(x = ex_dat_mrg_sum$diauxie_percap_time[ex_dat_mrg_sum$Well == "A1"],
+       y = ex_dat_mrg_sum$diauxie_percap[ex_dat_mrg_sum$Well == "A1"],
+       pch = 16, cex = 2)
 ```
 
 ## Finding threshold-passing events: extinction time
@@ -1766,8 +1635,7 @@ Let's use the `ex_dat_mrg_sum` from an earlier section, where we've summarized o
 
 ```{r}
 ex_dat_mrg_sum <-
-  summarize(grouped_ex_dat_mrg,
-            auc = auc(x = Time, y = smoothed))
+  summarize(grouped_ex_dat_mrg, auc = auc(x = Time, y = smoothed))
 ```
 
 
@@ -1776,8 +1644,7 @@ Now imagine that, separately, we've measured the resistance of each of these bac
 We're just going to focus on the bacterial growth in the absence of phage, so let's use `dplyr::filter` to remove the phage added rows.
 
 ```{r}
-ex_dat_mrg_sum <-
-  dplyr::filter(ex_dat_mrg_sum, Phage == "No Phage")
+ex_dat_mrg_sum <- dplyr::filter(ex_dat_mrg_sum, Phage == "No Phage")
 head(ex_dat_mrg_sum)
 ```
 
@@ -1786,13 +1653,12 @@ Now, let's generate some mock antibiotic resistance data. The file containing th
 ```{r}
 set.seed(123)
 antibiotic_dat <- 
-  data.frame(
-    Bacteria_strain = paste("Strain", 1:48),
-    Antibiotic_resis = 
-      ex_dat_mrg_sum$auc[
-        match(paste("Strain", 1:48), 
-              ex_dat_mrg_sum$Bacteria_strain)] * 
-      runif(48, 0.5, 1.5) < mean(ex_dat_mrg_sum$auc))
+  data.frame(Bacteria_strain = paste("Strain", 1:48),
+             Antibiotic_resis = 
+               ex_dat_mrg_sum$auc[
+                 match(paste("Strain", 1:48), 
+                       ex_dat_mrg_sum$Bacteria_strain)] * 
+               runif(48, 0.5, 1.5) < mean(ex_dat_mrg_sum$auc))
 
 head(antibiotic_dat)
 ```
@@ -1800,8 +1666,8 @@ head(antibiotic_dat)
 Great, now we merge our two data frames.
 
 ```{r}
-growth_and_antibiotics <- merge_dfs(ex_dat_mrg_sum,
-                                    antibiotic_dat)
+growth_and_antibiotics <- 
+  merge_dfs(ex_dat_mrg_sum, antibiotic_dat)
 head(growth_and_antibiotics)
 ```
 

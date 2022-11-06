@@ -119,8 +119,8 @@ ggplot(data = data_merged,
 # the area-under-the-curve, saving it to a column named 'auc'
 data_sum <- summarize(
   group_by(data_merged, Well, Bacteria_strain, Phage),
-  maxdens = max(smoothed, na.rm = TRUE),
-  auc = auc(y = smoothed, x = as.numeric(Time)))
+  maxdens = max(Measurements, na.rm = TRUE),
+  auc = auc(y = Measurements, x = as.numeric(Time)))
 
 #Print some of the max densities and auc's
 head(data_sum)

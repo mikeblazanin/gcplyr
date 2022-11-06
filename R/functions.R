@@ -165,10 +165,10 @@ dots_parser <- function(FUN, ...) {
 infer_block_metadata <- function(blocks) {
   #Infer nestedness if nested_metadata is set to NULL
   if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
-    warning("Inferring nested_metadata to be FALSE\n")
+    message("Inferring nested_metadata to be FALSE\n")
     return(FALSE)
   } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
-    warning("Inferring nested_metadata to be TRUE\n")
+    message("Inferring nested_metadata to be TRUE\n")
     return(TRUE)
   } else {
     stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
@@ -2464,10 +2464,10 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
   if (is.null(nested_metadata)) {
     if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
       nested_metadata <- FALSE
-      warning("Inferring nested_metadata to be FALSE\n")
+      message("Inferring nested_metadata to be FALSE\n")
     } else if (all(sapply(blocks, simplify = TRUE, FUN = class) == "list")) {
       nested_metadata <- TRUE
-      warning("Inferring nested_metadata to be TRUE\n")
+      message("Inferring nested_metadata to be TRUE\n")
     } else {
       stop("Unable to infer nested_metadata, this may be because blocks vary in nestedness or are not data.frame's")
     }

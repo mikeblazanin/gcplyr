@@ -2973,6 +2973,7 @@ moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
 #' @param subset_by if subset_by is provided, it should be a vector (same 
 #'                  length as y), the unique values of which will 
 #'                  separate calculations
+#' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @return A vector of values for the plain (if \code{percapita = FALSE})
 #'         or per-capita (if \code{percapita = TRUE}) difference 
 #'         (if \code{return = "difference"}) or derivative 
@@ -2982,7 +2983,8 @@ moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
 #' 
 #' @export   
 calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
-                       x_scale = 1, blank = NULL, subset_by = NULL) {
+                       x_scale = 1, blank = NULL, subset_by = NULL, 
+                       na.rm = TRUE) {
   #Check inputs
   if(!return %in% c("derivative", "difference")) {
     stop("return must be one of c('derivative', 'difference')")
@@ -3020,8 +3022,14 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   for (i in 1:length(unique(subset_by))) {
     indices <- which(subset_by == unique(subset_by)[i])
     
-    #reorder as needed
-    order_temp <- reorder_xy(x = x[indices], y = y[indices])
+    #remove nas
+    narm_temp <- rm_nas(x = x[indices], y = y[indices], 
+                        na.rm = na.rm, stopifNA = FALSE)
+    
+    #Reorder as needed
+    order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
+    
+    #Save vectors to temp vars
     sub_y <- order_temp[["y"]]
     sub_x <- order_temp[["x"]]
     
@@ -3036,7 +3044,16 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       sub_ans <- sub_ans/
         ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
     }
-    ans[indices] <- c(sub_ans[order(order_temp[["order"]])])
+    
+    #Back to original order
+    sub_ans <- c(sub_ans[order(order_temp[["order"]])])
+    
+    #Add NA's
+    sub_ans <- add_nas(x = sub_ans,
+                       nas_indices_removed = narm_temp[["nas_indices_removed"]])
+  
+    #Save results
+    ans[indices] <- sub_ans
   }
   return(ans)
 }

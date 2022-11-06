@@ -350,7 +350,7 @@ reorder <- function(x = NULL, y) {
     #Reorder
     y <- y[start_order]
     x <- x[start_order]
-  } else {start_order <- 1:length(sub_y)}
+  } else {start_order <- 1:length(y)}
   
   return(list(x = x, y = y, order = start_order))
 }
@@ -2598,6 +2598,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param return_fitobject Boolean indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
+#' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
 #'            \code{moving_average}, or \code{moving_median}.
 #'            
@@ -2679,7 +2680,7 @@ smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
       # paste them into the formula
       if(any(names(list(...)) %in% names(formals(mgcv::s)))) {
         idxs <- which(names(list(...)) %in% names(formals(mgcv::s)))
-        formula <- as.formula(
+        formula <- stats::as.formula(
           paste("y ~ s(x, ",
                 paste(paste(names(list(...))[idxs], list(...)[idxs], sep = "="),
                       collapse = ", "),
@@ -2754,7 +2755,7 @@ smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
       #Fill in output if needed
       if(method %in% c("gam", "loess")) {
         out[subset_by == unique(subset_by)[i]] <-
-          predict(temp, newdata = data[subset_by == unique(subset_by)[i], ])
+          stats::predict(temp, newdata = data[subset_by == unique(subset_by)[i], ])
       } else {
         out[subset_by == unique(subset_by)[i]] <- temp[["fitted"]]
       }

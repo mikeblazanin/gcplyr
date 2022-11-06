@@ -3824,6 +3824,8 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 block_tidydesign <- function(tidydesign, collapse = NULL,
                              wellnames_sep = "_", wellnames_colname = "Well") {
   
+  .Deprecated("make_design")
+  
   #Get rownames & colnames from well column
   rownames <- sapply(strsplit(tidydesign[, wellnames_colname],
                               split = wellnames_sep),

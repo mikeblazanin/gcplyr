@@ -1826,10 +1826,9 @@ points(
   pch = 16, cex = 2)
 ```
 
-## Threshold identification
+## Finding threshold-passing events: extinction time
 
-[This section to-be-written]
-
+When bacteria are grown with phages, one common metric for sensitivity to the phage is extinction time. Often, this is defined as the amount of time that passes before the bacterial population rises and then falls below some threshold. [rest of section to be written]
 
 # Combining growth curves data with other data
 

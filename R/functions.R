@@ -337,11 +337,11 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
 #' @param y Vector to reorder based on x
 #' @return A list containing: 
 #' 
-#'     [1] the reordered x
+#'     [1] "x" = the reordered x
 #' 
-#'     [2] the reordered y
+#'     [2] "y" = the reordered y
 #'                            
-#'     [3] the original order, such that:
+#'     [3] "order" = the original order, such that:
 #'                            
 #'     \code{return[["x"]][order(return[["order"]])] == x}
 #'                            
@@ -3040,7 +3040,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       sub_ans <- sub_ans/
         ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
     }
-    ans[indices] <- c(sub_ans[start_order])
+    ans[indices] <- c(sub_ans[order(order_temp[["order"]])])
   }
   return(ans)
 }

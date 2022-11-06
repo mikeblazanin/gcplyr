@@ -3049,8 +3049,9 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     sub_ans <- c(sub_ans[order(order_temp[["order"]])])
     
     #Add NA's
-    sub_ans <- add_nas(x = sub_ans,
-                       nas_indices_removed = narm_temp[["nas_indices_removed"]])
+    sub_ans <- 
+      add_nas(x = sub_ans,
+              nas_indices_removed = narm_temp[["nas_indices_removed"]])[["x"]]
   
     #Save results
     ans[indices] <- sub_ans

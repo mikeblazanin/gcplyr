@@ -2585,7 +2585,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 }
 
 
-# Smoothing ----
+# Preprocessing: Smoothing ----
 
 #' Smooth data
 #' 
@@ -2945,7 +2945,7 @@ moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
   return(results)
 }
 
-# Derivatives ----
+# Processing: Derivatives ----
 
 #' Calculate derivatives of vector of data
 #' 

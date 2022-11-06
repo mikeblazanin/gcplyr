@@ -1834,7 +1834,16 @@ When bacteria are grown with phages, one common metric for sensitivity to the ph
 
 As you approach the end of your growth curves analyses, you have likely summarized the dynamics of your growth curves into one or a few metrics. At this point, you may wish to pull in other sources of data to compare to your growth curves metrics. Just like merging multiple growth curves data frames together, this can be achieved with `merge_dfs`.
 
-Let's use the `example_data_and_designs_sum` from the previous section, where we've summarized our growth curves using area-under-the-curve (although this approach would work with any number of summarized metrics). Now imagine that, separately, we've measured the resistance of each of these bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth.
+Let's use the `example_data_and_designs_sum` from an earlier section, where we've summarized our growth curves using area-under-the-curve (although this approach would work with any number of summarized metrics). 
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(grouped_example_data_and_designs,
+            auc = auc(x = Time, y = smoothed))
+```
+
+
+Now imagine that, separately, we've measured the resistance of each of these bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth.
 
 We're just going to focus on the bacterial growth in the absence of phage, so let's use `dplyr::filter` to remove the phage added rows.
 
@@ -1844,7 +1853,7 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-Now, let's generate some mock antibiotic resistance data. The file containing the antibiotic resistance data should have the bacterial strain names under the same header `Bacterial_strain`, so that merge_dfs knows to match those two columns. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected.
+Now, let's generate some mock antibiotic resistance data. The file containing the antibiotic resistance data should have the bacterial strain names under the same header `Bacterial_strain`, so that merge_dfs knows to match those two columns. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
 
 ```{r}
 set.seed(123)

@@ -32,6 +32,8 @@ independently of the others.}
 by fitting function should be returned. If FALSE,
 just fitted values are returned.}
 
+\item{na.rm}{Boolean whether NA's should be removed before analyzing}
+
 \item{...}{Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
 \code{moving_average}, or \code{moving_median}.
 

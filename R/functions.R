@@ -1950,9 +1950,8 @@ write_blocks <- function(blocks, file = NULL,
         
         if(length(blocks[[i]]$metadata) > 1) {
           #there are other metadata, put them in rows above with WARNING
-          warning("block_name_location = 'filename' but there are multiple
-                 metadata entries. Putting block_names in filename
-                 and writing remaining metadata into file\n")
+          message("block_name_location = 'filename' but there are multiple metadata entries.
+Putting block_names in filename and writing remaining metadata into file\n")
           
           #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
           numcols <- max(2, 1+ncol(blocks[[i]]$data))

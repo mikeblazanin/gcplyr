@@ -246,10 +246,10 @@ test_that("read_wides works correctly", {
   data_in3 <- read_wides(
     files = c("./test_widecurves_data/test.csv",
               "./test_widecurves_data/test.xlsx"),
-    metadata = list(c(5, 5), "row12col2" = c(12, 2)))
+    metadata = list("row5col5" = c(5, 5), "row12col2" = c(12, 2)))
   data3 <- cbind(file = data2[, 1],
                  #The row-col numbers are off bc of headers 
-                 data.frame("E5" = rep(data[4, 5], nrow(data2)),
+                 data.frame("row5col5" = rep(data[4, 5], nrow(data2)),
                             "row12col2" = rep(data[11, 2], nrow(data2))),
                               data2[, -1])
   expect_equal(data_in3,
@@ -259,7 +259,7 @@ test_that("read_wides works correctly", {
   data_in3_excel <- read_wides(
     files = c("./test_widecurves_data/test.csv",
               "./test_widecurves_data/test.xlsx"),
-    metadata = list(c(5, "E"), "row12col2" = c(12, "B")))
+    metadata = list("row5col5" = c(5, "E"), "row12col2" = c(12, "B")))
   expect_equal(data_in3_excel,
                list("test_widecurves_data/test" = data3,
                     "test_widecurves_data/test" = data3))
@@ -293,15 +293,15 @@ test_that("read_wides works correctly with multiple from one file", {
   data_in <- read_wides(
     files = "test_multwideonefile.csv",
     startrow = c(1, 103), endrow = c(101, 203),
-    metadata = list(c(5, "E"), 
+    metadata = list("row5colE" = c(5, "E"), 
                     "row12col2" = list(c(13, 114), c("B", "B"))))
   
   temp1 <- cbind("file" = "test_multwideonefile",
-                 "E5" = "-0.152008845676564",
+                 "row5colE" = "-0.152008845676564",
                  "row12col2" = "0.216802889141846",
                  data)
   temp2 <- cbind("file" = "test_multwideonefile",
-                 "E5" = "-0.152008845676564",
+                 "row5colE" = "-0.152008845676564",
                  "row12col2" = "0.775730889959501",
                  data)
   row.names(temp2) <- 104:203

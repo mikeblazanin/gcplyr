@@ -188,25 +188,25 @@ test_that("write_blocks works for output_format = 'pasted'", {
   
   #For block_name_location = "file"
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+  expect_no_error(write_blocks(blocks = my_blockcurves_allmetad, file = fil,
                output_format = "pasted",
-               block_name_location = "file")
+               block_name_location = "file"))
   
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+  expect_no_error(write_blocks(blocks = my_blockcurves_namesonly, file = fil,
                output_format = "pasted",
-               block_name_location = "file")
+               block_name_location = "file"))
   
   #For block_name_location = "filename"
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+  expect_warning(write_blocks(blocks = my_blockcurves_allmetad, file = fil,
                  output_format = "pasted",
-                 block_name_location = "filename")
+                 block_name_location = "filename"))
   
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+  expect_no_error(write_blocks(blocks = my_blockcurves_namesonly, file = fil,
                  output_format = "pasted",
-                 block_name_location = "filename")
+                 block_name_location = "filename"))
 })
 
 test_that("write_blocks works for output_format = 'multiple'", {
@@ -236,23 +236,23 @@ test_that("write_blocks works for output_format = 'multiple'", {
   
   #For block_name_location = "file"
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+  expect_warning(write_blocks(blocks = my_blockcurves_allmetad, file = fil,
                output_format = "multiple",
-               block_name_location = "file")
+               block_name_location = "file"))
   
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+  expect_warning(write_blocks(blocks = my_blockcurves_namesonly, file = fil,
                output_format = "multiple",
-               block_name_location = "file")
+               block_name_location = "file"))
   
   #For block_name_location = "filename"
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_allmetad, file = fil,
+  expect_message(write_blocks(blocks = my_blockcurves_allmetad, file = fil,
                output_format = "multiple",
-               block_name_location = "filename")
+               block_name_location = "filename"))
   
   fil <- tempfile(fileext = ".csv")
-  write_blocks(blocks = my_blockcurves_namesonly, file = fil,
+  expect_no_error(write_blocks(blocks = my_blockcurves_namesonly, file = fil,
                output_format = "multiple",
-               block_name_location = "filename")
+               block_name_location = "filename"))
 })

@@ -14,7 +14,7 @@ test_that("trans_block_to_wide works on a single dataframe", {
                       dimnames = list(NULL,
                                       paste(rep(paste("V", 1:12, sep = ""), each = 8),
                                             as.character(rep(1:8, 12)),
-                                            sep = "_"))))
+                                            sep = ""))))
   expect_equal(
     trans_block_to_wide(example_dfs_list[[1]], colnames_first = TRUE),
     expected_df)
@@ -25,7 +25,7 @@ test_that("trans_block_to_wide works on a single dataframe", {
                       dimnames = list(NULL,
                                       paste(as.character(rep(1:8, each = 12)),
                                             rep(paste("V", 1:12, sep = ""), 8),
-                                            sep = "_"))))
+                                            sep = ""))))
   for (i in 1:ncol(expected_df2)) {
     colnames(expected_df2)[i] <- 
       as.character(substr(colnames(expected_df2)[i], 
@@ -47,7 +47,7 @@ test_that("trans_block_to_wide works on a list of dataframes", {
                                       dimnames = list(NULL,
                                                       paste(rep(paste("V", 1:12, sep = ""), each = 8),
                                                             as.character(rep(1:8, 12)),
-                                                            sep = "_"))))
+                                                            sep = ""))))
   for (i in 1:nrow(wide_expected)) {
     for (j in 1:ncol(wide_expected)) {
       wide_expected[i, j] <-
@@ -64,7 +64,7 @@ test_that("trans_block_to_wide works on a list of dataframes", {
                       dimnames = list(NULL,
                                       paste(as.character(rep(1:8, each = 12)),
                                             rep(paste("V", 1:12, sep = ""), 8),
-                                            sep = "_"))))
+                                            sep = ""))))
   for (i in 1:nrow(expected_df2)) {
     for (j in 1:ncol(expected_df2)) {
       expected_df2[i, j] <- as.character(as.numeric(i)*as.numeric(j))

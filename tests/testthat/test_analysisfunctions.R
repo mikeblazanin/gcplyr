@@ -1,4 +1,3 @@
-context("Analysis functions")
 library(testthat)
 library(gcplyr)
 

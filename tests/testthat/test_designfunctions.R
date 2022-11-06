@@ -1,4 +1,3 @@
-context("Design functions")
 library(testthat)
 library(gcplyr)
 

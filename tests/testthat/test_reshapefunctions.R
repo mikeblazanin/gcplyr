@@ -1,4 +1,3 @@
-context("Reshaping functions")
 library(testthat)
 library(gcplyr)
 

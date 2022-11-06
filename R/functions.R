@@ -363,7 +363,7 @@ reorder_xy <- function(x = NULL, y) {
 
 
 
-# Read files ----
+# Read functions ----
 
 #' An internal function that handles name inference logic for other functions
 #' 
@@ -1264,7 +1264,7 @@ read_tidys <- function(files, extension = NULL,
 }
 
 
-# Import block-shaped (read, uninterleave, transform to wide) ----
+# Import functions (for block-shaped files) ----
 
 #' Import blockmeasures
 #' 
@@ -1417,7 +1417,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 }
 
 
-# Make designs ----
+# Design functions ----
 
 #' Make design data.frame(s)
 #' 
@@ -2032,7 +2032,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
 }
 
 
-# Reshape (including merge) ----
+# Manipulation functions ----
 
 #' Transform blocks to wides
 #' 

@@ -1095,7 +1095,7 @@ Smoothing data is a step that alters the values you will analyze. Because of tha
 
 To use `smooth_data`, pass your x and y values, your method of choice, and any additional arguments needed for the method. It will return a vector of your smoothed y values.
 
-Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y whose unique values denote the subset groups. (Note: if you're using `smooth_data` within `dplyr::mutate`on a grouped `data.frame`, there's no need for the `subset_by` argument)
+Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y whose unique values denote the subset groups. (Note: if you're using `smooth_data` within `dplyr::mutate` on a grouped `data.frame`, there's no need for the `subset_by` argument)
 
 ### Smoothing with moving-average
 
@@ -1122,7 +1122,7 @@ example_data_and_designs$smoothed11 <-
               window_width_n = 11)
 
 #What does the smoothed data look like compared to the noisy original?
-#Darker lines are wider window_width_n's and more "smoothed"
+#Lighter lines are wider window_width_n's and more "smoothed"
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
@@ -1141,6 +1141,7 @@ lines(
   col = "gray65")
 
 #What does the smoothing look like on log axes?
+#Lighter lines are wider window_width_n's and more "smoothed"
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   log10(
@@ -1167,7 +1168,7 @@ Here we can see that `moving-average` has helped reduce the effects of some of t
 
 ### Smoothing with moving-median
 
-For `moving-median`, the tuning parameter is also `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 5, and 7 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
+For `moving-median`, the tuning parameter is also `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
 
 ```{r}
 example_data_and_designs$smoothed3 <-
@@ -1190,7 +1191,7 @@ example_data_and_designs$smoothed11 <-
               window_width_n = 11)
 
 #What does the smoothed data look like compared to the noisy original?
-#Darker lines are wider window_width_n's and more "smoothed"
+#Lighter lines are wider window_width_n's and more "smoothed"
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   example_data_and_designs$Measurements[example_data_and_designs$Well == "A1"],
@@ -1209,6 +1210,7 @@ lines(
   col = "gray65")
 
 #What does the smoothing look like on log axes?
+#Lighter lines are wider window_width_n's and more "smoothed"
 plot(
   example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
   log10(

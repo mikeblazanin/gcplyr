@@ -1501,7 +1501,7 @@ For growth curves, this means we will `group_by` our data so that every well is 
 
 In the next section, we provide a simple example of how the `max` function is used with `group_by` and `summarize` to calculate lag time and the maximum per-capita growth rate. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the remaining `gcplyr` functions, which (again) have to be used *within* `summarize` to work correctly.
 
-## Using simple summarize functions: maximum and minimum density
+## Summarizing with simple base functions: maximum and minimum density
 One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built in `max` function.
 
 First, we need to group our data. `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
@@ -1534,7 +1534,7 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-## Calculating area under the curve
+## Summarizing with simple gcplyr functions: area under the curve
 
 One common metric of growth curves is the total area under the curve. `gcplyr` has an `auc` function to easily calculate this area. Just like `min` and `max`, it needs to be used inside `summarize` on a `data.frame` that has been grouped.
 
@@ -1550,7 +1550,7 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-## Using summarize functions on subsets: lag time and maximum growth rate
+## Summarizing on subsets: lag time and maximum growth rate
 
 Sometimes, we need to provide limits on the data our simple functions will work with. We can demonstrate this in the process of calculating two common metrics we want to identify: 
 
@@ -1655,120 +1655,176 @@ example_data_and_designs_sum <-
 head(example_data_and_designs_sum)
 ```
 
-That looks great! Well B10 seems like it's growing at it's fastest rate quite a bit later than the other wells, is something going wrong there? Actually, as we'll see later, that's actually a result! (Spoiler: it has to do with the Phage Added).
+That looks great! Although, Well B10 seems like it's growing at it's fastest quite a bit later than the other wells, is something going wrong there? Actually, as we'll see later, that's actually a result! (Spoiler: it has to do with the Phage Added).
 
+## Finding local extrema: peak density and diauxic shifts
 
-########################################## Pick up edits here!!!
+We've previously shown how you can use `max` and `min` to find the global maxima and minima in data. However, what about *local* maxima or minima? That is, peaks and valleys that are obvious to the eye but aren't the highest or smallest values in the entire time series. In this section, we'll show how you can use the `gcplyr` functions `first_peak` and `find_local_extrema` to find points that are local maxima or minima in your data.
 
+### Finding the first peak: peak density
 
-## Finding local extrema: maximum growth rate, diauxic shift
+One particular special case we're often interested in is the first peak in some set of data. For instance, when bacteria are grown with phages, the density they reach before they start declining due to phage predation can be a measure of their susceptibility to the phage. 
 
-One common analysis step is identifying peaks and valleys in growth curve data, whether it be in the original absorbance data, or in one of the derivatives in the curve. `gcplyr` has several functions to facilitate identifying these local extrema.
-
-### A common use-case: the first peak
-
-One of the main peaks or valleys users are interested in identifying is the first peak. For instance, in absorbance data, the first peak could be the maximum absorbance reached before the population begins to decline as a result of phages or antibiotics. Whereas in derivative data, the first peak could show the maximum growth rate of the bacteria.
-
-To identify the first peak, use `first_peak`. `first_peak` simply requires the y data you want to identify the peak in. Let's use the derivative we calculated in the previous section, since it has a clear peak we might want to identify.
-
-```{r}
-#Let's plot the derivative in units of Abs/hour again
-plot(example_data_and_designs$Time[
-  example_data_and_designs$Well == "A2"],
-     example_data_and_designs$deriv_hr[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "derivative (Absorbance/hr)")
-```
-
-Now let's identify the peak in our data. First, we'll group our data using `dplyr::group_by`, then use `first_peak` inside our summarize command. (Remember to load dplyr with `library(dplyr)` if you haven't already). We'll save the index of the first peak in a column titled `first_peak_index`.
-
-```{r}
-example_data_and_designs_grouped <- 
-  group_by(example_data_and_designs,
-           Bacteria_strain, Phage, Well)
-example_data_and_designs_sum <-
-  summarize(example_data_and_designs_grouped,
-            first_peak_index = first_peak(deriv_hr))
-head(example_data_and_designs_sum)
-```
-
-By default, `first_peak` returns the index of the timepoint where the first peak is located *within* the group. If you want the x or y of the first peak, simply set `return = "x"` or `return = "y"`. Note that if `return = "x"`, you must specify the x values to `first_peak`
+To identify the first peak, we can use the `gcplyr` function `first_peak`. `first_peak` simply requires the `y` data you want to identify the peak in. In this case, that's `smoothed`. We also need to specify whether we want the function to `return` the `index` of the first peak, the `x` value of the peak, or the `y` value of the peak. We'll get the `x` and `y` values, saving them in columns `first_peak_x` and `first_peak_y`, respectively. (Note that if you want the x-value, you have to provide the x values to `first_peak`). As usual, `first_peak` needs to be used inside of a `summarize` command on data that has already been grouped.
 
 ```{r}
 example_data_and_designs_sum <-
-  summarize(example_data_and_designs_grouped,
-            first_peak_x = first_peak(deriv_hr, x = Time, return = "x"),
-            first_peak_y = first_peak(deriv_hr, return = "y"))
+  summarize(grouped_example_data_and_designs,
+            first_peak_x = first_peak(x = Time, y = smoothed, return = "x"),
+            first_peak_y = first_peak(y = smoothed, return = "y"))
+
 head(example_data_and_designs_sum)
 ```
 
-And now that we have x and y values, we can plot them to confirm that `first_peak` finds what we expect.
+Let's plot these points from a few wells to confirm they are what we expect:
 
 ```{r}
-plot(example_data_and_designs$Time[
-       example_data_and_designs$Well == "A2"],
-     example_data_and_designs$deriv_hr[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "derivative (Absorbance/hr)")
-points(x = example_data_and_designs_sum$first_peak_x[
-             example_data_and_designs_sum$Well == "A2"],
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
+points(
+  x = example_data_and_designs_sum$first_peak_x[
+    example_data_and_designs_sum$Well == "A1"],
   y = example_data_and_designs_sum$first_peak_y[
-        example_data_and_designs_sum$Well == "A2"],
+    example_data_and_designs_sum$Well == "A1"],
   pch = 16, cex = 2)
 ```
 
-Here we can see that `first_peak` has found *a* peak, but perhaps not the large one we're primarily interested in. If we want `first_peak` to be less sensitive to local peaks, we can increase the `width_limit_n` argument (which defaults to 20% of the length of `y`, in this case `= 19`).
+```{r}
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A7"],
+  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A7")
+points(
+  x = example_data_and_designs_sum$first_peak_x[
+    example_data_and_designs_sum$Well == "A7"],
+  y = example_data_and_designs_sum$first_peak_y[
+    example_data_and_designs_sum$Well == "A7"],
+  pch = 16, cex = 2)
+```
+
+Hmmm, in Well A1 `first_peak` worked perfectly well, but in Well A7 it seems to have gotten stuck on some earlier fluctuations. Just like in smoothing, **peak-finding also has tuning parameters**. For `first_peak` and `find_local_extrema`, these are `width_limit_n`, `width_limit` and `height_limit`:
+
+* `width_limit` determines the width of the window used to search for peaks and valleys, in units of `x`
+* `width_limit_n` determines the width of the window, in units of number of data points
+* `height_limit` determines the shortest peak or shallowest valley the window will cross, in units of `y`
+
+If we want `first_peak` to be less sensitive to local peaks, we can increase these parameters (the default setting is `width_limit_n` equal to 20% of the length of `y`, which is ~19 here). Let's try that:
 
 ```{r}
 example_data_and_designs_sum <-
-  summarize(example_data_and_designs_grouped,
-            first_peak_x = first_peak(deriv_hr, x = Time, return = "x",
+  summarize(grouped_example_data_and_designs,
+            first_peak_x = first_peak(x = Time, y = smoothed, return = "x",
                                       width_limit_n = 39),
-            first_peak_y = first_peak(deriv_hr, return = "y",
+            first_peak_y = first_peak(y = smoothed, return = "y",
                                       width_limit_n = 39))
-head(example_data_and_designs_sum)
-plot(example_data_and_designs$Time[
-       example_data_and_designs$Well == "A2"],
-     example_data_and_designs$deriv_hr[
-       example_data_and_designs$Well == "A2"],
-  xlab = "time", ylab = "derivative (Absorbance/hr)")
-points(x = example_data_and_designs_sum$first_peak_x[
-             example_data_and_designs_sum$Well == "A2"],
+
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A7"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A7"],
+  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A7")
+points(
+  x = example_data_and_designs_sum$first_peak_x[
+    example_data_and_designs_sum$Well == "A7"],
   y = example_data_and_designs_sum$first_peak_y[
-        example_data_and_designs_sum$Well == "A2"],
+    example_data_and_designs_sum$Well == "A7"],
   pch = 16, cex = 2)
 ```
 
+That worked great! But what if you want to find an extrema that's *not* the first peak? In the next section, we'll learn how to use `find_local_extrema` to identify all kinds of local extrema.
 
-In the next section, we'll learn how to use `find_local_extrema` to identify other kinds of local extrema, not just the first peak.
+### Finding any kind of local extrema: diauxic shifts
 
-### Finding any kind of local extrema
+We've seen how `first_peak` can be used to identify the first peak in data. But what about other kinds of local extrema? The first minimum? The *second* peak?
 
-We've seen how `first_peak` can be used to identify the first peak. But what about other extrema in the data? The first minimum? The *second* peak? Etc.
+In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. In fact, `first_peak` is really just a special case of `find_local_extrema`. Just like `first_peak`, `find_local_extrema` only requires a vector of y data in which to find the local extrema, and can return the `index`, `x` value, or `y` of the extrema it finds.
 
-In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. `find_local_extrema` works very similarly to `first_peak`, but with a few additional options that users can specify to get exactly the kinds of peaks and valleys they want.
+Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`. However, `find_local_extrema` will always return a vector of all the extrema found, so users must use brackets to select which one they want `summarize` to save.
 
-Just like `first_peak`, `find_local_extrema` only requires a vector of y data in which to find the local extrema, and will return the index of the extrema *within* the current group. By altering the `return` argument to `return = "x"` or `return = "y"`, find_local_extrema will return x and y values rather than indices.
+Let's dig into an example: identifying diauxic shifts. To refresh your memory on what we saw in the section [A simple derivative], here's a plot of the derivative of Well A1 over time.
 
-Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`. However, `find_local_extrema` will always return a vector of all the extrema found, so users should use brackets to specify which one they want.
+```{r}
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+     example_data_and_designs$deriv[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "derivative (Absorbance/sec)")
+```
 
-For instance, here's an example where we've used `find_local_extrema` to identify the first peak in the data *that includes endpoints*:
+Here we can clearly see there is a second, slower, burst of growth after the first wave of growth. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+
+How could we identify the time when the bacteria switch from their first burst of growth to their second? We could find the first minima (that isn't just the start) in the `deriv` values. To do so, we specify to `find_local_extrema` that we want `return = "x"` and we don't want maxima returned:
 
 ```{r}
 example_data_and_designs_sum <-
-  summarize(example_data_and_designs_grouped,
-            first_peak_x = find_local_extrema(
-              y = deriv_hr, x = Time, return = "x",
-              return_maxima = TRUE, return_minima = FALSE,
-              return_endpoints = TRUE, width_limit_n = 39)[1],
-            first_peak_y = find_local_extrema(
-              y = deriv_hr, return = "y",
-              return_maxima = TRUE, return_minima = FALSE,
-              return_endpoints = TRUE, width_limit_n = 39)[1])
-head(example_data_and_designs_sum)
+  summarize(
+    grouped_example_data_and_designs,
+    diauxie_x = find_local_extrema(x = Time, y = deriv, return = "x",
+                                   return_maxima = FALSE, return_minima = TRUE,
+                                   width_limit_n = 39)[2])
+
+#Plot data with vertical line at detected diauxie
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+     example_data_and_designs$deriv[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "derivative (Absorbance/sec)")
+abline(
+  v = example_data_and_designs_sum$diauxie_x[
+    example_data_and_designs_sum$Well == "A1"])
 ```
 
-Additionally, note that with `find_local_extrema`, users must specify at least one of the tuning parameters: `width_limit_n` or `height_limit`. These parameters control how sensitive the function is to smaller local peaks and valleys. `width_limit_n` is the number of data points wide the algorithm will search at each step, meaning that a smaller `width_limit_n` will be more sensitive to narrow peaks and valleys. `height_limit` (in units of `y`) limits the depth of the peaks and valleys the algorithm will search over at each step, meaning that a smaller `height_limit` will be more sensitive to shallow peaks and valleys.
+Now that we've found the point where the bacteria switch, we could quite easily find the density where that happens. To make it easier to follow, we'll save the *index* where the diauxic shift occurs to a column titled `diaxuie_idx`. To get that, we simple run `find_local_extrema` with `return = "index"`. Then, we can get the `smoothed` value at that index:
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(
+    grouped_example_data_and_designs,
+    diauxie_x = find_local_extrema(x = Time, y = deriv, return = "x",
+                                   return_maxima = FALSE, return_minima = TRUE,
+                                   width_limit_n = 39)[2],
+    diauxie_idx = find_local_extrema(x = Time, y = deriv, return = "index",
+                                   return_maxima = FALSE, return_minima = TRUE,
+                                   width_limit_n = 39)[2],
+    diauxie_dens = smoothed[diauxie_idx])
+
+#Now let's plot it on the original density data
+plot(example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$smoothed[example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
+points(
+  x = example_data_and_designs_sum$diauxie_x[
+    example_data_and_designs_sum$Well == "A1"],
+  y = example_data_and_designs_sum$diauxie_dens[
+    example_data_and_designs_sum$Well == "A1"],
+  pch = 16, cex = 2)
+```
+
+Something that was hard to see on the density plot has now been easily quantified and can be visualized exactly where the shift occurs.
+
+### Combining subsets and local extrema: growth rate during diauxie
+
+In the previous section we identified when the bacteria shifted into their second burst of growth. Can we find out what the peak per-capita growth rate was during that second burst? Yes, we just have to put together some of the things we've learned already. In particular, we're going to combine our use of `find_local_extrema`, `max`, and subsets to find the `max(deriv_percap_hr)` during the times after the diauxic shift:
+
+```{r}
+example_data_and_designs_sum <-
+  summarize(
+    grouped_example_data_and_designs,
+    diauxie_x = find_local_extrema(x = Time, y = deriv, return = "x",
+                                   return_maxima = FALSE, return_minima = TRUE,
+                                   width_limit_n = 39)[2],
+    diauxie_percap = max(deriv_percap_hr[Time >= diauxie_x], na.rm = TRUE),
+    diauxie_percap_time = 
+      Time[Time >= diauxie_x][which.max(deriv_percap_hr[Time >= diauxie_x])])
+
+#Plot per-capita growth with a point at diauxie_percap_time, diauxie_percap
+plot(
+  example_data_and_designs$Time[example_data_and_designs$Well == "A1"],
+  example_data_and_designs$deriv_percap_hr[
+    example_data_and_designs$Well == "A1"],
+  xlab = "time", ylab = "per-capita growth rate (/hr)",
+  main = "Well A1")
+points(
+  x = example_data_and_designs_sum$diauxie_percap_time[
+    example_data_and_designs_sum$Well == "A1"],
+  y = example_data_and_designs_sum$diauxie_percap[
+    example_data_and_designs_sum$Well == "A1"],
+  pch = 16, cex = 2)
+```
 
 ## Threshold identification
 

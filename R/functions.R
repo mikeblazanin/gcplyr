@@ -3019,15 +3019,11 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   ans <- rep(NA, length(y))
   for (i in 1:length(unique(subset_by))) {
     indices <- which(subset_by == unique(subset_by)[i])
-    sub_y <- y[indices]
-    if(!is.null(x)) {
-      #Save orig order info so we can put things back at the end
-      sub_x <- x[indices]
-      start_order <- order(sub_x) 
-      #Reorder
-      sub_y <- sub_y[start_order]
-      sub_x <- sub_x[start_order]
-    } else {start_order <- 1:length(sub_y)}
+    
+    #reorder as needed
+    order_temp <- reorder_xy(x = x[indices], y = y[indices])
+    sub_y <- order_temp[["y"]]
+    sub_x <- order_temp[["x"]]
     
     #Blank subtraction
     if(!is.null(blank)) {sub_y <- sub_y - blank[i]}

@@ -335,15 +335,21 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
 #' 
 #' @param x Vector to reorder based on
 #' @param y Vector to reorder based on x
-#' @return A list containing: the reordered x
+#' @return A list containing: 
 #' 
-#'                            the reordered y
+#'     [1] the reordered x
+#' 
+#'     [2] the reordered y
 #'                            
-#'                            the original order, such that 
-#'                            return[["x"]][order(return[["order"]])] == x and
-#'                            return[["y"]][order(return[["order"]])] == y
+#'     [3] the original order, such that:
+#'                            
+#'     \code{return[["x"]][order(return[["order"]])] == x}
+#'                            
+#'     and
+#'                            
+#'     \code{return[["y"]][order(return[["order"]])] == y}
 #' 
-reorder <- function(x = NULL, y) {
+reorder_xy <- function(x = NULL, y) {
   if(!is.null(x)) {
     #Save orig order info so we can put things back at the end
     start_order <- order(x)
@@ -2819,7 +2825,7 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
                       na.rm = na.rm, stopifNA = TRUE)
   
   #Reorder data
-  order_temp <- reorder(x = narm_temp[["x"]], y = narm_temp[["y"]])
+  order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
   
   #Make temp vectors of x and y
   x <- order_temp[["x"]]
@@ -2907,7 +2913,7 @@ moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
   narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
                       na.rm = na.rm, stopifNA = TRUE)  
   #Reorder data
-  order_temp <- reorder(x = narm_temp[["x"]], y = narm_temp[["y"]])
+  order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
   
   #Make temp vectors of x and y
   x <- order_temp[["x"]]

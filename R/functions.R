@@ -2677,8 +2677,8 @@ smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
     } else {
       #For gam we detect any args that need to be passed within s() and
       # paste them into the formula
-      if(any(names(list(...)) %in% names(formals(s)))) {
-        idxs <- which(names(list(...)) %in% names(formals(s)))
+      if(any(names(list(...)) %in% names(formals(mgcv::s)))) {
+        idxs <- which(names(list(...)) %in% names(formals(mgcv::s)))
         formula <- as.formula(
           paste("y ~ s(x, ",
                 paste(paste(names(list(...))[idxs], list(...)[idxs], sep = "="),

@@ -1,15 +1,6 @@
 library(testthat)
 library(gcplyr)
 
-#For testing smooth_data
-
-
-# temp <- mgcv::gam(dens ~ s(time), data=data)
-# temp <- mgcv::gam(formula = formula, data = data)
-# 
-# plot(test$time, test$dens)
-# lines(test$time, temp$fitted)
-
 test_that("Moving average returns correctly", {
   set.seed(1)
   data <- data.frame("time" = 1:100,

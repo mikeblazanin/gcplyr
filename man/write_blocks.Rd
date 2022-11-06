@@ -8,9 +8,10 @@ write_blocks(
   blocks,
   file = NULL,
   output_format = "multiple",
-  block_name_location = "filename",
+  block_name_location = NULL,
   paste_sep = "_",
   filename_sep = "_",
+  na = "",
   ...
 )
 }
@@ -40,7 +41,16 @@ write_blocks(
                      
                      "multiple" will write each block to its own csv file}
 
-\item{block_name_location}{Either 'filename' or 'file'.
+\item{block_name_location}{Either NULL, 'filename' or 'file'.
+
+                          If NULL, will be automatically selected based
+                          on \code{output_format}. For 
+                          \code{output_format = 'single'} and 
+                          \code{output_format = 'pasted'}, 
+                          \code{block_name_location} defaults to \code{file}.
+                          For \code{output_format = 'multiple'}, 
+                          \code{block_name_location} defaults to 
+                          \code{filename}
 
                           If 'filename', the \code{block_name} metadata 
                           will be used as the output file name(s) when
@@ -56,7 +66,9 @@ will be used to paste together blocks.}
 \item{filename_sep}{What character will be used to paste together 
 filenames when block_name_location = 'filename'.}
 
-\item{...}{Other arguments passed to \code{write.csv}}
+\item{na}{The string to use for missing values in the data.}
+
+\item{...}{Other arguments passed to \code{write.table}}
 }
 \value{
 Nothing, but R objects are written to files

@@ -6,7 +6,7 @@
 \usage{
 trans_block_to_wide(
   blocks,
-  wellnames_sep = "_",
+  wellnames_sep = "",
   nested_metadata = NULL,
   colnames_first = FALSE
 )
@@ -16,7 +16,8 @@ trans_block_to_wide(
 data.frames}
 
 \item{wellnames_sep}{String to use as separator for well names between 
-rowname and column name}
+rowname and column name (ordered according to
+\code{colnames_first}}
 
 \item{nested_metadata}{A Boolean indicating the existence of nested metadata
 in the \code{blockmeasures} list, e.g. as is typically

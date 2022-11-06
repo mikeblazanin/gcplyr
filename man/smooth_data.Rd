@@ -6,17 +6,19 @@
 \usage{
 smooth_data(
   x = NULL,
-  y,
+  y = NULL,
   method,
   subset_by = NULL,
   return_fitobject = FALSE,
+  na.rm = TRUE,
   ...
 )
 }
 \arguments{
 \item{x}{An (optional) vector of predictor values to smooth along (e.g. time)}
 
-\item{y}{A vector of response values to be smoothed (e.g. density)}
+\item{y}{A vector of response values to be smoothed (e.g. density). If NULL,
+\code{formula} and \code{data} *must* be provided via \code{...}}
 
 \item{method}{Argument specifying which smoothing method should
 be used to smooth data. Options include 
@@ -34,9 +36,21 @@ just fitted values are returned.}
 \code{moving_average}, or \code{moving_median}.
 
 For \code{moving_average} and \code{moving_median}, 
-\code{window_width_n} is required. 
+\code{window_width_n} is required and sets the number of
+data points wide the moving window is. Larger values will
+be more "smoothed"
 
-For \code{loess} and \code{gam}, see details.}
+For \code{loess}, the \code{span} argument sets the fraction of
+data points that should be included in each calculation. It's
+typically best to specify, since the default of 0.75 is often
+too large for growth curves data. Larger values will be more
+"smoothed"
+
+For \code{gam}, both arguments to \code{gam} and \code{s} can
+be provided via \code{...}. Most frequently, the the \code{k} 
+argument to \code{s} sets the number of "knots" the
+spline-fitting can use. Smaller values will be more "smoothed".
+See Details for additional arguments options.}
 }
 \value{
 If return_fitobject == FALSE:
@@ -58,16 +72,26 @@ If return_fitobject == FALSE:
 This function calls other functions to smooth growth curve data
 }
 \details{
-For smoothing using \code{loess} or \code{gam} that depends on 
-         more than one predictor, \code{formula} and \code{data} can be
-         passed to \code{smooth_data} via the \code{...} argument and will
-         override the \code{x} and \code{y} arguments.
+When using \code{method = "gam"}, advanced users may also modify 
+           other parameters of \code{s()}, including the smoothing basis 
+           \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
+           the default), cubic regressions (\code{bs = "cr"}), or many other 
+           options (see \code{?mcgv::s}). We recommend leaving the default 
+           thin plate regressions, whose main drawback is that they are 
+           computationally intensive to calculate. For growth curves data, 
+           this is unlikely to be relevant.
+           
+         As an alternative to passing \code{y}, for more advanced needs 
+         with \code{loess} or \code{gam}, \code{formula} and \code{data} can 
+         be passed to \code{smooth_data} via the \code{...} argument 
+         (in lieu of \code{y}).
          
-         The formula should specify the response (e.g. density) 
+         In this case, the formula should specify the response (e.g. density) 
          and predictors. For \code{gam} smoothing, the formula should
          typically be of the format: y ~ s(x), which uses 
-         \code{mgcv::s} to smooth the data
-         
+         \code{mgcv::s} to smooth the data. 
          The data argument should be a \code{data.frame} containing the
-         variables in the formula
+         variables in the formula.
+         In such cases, subset_by can still be specified as a vector
+         as long as \code{nrow(data)}
 }

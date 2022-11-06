@@ -10,12 +10,12 @@ make_design(
   block_row_names = NULL,
   block_col_names = NULL,
   output_format = "tidy",
-  wellnames_sep = "_",
+  wellnames_numeric = FALSE,
+  wellnames_sep = "",
   wellnames_colname = "Well",
-  wellnames_Excel = TRUE,
+  colnames_first = FALSE,
   lookup_tbl_start = 1,
   pattern_split = "",
-  colnames_first = FALSE,
   ...
 )
 }
@@ -37,17 +37,29 @@ is correct, choose 'blocks' or 'blocks_pasted'.
 For writing to block-shaped file(s), choose 'blocks' or
 'blocks_pasted'.}
 
+\item{wellnames_numeric}{If \code{block_row_names} or \code{block_col_names}
+are not specified, then names will be generated
+automatically according to \code{wellnames_numeric}.
+
+If \code{wellnames_numeric} is TRUE, rows and columns
+will be numbered with "R" and "C" prefixes, respectively.
+
+If \code{wellnames_numeric} is FALSE, rows will be
+lettered A through Z, while columns will be numbered}
+
 \item{wellnames_sep}{A string used when concatenating rownames and column
-names to create well names}
+names to create well names, when 
+\code{output_format = "wide"} or 
+\code{output_format = "tidy"}}
 
 \item{wellnames_colname}{Header for newly-created column containing the
-well names}
+well names, when \code{output_format = "tidy"}}
 
-\item{wellnames_Excel}{If \code{block_row_names} or \code{block_col_names}
-are not specified, should rows and columns be named
-using Excel-style base-26 lettering for rows
-and numbering for columns? If FALSE, rows and columns
-will be numbered with "R" and "C" prefix.}
+\item{colnames_first}{When wellnames are created for 
+\code{output_format = "wide"} or 
+\code{output_format = "tidy"} by \code{paste}-ing the
+rownames and column names, should the column names
+come first.}
 
 \item{lookup_tbl_start}{Value in the lookup table for the split pattern values
 that corresponds to the first value in the vector.
@@ -58,11 +70,7 @@ for example, lookup_tbl_start = "A", then the lookup
 table will now be c(A,B,...Y,Z,a,b,...,y,z)}
 
 \item{pattern_split}{character to split pattern elements provided in
-\code{...} by}
-
-\item{colnames_first}{In the wellnames created by \code{paste}-ing the
-rownames and column names, should the column names
-come first}
+\code{...} by, if they're not already a vector}
 
 \item{...}{Each \code{...} argument must be a list with five elements:
 
@@ -72,13 +80,13 @@ come first}
              
              3. a vector of the columns the pattern should be applied to
              
-             4. a string of the pattern itself, where numbers refer to
-              the indices in the values vector
+             4. a string or vector denoting the pattern in which the
+                values should be filled into the rows and columns specified.
+                
+                If it's a string, will be split by \code{pattern_split}.
+                Pattern will be used as the indices of the values vector.
               
-              0's refer to NA
-              
-              This pattern will be split using pattern_split, which
-              defaults to every character
+                0's refer to NA
               
              5. a Boolean for whether this pattern should be filled byrow}
 }

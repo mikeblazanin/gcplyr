@@ -13,8 +13,9 @@ import_blockmeasures(
 )
 }
 \arguments{
-\item{files}{Vector of filenames (as strings), each of which is a blockmeasures
-formatted file. Inputs can be .csv, .xls, or .xlsx}
+\item{files}{Vector of filenames (as strings), each of which is a 
+block-shaped file containing measures data. File formats
+can be .csv, .xls, or .xlsx}
 
 \item{num_plates}{Number of plates. If multiple plates uninterleave will be
 used to separate blockmeasures into those plates accordingly}
@@ -31,4 +32,15 @@ or \code{widen_blocks}}
 Function to import blockmeasures from files and return widemeasures
 This function acts as a wrapper to call read_blocks, uninterleave, 
 then trans_block_to_wide in one go
+}
+\details{
+Common arguments that you may want to provide include:
+
+             \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
+             \code{sheet} - specifying the location of design information 
+             inside \code{files} to \code{read_blocks}
+             
+             \code{metadata} - specifying metadata to \code{read_blocks}
+             
+             See help for \code{read_blocks} for more details
 }

@@ -16,7 +16,8 @@ read_blocks(
   block_names = NULL,
   header = NA,
   sider = NA,
-  wellnames_Excel = TRUE,
+  wellnames_numeric = FALSE,
+  na.strings = c("NA", ""),
   ...
 )
 }
@@ -41,12 +42,21 @@ row and column of the files.}
 \item{sheet}{(optional) If data is in .xls or .xlsx files, which sheet it 
 is located on. Defaults to the first sheet if not specified}
 
-\item{metadata}{(optional) non-spectrophotometric data that should be associated
-with each read blockmeasures. A list where each item in the
-list is a vector of length 2. Each vector should provide the
-row and column where the metadata is located in the blockmeasures
-input file. If the list is named those names will be inherited
-to the output metadata.}
+\item{metadata}{(optional) non-spectrophotometric data that should be 
+associated with each read blockmeasures. A named list where 
+each item in the list is either: a vector of length 2, or
+a list containing two vectors. 
+
+In the former case, each vector should provide the row and 
+column where the metadata is located in all of the
+blockmeasures input files.
+
+In the latter case, the first vector should provide the rows
+where the metadata is located in each of the corresponding
+input files, and the second vector should provide the 
+columns where the metadata is located in each of the
+corresponding input files. (This case is typically used 
+when reading multiple blocks from a single file.)}
 
 \item{block_names}{(optional) vector of names corresponding to each plate
 in \code{files}. If not provided, block_names are inferred
@@ -58,7 +68,7 @@ column names as its first line. If \code{header = NA}
 will attempt to infer the presence of column names. If
 \code{header = FALSE} or no column names are inferred when 
 \code{header = NA}, column names will be generated
-automatically according to \code{wellnames_Excel}}
+automatically according to \code{wellnames_numeric}}
 
 \item{sider}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 such values, indicating whether the file(s) contains the
@@ -66,17 +76,23 @@ row names as its first line. If \code{sider = NA}
 will attempt to infer the presence of row names. If
 \code{sider = FALSE} or no row names are inferred when 
 \code{sider = NA}, row names will be generated
-automatically according to \code{wellnames_Excel}}
+automatically according to \code{wellnames_numeric}}
 
-\item{wellnames_Excel}{If row names and column names are not provided in the
+\item{wellnames_numeric}{If row names and column names are not provided in the
 input dataframe as specified by \code{header}
 and \code{sider}, then names will be generated
-automatically.
-If \code{wellnames_Excel} is TRUE, generated names
-will use Excel-style base-26 lettering for columns
-and numbers for rows. 
-If \code{wellnames_Excel} is FALSE, rows and columns
-will be numbered with "R" and "C" prefixes, respectively.}
+automatically according to \code{wellnames_numeric}.
+
+If \code{wellnames_numeric} is TRUE, rows and columns
+will be numbered with "R" and "C" prefixes, respectively.
+
+If \code{wellnames_numeric} is FALSE, rows will be
+lettered A through Z, while columns will be numbered}
+
+\item{na.strings}{A character vector of strings which are to be interpreted
+as \code{NA} values by \code{utils::read.csv},
+\code{readxl::read_xls}, \code{readxl::read_xlsx},
+or \code{utils::read.table}}
 
 \item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx},
@@ -93,7 +109,7 @@ A function that reads block measures into the R environment
 \details{
 For metadata, \code{read_blocks} can handle an arbitrary number of additional
  pieces of information to extract from each blockcurve file as metadata.
- These pieces of information are specified as a list of (named) vectors
+ These pieces of information are specified as a named list of vectors
  where each vector is the c(row, column) where the information is to be
  pulled from in the input files.
 

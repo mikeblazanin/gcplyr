@@ -16,7 +16,7 @@ read_wides(
   run_names = NULL,
   names_to_col = "file",
   metadata = NULL,
-  metadata_Excel_names = TRUE,
+  na.strings = c("NA", ""),
   ...
 )
 }
@@ -56,20 +56,26 @@ If \code{names_to_col} is a string, that string will be
 the column header for the column where the names will be
 stored}
 
-\item{metadata}{(optional) non-spectrophotometric data that should be associated
-with each widemeasures. A list where each item in the
-list is a vector of length 2. Each vector should provide the
-row and column where the metadata is located in the widemeasures
-input file. If the list is named those names will be inherited
-to the output metadata.}
+\item{metadata}{(optional) non-spectrophotometric data that should be 
+associated with each read widemeasures. A named list where 
+each item in the list is either: a vector of length 2, or
+a list containing two vectors. 
 
-\item{metadata_Excel_names}{Boolean. If metadata do not have names, names
-will be generated. If \code{metadata_Excel_names}
-is TRUE, names will be in Excel format
-(e.g. D7 is the 4th column, 7th row).
-If FALSE, names will be numbered with "R" and "C"
-prefixes for row and column.
-(e.g. R4C7 is the 4th column, 7th row)}
+In the former case, each vector should provide the row and 
+column where the metadata is located in all of the
+blockmeasures input files.
+
+In the latter case, the first vector should provide the rows
+where the metadata is located in each of the corresponding
+input files, and the second vector should provide the 
+columns where the metadata is located in each of the
+corresponding input files. (This case is typically used 
+when reading multiple blocks from a single file.)}
+
+\item{na.strings}{A character vector of strings which are to be interpreted
+as \code{NA} values by \code{utils::read.csv},
+\code{readxl::read_xls}, \code{readxl::read_xlsx},
+or \code{utils::read.table}}
 
 \item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx}, or

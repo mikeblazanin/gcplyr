@@ -14,6 +14,7 @@ read_tidys(
   sheet = NULL,
   run_names = NULL,
   names_to_col = NULL,
+  na.strings = c("NA", ""),
   ...
 )
 }
@@ -59,6 +60,11 @@ for \code{names_to_col}.
 If \code{names_to_col} is NULL, they only will be 
 added if there are multiple tidy data.frames being read.
 In which case, the column name will be "run_name"}
+
+\item{na.strings}{A character vector of strings which are to be interpreted
+as \code{NA} values by \code{utils::read.csv},
+\code{readxl::read_xls}, \code{readxl::read_xlsx},
+or \code{utils::read.table}}
 
 \item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx}, or

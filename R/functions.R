@@ -3448,39 +3448,24 @@ first_peak <- function(y, x = NULL, return = "index", width_limit_n = NULL, ...)
     width_limit_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
   
-  if (!return %in% c("x", "y", "index")) {
-    stop('return must be one of "x", "y", or "index"')
-  }
-  if(!is.null(x) & length(x) != length(y)) {
-    stop("x and y must be the same length")
-  }
-  if(is.null(x) & return == "x") {stop('return = "x" but x is not provided')}
-  
-  dot_args <- list(...)
-  if (any(c("return_maxima", "return_minima") %in% names(dot_args))) {
+  if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
     stop("return_maxima and return_minima cannot be changed in first_peak, 
 please use find_local_extrema for more flexibility")
   }
   
-  out <- find_local_extrema(y = y,
+  return(find_local_extrema(y = y, x = x,
                             return_maxima = TRUE,
                             return_minima = FALSE,
                             width_limit_n = width_limit_n,
-                            ...)
-  if (return == "index") {
-    return(out[1])
-  } else if (return == "x") {
-    return(x[out[1]])
-  } else if (return == "y") {
-    return(y[out[1]])
-  }
+                            return = return, ...)[1])
 }
 
 #' Find the first point when a numeric vector falls below some threshold
 #' 
 #' This function takes a vector of \code{y} values and 
 #' returns the index (by default) of the first point that falls
-#' below some threshold y value.
+#' below some threshold y value. This function is essentially a wrapper for 
+#' \code{find_threshold_crosses(return_rising = FALSE, return_falling = TRUE)[1]}
 #' 
 #' @param y Numeric vector of y values in which to identify first below point
 #' @param x Optional numeric vector of corresponding x values

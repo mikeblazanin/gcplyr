@@ -3447,8 +3447,8 @@ first_peak <- function(y, x = NULL, return = "index", width_limit_n = NULL, ...)
   
   dot_args <- list(...)
   if (any(c("return_maxima", "return_minima") %in% names(dot_args))) {
-    stop("return_maxima and return_minima cannot be changed in first_peak,
-    please use find_local_extrema for more flexibility")
+    stop("return_maxima and return_minima cannot be changed in first_peak, 
+please use find_local_extrema for more flexibility")
   }
   
   out <- find_local_extrema(y = y,
@@ -3467,70 +3467,55 @@ first_peak <- function(y, x = NULL, return = "index", width_limit_n = NULL, ...)
 
 #' Find the first point when a numeric vector falls below some threshold
 #' 
-#' This function takes a vector of \code{x} and \code{y} values and 
+#' This function takes a vector of \code{y} values and 
 #' returns the index (by default) of the first point that falls
 #' below some threshold y value.
 #' 
-#' @param y Numeric vector of y values in which to identify first point
-#'          below some threshold
+#' @param y Numeric vector of y values in which to identify first below point
 #' @param x Optional numeric vector of corresponding x values
 #' @param threshold Threshold y value of interest
-#' @param return One of c("index", "x"), determining whether the function
-#'               will return the index or x value associated with the
-#'               first y value below some threshold
+#' @param return One of \code{c("index", "x")}, determining whether the function
+#'               will return the \code{index} or \code{x} value associated with 
+#'               the first-below point.
+#'               
+#'               If \code{index}, it will refer to the first data point
+#'               below the threshold.
+#'               
+#'               If \code{x}, it will use linear interpolation and the data
+#'               points immediately before and after the threshold-crossing
+#'               to return the exact \code{x} value when \code{y} first
+#'               came below \code{threshold}
 #' @param subset A vector of Boolean values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
 #'               If \code{return = "index"}, index will be for the whole 
 #'               vector and not the subset of the vector
-#'               
+#' @param return_endpoints Boolean for whether startpoint should be returned
+#'                      when the startpoint is below \code{threshold}
+#' @param na.rm Boolean whether NA's should be removed before analyzing.
+#'              If \code{return = 'index'}, indices will refer to the original
+#'              \code{y} vector *including* \code{NA} values
+#' @param ... Other arguments to pass to \code{find_threshold_crosses}
+#' @return A vector of indices (\code{return = "index"}) or x values
+#'         (\code{return = "x"}) for when \code{y} crossed \code{threshold}
+#'         
 #' @details 
 #' This function is designed to be compatible for use within
 #'  dplyr::group_by and dplyr::summarize
 #'                    
 #' @export    
 first_below <- function(y, x = NULL, threshold, 
-                        return = "index", subset = NULL) {
-  if (!return %in% c("x", "index")) {
-    stop('return must be "x" or "index"')
+                        return = "index", subset = NULL,
+                        return_endpoints = TRUE, na.rm = TRUE, ...) {
+  if(c("return_rising", "return_falling") %in% names(list(...))) {
+    stop("return_rising and return_falling cannot be changed in first_below,
+please use find_threshold_crosses for more flexibility")
   }
-  if(!is.null(x) & length(x) != length(y)) {
-    stop("x and y must be the same length")
-  }
-  if(return == "x" & is.null(x)) {stop("return = x but x is not provided")}
-  
-  if(!canbe.numeric(y)) {stop("y must be numeric")}
-  if(!is.null(x)) {
-    if(!canbe.numeric(x)) {stop("x must be numeric")}
-    y <- y[order(x)]
-    x <- x[order(x)]
-  }
-  
-  #Apply subset
-  if(is.null(subset)) {indices = 1:length(y)
-  } else {indices <- which(subset)}
-  if(!is.null(x)) {x <- x[indices]}
-  y <- y[indices]
-  
-  #Find first below index
-  if(any(y < threshold)) {
-    out_idx <- min(which(y <= threshold))
-  } else {out <- NA}
-  
-  #Return as appropriate
-  if(return == "index") {
-    return(indices[out_idx])
-  } else if (return == "x") {
-    #Use linear interpolation to find exact extinction time
-    x1 <- x[(out_idx-1)]
-    x3 <- x[out_idx]
-    y1 <- y[(out_idx-1)]
-    y3 <- y[out_idx]
-    y2 <- threshold
-    
-    x2 <- (y2-y1)*(x3-x1)/(y3-y1) + x1
-    return(x2)
-  }
+  return(find_threshold_crosses(y = y, x = x,
+                                threshold = threshold,
+                                return = return, subset = subset,
+                                return_endpoints = return_endpoints,
+                                na.rm = na.rm, ...)[1])
 }
 
 
@@ -3585,7 +3570,7 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   if(!is.null(x) & length(x) != length(y)) {
     stop("x and y must be the same length")
   }
-  if(return == "x" & is.null(x)) {stop("return = x but x is not provided")}
+  if(return == "x" & is.null(x)) {stop("return = 'x' but x is not provided")}
   
   #Numeric checks/coercion
   if(!canbe.numeric(y)) {stop("y must be numeric")

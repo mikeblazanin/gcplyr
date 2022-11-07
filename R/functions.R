@@ -253,7 +253,7 @@ canbe.numeric <- function(x) {
 #' 
 #' Any values of x and y will be removed for indices where x or y are NA
 #' 
-#' @param x, y Vectors to remove NA's from. At least one must be non-NULL
+#' @param x,y Vectors to remove NA's from. At least one must be non-NULL
 #' @param na.rm Boolean, should NA's be removed
 #' @param stopifNA Boolean, should an error be passed if na.rm = FALSE
 #'                 and there are NA's in x or y?

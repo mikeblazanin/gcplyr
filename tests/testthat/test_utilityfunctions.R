@@ -66,9 +66,9 @@ test_that("add_nas returns correctly", {
                list(x = c(5, 6, NA, 7, 8), y = c(1, 2, NA, 3, 4)))
 })
 
-test_that("reorder returns correctly", {
-  expect_equal(reorder(x = c(5, 6, 7, 8), y = c(1, 5, 3, 2)), 
+test_that("reorder_xy returns correctly", {
+  expect_equal(reorder_xy(x = c(5, 6, 7, 8), y = c(1, 5, 3, 2)), 
                list(x = c(5, 6, 7, 8), y = c(1, 5, 3, 2), order = 1:4))
-  expect_equal(reorder(x = c(5, 8, 2, 4), y = 1:4), 
+  expect_equal(reorder_xy(x = c(5, 8, 2, 4), y = 1:4), 
                list(x = c(2, 4, 5, 8), y = c(3, 4, 1, 2), order = c(3, 4, 1, 2)))
 })

@@ -4,12 +4,10 @@
 \alias{rm_nas}
 \title{A function that removes na's values from a vector or pair of vectors}
 \usage{
-rm_nas(x, y = NULL, na.rm, stopifNA = FALSE)
+rm_nas(x = NULL, y = NULL, na.rm, stopifNA = FALSE)
 }
 \arguments{
-\item{x}{Vector to remove NA's from}
-
-\item{y}{Optional second vector to remove NA's from}
+\item{x, }{y Vectors to remove NA's from. At least one must be non-NULL}
 
 \item{na.rm}{Boolean, should NA's be removed}
 

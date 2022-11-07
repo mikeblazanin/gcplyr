@@ -7,13 +7,14 @@
 find_local_extrema(
   y,
   x = NULL,
+  width_limit = NULL,
+  width_limit_n = NULL,
+  height_limit = NULL,
   return = "index",
   return_maxima = TRUE,
   return_minima = TRUE,
   return_endpoints = TRUE,
-  width_limit = NULL,
-  width_limit_n = NULL,
-  height_limit = NULL,
+  subset = NULL,
   na.rm = TRUE
 )
 }
@@ -21,17 +22,6 @@ find_local_extrema(
 \item{y}{Numeric vector of y values in which to identify local extrema}
 
 \item{x}{Optional numeric vector of corresponding x values}
-
-\item{return}{One of c("index", "x", "y"), determining whether the function
-will return the index, x value, or y value associated with the
-identified extremas}
-
-\item{return_maxima, return_minima}{Boolean for which classes of local extrema
-to return}
-
-\item{return_endpoints}{Should the first and last values in \code{y}
-be included if they are in the returned 
-vector of extrema?}
 
 \item{width_limit}{Width of the window (in units of \code{x}) used to
 search for local extrema. A narrower width will be more
@@ -58,6 +48,23 @@ A smaller \code{height_limit} will be more sensitive
 to shallow local maxima/minima, while a larger 
 \code{height_limit} will be less sensitive to 
 shallow maxima/minima.}
+
+\item{return}{One of c("index", "x", "y"), determining whether the function
+will return the index, x value, or y value associated with the
+identified extremas}
+
+\item{return_maxima, return_minima}{Boolean for which classes of local extrema
+to return}
+
+\item{return_endpoints}{Should the first and last values in \code{y}
+be included if they are in the returned 
+vector of extrema?}
+
+\item{subset}{A vector of Boolean values indicating which x and y values
+should be included (TRUE) or excluded (FALSE).
+
+If \code{return = "index"}, index will be for the whole 
+vector and not the subset of the vector}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }

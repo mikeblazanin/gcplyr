@@ -11,7 +11,8 @@ calc_deriv(
   percapita = FALSE,
   x_scale = 1,
   blank = NULL,
-  subset_by = NULL
+  subset_by = NULL,
+  na.rm = TRUE
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ assumed to be in the same order as unique(subset_by)}
 \item{subset_by}{if subset_by is provided, it should be a vector (same 
 length as y), the unique values of which will 
 separate calculations}
+
+\item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
 \value{
 A vector of values for the plain (if \code{percapita = FALSE})

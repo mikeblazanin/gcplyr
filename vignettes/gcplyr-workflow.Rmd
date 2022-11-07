@@ -1658,7 +1658,7 @@ points(x = ex_dat_mrg_sum$extin_time[ex_dat_mrg_sum$Well == "A7"],
        y = 0.15, pch = 16, cex = 2)
 ```
 
-As we can see, the plots of the curves with no phage added tend to never drop below 0.15 once they've passed it. That's good! That's what we'd expect. In contrast, the phage-added wells all have a time when the bacteria drop below that threshold, and the plot clearly shows that it's right where we'd expect it.
+As we can see, the wells with no phage added tend to never drop below 0.15 once they've passed it. That's what we'd expect! In contrast, the phage-added wells all have a time when the bacteria drop below that threshold, and the plot clearly shows that it's right where we'd expect it.
 
 ### Finding any kind of threshold-crossing: time to density
 

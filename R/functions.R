@@ -3645,7 +3645,9 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
     }
   
     #Change indices to account for subset being used
-    return(indices[out_idx])
+    out_idx <- indices[out_idx]
+    
+    return(out_idx[order(out_idx)])
     
   } else { #return = "x"
     #To do linear interpolation when the first point is included, 

@@ -3257,14 +3257,6 @@ find_next_extrema <- function(cnt_pos, y, x = NULL,
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
-#' @param return One of c("index", "x", "y"), determining whether the function
-#'               will return the index, x value, or y value associated with the
-#'               identified extremas
-#' @param return_maxima,return_minima Boolean for which classes of local extrema
-#'                                    to return
-#' @param return_endpoints Should the first and last values in \code{y}
-#'                         be included if they are in the returned 
-#'                         vector of extrema?
 #' @param width_limit Width of the window (in units of \code{x}) used to
 #'                   search for local extrema. A narrower width will be more
 #'                   sensitive to narrow local maxima/minima, while a wider
@@ -3288,6 +3280,19 @@ find_next_extrema <- function(cnt_pos, y, x = NULL,
 #'                     to shallow local maxima/minima, while a larger 
 #'                     \code{height_limit} will be less sensitive to 
 #'                     shallow maxima/minima.
+#' @param return One of c("index", "x", "y"), determining whether the function
+#'               will return the index, x value, or y value associated with the
+#'               identified extremas
+#' @param return_maxima,return_minima Boolean for which classes of local extrema
+#'                                    to return
+#' @param return_endpoints Should the first and last values in \code{y}
+#'                         be included if they are in the returned 
+#'                         vector of extrema?
+#' @param subset A vector of Boolean values indicating which x and y values
+#'               should be included (TRUE) or excluded (FALSE).
+#'               
+#'               If \code{return = "index"}, index will be for the whole 
+#'               vector and not the subset of the vector
 #' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @return If \code{return = "index"}, a vector of indices corresponding 
 #'           to local extrema in the data
@@ -3299,14 +3304,14 @@ find_next_extrema <- function(cnt_pos, y, x = NULL,
 #'           to local extrema in the data
 #' 
 #' @export                             
-find_local_extrema <- function(y, x = NULL, return = "index",
-                               return_maxima = TRUE,
-                               return_minima = TRUE,
-                               return_endpoints = TRUE,
+find_local_extrema <- function(y, x = NULL, 
                                width_limit = NULL,
                                width_limit_n = NULL,
                                height_limit = NULL,
-                               na.rm = TRUE) {
+                               return = "index",
+                               return_maxima = TRUE, return_minima = TRUE,
+                               return_endpoints = TRUE,
+                               subset = NULL, na.rm = TRUE) {
   #Check inputs
   if (!return_maxima & !return_minima) {
     stop("Both return_maxima and return_minima are FALSE, at least one must be TRUE")
@@ -3332,16 +3337,32 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   }
   if(is.null(x) & return == "x") {stop('return = "x" but x is not provided')}
   
-  #Deal with NA's in y
-  if(any(is.na(y))) {
-    if(na.rm == TRUE) {
-      nas_removed_indices <- which(is.na(y))
-      y_orig <- y
-      y <- y[!is.na(y)]
-    } else {
-      stop("Some of y are NA but na.rm = FALSE")
-    }
-  } else {nas_removed_indices <- NULL}
+  #Numeric checks/coercion
+  if(!canbe.numeric(y)) {stop("y must be numeric")
+  } else {y <- as.numeric(y)}
+  if(!is.null(x)) {
+    if(!canbe.numeric(x)) {stop("x must be numeric")
+    } else {x <- as.numeric(x)}
+  }
+  
+  #Take subset
+  if(!is.null(subset)) {
+    if(length(subset) != length(y)) {stop("subset and y must be the same length")}
+    if(!all(is.logical(subset))) {stop("subset must be vector of logical values")}
+    indices <- which(subset)
+    if(!is.null(x)) {x <- x[indices]}
+    y <- y[indices]
+  } else {indices <- 1:length(y)}
+  
+  #remove nas
+  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
+  
+  #reorder
+  order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
+  
+  #Save to temp vars
+  x <- order_temp[["x"]]
+  y <- order_temp[["y"]]
   
   #Start finding extrema
   cnt_pos <- 1
@@ -3399,23 +3420,27 @@ find_local_extrema <- function(y, x = NULL, return = "index",
   }
   #Remove duplicates
   output <- unique(output)
-  #Order
-  output <- output[order(output)]
-  
-  #Adjust indices for NAs that were removed
-  if(na.rm & !is.null(nas_removed_indices)) {
-    for (index in nas_removed_indices) {
-      output[output >= index] <- (output[output >= index] + 1)
-    }
-  }
   
   #Return as specified
   if (return == "index") {
-    return(output)
+    #return to original order
+    output <- order_temp[["order"]][output]
+    
+    #Change indices to account for NA's removed
+    for (index in narm_temp$nas_indices_removed) {
+      output[output >= index] <- (output[output >= index] + 1)
+    }
+    
+    #Change indices to account for subset being used
+    output <- indices[output]
+    
+    return(output[order(output)])
   } else if (return == "x") {
+    #return using the subsetted, re-ordered, and na-removed x vals & indices
     return(x[output])
   } else if (return == "y") {
-    return(y_orig[output])
+    #return using the subsetted, re-ordered, and na-removed y vals & indices
+    return(y[output])
   }
 }
 
@@ -3443,7 +3468,8 @@ find_local_extrema <- function(y, x = NULL, return = "index",
 #'  dplyr::group_by and dplyr::summarize
 #'                    
 #' @export      
-first_peak <- function(y, x = NULL, return = "index", width_limit_n = NULL, ...) {
+first_peak <- function(y, x = NULL, width_limit_n = NULL, 
+                       return = "index",  ...) {
   if(is.null(width_limit_n)) {
     width_limit_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
@@ -3501,10 +3527,11 @@ please use find_local_extrema for more flexibility")
 #'         (\code{return = "x"}) for when \code{y} crossed \code{threshold}
 #'                    
 #' @export    
-find_threshold_crosses <- function(y, x = NULL, threshold, 
-                                   return = "index", subset = NULL,
-                                   return_rising = TRUE, return_falling = TRUE, 
-                                   return_endpoints = TRUE, na.rm = TRUE) {
+find_threshold_crosses <- function(y, x = NULL, threshold,
+                                   return = "index",
+                                   return_rising = TRUE, return_falling = TRUE,
+                                   return_endpoints = TRUE,  
+                                   subset = NULL, na.rm = TRUE) {
   if (!return %in% c("x", "index")) {
     stop('return must be "x" or "index"')
   }
@@ -3616,13 +3643,13 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
 #'               points immediately before and after the threshold-crossing
 #'               to return the exact \code{x} value when \code{y} first
 #'               came below \code{threshold}
+#' @param return_endpoints Boolean for whether startpoint should be returned
+#'                      when the startpoint is below \code{threshold}
 #' @param subset A vector of Boolean values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
 #'               If \code{return = "index"}, index will be for the whole 
 #'               vector and not the subset of the vector
-#' @param return_endpoints Boolean for whether startpoint should be returned
-#'                      when the startpoint is below \code{threshold}
 #' @param na.rm Boolean whether NA's should be removed before analyzing.
 #'              If \code{return = 'index'}, indices will refer to the original
 #'              \code{y} vector *including* \code{NA} values
@@ -3636,8 +3663,8 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
 #'                    
 #' @export    
 first_below <- function(y, x = NULL, threshold, 
-                        return = "index", subset = NULL,
-                        return_endpoints = TRUE, na.rm = TRUE, ...) {
+                        return = "index", return_endpoints = TRUE,
+                        subset = NULL, na.rm = TRUE, ...) {
   if(any(c("return_rising", "return_falling") %in% names(list(...)))) {
     stop("return_rising and return_falling cannot be changed in first_below,
 please use find_threshold_crosses for more flexibility")

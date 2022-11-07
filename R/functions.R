@@ -3518,7 +3518,7 @@ please use find_local_extrema for more flexibility")
 first_below <- function(y, x = NULL, threshold, 
                         return = "index", subset = NULL,
                         return_endpoints = TRUE, na.rm = TRUE, ...) {
-  if(c("return_rising", "return_falling") %in% names(list(...))) {
+  if(any(c("return_rising", "return_falling") %in% names(list(...)))) {
     stop("return_rising and return_falling cannot be changed in first_below,
 please use find_threshold_crosses for more flexibility")
   }
@@ -3528,7 +3528,6 @@ please use find_threshold_crosses for more flexibility")
                                 return_endpoints = return_endpoints,
                                 na.rm = na.rm, ...)[1])
 }
-
 
 #' Find all points when a numeric vector crosses some threshold
 #' 

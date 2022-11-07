@@ -55,3 +55,66 @@ test_that("first_below works correctly with subset", {
     first_below(y = 20:1, x = 21:40, return = "x", 
                 threshold = 10.5, subset = (abs(1:20-10) < 5)), 30.5)
 })
+
+test_that("find_threshold_crosses works correctly", {
+  #data in order
+  dat <- data.frame(x = 1:40,
+                    y = rep(20 - abs(12 - 1:20), 2))
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = TRUE, return_falling = FALSE,
+                           threshold = 16.5, return = "index"),
+    c(9, 29))
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = FALSE, return_falling = TRUE,
+                           return_endpoints = TRUE,
+                           threshold = 16.5, return = "index"),
+    c(1, 16, 36))
+                           
+  #data out of order
+  dat <- dat[c(27:40, 1:26), ]
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = TRUE, return_falling = FALSE,
+                           threshold = 16.5, return = "index"),
+    c(3, 23))
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = FALSE, return_falling = TRUE,
+                           return_endpoints = TRUE,
+                           threshold = 16.5, return = "index"),
+    c(10, 15, 30))
+  
+  #data with NA's
+  dat$x[7] <- NA
+  dat$y[26] <- NA
+  
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = TRUE, return_falling = FALSE,
+                           threshold = 16.5, return = "index"),
+    c(3, 23))
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = FALSE, return_falling = TRUE,
+                           return_endpoints = TRUE,
+                           threshold = 16.5, return = "index"),
+    c(10, 15, 30))
+  
+  #data with subset specified
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = TRUE, return_falling = FALSE,
+                           threshold = 16.5, return = "index",
+                           subset = dat$x > 15),
+    c(3))
+  expect_equal(
+    find_threshold_crosses(y = dat$y, x = dat$x,
+                           return_rising = FALSE, return_falling = TRUE,
+                           return_endpoints = TRUE,
+                           threshold = 16.5, return = "index",
+                           subset = dat$x < 25),
+    c(15, 30))
+})
+

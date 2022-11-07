@@ -3526,6 +3526,8 @@ please use find_threshold_crosses for more flexibility")
                                 threshold = threshold,
                                 return = return, subset = subset,
                                 return_endpoints = return_endpoints,
+                                return_rising = FALSE,
+                                return_falling = TRUE,
                                 na.rm = na.rm, ...)[1])
 }
 
@@ -3649,7 +3651,7 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
     # we add a buffer value at the beginning of x and y that is a duplicate 
     # of x[1] and y[1] and add 1 to all the indices to reflect that addition
     x <- c(x[1], x)
-    y <- x(y[1], y)
+    y <- c(y[1], y)
     out_idx <- out_idx + 1
     
     #Use linear interpolation to determine exact x values of crossing events

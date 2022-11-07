@@ -1306,7 +1306,7 @@ read_tidys <- function(files, extension = NULL,
 #' @export       
 import_blockmeasures <- function(files, num_plates = 1, 
                                  plate_names = NULL,
-                                 wellnames_sep = "_",
+                                 wellnames_sep = "",
                                  ...) {
   blockmeasures <- uninterleave(read_blocks(files = files, ...),
                                 n = num_plates)

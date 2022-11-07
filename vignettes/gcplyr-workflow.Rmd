@@ -1623,9 +1623,77 @@ points(x = ex_dat_mrg_sum$diauxie_percap_time[ex_dat_mrg_sum$Well == "A1"],
        pch = 16, cex = 2)
 ```
 
-## Finding threshold-passing events: extinction time
+## Finding threshold-crossings: extinction time and time to density
 
-When bacteria are grown with phages, one common metric for sensitivity to the phage is extinction time. Often, this is defined as the amount of time that passes before the bacterial population rises and then falls below some threshold. [rest of section to be written]
+We've previously shown how you can find local and global extrema in data, but what if you just want to find when the data passes some threshold value? In this section, we'll show how you can use the `gcplyr` functions `first_below` and `find_threshold_crosses` to find the points when your data crosses user-defined thresholds.
+
+### Finding the first point below a threshold: extinction time
+
+One common case of threshold-crossing we might be interested in is the first point that our data falls below some threshold density. For instance, when bacteria are grown with phages, the amount of time it takes before the bacterial population falls below some threshold can be a proxy metric for how sensitive the bacteria are to that phage.
+
+Let's take a look at an example. Well A7 has bacteria and phages in it, let's look at the *smoothed* absorbance values:
+
+```{r}
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "Absorbance",
+     main = "Well A7")
+```
+
+Ok great. Now let's suppose that we think that an absorbance of 0.15 is a good threshold for extinction. How could we use `first_below` to calculate the time when that first occurs across all our different wells? Well, primarily, `first_below` simply needs our `x` and `y` values, the `threshold` we want to use, as well as whether we want it to `return` the `index` of the first point below the threshold, or the `x` value of that point (since we care about the time it happened here, we'll do the latter). Additionally, we'll specify that we don't care if the startpoint is below the threshold: we only care when the data goes from above to below it.
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(
+    grouped_ex_dat_mrg,
+    extin_time = first_below(x = Time, y = smoothed, threshold = 0.15,
+                             return = "x", return_endpoints = FALSE))
+head(ex_dat_mrg_sum)
+
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "Absorbance",
+     main = "Well A7")
+points(x = ex_dat_mrg_sum$extin_time[ex_dat_mrg_sum$Well == "A7"],
+       y = 0.15, pch = 16, cex = 2)
+```
+
+As we can see, the plots of the curves with no phage added tend to never drop below 0.15 once they've passed it. That's good! That's what we'd expect. In contrast, the phage-added wells all have a time when the bacteria drop below that threshold, and the plot clearly shows that it's right where we'd expect it.
+
+### Finding any kind of threshold-crossing: time to density
+
+We've seen how `first_below` can be used to identify the first point some data crosses below a threshold. But what about other kinds of threshold-crossing events? The first point it passes above a threshold? The first point it's ever below a threshold, including at the start?
+
+In order to identify these kinds of extrema, we can use the more-general function `find_threshold_crosses`. In fact, `first_below` is really just a special case of `find_threshold_crosses`. Just like `first_below`, `find_threshold_crosses` only requires a `threshold` and a vector of `y` data in which to find the threshold crosses, and can return the `index` or `x` value of the crossing events it finds.
+
+However, unlike `first_below`, `find_threshold_crosses` returns a vector containing *all* of the threshold crossings found under the given settings. Users can alter which kinds of threshold crossings are reported using the arguments `return_rising`, `return_falling`, and `return_endpoints`. However, `find_threshold_crosses` will always return a vector of all the extrema found, so users must use brackets to select which one they want `summarize` to save.
+
+Let's dig into an example: identifying the first time the bacteria reach some density, including if they start at that density
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(
+    grouped_ex_dat_mrg,
+    time_to_01 = find_threshold_crosses(x = Time, y = smoothed, 
+                                        threshold = 0.1, return = "x", 
+                                        return_endpoints = TRUE, 
+                                        return_falling = FALSE)[1],
+    time_to_05 = find_threshold_crosses(x = Time, y = smoothed, 
+                                        threshold = 0.5, return = "x", 
+                                        return_endpoints = TRUE, 
+                                        return_falling = FALSE)[1])
+head(ex_dat_mrg_sum)
+
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
+     xlab = "time", ylab = "Absorbance",
+     main = "Well A1")
+points(x = ex_dat_mrg_sum$time_to_01[ex_dat_mrg_sum$Well == "A1"],
+       y = 0.1, pch = 16, cex = 2)
+points(x = ex_dat_mrg_sum$time_to_05[ex_dat_mrg_sum$Well == "A1"],
+       y = 0.5, pch = 16, cex = 2)
+```
+As we can see, `find_threshold_crosses` has returned the times when the bacteria reached those densities. We can see that some bacteria (e.g. those in Well A7) never reached 0.5, but all of the ones shown by `head` *did* reach 0.1. By comparing the times it took each strain to reach an absorbance of 0.1, we could learn something about how soon the bacteria started growing and how quickly they grew.
 
 # Combining growth curves data with other data
 

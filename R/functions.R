@@ -3352,9 +3352,8 @@ find_local_extrema <- function(y, x = NULL, return = "index",
     #we're finding repeats
     if (any(duplicated(c(minima_list, maxima_list)))) {break}
     #or we hit the end of the y
-    if (length(y) %in% c(maxima_list, minima_list)) {
-      break
-    }
+    if (length(y) %in% c(maxima_list, minima_list)) {break}
+    
     #Since maxima & minima must alternate, always start with furthest one 
     # we've found so far
     cnt_pos <- max(c(minima_list, maxima_list))
@@ -3523,6 +3522,140 @@ first_below <- function(y, x = NULL, threshold,
     return(indices[out_idx])
   } else if (return == "x") {
     #Use linear interpolation to find exact extinction time
+    x1 <- x[(out_idx-1)]
+    x3 <- x[out_idx]
+    y1 <- y[(out_idx-1)]
+    y3 <- y[out_idx]
+    y2 <- threshold
+    
+    x2 <- (y2-y1)*(x3-x1)/(y3-y1) + x1
+    return(x2)
+  }
+}
+
+
+#' Find all points when a numeric vector crosses some threshold
+#' 
+#' This function takes a vector of \code{y} values and 
+#' returns the index or x value of every point where the \code{y} values
+#' cross some threshold y value.
+#' 
+#' @param y Numeric vector of y values in which to identify threshold
+#'          crossing events
+#' @param x Optional numeric vector of corresponding x values
+#' @param threshold Threshold y value of interest
+#' @param return One of \code{c("index", "x")}, determining whether the function
+#'               will return the \code{index} or \code{x} value associated with the
+#'               threshold-crossing event.
+#'               
+#'               If \code{index}, it will refer to the data point immediately after
+#'               the crossing event.
+#'               
+#'               If \code{x}, it will use linear interpolation and the data
+#'               points immediately before and after the threshold-crossing
+#'               to return the exact \code{x} value when the threshold crossing
+#'               occurred
+#' @param subset A vector of Boolean values indicating which x and y values
+#'               should be included (TRUE) or excluded (FALSE).
+#'               
+#'               If \code{return = "index"}, index will be for the whole 
+#'               vector and not the subset of the vector
+#' @param return_rising Boolean for whether crossing events where \code{y}
+#'                      rises above \code{threshold} should be returned
+#' @param return_falling Boolean for whether crossing events where \code{y}
+#'                      falls below \code{threshold} should be returned
+#' @param return_endpoints Boolean for whether startpoint should be returned
+#'                      when the startpoint is above \code{threshold} and
+#'                      \code{return_rising = TRUE}, or when the startpoint is
+#'                      below \code{threshold} and \code{return_falling = TRUE}
+#' @param na.rm Boolean whether NA's should be removed before analyzing.
+#'              If \code{return = 'index'}, indices will refer to the original
+#'              \code{y} vector *including* \code{NA} values
+#' @return A vector of indices (\code{return = "index"}) or x values
+#'         (\code{return = "x"}) for when \code{y} crossed \code{threshold}
+#'                    
+#' @export    
+find_threshold_crosses <- function(y, x = NULL, threshold, 
+                                   return = "index", subset = NULL,
+                                   return_rising = TRUE, return_falling = TRUE, 
+                                   return_endpoints = TRUE, na.rm = TRUE) {
+  if (!return %in% c("x", "index")) {
+    stop('return must be "x" or "index"')
+  }
+  if(!is.null(x) & length(x) != length(y)) {
+    stop("x and y must be the same length")
+  }
+  if(return == "x" & is.null(x)) {stop("return = x but x is not provided")}
+  
+  #Numeric checks/coercion
+  if(!canbe.numeric(y)) {stop("y must be numeric")
+  } else {y <- as.numeric(y)}
+  if(!is.null(x)) {
+    if(!canbe.numeric(x)) {stop("x must be numeric")
+    } else {x <- as.numeric(x)}
+  }
+  
+  #Take subset
+  if(!is.null(subset)) {
+    if(length(subset) != length(y)) {stop("subset and y must be the same length")}
+    if(!all(is.logical(subset))) {stop("subset must be vector of logical values")}
+    indices <- which(subset)
+    if(!is.null(x)) {x <- x[indices]}
+    y <- y[indices]
+  } else {indices <- 1:length(y)}
+  
+  #remove nas
+  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
+  
+  #reorder
+  order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
+  
+  #Save to temp vars
+  x <- order_temp[["x"]]
+  y <- order_temp[["y"]]
+  
+  #Check startpoint
+  out_idx <- NULL
+  if(return_endpoints) {
+    if(return_rising & y[1] >= threshold) {out_idx <- c(out_idx, 1)}
+    if(return_falling & y[1] <= threshold) {out_idx <- c(out_idx, 1)}
+  }
+  
+  #Find indices of crossing events
+  # (saving the index of the value *before* the cross has happened)
+  if(return_rising) {
+    out_idx <- c(out_idx, 1+which(y[2:length(y)] > threshold &
+                                  y[1:(length(y)-1)] <= threshold))
+  }
+  if(return_falling) {
+    out_idx <- c(out_idx, 1+which(y[2:length(y)] < threshold &
+                                  y[1:(length(y)-1)] >= threshold))
+  }
+  
+  if(length(out_idx) == 0) {out_idx <- NA
+  } else {out_idx <- out_idx[order(out_idx)]}
+  
+  if(return == "index") {
+    #return to original order
+    out_idx <- order_temp[["order"]][out_idx]
+    
+    #Change indices to account for NA's removed
+    for (index in narm_temp$nas_indices_removed) {
+      out_idx[out_idx >= index] <- (out_idx[out_idx >= index] + 1)
+    }
+  
+    #Change indices to account for subset being used
+    return(indices[out_idx])
+    
+  } else { #return = "x"
+    #To do linear interpolation when the first point is included, 
+    # we add a buffer value at the beginning of x and y that is a duplicate 
+    # of x[1] and y[1] and add 1 to all the indices to reflect that addition
+    x <- c(x[1], x)
+    y <- x(y[1], y)
+    out_idx <- out_idx + 1
+    
+    #Use linear interpolation to determine exact x values of crossing events
     x1 <- x[(out_idx-1)]
     x3 <- x[out_idx]
     y1 <- y[(out_idx-1)]

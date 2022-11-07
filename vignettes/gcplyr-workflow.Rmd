@@ -66,7 +66,6 @@ write.csv(example_widedata, file = "widedata.csv", row.names = FALSE)
 #This code just creates our block designs
 example_design <- make_design(
   output_format = "blocks",
-  wellnames_sep = "",
   pattern_split = ",", nrows = 8, ncols = 12,
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
@@ -100,8 +99,7 @@ data_tidy <-
 
 #Import our designs
 # (saved in the files Bacteria_strain.csv and Phage.csv)
-designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"),
-                               wellnames_sep = "")
+designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"))
 
 #Merge our designs and data
 data_merged <- merge_dfs(data_tidy, designs)
@@ -248,9 +246,7 @@ If we want to read these files into `R`, we simply provide `import_blockmeasures
 ```{r}
 #Now let's read it with import_blockmeasures
 imported_blockdata <- import_blockmeasures(
-  files = temp_filenames,
-  startrow = 4,
-  wellnames_sep = "")
+  files = temp_filenames, startrow = 4)
 
 head(imported_blockdata[, 1:10])
 ```
@@ -263,8 +259,7 @@ If you're looking at your data in Excel or a similar spreadsheet program, you'll
 #We can specify rows or columns by Excel-style letters too
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames,
-  startrow = 4, startcol = "A",
-  wellnames_sep = "")
+  startrow = 4, startcol = "A")
 ```
 
 ### Specifying metadata
@@ -284,7 +279,6 @@ In these files, the timepoint information was located in the 2nd row and 3rd col
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames,
   startrow = 4,
-  wellnames_sep = "",
   metadata = list("time" = c(2, 3)))
 
 head(imported_blockdata[, 1:10])
@@ -299,7 +293,6 @@ And just like how you can specify `startrow`, `startcol`, etc. with Excel-style 
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames,
   startrow = 4,
-  wellnames_sep = "",
   metadata = list("time" = c(2, "C")))
 ```
 
@@ -334,8 +327,7 @@ imported_blockdata <- import_blockmeasures(
   "blocks_single.csv",
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
-  startcol = 1, endcol = 13,
-  wellnames_sep = "")
+  startcol = 1, endcol = 13)
 ```
 
 Here we've used the built-in `R` function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look, we can see that it's been read successfully:
@@ -354,7 +346,6 @@ imported_blockdata <- import_blockmeasures(
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13,
-  wellnames_sep = "",
   metadata = list("time" = list(seq(from = 2, to = 1154, by = 12), 2)))
 ```
 
@@ -940,7 +931,6 @@ Let's generate our design:
 
 ```{r}
 example_design <- make_design(
-  wellnames_sep = "",
   pattern_split = ",", nrows = 8, ncols = 12,
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),

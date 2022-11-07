@@ -34,7 +34,7 @@ test_that("first_peak matches find_local_extrema results", {
 test_that("first_below works correctly with no subset", {
   dat <- data.frame(x = 1:20,
                     y = 20 - abs(12 - 1:20))
-  expect_equal(first_below(y = 20:1, threshold = 15), 6)
+  expect_equal(first_below(y = 20:1, threshold = 15), 7)
   expect_equal(first_below(y = 20:1, threshold = 10.5), 11)
   expect_equal(
     first_below(y = 20:1, x = 21:40, return = "x", threshold = 10), 31)
@@ -45,7 +45,7 @@ test_that("first_below works correctly with no subset", {
 test_that("first_below works correctly with subset", {
   dat <- data.frame(x = 1:20,
                     y = 20 - abs(12 - 1:20))
-  expect_equal(first_below(y = 20:1, threshold = 15, subset = (1:20 < 10)), 6)
+  expect_equal(first_below(y = 20:1, threshold = 15, subset = (1:20 < 10)), 7)
   expect_equal(
     first_below(y = 20:1, threshold = 10.5, subset = (abs(1:20-10) < 5)), 11)
   expect_equal(

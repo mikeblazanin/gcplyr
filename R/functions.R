@@ -3349,6 +3349,10 @@ find_local_extrema <- function(y, x = NULL,
   if(!is.null(subset)) {
     if(length(subset) != length(y)) {stop("subset and y must be the same length")}
     if(!all(is.logical(subset))) {stop("subset must be vector of logical values")}
+    if(any(is.na(subset))) {
+      warning("subset contains NA's, treating NA's as FALSE")
+      subset[is.na(subset)] <- FALSE
+    }
     indices <- which(subset)
     if(!is.null(x)) {x <- x[indices]}
     y <- y[indices]

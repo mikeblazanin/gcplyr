@@ -991,7 +991,7 @@ read_wides <- function(files, extension = NULL,
     #Read file & save in temp
     if (extension[i] == "tbl") {
       temp <- dots_parser(utils::read.table, file = files[i],
-                          na.strings = na.strings...)
+                          na.strings = na.strings, ...)
     } else if (extension[i] == "csv") {
       temp <- 
         dots_parser(utils::read.csv, file = files[i], 

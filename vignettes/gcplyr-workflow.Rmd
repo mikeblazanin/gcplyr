@@ -964,7 +964,7 @@ example_tidydata <- trans_wide_to_tidy(example_widedata,
                                        id_cols = "Time")
 ```
 
-And finally, we merge the two using `merge_dfs`:
+And finally, we merge the two using `merge_dfs`, saving the result to `ex_dat_mrg`, short for example_data_merged:
 
 ```{r}
 ex_dat_mrg <-
@@ -974,20 +974,8 @@ ex_dat_mrg <-
 head(ex_dat_mrg)
 ```
 
-# How to pre-process, process, and analyze your data
-With your data and design information merged, **your dataset is now organized in a way that's easy to export and analyze**. It is also at this point that the next steps for what you can do diversify into many options.
-
-Broadly speaking, there are two main approaches to analyzing growth curves data:
-
-1. directly quantify attributes of the growth dynamics
-2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
-
-The remaining functions of `gcplyr` can facilitate analyses following the first approach: directly quantifying attributes of the observed dynamics. If you're interested in exploring model-fitting approaches, which can provide enormous analytical power, check out the **[Other growth curve analysis packages]** section. At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based analyses).
-
-So, how do we directly quantify attributes of growth curves? First, we need to carry out any necessary pre-processing steps, like converting data types, excluding missing data, and possibly smoothing. Then, we can process our data by calculating derivatives. Finally, we can analyze it. `gcplyr` has a number of functions that facilitate these steps. However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Pre-processing]**, **[Processing](#Processing)**, and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
-
 # Pre-processing
-Pre-processing includes some necessary steps before we start calculating anything about the growth curves. For instance, excluding wells, converting time formats, and smoothing spectrophotometric data.
+Now that we have our data and designs merged, we're almost ready to start processing and analyzing them. However, first we need to carry out any necessary pre-processing steps, like excluding wells that were contaminated or empty, and converting time formats to numeric.
 
 ## Pre-processing: excluding data
 In some cases, we want to remove some of the wells from our growth curves data before we carry on with downstream analyses. For instance, they may have been left empty, contained negative controls, or were contaminated. We can use `dplyr`'s `filter` function to remove those wells that meet criteria we want to exclude.
@@ -1048,23 +1036,66 @@ head(ex_dat_mrg)
 
 And now we can see that we've gotten nice numeric `Time` values! So we can proceed with the next steps of the analysis.
 
-## Pre-processing: smoothing
-Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary to reduce this noise and improve the accuracy of analyses. `gcplyr` has a `smooth_data` function that can carry out such smoothing.
+# Plotting your data
 
-Let's take a look at one well from our example data, which is already a little noisy.
+Once your data has been merged and times have been converted to numeric, we can easily plot our data using the `ggplot2` package. That's because `ggplot2` was specifically built on the assumption that data would be tidy-shaped, which ours is! We won't go into depth on how to use `ggplot` here, but there are three main commands to the plot below:
+
+* `ggplot` - the ggplot function is where you specify the `data.frame` you would like to use and the *aes*thetics of the plot (the x and y axes you would like)
+* `geom_line` - tells `ggplot` how we would like to plot the data, in this case with a line (another common `geom` for time-series data is `geom_point`)
+* `facet_wrap` - tells `ggplot` to plot each Well in a separate facet
+
+**We'll be using this format to plot our data throughout the remainder of this vignette**
 
 ```{r}
-#What does one well of our (noisy) data look like?
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"],
-     xlab = "time", ylab = "Abs")
+library(ggplot2)
+
+#First, we'll reorder the Well levels so they plot in the correct order
+ex_dat_mrg$Well <- 
+  factor(ex_dat_mrg$Well,
+         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+
+ggplot(data = ex_dat_mrg, aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well, nrow = 8, ncol = 12)
+```
+
+Generally speaking, **from here on you should plot your data frequently**, and in every way you can think of! **After every processing and analysis step, visualize both the input data and output data** to understand what the processing and analysis steps are doing and whether they are the right choices for your particular data (this vignette will be doing that too!)
+
+# How to process and analyze your data
+With your data and design information pre-processed, **your dataset is now organized in a way that's easy to export and analyze**. It is also at this point that the next steps for what you can do diversify into many options.
+
+Broadly speaking, there are two main approaches to analyzing growth curves data:
+
+1. directly quantify attributes of the growth dynamics
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
+
+The remaining functions of `gcplyr` can facilitate analyses following the first approach: directly quantifying attributes of the observed dynamics. If you're interested in exploring model-fitting approaches, which can provide enormous analytical power, check out the **[Other growth curve analysis packages]** section. At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
+
+So, how do we directly quantify attributes of growth curves? First, we can process our data by smoothing (if needed) and calculating derivatives. Then, we can analyze it. `gcplyr` has a number of functions that facilitate these steps. However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Processing](#Processing)** and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
+
+#Processing data: smoothing
+Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary for analyses to succeed. `gcplyr` has a `smooth_data` function that can carry out such smoothing. **Generally, you should carry out as little smoothing as is necessary for your analyses to work**.
+
+Let's take a look at a few wells from our example data, which have some noise.
+
+```{r}
+#Here we've chosen four wells that, from our previous plot, seem 
+# representative of the overall diversity of dynamics
+#In your own code, you should visualize all your data
+sample_wells <- c("A1", "F1", "F10", "E11")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_point() +
+  facet_wrap(~Well)
 ```
 Well that doesn't look so bad! Let's take a quick peek at the data using a log scale for the y-axis. Log scales are particularly useful for plotting growth curves because exponential growth is a straight line when plotted on a log scale.
 
 ```{r}
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-     xlab = "time", ylab = "log10(Abs)")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_point() +
+  facet_wrap(~Well) +
+  scale_y_continuous(trans = "log10")
 ```
 
 Oh. That looks a lot more noisy! In fact, this is a common occurrence: **at low densities, random noise tends to have a much larger effect** than at high densities. Unfortunately, steps like calculating maximum growth rate can be very sensitive to such noise, so we're going to need to smooth our data to prevent that from being a problem.
@@ -1074,7 +1105,7 @@ So, how can we smooth our data? Well, `smooth_data` has four different smoothing
 * `moving-average` is a simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
 * `moving-median` is another simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
 * `loess` is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
-* `gam` is also a spline-fitting approach that tends to better avoid the creation of curvature artifacts and is often recommended over loess, although you should evaluate its efficacy for your own data
+* `gam` is also a spline-fitting approach that is often recommended over `loess`, although you should evaluate its efficacy for your own data
 
 **Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should plot smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise. Make sure to plot the smoothing for every well in your data, so that you're choosing the best setting for all your data and not just one well.
 
@@ -1084,7 +1115,7 @@ To use `smooth_data`, pass your x and y values, your method of choice, and any a
 
 Since your dataframe likely includes data from multiple wells (or even plates), we'll want to only smooth within each of those subsets. You can specify the groupings using the `subset_by` argument, which should be a vector as long as y whose unique values denote the subset groups. (Note: if you're using `smooth_data` within `dplyr::mutate` on a grouped `data.frame`, there's no need for the `subset_by` argument)
 
-### Smoothing with moving-average
+## Smoothing with moving-average
 
 For `moving-average`, the tuning parameter is `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
 
@@ -1104,23 +1135,19 @@ ex_dat_mrg$smoothed11 <-
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are wider window_width_n's and more "smoothed"
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-     xlab = "time", ylab = "log10(Abs)")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed3[ex_dat_mrg$Well == "A1"]),
-      col = "gray20")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed7[ex_dat_mrg$Well == "A1"]),
-      col = "gray45")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed11[ex_dat_mrg$Well == "A1"]),
-      col = "gray65")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time)) +
+  geom_point(aes(y = Measurements)) +
+  geom_line(aes(y = smoothed3), color = "gray20") +
+  geom_line(aes(y = smoothed7), color = "gray45") +
+  geom_line(aes(y = smoothed11), color = "gray65") +
+  facet_wrap(~Well) +
+  scale_y_continuous(trans = "log10")
 ```
 
-Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, with `window_width_n = 11` (the lightest line), the smoothing has started biasing our later data points to be higher than they actually are. Based on this, we'd probably want to use a `window_width_n` less than 11. Unfortunately, with smaller `window_width_n` our early data is still being affected by that early noise, so we should explore other smoothing methods, or try combining multiple smoothing methods.
+Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, with `window_width_n = 11` (the lightest line), the smoothing has started biasing our medium-density data points to be higher than they actually are. Based on this, we'd probably want to use a `window_width_n` less than 11. Unfortunately, with smaller `window_width_n` our early data is still being affected by that early noise, so we should explore other smoothing methods, or try combining multiple smoothing methods.
 
-### Smoothing with moving-median
+## Smoothing with moving-median
 
 For `moving-median`, the tuning parameter is also `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
 
@@ -1140,23 +1167,19 @@ ex_dat_mrg$smoothed11 <-
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are wider window_width_n's and more "smoothed"
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-     xlab = "time", ylab = "log10(Abs)")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed3[ex_dat_mrg$Well == "A1"]),
-      col = "gray20")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed7[ex_dat_mrg$Well == "A1"]),
-      col = "gray45")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed11[ex_dat_mrg$Well == "A1"]),
-      col = "gray65")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time)) +
+  geom_point(aes(y = Measurements)) +
+  geom_line(aes(y = smoothed3), color = "gray20") +
+  geom_line(aes(y = smoothed7), color = "gray45") +
+  geom_line(aes(y = smoothed11), color = "gray65") +
+  facet_wrap(~Well) +
+  scale_y_continuous(trans = "log10")
 ```
 
-Here we can see that `moving-median` has really excluded that early noise, even with the smallest `window_width_n = 3`. Additionally, `moving-median` did not bias our later data at all, even with the widest `window_width_n`. However, it has produced a smoothed density that is fairly "jumpy", something that wider `window_width_n` did not fix. **This is common with moving-median**, so often you may need to try other smoothing methods or combining `moving-median` with other methods.
+Here we can see that `moving-median` has really excluded that low-density noise, even with the smallest `window_width_n = 3`. Additionally, `moving-median` did not bias our larger data hardly at all, except with the widest `window_width_n`. However, it has produced a smoothed density that is fairly "jumpy", something that wider `window_width_n` did not fix. **This is common with moving-median**, so often you may need to try other smoothing methods or combining `moving-median` with other methods.
 
-### Smoothing with LOESS
+## Smoothing with LOESS
 
 For `loess`, the tuning parameter is the `span` argument. `loess` works by doing fits on subset windows of the data centered at each data point. These fits can be linear (`degree = 1`) or polynomial (typically `degree = 2`). `span` is the width of the window, as a fraction of all data points. For instance, with the default `span` of 0.75, 75% of the data points are included in each window. Thus, span values typically are between 0 and 1 (although see `?loess` for use of `span` values greater than 1), and larger values are more "smoothed". Here, we'll show `loess` smoothing with spans of 0.1, 0.2, and 0.5 and `degree = 1`.
 
@@ -1176,25 +1199,21 @@ ex_dat_mrg$smoothed5 <-
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are larger span's and more "smoothed"
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-     xlab = "time", ylab = "log10(Abs)")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed1[ex_dat_mrg$Well == "A1"]),
-      col = "gray20")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed2[ex_dat_mrg$Well == "A1"]),
-      col = "gray45")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed5[ex_dat_mrg$Well == "A1"]),
-      col = "gray65")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time)) +
+  geom_point(aes(y = Measurements)) +
+  geom_line(aes(y = smoothed1), color = "gray20") +
+  geom_line(aes(y = smoothed2), color = "gray45") +
+  geom_line(aes(y = smoothed5), color = "gray65") +
+  facet_wrap(~Well) +
+  scale_y_continuous(trans = "log10")
 ```
 
-Here we can see that `loess` with smaller spans (darker lines) have smoothed the data but are still sensitive to those outliers. However, `loess` with a larger span (lightest line) has introduced significant bias, overestimating early data and underestimating later data points. To fix this, we might explore `span` values between 0.2 and 0.5, other smoothing methods, or combining `loess` with other smoothing methods.
+Here we can see that `loess` with smaller spans (darker lines) have smoothed the data somewhat but are still sensitive to outliers. However, `loess` with a larger span (lightest line) has introduced significant bias. To fix this, we might explore other smoothing methods, or combining `loess` with other smoothing methods.
 
-### Smoothing with GAM
+## Smoothing with GAM
 
-For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"** (note this is opposite the trend with other smoothing methods). Typically `k` must not be larger than the number of data points. Here, we'll show `gam` smoothing with `k` values of 5, 10, and 20.
+For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"** (note this is opposite the trend with other smoothing methods). However, **unlike earlier methods, `k` values that are too large are also problematic**, as they will tend to 'overfit' the data. `k` cannot be larger than the number of data points, and should usually be substantially smaller than that. Here, we'll show `gam` smoothing with `k` values of 5, 10, and 20.
 
 ```{r}
 ex_dat_mrg$smoothed20 <-
@@ -1209,45 +1228,46 @@ ex_dat_mrg$smoothed5 <-
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are smaller k and more "smoothed"
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-  xlab = "time", ylab = "log10(Abs)")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(ex_dat_mrg$smoothed20[ex_dat_mrg$Well == "A1"]),
-  col = "gray20")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(ex_dat_mrg$smoothed10[ex_dat_mrg$Well == "A1"]),
-  col = "gray45")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-  log10(ex_dat_mrg$smoothed5[ex_dat_mrg$Well == "A1"]),
-  col = "gray65")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time)) +
+  geom_point(aes(y = Measurements)) +
+  geom_line(aes(y = smoothed20), color = "gray20") +
+  geom_line(aes(y = smoothed10), color = "gray45") +
+  geom_line(aes(y = smoothed5), color = "gray65") +
+  facet_wrap(~Well) +
+  scale_y_continuous(trans = "log10")
 ```
 
-Here we can see that `gam` with higher `k` (darkest line) have smoothed the data but are still sensitive to those early outliers. However, `gam` with lower `k` values (lighter lines) have introduced significant bias, with the smallest `k` (lightest line) overestimating early data and adding fluctuations to later data points. To fix this, we might explore other smoothing methods or combining `gam` with other smoothing methods.
+Here we can see that `gam` does alright when working with the no phage-added wells (A1 and F1): higher `k` values (darkest line) have smoothed the data but are still sensitive to those early outliers, while lower `k` values (lighter lines) have introduced significant bias. However, `gam` is struggling when phage have been added (E11 and F10). Across all the `k` values it has added many fluctuations and often dips into values of 0 or lower (plotted here as breaks in the line, since the log of numbers <= 0 are undefined). To fix this, we might explore other smoothing methods or combining `gam` with other smoothing methods.
 
-### Combining multiple smoothing methods
+## Combining multiple smoothing methods
 
-Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `loess`, and `gam` work well at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using `moving-median` and `gam` (note that because `moving-median` removes the outliers, we can use `gam` with even less smoothing than before):
+Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `moving-average`, `loess`, and `gam` work better at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using the strengths of both `moving-median` and `moving-average`:
 
 ```{r}
-ex_dat_mrg$smoothed <-
+ex_dat_mrg$smoothed_med3 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
               method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
 #Note that for the second round, we're using the first smoothing as input
 ex_dat_mrg$smoothed <-
-  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed,
-              method = "gam", subset_by = ex_dat_mrg$Well, k = 40)
+  smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed_med3,
+              method = "moving-average", subset_by = ex_dat_mrg$Well, 
+              window_width_n = 3)
 
 #What does the smoothed data look like compared to the noisy original?
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     log10(ex_dat_mrg$Measurements[ex_dat_mrg$Well == "A1"]),
-     xlab = "time", ylab = "log10(Abs)")
-lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-      log10(ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"]))
+#The first round of smoothing with moving-median is plotted in lighter colors
+#The second round of smoothing with moving-average is plotted in darker colors
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time)) +
+  geom_point(aes(y = Measurements)) +
+  geom_line(aes(y = smoothed_med3), color = "gray20") +
+  geom_line(aes(y = smoothed), color = "gray65") +
+  facet_wrap(~Well) +
+  scale_y_continuous(trans = "log10")
 ```
 
-Here we can see that the combination of minimal `moving-median` and minimal `gam` smoothing has produced a curve that is very smooth (and so good for downstream analyses) but has minimal introduction of bias.
+Here we can see that the combination of minimal `moving-median` and `moving-average` smoothing has produced a curve that has most of the noise removed with minimal introduction of bias.
 
 # Processing data: calculating derivatives {#Processing}
 
@@ -1280,10 +1300,18 @@ ex_dat_mrg$deriv_percap <-
   calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed,
              subset_by = ex_dat_mrg$Well, percapita = TRUE, blank = 0)
 
+ex_dat_mrg$deriv_percap_raw <- 
+  calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
+             subset_by = ex_dat_mrg$Well, percapita = TRUE, blank = 0)
+
 #Now let's plot the per-capita derivative
 plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
      ex_dat_mrg$deriv_percap[ex_dat_mrg$Well == "A1"],
   xlab = "time", ylab = "per-capita growth rate (/sec)")
+
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
+     ex_dat_mrg$deriv_percap_raw[ex_dat_mrg$Well == "A1"],
+  xlab = "time", ylab = "per-capita growth rate (/sec)", ylim = c(-0.001, 0.03))
 ```
 
 Here we can see that the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly.
@@ -1320,9 +1348,9 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 * the peak density before a decline from phage predation
 * the time when bacteria drop below some density because of phage predation
 
-`gcplyr` contains a number of functions that make it easier to carry out these calculations, and many others that you might wish to design yourself. In the following sections, we highlight general-use `gcplyr` functions and provide examples using the common metrics above. 
+`gcplyr` contains a number of functions that make it easier to carry out these calculations. Additionally, `gcplyr` functions are flexible enough that you can use them in designing your own metric calculations. The following sections highlight general-use `gcplyr` functions and provide examples using the common metrics above. 
 
-But first, we need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`, feel free to skip the primer in the next section.** If you’re not familiar yet, don’t worry! Continue to the next section, where we provide a primer that will teach you all you need to know on using `group_by` and `summarize`.
+But first, we need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`, feel free to skip the primer in the next section.** If you’re not familiar yet, don’t worry! Continue to the next section, where we will work through a primer that will teach you all you need to know on using `group_by` and `summarize`.
 
 ## A brief primer on dplyr
 
@@ -1330,23 +1358,28 @@ The `R` package `dplyr` provides a "grammar of data manipulation" that is useful
 
 The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. 
 
-For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve. Since `dplyr` will drop any columns that the data aren't grouped by, we will typically want to list all of our design columns for `group_by`, along with the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
+For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve. Since `dplyr` will drop columns that the data aren't grouped by and that aren't summarized, we will typically want to list all of our design columns for `group_by`, along with the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
 
 In the next section, we provide a simple example of how the `max` function is used with `group_by` and `summarize` to calculate lag time and the maximum per-capita growth rate. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the remaining `gcplyr` functions, which (again) have to be used *within* `summarize` to work correctly.
 
 ## Summarizing with simple base functions: maximum and minimum density
-One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built in `max` function.
+One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth, maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built in `max` function.
 
 First, we need to group our data. `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
 
 ```{r}
 library(dplyr)
+#First, drop unneeded columns (optional)
+ex_dat_mrg <- dplyr::select(ex_dat_mrg,
+                            Time, Well, Measurements, Bacteria_strain, Phage,
+                            smoothed, deriv, deriv_percap, deriv_percap_hr)
+#Then, carry out grouping
 grouped_ex_dat_mrg <- group_by(ex_dat_mrg, Bacteria_strain, Phage, Well)
 
 head(grouped_ex_dat_mrg)
 ```
 
-Notice that this hasn't changed anything about our `data.frame`, but the groups are saved in there under the hood. Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the maximum of the `smoothed` column, and saved it in a column named `max_dens` (note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values).
+Notice that this hasn't changed anything about our `data.frame`, but the groups are saved in there under the hood. Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the maximum of the `smoothed` column, and saved it in a column named `max_dens` (note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values). We've saved the output from `summarize` to a new `data.frame`: `ex_dat_mrg_sum`, short for example_data_merged_summarized.
 
 ```{r}
 ex_dat_mrg_sum <- summarize(grouped_ex_dat_mrg,
@@ -1383,7 +1416,7 @@ head(ex_dat_mrg_sum)
 Sometimes, we need to provide limits on the data our simple functions will work with. We can demonstrate this in the process of calculating two common metrics we want to identify: 
 
 * the lag time (here we'll use the delay from the start of the run until growth rate peaks as a measure of lag time)
-* the maximum per-capita growth rate. 
+* the maximum per-capita growth rate
 
 Let's take a look at how this might work. What happens if we just try to use `max` on our per-capita growth rates?
 
@@ -1409,9 +1442,13 @@ plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
      xlab = "time", ylab = "log10(Abs)")
 lines(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
       log10(ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"]))
+
+plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
+     ex_dat_mrg$deriv_percap_hr[ex_dat_mrg$Well == "A7"],
+     xlab = "time", ylab = "deriv percap hr")
 ```
 
-Ahh, our smoothing has dipped into the negative territory, which is causing our per-capita growth rate to go haywire. We could try going back and adjusting our smoothing, but because so much of our data is so close to 0 we're unlikely to have much success. What if we just exclude all the values when the **density** is really low? Since all those values are basically just random noise from when the bacterial densities were really low, excluding them doesn't mean we're losing any information.
+Ahh, our smoothing has dipped into the negative territory, which is causing our per-capita growth rate to go haywire. We could try going back and adjusting our smoothing, but because so much of our data is so close to 0 we're unlikely to have much success. What if we just exclude all the values when the *density* is really low? Since all those values are basically just random noise from when the bacterial densities were really low, excluding them doesn't mean we're losing any information.
 
 Let's plot our per-capita growth rates at different cutoffs:
 
@@ -1447,7 +1484,7 @@ We can see with a cutoff of 0.001, many high growth rate points that are basical
 ```{r}
 ex_dat_mrg_sum <-
   summarize(grouped_ex_dat_mrg,
-            growth_rate = max(deriv_percap_hr[smoothed > 0.005], na.rm = TRUE))
+            growth_rate = max(deriv_percap_hr[smoothed > 0.01], na.rm = TRUE))
 head(ex_dat_mrg_sum)
 ```
 

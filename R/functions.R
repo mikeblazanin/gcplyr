@@ -3459,22 +3459,48 @@ find_local_extrema <- function(y, x = NULL,
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
 #'               first peak in y values
-#' @param width_limit_n Width of the window (in number of \code{y}) used to
-#'                    search for local extrema. A narrower width will me more
-#'                    sensitive to local maxima/minima, while a wider
-#'                    width will be less sensitive to local maxima/minima.
-#'                    
-#'                    If not provided, defaults to ~0.2*length(y)
+#' @param width_limit Width of the window (in units of \code{x}) used to
+#'                   search for local extrema. A narrower width will be more
+#'                   sensitive to narrow local maxima/minima, while a wider
+#'                   width will be less sensitive to local maxima/minima.
+#' @param width_limit_n The maximum number of data points a single 
+#'                      extrema-search step is allowed to take. For example,
+#'                      when maxima-finding, the function will not pass
+#'                      a valley consisting of more than \code{width_limit_n}
+#'                      data points.
+#'                      
+#'                      A smaller \code{width_limit_n} will be more sensitive 
+#'                      to narrow local maxima/minima, while a larger 
+#'                      \code{width_limit_n} will be less sensitive to 
+#'                      narrow local maxima/minima.
+#'                      
+#'                      If not provided, defaults to ~0.2*length(y)
+#' @param height_limit The maximum change in \code{y} a single extrema-search
+#'                     step is allowed to take.  For example, when 
+#'                     maxima-finding, the function will not pass a
+#'                     valley deeper than \code{height_limit}.
+#'                     
+#'                     A smaller \code{height_limit} will be more sensitive 
+#'                     to shallow local maxima/minima, while a larger 
+#'                     \code{height_limit} will be less sensitive to 
+#'                     shallow maxima/minima.
 #' @param ... Other parameters to pass to \code{find_local_extrema}
 #' 
 #' @details 
+#' If none of \code{width_limit}, \code{width_limit_n}, or 
+#' \code{height_limit} are provided, default value of \code{width_limit_n}
+#' will be used.
+#' 
 #' This function is designed to be compatible for use within
 #'  dplyr::group_by and dplyr::summarize
 #'                    
 #' @export      
-first_peak <- function(y, x = NULL, width_limit_n = NULL, 
+first_peak <- function(y, x = NULL, 
+                       width_limit = NULL,
+                       width_limit_n = NULL,
+                       height_limit = NULL,
                        return = "index",  ...) {
-  if(is.null(width_limit_n)) {
+  if(is.null(width_limit) & is.null(width_limit_n) & is.null(height_limit)) {
     width_limit_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
   
@@ -3486,7 +3512,9 @@ please use find_local_extrema for more flexibility")
   return(find_local_extrema(y = y, x = x,
                             return_maxima = TRUE,
                             return_minima = FALSE,
+                            width_limit = width_limit,
                             width_limit_n = width_limit_n,
+                            height_limit = height_limit,
                             return = return, ...)[1])
 }
 

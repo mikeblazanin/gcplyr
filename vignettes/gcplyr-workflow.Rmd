@@ -983,9 +983,11 @@ In some cases, we want to remove some of the wells from our growth curves data b
 For instance, let's imagine that we realized that we put the wrong media into Well B1, and so we should remove it from our analyses. In that case, we can simply:
 
 ```{r}
-library(dplyr)
-example_data_and_designs_filtered <- 
-  filter(ex_dat_mrg, Well != "B1")
+#We have previously loaded dplyr, but if you haven't already then
+#make sure to add the line:
+#   library(dplyr)
+
+example_data_and_designs_filtered <- filter(ex_dat_mrg, Well != "B1")
 head(example_data_and_designs_filtered)
 ```
 
@@ -1027,7 +1029,9 @@ Let's use `lubridate` to convert this text into a usable format. `lubridate` has
 Since the example has all three, we'll use `hms`. Once `hms` has parsed the text, we'll use another function to convert the output of `hms` into a pure numeric value: `time_length`. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
 
 ```{r}
-library(lubridate)
+#We have previously loaded lubridate, but if you haven't already then
+#make sure to add the line:
+#   library(lubridate)
 
 ex_dat_mrg$Time <- time_length(hms(ex_dat_mrg$Time))
 
@@ -1047,7 +1051,9 @@ Once your data has been merged and times have been converted to numeric, we can 
 **We'll be using this format to plot our data throughout the remainder of this vignette**
 
 ```{r}
-library(ggplot2)
+#We have previously loaded ggplot2, but if you haven't already then
+#make sure to add the line:
+#    library(ggplot2)
 
 #First, we'll reorder the Well levels so they plot in the correct order
 ex_dat_mrg$Well <- 
@@ -1830,7 +1836,6 @@ head(growth_and_antibiotics)
 And now let's see if there's a relationship!
 
 ```{r}
-library(ggplot2)
 ggplot(data = growth_and_antibiotics, 
        aes(x = Antibiotic_resis, y = auc)) +
   geom_point()

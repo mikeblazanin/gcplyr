@@ -1341,11 +1341,11 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 * the maximum per-capita growth rate
 * the density when a diauxic shift occurs
 * the time until diauxic shift occurs
-* the peak per-capita growth rate during a diauxic shift
+* the peak per-capita growth rate after a diauxic shift
 * the peak density before a decline from phage predation
 * the time when bacteria drop below some density because of phage predation
 
-`gcplyr` contains a number of functions that make it easier to carry out these calculations. Additionally, `gcplyr` functions are flexible enough that you can use them in designing your own metric calculations. The following sections highlight general-use `gcplyr` functions and provide examples using the common metrics above. 
+`gcplyr` contains a number of functions that make it easier to carry out these calculations. Additionally, `gcplyr` functions are flexible enough that you can use them in designing your own metric calculations. The following sections highlight general-use `gcplyr` functions and provide examples to calculate the common metrics above. 
 
 But first, we need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `summarize`. Why? Because the upcoming `gcplyr` functions need to be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`, feel free to skip the primer in the next section.** If you’re not familiar yet, don’t worry! Continue to the next section, where we will work through a primer that will teach you all you need to know on using `group_by` and `summarize`.
 
@@ -1355,12 +1355,17 @@ The `R` package `dplyr` provides a "grammar of data manipulation" that is useful
 
 The `group_by` functions in `dplyr` allow users to group the rows of their `data.frame`'s into groups. Then, `summarize` will carry out user-specified calculations on *each* group independently, producing a new `data.frame` where each group is a single row. 
 
-For growth curves, this means we will `group_by` our data so that every well is a group, and then we'll `summarize` each well with calculations like maximum density or area under the curve. Since `dplyr` will drop columns that the data aren't grouped by and that aren't summarized, we will typically want to list all of our design columns for `group_by`, along with the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
+For growth curves, this means we will:
 
-In the next section, we provide a simple example of how the `max` function is used with `group_by` and `summarize` to calculate lag time and the maximum per-capita growth rate. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the remaining `gcplyr` functions, which (again) have to be used *within* `summarize` to work correctly.
+1. `group_by` our data so that every well is a group
+2. `summarize` each well with calculations like maximum density or area under the curve
+
+Since `dplyr` will drop columns that the data aren't grouped by and that aren't summarized, we will typically want to list all of our design columns for `group_by`, along with the plate name and well. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
+
+In the next section, we provide a simple example of how the `max` function is used with `group_by` and `summarize` to calculate lag time and the maximum per-capita growth rate. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the remaining `gcplyr` functions, which (as a reminder) have to be used *within* `summarize` to work correctly.
 
 ## Summarizing with simple base functions: maximum and minimum density
-One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth, maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built in `max` function.
+One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth, maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built-in `max` function.
 
 First, we need to group our data. `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
 
@@ -1375,7 +1380,12 @@ grouped_ex_dat_mrg <- group_by(ex_dat_mrg, Bacteria_strain, Phage, Well)
 head(grouped_ex_dat_mrg)
 ```
 
-Notice that this hasn't changed anything about our `data.frame`, but the groups are saved in there under the hood. Then, we run `summarize`, specifying the name we want to save the results to and the function that calculates the summarized results. For instance, in the code below we've calculated the maximum of the `smoothed` column, and saved it in a column named `max_dens` (note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values). We've saved the output from `summarize` to a new `data.frame`: `ex_dat_mrg_sum`, short for example_data_merged_summarized.
+Notice that this hasn't changed anything about our `data.frame`, but `R` now knows what the groups are. Then, we run `summarize`, specifying:
+
+1. the name of the variable we want results saved to
+2. the function that calculates the summarized results
+
+For instance, in the code below we've calculated the maximum of the `smoothed` column, and saved it in a column named `max_dens` (note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values). We've saved the output from `summarize` to a new `data.frame`: `ex_dat_mrg_sum`, short for example_data_merged_summarized.
 
 ```{r}
 ex_dat_mrg_sum <- summarize(grouped_ex_dat_mrg,
@@ -1421,9 +1431,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 One common metric of growth curves is the total area under the curve. `gcplyr` has an `auc` function to easily calculate this area. Just like `min` and `max`, it needs to be used inside `summarize` on a `data.frame` that has been grouped.
 
-To use `auc`, simply specify the x and y data you are interested in calculating the area-under-the-curve of. Note that you can also specify a subset of the x-range to calculate the area of, in cases where you do not want the area under the curve from the beginning to the end of your time series.
-
-Here, we calculate the area-under-the-curve of the density data (saved to the `auc` column)
+To use `auc`, simply specify the x and y data whose area-under-the-curve you want to calculate. Here, we calculate the area-under-the-curve of the `smoothed` column and save it to a column titled `auc`.
 
 ```{r}
 ex_dat_mrg_sum <-
@@ -1434,7 +1442,7 @@ head(ex_dat_mrg_sum)
 
 ## Summarizing on subsets: maximum growth rate
 
-Sometimes, we need to provide limits on the data our simple functions will work with. We can demonstrate this in the process of calculating one of the most common metrics we want to identify: the maximum per-capita growth rate
+Sometimes, we need to provide limits on the data passed to our simple functions. We can demonstrate this in the process of calculating one of the most common metrics we want to identify: the maximum per-capita growth rate
 
 Let's look again at our smoothed per-capita growth rates:
 

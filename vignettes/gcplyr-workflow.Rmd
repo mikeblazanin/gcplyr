@@ -1277,7 +1277,7 @@ In many cases, identifying features of a growth curve requires looking not only 
 
 ## A simple derivative
 
-To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument) Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point.
+To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values, along with a vector of `subset_by` values differentiating our unique growth curves (here, the different wells). (Note: if you're using `calc_deriv` within `dplyr::mutate`, there's no need to use the `subset_by` argument) Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point. This is useful for identifying events like population declines, or multiple rounds of growth.
 
 ```{r}
 ex_dat_mrg$deriv <- 
@@ -1285,12 +1285,13 @@ ex_dat_mrg$deriv <-
              subset_by = ex_dat_mrg$Well)
 
 #Now let's plot the derivative
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "derivative (Absorbance/sec)")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free")
 ```
 
-Here we can clearly see when the slope of the total population was increasing the fastest. But we can also see something that may not have been immediately apparent visually: there is a second, slower, burst of growth later on. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+Here we can clearly see when the slope of the total population was increasing the fastest, and when it declines in the phage-added wells. But we can also see something surprising in Well A1 that may not have been immediately apparent visually: there is a second, slower, burst of growth later on. Such a pattern is common in bacterial growth curves and is called *diauxic growth*. Additionally, we can see in Well E11 when the bacteria start to grow again following near-extinction by phages, presumably after evolving resistance to the phage.
 
 ## Per-capita derivative
 If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
@@ -1300,21 +1301,16 @@ ex_dat_mrg$deriv_percap <-
   calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed,
              subset_by = ex_dat_mrg$Well, percapita = TRUE, blank = 0)
 
-ex_dat_mrg$deriv_percap_raw <- 
-  calc_deriv(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-             subset_by = ex_dat_mrg$Well, percapita = TRUE, blank = 0)
-
 #Now let's plot the per-capita derivative
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv_percap[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "per-capita growth rate (/sec)")
-
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv_percap_raw[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "per-capita growth rate (/sec)", ylim = c(-0.001, 0.03))
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free")
 ```
 
-Here we can see that the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly.
+Here we can see that, in Well A1, the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly. 
+
+However, the other wells seem to have a lot of noise obscuring their per-capita growth rates. What happened? Why hasn't our smoothing been sufficient? As we explore later, per-capita growth rates can be strongly affected by even small noise at very low densities, something that can be excluded simply by only analyzing per-capita growth when densities are above some minimum value.
 
 ## Changing the derivative units
 
@@ -1327,12 +1323,13 @@ ex_dat_mrg$deriv_percap_hr <-
              x_scale = 3600)
 
 #Now let's plot the derivative in units of Abs/hour
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv_percap_hr[ex_dat_mrg$Well == "A1"],
-  xlab = "time", ylab = "per-capita growth rate (/hr)")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap_hr)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free")
 ```
 
-Now we can see the bacterial growth rate in more-understandable units: they're growing just over 1.5 times/hour.
+Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 times/hour (when ignoring the points that seem likely to be noise).
 
 # Analyzing data with summarize {#Analyzing}
 

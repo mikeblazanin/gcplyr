@@ -1657,15 +1657,26 @@ In order to identify these kinds of extrema, we can use the more-general functio
 
 Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`. However, `find_local_extrema` will always return a vector of all the extrema found, so users must use brackets to select which one they want `summarize` to save.
 
-Let's dig into an example: identifying diauxic shifts. To refresh your memory on what we saw in the section [A simple derivative], here's a plot of the derivative of Well A1 over time.
+Let's dig into an example: identifying diauxic shifts. To refresh your memory on what we saw in the section [A simple derivative], here's a plot of the derivative of some of the wells over time.
 
 ```{r}
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv[ex_dat_mrg$Well == "A1"],
-     xlab = "time", ylab = "derivative (Absorbance/sec)")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
 ```
 
-Here we can clearly see there is a second, slower, burst of growth after the first wave of growth. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+In fact, if we look at some more of the wells with no phage added, we'll see a similar pattern repeatedly.
+
+```{r}
+sample_wells <- c("A1", "A4", "E2", "F1")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+This second, slower, burst of growth after the first wave of growth is common in bacterial growth curves and is called *diauxic growth*.
 
 How could we identify the time when the bacteria switch from their first burst of growth to their second? We could find the first minima (that isn't just the start) in the `deriv` values. To do so, we specify to `find_local_extrema` that we want `return = "x"` and we don't want maxima returned:
 
@@ -1673,15 +1684,17 @@ How could we identify the time when the bacteria switch from their first burst o
 ex_dat_mrg_sum <-
   summarize(
     grouped_ex_dat_mrg,
-    diauxie_x = find_local_extrema(x = Time, y = deriv, return = "x",
+    diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
                                    width_limit_n = 39)[2])
 
 #Plot data with vertical line at detected diauxie
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv[ex_dat_mrg$Well == "A1"],
-     xlab = "time", ylab = "derivative (Absorbance/sec)")
-abline(v = ex_dat_mrg_sum$diauxie_x[ex_dat_mrg_sum$Well == "A1"])
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free") +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(xintercept = diauxie_time))
 ```
 
 Now that we've found the point where the bacteria switch, we could quite easily find the density where that happens. To make it easier to follow, we'll save the *index* where the diauxic shift occurs to a column titled `diaxuie_idx`. To get that, we simple run `find_local_extrema` with `return = "index"`. Then, we can get the `smoothed` value at that index:
@@ -1690,7 +1703,7 @@ Now that we've found the point where the bacteria switch, we could quite easily 
 ex_dat_mrg_sum <-
   summarize(
     grouped_ex_dat_mrg,
-    diauxie_x = find_local_extrema(x = Time, y = deriv, return = "x",
+    diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
                                    width_limit_n = 39)[2],
     diauxie_idx = find_local_extrema(x = Time, y = deriv, return = "index",
@@ -1698,18 +1711,19 @@ ex_dat_mrg_sum <-
                                    width_limit_n = 39)[2],
     diauxie_dens = smoothed[diauxie_idx])
 
-#Now let's plot it on the original density data
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
-     xlab = "time", ylab = "Smoothed Absorbance", main = "Well A1")
-points(x = ex_dat_mrg_sum$diauxie_x[ex_dat_mrg_sum$Well == "A1"],
-       y = ex_dat_mrg_sum$diauxie_dens[ex_dat_mrg_sum$Well == "A1"],
-       pch = 16, cex = 2)
+#Plot data with a point at the moment of diauxic shift
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free") +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(x = diauxie_time, y = diauxie_dens),
+             size = 2, color = "red")
 ```
 
 Something that was hard to see on the density plot has now been easily quantified and can be visualized exactly where the shift occurs.
 
-### Combining subsets and local extrema: lag time and growth rate during diauxie
+### Combining subsets and local extrema: diauxic growth rate
 
 In the previous section we identified when the bacteria shifted into their second burst of growth. Can we find out what the peak per-capita growth rate was during that second burst? Yes, we just have to put together some of the things we've learned already. In particular, we're going to combine our use of `find_local_extrema`, `max`, and subsets to find the `max(deriv_percap_hr)` during the times after the diauxic shift:
 
@@ -1717,21 +1731,23 @@ In the previous section we identified when the bacteria shifted into their secon
 ex_dat_mrg_sum <-
   summarize(
     grouped_ex_dat_mrg,
-    diauxie_x = find_local_extrema(x = Time, y = deriv, return = "x",
+    diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
                                    width_limit_n = 39)[2],
-    diauxie_percap = max(deriv_percap_hr[Time >= diauxie_x], na.rm = TRUE),
+    diauxie_percap = max(deriv_percap_hr[Time >= diauxie_time], na.rm = TRUE),
     diauxie_percap_time = 
-      Time[Time >= diauxie_x][which.max(deriv_percap_hr[Time >= diauxie_x])])
+      Time[Time >= diauxie_time][
+        which.max(deriv_percap_hr[Time >= diauxie_time])]
+    )
 
-#Plot per-capita growth with a point at diauxie_percap_time, diauxie_percap
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$deriv_percap_hr[ex_dat_mrg$Well == "A1"],
-     xlab = "time", ylab = "per-capita growth rate (/hr)",
-     main = "Well A1")
-points(x = ex_dat_mrg_sum$diauxie_percap_time[ex_dat_mrg_sum$Well == "A1"],
-       y = ex_dat_mrg_sum$diauxie_percap[ex_dat_mrg_sum$Well == "A1"],
-       pch = 16, cex = 2)
+#Plot data with a point at the moment of peak diauxic growth rate
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap_hr)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free") +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(x = diauxie_percap_time, y = diauxie_percap),
+             size = 2, color = "red")
 ```
 
 ## Finding threshold-crossings: extinction time and time to density
@@ -1742,13 +1758,15 @@ We've previously shown how you can find local and global extrema in data, but wh
 
 One common case of threshold-crossing we might be interested in is the first point that our data falls below some threshold density. For instance, when bacteria are grown with phages, the amount of time it takes before the bacterial population falls below some threshold can be a proxy metric for how sensitive the bacteria are to that phage.
 
-Let's take a look at an example. Well A7 has bacteria and phages in it, let's look at the *smoothed* absorbance values:
+Let's take a look at the *smoothed* absorbance values in some example wells with both bacteria and phages:
 
 ```{r}
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
-     xlab = "time", ylab = "Absorbance",
-     main = "Well A7")
+sample_wells <- c("A7", "B10", "F10", "H8")
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well)
 ```
 
 Ok great. Now let's suppose that we think that an absorbance of 0.15 is a good threshold for extinction. How could we use `first_below` to calculate the time when that first occurs across all our different wells? Well, primarily, `first_below` simply needs our `x` and `y` values, the `threshold` we want to use, as well as whether we want it to `return` the `index` of the first point below the threshold, or the `x` value of that point (since we care about the time it happened here, we'll do the latter). Additionally, we'll specify that we don't care if the startpoint is below the threshold: we only care when the data goes from above to below it.
@@ -1761,15 +1779,15 @@ ex_dat_mrg_sum <-
                              return = "x", return_endpoints = FALSE))
 head(ex_dat_mrg_sum)
 
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A7"],
-     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A7"],
-     xlab = "time", ylab = "Absorbance",
-     main = "Well A7")
-points(x = ex_dat_mrg_sum$extin_time[ex_dat_mrg_sum$Well == "A7"],
-       y = 0.15, pch = 16, cex = 2)
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(xintercept = extin_time), lty = 2)
 ```
 
-As we can see, the wells with no phage added tend to never drop below 0.15 once they've passed it. That's what we'd expect! In contrast, the phage-added wells all have a time when the bacteria drop below that threshold, and the plot clearly shows that it's right where we'd expect it.
+All the phage-added wells have a time when the bacteria drop below that threshold, and the plot clearly shows that it's right where we'd expect it.
 
 ### Finding any kind of threshold-crossing: time to density
 
@@ -1782,6 +1800,7 @@ However, unlike `first_below`, `find_threshold_crosses` returns a vector contain
 Let's dig into an example: identifying the first time the bacteria reach some density, including if they start at that density
 
 ```{r}
+sample_wells <- c("A1", "F1", "F10", "E11")
 ex_dat_mrg_sum <-
   summarize(
     grouped_ex_dat_mrg,
@@ -1795,16 +1814,16 @@ ex_dat_mrg_sum <-
                                         return_falling = FALSE)[1])
 head(ex_dat_mrg_sum)
 
-plot(ex_dat_mrg$Time[ex_dat_mrg$Well == "A1"],
-     ex_dat_mrg$smoothed[ex_dat_mrg$Well == "A1"],
-     xlab = "time", ylab = "Absorbance",
-     main = "Well A1")
-points(x = ex_dat_mrg_sum$time_to_01[ex_dat_mrg_sum$Well == "A1"],
-       y = 0.1, pch = 16, cex = 2)
-points(x = ex_dat_mrg_sum$time_to_05[ex_dat_mrg_sum$Well == "A1"],
-       y = 0.5, pch = 16, cex = 2)
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(xintercept = time_to_01), lty = 2) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(xintercept = time_to_05), lty = 2)
 ```
-As we can see, `find_threshold_crosses` has returned the times when the bacteria reached those densities. We can see that some bacteria (e.g. those in Well A7) never reached 0.5, but all of the ones shown by `head` *did* reach 0.1. By comparing the times it took each strain to reach an absorbance of 0.1, we could learn something about how soon the bacteria started growing and how quickly they grew.
+As we can see, `find_threshold_crosses` has returned the times when the bacteria reached those densities. We can see that some bacteria (e.g. those in Wells A7 and F10) never reached 0.5, so they have an `NA` value for `time_to_05`. By comparing the times it took each strain to reach an absorbance of 0.1, we could learn something about how soon the bacteria started growing and how quickly they grew.
 
 # Combining growth curves data with other data
 

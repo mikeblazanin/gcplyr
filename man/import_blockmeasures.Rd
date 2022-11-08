@@ -8,7 +8,7 @@ import_blockmeasures(
   files,
   num_plates = 1,
   plate_names = NULL,
-  wellnames_sep = "_",
+  wellnames_sep = "",
   ...
 )
 }

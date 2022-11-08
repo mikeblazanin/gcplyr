@@ -94,6 +94,6 @@ When using \code{method = "gam"}, advanced users may also modify
          \code{mgcv::s} to smooth the data. 
          The data argument should be a \code{data.frame} containing the
          variables in the formula.
-         In such cases, subset_by can still be specified as a vector
+         In such cases, \code{subset_by} can still be specified as a vector
          as long as \code{nrow(data)}
 }

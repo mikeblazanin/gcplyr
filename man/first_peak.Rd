@@ -4,19 +4,48 @@
 \alias{first_peak}
 \title{Find the first local peak of a numeric vector}
 \usage{
-first_peak(y, x = NULL, width_limit_n = NULL, return = "index", ...)
+first_peak(
+  y,
+  x = NULL,
+  width_limit = NULL,
+  width_limit_n = NULL,
+  height_limit = NULL,
+  return = "index",
+  ...
+)
 }
 \arguments{
 \item{y}{Numeric vector of y values in which to identify local extrema}
 
 \item{x}{Optional numeric vector of corresponding x values}
 
-\item{width_limit_n}{Width of the window (in number of \code{y}) used to
-search for local extrema. A narrower width will me more
-sensitive to local maxima/minima, while a wider
-width will be less sensitive to local maxima/minima.
+\item{width_limit}{Width of the window (in units of \code{x}) used to
+search for local extrema. A narrower width will be more
+sensitive to narrow local maxima/minima, while a wider
+width will be less sensitive to local maxima/minima.}
+
+\item{width_limit_n}{The maximum number of data points a single 
+extrema-search step is allowed to take. For example,
+when maxima-finding, the function will not pass
+a valley consisting of more than \code{width_limit_n}
+data points.
+
+A smaller \code{width_limit_n} will be more sensitive 
+to narrow local maxima/minima, while a larger 
+\code{width_limit_n} will be less sensitive to 
+narrow local maxima/minima.
 
 If not provided, defaults to ~0.2*length(y)}
+
+\item{height_limit}{The maximum change in \code{y} a single extrema-search
+step is allowed to take.  For example, when 
+maxima-finding, the function will not pass a
+valley deeper than \code{height_limit}.
+
+A smaller \code{height_limit} will be more sensitive 
+to shallow local maxima/minima, while a larger 
+\code{height_limit} will be less sensitive to 
+shallow maxima/minima.}
 
 \item{return}{One of c("index", "x", "y"), determining whether the function
 will return the index, x value, or y value associated with the
@@ -30,6 +59,10 @@ This function takes a vector of \code{y} values and returns the index
 for \code{find_local_extrema}
 }
 \details{
+If none of \code{width_limit}, \code{width_limit_n}, or 
+\code{height_limit} are provided, default value of \code{width_limit_n}
+will be used.
+
 This function is designed to be compatible for use within
  dplyr::group_by and dplyr::summarize
 }

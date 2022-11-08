@@ -2,13 +2,13 @@
 title: "An introduction to using gcplyr"
 author: "Mike Blazanin"
 output: 
-  rmarkdown::html_vignette:
-    toc: true
-    toc_depth: 4
   pdf_document:
     toc: true
     toc_depth: 4
   word_document:
+    toc: true
+    toc_depth: 4
+  rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
 vignette: >

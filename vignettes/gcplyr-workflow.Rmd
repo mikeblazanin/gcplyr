@@ -1468,42 +1468,59 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Here we can clearly see that most of the noise is arising when the bacterial population is very small. Indeed, **this is common with per-capita growth rates, which are very sensitive to noise at low densities**. What can we do about it? What if we just exclude all the values when the *density* is really low? 
+If we compare these plots with the previous ones, we can begin to see that most of the noise is arising when the bacterial populations are very small. Indeed, **this is common with per-capita growth rates, which are very sensitive to noise at low densities**. What can we do about it? We can simply exclude all the values when the *density* is really low.
 
-Let's plot our per-capita growth rates at different cutoffs for the minimum *density* of bacteria. Even though these are smoothed values, we'll use points here, since it better showcases when data are being excluded:
+Let's plot our per-capita growth rate data at different cutoffs for the minimum *density* of bacteria. Even though these are smoothed values, we'll use points here, since it better showcases where data are being excluded:
 
 ```{r}
-#What does the original per-capita growth rate over time look like?
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv_percap_hr)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free") +
-  ggtitle("all data")
-
-#What do subsets look like with OD cutoffs of 0.001, 0.005, and 0.01?
-ggplot(data = dplyr::filter(ex_dat_mrg, 
-                            Well %in% sample_wells, smoothed > 0.001),
-       aes(x = Time, y = deriv_percap_hr)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free") +
-  ggtitle("data where smoothed density > 0.001")
-
-ggplot(data = dplyr::filter(ex_dat_mrg, 
-                            Well %in% sample_wells, smoothed >= 0.005),
-       aes(x = Time, y = deriv_percap_hr)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free") +
-  ggtitle("data where smoothed density > 0.005")
-
-ggplot(data = dplyr::filter(ex_dat_mrg, 
-                            Well %in% sample_wells, smoothed >= 0.01),
-       aes(x = Time, y = deriv_percap_hr)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free") +
-  ggtitle("data where smoothed density > 0.01")
+for (my_well in sample_wells) {
+  #Title
+  title <- cowplot::ggdraw() + 
+    cowplot::draw_label(paste("Well", my_well), 
+                        fontface = "bold", x = 0, hjust = 0) +
+    theme(plot.margin = margin(0, 0, 0, 7))
+  
+  #Save x and y limits for all plots so they're all on the same axes
+  xdat <- dplyr::filter(ex_dat_mrg, Well == my_well)$Time
+  ydat <- dplyr::filter(ex_dat_mrg, Well == my_well)$deriv_percap_hr
+  xlims <- c(min(xdat[is.finite(xdat)], na.rm = TRUE),
+             max(xdat[is.finite(xdat)], na.rm = TRUE))
+  ylims <- c(min(ydat[is.finite(ydat)], na.rm = TRUE),
+             max(ydat[is.finite(ydat)], na.rm = TRUE))
+  
+  #Plot unfiltered data
+  p1 <- ggplot(data = dplyr::filter(ex_dat_mrg, Well == my_well),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("all data") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  
+  #Plot data with filters for density
+  p2 <- ggplot(data = dplyr::filter(ex_dat_mrg, 
+                                    Well == my_well, smoothed > 0.001),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("data where smoothed > 0.001") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  p3 <- ggplot(data = dplyr::filter(ex_dat_mrg, 
+                                    Well == my_well, smoothed > 0.005),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("data where smoothed > 0.005") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  p4 <- ggplot(data = dplyr::filter(ex_dat_mrg, 
+                                    Well == my_well, smoothed > 0.01),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("data where smoothed > 0.01") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  
+  print(cowplot::plot_grid(title, cowplot::plot_grid(p1, p2, p3, p4, ncol = 2),
+                           ncol = 1, rel_heights = c(0.1, 1)))
+}
 ```
 
-We can see with a cutoff of 0.001, much of the noise still remains. However, once we use a cutoff of 0.005, they are all basically gone, and no high growth rate values are affected by 0.005 vs 0.01. If we checked this pattern for all the wells (as you should in your workflow), we would see a similar result. **Now, let's calculate the maximum growth rate of just the subset** of data points where OD is above 0.005. We can specify that subset directly in the summarize command:
+We can see with a cutoff of 0.001, much of the noise still remains. However, once we use a cutoff of 0.005, they are all basically gone, and no high growth rate values are affected by 0.005 vs 0.01. If we checked this pattern for all the wells (as you should in your own analyses), we would see a similar result. **Now, let's calculate the maximum growth rate of just the subset** of data points where OD is above 0.005. We can specify that subset directly in the summarize command:
 
 ```{r}
 ex_dat_mrg_sum <-

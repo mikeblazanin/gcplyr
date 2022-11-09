@@ -2641,7 +2641,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'            other parameters of \code{s()}, including the smoothing basis 
 #'            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
 #'            the default), cubic regressions (\code{bs = "cr"}), or many other 
-#'            options (see \code{?mcgv::s}). We recommend leaving the default 
+#'            options (see \code{?mcgv::s}). I recommend leaving the default 
 #'            thin plate regressions, whose main drawback is that they are 
 #'            computationally intensive to calculate. For growth curves data, 
 #'            this is unlikely to be relevant.

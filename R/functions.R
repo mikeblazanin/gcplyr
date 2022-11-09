@@ -2693,16 +2693,17 @@ smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
     if(method != "gam") {
       formula <- y ~ x
     } else {
-      #For gam we detect any args that need to be passed within s() and
-      # paste them into the formula
+      formula <- y ~ s(x)
+      #Detect any args that need to be passed within s() and
+      # put them into the formula manually
       if(any(names(list(...)) %in% names(formals(mgcv::s)))) {
         idxs <- which(names(list(...)) %in% names(formals(mgcv::s)))
-        formula <- stats::as.formula(
-          paste("y ~ s(x, ",
-                paste(paste(names(list(...))[idxs], list(...)[idxs], sep = "="),
-                      collapse = ", "),
-                ")", sep = ""))
-      } else {formula <- y ~ s(x)}
+        for(idx in idxs) {
+          formula[[3]][[length(formula[[3]])+1]] <- list(...)[[idx]]
+          names(formula[[3]])[[length(formula[[3]])]] <- names(list(...))[idx]
+        }
+        names(formula[[3]])[1:2] <- c("", "")
+      }
     }
   } else { #y is null
     if(!all(c("formula", "data") %in% names(list(...)))) {

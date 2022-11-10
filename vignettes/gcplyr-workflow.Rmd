@@ -209,8 +209,13 @@ Here's a simple example. First, we need to create a series of example block-shap
 #Don't worry about how it works - when working with real growth
 #curves data, all these files would be created by the plate reader
 temp_filenames <- 
-  tempfile(pattern = paste(as.character(example_widedata$Time), "_2_", sep = ""),
-                           fileext = ".csv")
+  paste("Plate1-", 
+        paste(example_widedata$Time %/% 3600,
+              formatC((example_widedata$Time %% 3600) %/% 60, 
+                      width = 2, flag = 0),
+              formatC((example_widedata$Time %% 3600) %% 60,
+                      width = 2, flag = 0),
+              sep = "_"), ".csv", sep = "")
 for (i in 1:length(temp_filenames)) {
   temp_filenames[i] <- strsplit(temp_filenames[i], split = "\\\\")[[1]][
     length(strsplit(temp_filenames[i], split = "\\\\")[[1]])]
@@ -233,6 +238,12 @@ for (i in 1:length(temp_filenames)) {
 }
 ```
 
+If you've saved all the files to a single folder, you can easily get a vector with all their names using `list.files`:
+```{r}
+list.files(pattern = ".csv")
+temp_filenames <- list.files(pattern = ".csv")
+```
+
 Here's what one of the files looks like (where the values are absorbance/optical density):
 
 ```{r}
@@ -248,7 +259,7 @@ If we want to read these files into `R`, we simply provide `import_blockmeasures
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames, startrow = 4)
 
-head(imported_blockdata[, 1:10])
+head(imported_blockdata, c(6, 8))
 ```
 
 Here we can see that import_blockmeasures has created a wide-shaped R object containing the data from all of our reads. It has also added the file names under the `block_name` column, so that we can easily track which row came from which file.
@@ -281,7 +292,7 @@ imported_blockdata <- import_blockmeasures(
   startrow = 4,
   metadata = list("time" = c(2, 3)))
 
-head(imported_blockdata[, 1:10])
+head(imported_blockdata, c(6, 8))
 ```
 
 You can see that the metadata you specified has been added as a column in our output `data.frame`. When specifying metadata, the metadata argument must be a list of named vectors. Each vector should have two elements specifying the location of the metadata in the input files: the first element is the row, the second element is the column.
@@ -316,8 +327,9 @@ write_blocks(read_blocks(files = temp_filenames,
 Let's take a look at what the file looks like:
 
 ```{r}
-print_df(head(read.csv("blocks_single.csv", 
-                       header = FALSE, colClasses = "character"), 20))
+print_df(head(read.csv("blocks_single.csv", header = FALSE, 
+                       colClasses = "character"),
+              c(20, 8)))
 ```
 
 We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `import_blockmeasures` (in this example we don't *have* to specify a start column, since the data starts in the first column, but I do to be explicit):
@@ -333,7 +345,7 @@ imported_blockdata <- import_blockmeasures(
 Here we've used the built-in `R` function `seq` to generate the full vector of `startrow`s and `endrow`s. If we take a look, we can see that it's been read successfully:
 
 ```{r}
-head(imported_blockdata[, 1:10])
+head(imported_blockdata, c(6, 8))
 ```
 
 Now let's add some metadata. Because we're reading from a single file, we need to specify the metadata slightly differently. Instead of the metadata being a single vector `c(row,column)` with the location, it's going to be a list of two vectors, one with the row numbers, and one with the column numbers.
@@ -352,7 +364,7 @@ imported_blockdata <- import_blockmeasures(
 And now if we take a look at the resulting object, we can see that the time metadata has been incorporated.
 
 ```{r}
-head(imported_blockdata[, 1:10])
+head(imported_blockdata, c(6, 10))
 ```
 
 ### Notes for more advanced use
@@ -395,8 +407,9 @@ Here's what the start of the file looks like (where the values are absorbance/op
 
 ```{r}
 #Let's take a peek at what this file looks like
-print_df(head(read.csv("widedata.csv", header = FALSE, colClasses = "character"), 
-              c(10, 6)))
+print_df(head(read.csv("widedata.csv", header = FALSE, 
+                       colClasses = "character"), 
+              c(6, 8)))
 ```
 
 This file contains all the reads for a single plate taken across all timepoints. We can see that the first two rows contain some metadata saved by the plate reader, like the name of the experiment and the date of the experiment. Then, we can see that the data starts on the 5th row with a header. The first column contains the timepoint information, and each subsequent column corresponds to a well in the plate. 
@@ -410,7 +423,7 @@ imported_widedata <- read_wides(files = "widedata.csv", startrow = 5)
 The resulting `data.frame` looks like this:
 
 ```{r}
-print_df(head(imported_widedata, c(10, 6)))
+print_df(head(imported_widedata, c(6, 8)))
 ```
 
 Note that *read_wides automatically saves the filename* the data was imported from into the first column of the output `data.frame`. This is done to ensure that later on, `data.frames` from multiple plates can be combined without fear of losing the identity of each plate.
@@ -442,7 +455,7 @@ imported_widedata <- read_wides(files = "widedata.csv",
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, 2),
                                                 "start_date" = c(2, 2)))
-print_df(head(imported_widedata, c(6, 3)))
+print_df(head(imported_widedata, c(6, 5)))
 ```
 
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
@@ -518,9 +531,8 @@ To import block-shaped design files, you can use the `import_blockdesigns` funct
 Let's take a look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
-temp_filename <- tempfile(fileext = ".csv")
 write.csv(
-  file = temp_filename,
+  file = "mydesign.csv",
   x = matrix(rep(c("Tr1", "Tr2"), each = 48),
              nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)))
 ```
@@ -528,13 +540,14 @@ write.csv(
 Now let's take a look at what the file looks like:
 
 ```{r}
-print_df(read.csv(temp_filename, header = FALSE, colClasses = "character"))
+print_df(read.csv("mydesign.csv", header = FALSE, colClasses = "character"))
 ```
 
 Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`. Since this block contains the treatment numbers, we've given the `block_names` as "Treatment_numbers". If no `block_names` is provided, `import_blockdesigns` will automatically name it according to the file name.
 
 ```{r}
-my_design <- import_blockdesigns(files = temp_filename, block_names = "Treatment_numbers")
+my_design <- import_blockdesigns(files = "mydesign.csv", 
+                                 block_names = "Treatment_numbers")
 head(my_design, 20)
 ```
 
@@ -546,9 +559,8 @@ What do you do if you have multiple design components? For instance, what if you
 First, let's create another example designs file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
-temp_filename2 <- tempfile(fileext = ".csv")
 write.csv(
-  file = temp_filename2,
+  file = "mydesign2.csv",
   x = matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),
              nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
              byrow = TRUE))
@@ -557,7 +569,7 @@ write.csv(
 Now let's take a look at what the file looks like:
 
 ```{r}
-print_df(read.csv(temp_filename2, header = FALSE, colClasses = "character"))
+print_df(read.csv("mydesign2.csv", header = FALSE, colClasses = "character"))
 ```
 
 Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
@@ -566,7 +578,7 @@ Let's now import both designs using `import_blockdesigns`. Since our two blocks 
 
 ```{r}
 my_design <- 
-  import_blockdesigns(files = c(temp_filename, temp_filename2), 
+  import_blockdesigns(files = c("mydesign.csv", "mydesign2.csv"), 
                       block_names = c("Treatment_numbers", "Strain_letters"))
 head(my_design, 20)
 ```
@@ -1554,6 +1566,7 @@ One particular special case we're often interested in is the first peak in some 
 #### Peak density
 
 
+
 Let's start with the former example: finding the peak of density.
 
 To identify the first peak, we can use the `gcplyr` function `first_peak`. `first_peak` simply requires the `y` data you want to identify the peak in. In this case, that's `smoothed`. We also need to specify whether we want the function to `return` the `index` of the first peak, the `x` value of the peak, or the `y` value of the peak. We'll get the `x` and `y` values, saving them in columns `first_peak_x` and `first_peak_y`, respectively. (Note that if you want the x-value, you have to provide the x values to `first_peak`). As usual, `first_peak` needs to be used inside of a `summarize` command on data that has already been grouped.
@@ -1619,6 +1632,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% wells_tocheck),
 That worked great! 
 
 #### Maximum growth rate and lag time
+
 
 
 Now let's look at the other example: using `first_peak` to find the first peak in per-capita growth rate to find both the maximum growth rate and the lag time. As we did earlier, we'll limit our analyses to data where `smoothed > 0.005`, and visualize using points (even though this is smoothed):

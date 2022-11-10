@@ -2333,7 +2333,7 @@ trans_wide_to_tidy <- function(wides,
   for (i in 1:length(wides)) {
     if (!is.na(data_cols[i])) { #user specified which columns are data columns
       outputs[[i]] <- as.data.frame(
-        tidyr::pivot_longer(wides[[i]],
+        tidyr::pivot_longer(data = wides[[i]],
                             names_to = names_to[i],
                             values_to = values_to[i],
                             cols = data_cols[[i]],
@@ -2341,14 +2341,14 @@ trans_wide_to_tidy <- function(wides,
                             ...))
     } else if (!is.na(id_cols[i])) { #user specified which columns are id columns
       outputs[[i]] <- as.data.frame(
-        tidyr::pivot_longer(wides[[i]],
+        tidyr::pivot_longer(data = wides[[i]],
                             names_to = names_to[i],
                             values_to = values_to[i],
                             cols = which(!colnames(wides[[i]]) %in% id_cols[[i]]),
                             values_transform = values_transform[[i]],
                             ...))
     } else { #User must be providing their own arguments to pivot_longer
-      outputs[[i]] <- as.data.frame(tidyr::pivot_longer(wides[[i]],
+      outputs[[i]] <- as.data.frame(tidyr::pivot_longer(data = wides[[i]],
                                                         names_to = names_to[i],
                                                         values_to = values_to[i],
                                                         values_transform = values_transform[[i]],
@@ -2437,8 +2437,8 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   
   if (!is.null(y)) {
     #Join x and y
-    output <- dplyr::full_join(x, y,
-                             by = by, ...)
+    output <- dplyr::full_join(x = x, y = y,
+                               by = by, ...)
     if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
       warning("\nmerged_df has more rows than x or y, this may indicate
                mis-matched values in the shared column(s) used to merge 
@@ -2677,7 +2677,8 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' 
 #' @export
 smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
-                        return_fitobject = FALSE, na.rm = TRUE, ...) {
+                        return_fitobject = FALSE, ...) {
+  browser()
   if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("method must be one of: moving-average, moving-median, gam, or loess")
   }
@@ -3500,7 +3501,8 @@ first_peak <- function(y, x = NULL,
                        width_limit = NULL,
                        width_limit_n = NULL,
                        height_limit = NULL,
-                       return = "index",  ...) {
+                       return = "index", return_endpoints = TRUE, 
+                       ...) {
   if(is.null(width_limit) & is.null(width_limit_n) & is.null(height_limit)) {
     width_limit_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
@@ -3513,6 +3515,7 @@ please use find_local_extrema for more flexibility")
   return(find_local_extrema(y = y, x = x,
                             return_maxima = TRUE,
                             return_minima = FALSE,
+                            return_endpoints = return_endpoints,
                             width_limit = width_limit,
                             width_limit_n = width_limit_n,
                             height_limit = height_limit,

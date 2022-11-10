@@ -14,12 +14,12 @@ You can also embed plots in R chunks. In that case, don't forget to commit and p
 The goal of gcplyr is to facilitate manipulation and analysis of
 bacterial growth curves data.
 
-gcplyr is currently in an **alpha release**. Many features are still
-under development and may change frequently. Documentation may also be
-incomplete or missing.
+gcplyr is currently in an **Open Beta release**. Most features are
+complete and should be relatively stable. Documentation should be
+complete.
 
-**Please send all questions, requests, and bugs to mikeblazanin \[at\]
-gmail \[dot\] com**
+**Please send all questions, requests, comments, and bugs to
+mikeblazanin \[at\] gmail \[dot\] com**
 
 ## What this package can do
 
@@ -66,4 +66,4 @@ vignette("gcplyr-workflow")
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulation and analysis of growth
-curves data.’ R package version 0.10
+curves data.’ R package version 0.11

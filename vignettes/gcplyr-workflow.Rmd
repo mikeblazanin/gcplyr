@@ -1128,15 +1128,15 @@ For `moving-average`, the tuning parameter is `window_width_n`, which specifies 
 ```{r}
 ex_dat_mrg$smoothed3 <- 
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-average", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-average", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
 ex_dat_mrg$smoothed7 <- 
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-average", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-average", subset_by = ex_dat_mrg$Well,
               window_width_n = 7)
 ex_dat_mrg$smoothed11 <- 
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-average", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-average", subset_by = ex_dat_mrg$Well,
               window_width_n = 11)
 
 #What does the smoothed data look like compared to the noisy original?
@@ -1160,15 +1160,15 @@ For `moving-median`, the tuning parameter is also `window_width_n`, which specif
 ```{r}
 ex_dat_mrg$smoothed3 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-median", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
 ex_dat_mrg$smoothed7 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-median", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 7)
 ex_dat_mrg$smoothed11 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-median", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 11)
 
 #What does the smoothed data look like compared to the noisy original?
@@ -1192,15 +1192,15 @@ For `loess`, the tuning parameter is the `span` argument. `loess` works by doing
 ```{r}
 ex_dat_mrg$smoothed1 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "loess", subset_by = ex_dat_mrg$Well,
+              sm_method = "loess", subset_by = ex_dat_mrg$Well,
               span = .1, degree = 1)
 ex_dat_mrg$smoothed2 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "loess", subset_by = ex_dat_mrg$Well,
+              sm_method = "loess", subset_by = ex_dat_mrg$Well,
               span = .2, degree = 1)
 ex_dat_mrg$smoothed5 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "loess", subset_by = ex_dat_mrg$Well,
+              sm_method = "loess", subset_by = ex_dat_mrg$Well,
               span = .5, degree = 1)
 
 #What does the smoothed data look like compared to the noisy original?
@@ -1224,13 +1224,13 @@ For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doin
 ```{r}
 ex_dat_mrg$smoothed20 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "gam", subset_by = ex_dat_mrg$Well, k = 20)
+              sm_method = "gam", subset_by = ex_dat_mrg$Well, k = 20)
 ex_dat_mrg$smoothed10 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "gam", subset_by = ex_dat_mrg$Well, k = 10)
+              sm_method = "gam", subset_by = ex_dat_mrg$Well, k = 10)
 ex_dat_mrg$smoothed5 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "gam", subset_by = ex_dat_mrg$Well, k = 5)
+              sm_method = "gam", subset_by = ex_dat_mrg$Well, k = 5)
 
 #What does the smoothed data look like compared to the noisy original?
 #Lighter lines are smaller k and more "smoothed"
@@ -1253,12 +1253,12 @@ Often, combining multiple smoothing methods can provide improved results. For in
 ```{r}
 ex_dat_mrg$smoothed_med3 <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$Measurements,
-              method = "moving-median", subset_by = ex_dat_mrg$Well,
+              sm_method = "moving-median", subset_by = ex_dat_mrg$Well,
               window_width_n = 3)
 #Note that for the second round, we're using the first smoothing as input
 ex_dat_mrg$smoothed <-
   smooth_data(x = ex_dat_mrg$Time, y = ex_dat_mrg$smoothed_med3,
-              method = "moving-average", subset_by = ex_dat_mrg$Well, 
+              sm_method = "moving-average", subset_by = ex_dat_mrg$Well, 
               window_width_n = 3)
 
 #What does the smoothed data look like compared to the noisy original?

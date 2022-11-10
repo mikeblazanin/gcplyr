@@ -2606,7 +2606,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param x An (optional) vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density). If NULL,
 #'          \code{formula} and \code{data} *must* be provided via \code{...}
-#' @param method Argument specifying which smoothing method should
+#' @param sm_method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
 #'                  "moving-average", "moving-median', "loess", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
@@ -2637,7 +2637,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'            See Details for additional arguments options.
 #'
 #' @details 
-#'            When using \code{method = "gam"}, advanced users may also modify 
+#'            When using \code{sm_method = "gam"}, advanced users may also modify 
 #'            other parameters of \code{s()}, including the smoothing basis 
 #'            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
 #'            the default), cubic regressions (\code{bs = "cr"}), or many other 
@@ -2676,11 +2676,15 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'         fitted values and the input values
 #' 
 #' @export
-smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
+smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
-  browser()
-  if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
-    stop("method must be one of: moving-average, moving-median, gam, or loess")
+  if(!missing("method")) { #method arg deprecated in v0.11
+    warning("'method' is deprecated, use 'sm_method' instead. 'method' is now
+used exclusively to be passed via ... to smoothing sub-functions")
+  }
+
+  if(!sm_method %in% c("moving-average", "moving-median", "gam", "loess")) {
+    stop("sm_method must be one of: moving-average, moving-median, gam, or loess")
   }
   
   #Parse x and y, and/or ... args, into formula and data
@@ -2691,7 +2695,7 @@ smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
     if(is.null(x)) {x <- 1:length(y)}
     if(length(x) != length(y)) {stop("x and y must be the same length")}
     data <- data.frame(x, y)
-    if(method != "gam") {
+    if(sm_method != "gam") {
       formula <- y ~ x
     } else {
       formula <- y ~ s(x)
@@ -2714,7 +2718,7 @@ smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
     data <- list(...)$data
   }
   
-  if (method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
+  if (sm_method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
     warning("gam method is called without 's()' to smooth\n")}
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
   } else if (length(subset_by) != nrow(data)) {
@@ -2731,26 +2735,26 @@ smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
   #Run smoothing methods
   for (i in 1:length(unique(subset_by))) {
     #Calculate fitted values
-    if (method == "moving-average") {
+    if (sm_method == "moving-average") {
       temp <- 
         list(
           moving_average(formula = formula, 
                          data = data[subset_by == unique(subset_by)[i], ],
                          ...))
       names(temp) <- "fitted"
-    } else if (method == "moving-median") {
+    } else if (sm_method == "moving-median") {
       temp <-
         list(
           moving_median(formula = formula,
                         data = data[subset_by == unique(subset_by)[i], ],
                         ...))
       names(temp) <- "fitted"
-    } else if (method == "loess") {
+    } else if (sm_method == "loess") {
       temp <- 
         stats::loess(formula = formula, 
                      data = data[subset_by == unique(subset_by)[i], ],
                      na.action = "na.exclude", ...)
-    } else if (method == "gam") {
+    } else if (sm_method == "gam") {
       temp <- 
         dots_parser(
           FUN = mgcv::gam,
@@ -2760,7 +2764,7 @@ smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
     
     #Store results as requested
     if (return_fitobject) {
-      if (method == "gam") {
+      if (sm_method == "gam") {
         #Rename fitted.values to fitted
         names(temp)[match("fitted.values", names(temp))] <- "fitted"
       }
@@ -2772,7 +2776,7 @@ smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
       fits_list[[i]] <- temp
     } else {
       #Fill in output if needed
-      if(method %in% c("gam", "loess")) {
+      if(sm_method %in% c("gam", "loess")) {
         out[subset_by == unique(subset_by)[i]] <-
           stats::predict(temp, newdata = data[subset_by == unique(subset_by)[i], ])
       } else {

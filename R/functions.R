@@ -2615,7 +2615,6 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param return_fitobject Boolean indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
-#' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @param ... Arguments passed to \code{stats::loess}, \code{mgcv::gam},
 #'            \code{moving_average}, or \code{moving_median}.
 #'            
@@ -3491,6 +3490,8 @@ find_local_extrema <- function(y, x = NULL,
 #'                     to shallow local maxima/minima, while a larger 
 #'                     \code{height_limit} will be less sensitive to 
 #'                     shallow maxima/minima.
+#' @param return_endpoints Should the first or last value in \code{y}
+#'                         be allowed to be returned?
 #' @param ... Other parameters to pass to \code{find_local_extrema}
 #' 
 #' @details 

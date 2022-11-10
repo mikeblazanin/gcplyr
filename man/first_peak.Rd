@@ -52,6 +52,9 @@ shallow maxima/minima.}
 will return the index, x value, or y value associated with the
 first peak in y values}
 
+\item{return_endpoints}{Should the first or last value in \code{y}
+be allowed to be returned?}
+
 \item{...}{Other parameters to pass to \code{find_local_extrema}}
 }
 \description{

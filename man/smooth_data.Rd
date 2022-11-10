@@ -50,8 +50,6 @@ independently of the others.}
 \item{return_fitobject}{Boolean indicating whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.}
-
-\item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
 \value{
 If return_fitobject == FALSE:

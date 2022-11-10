@@ -89,14 +89,14 @@ test_that("smooth_data returns properly for moving-average", {
   manual_expect_win5 <- c(NA, NA, rep(0, (nrow(data)-4)), NA, NA)
   for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
   expect_equal(smooth_data(x = data$time, y = data$dens,
-                           method = "moving-average",
+                           sm_method = "moving-average",
                            window_width = 5),
                expected = manual_expect_win5)
   data2 <- data.frame("time" = c(1:100, 1:100),
                       "dens" = c(data$dens, data$dens + 10),
                       "treat" = rep(c("A", "B"), each = 100))
   expect_equal(smooth_data(x = data2$time, y = data2$dens,
-                           method = "moving-average",
+                           sm_method = "moving-average",
                            subset_by = data2$treat,
                            window_width = 5),
                expected = c(manual_expect_win5, manual_expect_win5 + 10))
@@ -109,14 +109,14 @@ test_that("smooth_data returns properly for loess", {
                        rnorm(100, sd = 0.5))
   expect_equal(
     smooth_data(x = data$time, y = data$dens,
-                method = "loess", span = 0.5),
+                sm_method = "loess", span = 0.5),
     expected = loess(dens ~ time, data, span = 0.5, 
                      na.action = "na.exclude")$fitted)
   
   #Now test with out-of-order data
   data2 <- data.frame(x = c(50:100, 1:49), y = sqrt(c(50:100, 1:49)))
   expect_equal(smooth_data(x = data2$x, y = data2$y,
-                           method = "loess", span = 0.5),
+                           sm_method = "loess", span = 0.5),
                expected = loess(y ~ x, data2, span = 0.5,
                                 na.action = "na.exclude")$fitted)
   
@@ -127,7 +127,7 @@ test_that("smooth_data returns properly for loess", {
                        data3)
   names(expected3) <- NULL
   expect_equal(smooth_data(x = data3$x, y = data3$y,
-                           method = "loess", span = 0.5),
+                           sm_method = "loess", span = 0.5),
                expected = expected3)
 })
 
@@ -142,16 +142,15 @@ test_that("smooth_data returns properly for gam", {
   names(expect1) <- NULL
   dim(expect1) <- NULL
   expect_equal(
-    smooth_data(x = data$time, y = data$dens, method = "gam"),
+    smooth_data(x = data$time, y = data$dens, sm_method = "gam"),
     expected = expect1)
 
-  #Now test with out-of-order data
   data2 <- data.frame(x = c(50:100, 1:49), y = sqrt(c(50:100, 1:49)))
   expect2 <- predict(gam(formula = y ~ s(x), data = data2),
                      data2)
   names(expect2) <- NULL
   dim(expect2) <- NULL
-  expect_equal(smooth_data(x = data2$x, y = data2$y, method = "gam"),
+  expect_equal(smooth_data(x = data2$x, y = data2$y, sm_method = "gam"),
                expected = expect2)
   
   #Now test with NA's and out-of-order data
@@ -161,7 +160,7 @@ test_that("smooth_data returns properly for gam", {
                      data3)
   names(expect3) <- NULL
   dim(expect3) <- NULL
-  expect_equal(smooth_data(x = data3$x, y = data3$y, method = "gam"),
+  expect_equal(smooth_data(x = data3$x, y = data3$y, sm_method = "gam"),
                expected = expect3)
   
   #Now test when passing arguments for s() (e.g. k)
@@ -170,6 +169,29 @@ test_that("smooth_data returns properly for gam", {
   names(expect4) <- NULL
   dim(expect4) <- NULL
   expect_equal(
-    smooth_data(x = data$time, y = data$dens, method = "gam", k = 5),
+    smooth_data(x = data$time, y = data$dens, sm_method = "gam", k = 5),
     expected = expect4)
+  
+  #& non-k args to s
+  expect5 <-
+    predict(gam(formula = dens ~ s(time, k = 5, bs = "cr"), data = data),
+                     data)
+  names(expect5) <- NULL
+  dim(expect5) <- NULL
+  expect_equal(
+    smooth_data(x = data$time, y = data$dens, sm_method = "gam",
+                k = 5, bs = "cr"),
+    expected = expect5)
+
+  #& mix of args to s() and to gam()
+  expect6 <-
+    predict(gam(formula = dens ~ s(time, k = 5, bs = "cr"),
+                data = data, subset = 1:90),
+            data)
+  names(expect6) <- NULL
+  dim(expect6) <- NULL
+  expect_equal(
+    smooth_data(x = data$time, y = data$dens, sm_method = "gam",
+                k = 5, bs = "cr", subset = 1:90),
+    expected = expect6)
 })

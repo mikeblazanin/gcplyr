@@ -1,0 +1,31 @@
+gcplyr_func,other_func,matches,checked
+read_blocks,utils::read.csv,header,x
+read_blocks,readxl::read_xls,sheet,x
+read_blocks,readxl::read_xlsx,sheet,x
+read_blocks,utils::read.table,"header, na.strings",x
+read_wides,utils::read.csv,header,x
+read_wides,readxl::read_xls,sheet,x
+read_wides,readxl::read_xlsx,sheet,x
+read_wides,utils::read.table,"header, na.strings",x
+read_tidys,utils::read.csv,,NA
+read_tidys,readxl::read_xls,sheet,x
+read_tidys,readxl::read_xlsx,sheet,x
+read_tidys,utils::read.table,na.strings,x
+import_blockmeasures,gcplyr::uninterleave,,NA
+import_blockmeasures,gcplyr::read_blocks,files,x
+import_blockdesigns,gcplyr::read_blocks,"files, block_names",x
+import_blockdesigns,gcplyr::paste_blocks,sep,x
+import_blockdesigns,gcplyr::trans_block_to_wide,,NA
+import_blockdesigns,gcplyr::trans_wide_to_tidy,,NA
+import_blockdesigns,gcplyr::separate_tidy,sep,x
+write_blocks,utils::write.table,"file, na",x
+trans_wide_to_tidy,tidyr::pivot_longer,"names_to, values_to",x
+merge_dfs,dplyr::full_join,"x, y, by",x
+separate_tidy,tidyr::separate,"data, col, into, sep",x
+smooth_data,stats::loess,method,x
+smooth_data,mgcv::gam,method,x
+smooth_data,gcplyr::moving_average,,NA
+smooth_data,gcplyr::moving_median,,NA
+smooth_data,mgcv::s,,NA
+first_peak,gcplyr::find_local_extrema,"y, x, width_limit, width_limit_n, height_limit, return",x
+first_below,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endpoints, subset, na.rm",x

@@ -1697,7 +1697,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
              aes(xintercept = diauxie_time))
 ```
 
-Now that we've found the point where the bacteria switch, we could quite easily find the density where that happens. To make it easier to follow, we'll save the *index* where the diauxic shift occurs to a column titled `diaxuie_idx`. To get that, we simple run `find_local_extrema` with `return = "index"`. Then, we can get the `smoothed` value at that index:
+Now that we've found the point where the bacteria switch, we could quite easily find the density where that happens. To make it easier to follow, we'll save the *index* where the diauxic shift occurs to a column titled `diaxuie_idx`. To get that, we simply run `find_local_extrema` with `return = "index"`. Then, we can get the `smoothed` value at that index:
 
 ```{r}
 ex_dat_mrg_sum <-

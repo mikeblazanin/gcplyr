@@ -4,6 +4,24 @@ growthcurvalyzer
 gcanalyzer
 gcer
 
+#Every new version
+1. Save & commit all changes to code
+2. Re-build vignettes (see code in vignette to re-build all formats at once)
+3. Commit new vignettes
+4. Update DESCRIPTION with version and date, commit
+5. R CMD build gcplyr
+6. R CMD check gcplyr_X.X.X.tar.gz
+7. R CMD INSTALL gcplyr_X.X.X.tar.gz
+8. Re-knit README.Rmd
+9. Save & commit newly generated README.md file
+10. Push everything
+11. git checkout master
+12. git merge develop
+13. git push
+14. git checkout develop
+15. Update DESCRIPTION to newest development version number
+
+
 #Managing master & develop branches:
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github
 

@@ -2603,6 +2603,10 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' 
 #' This function calls other functions to smooth growth curve data
 #' 
+#' @param ... Arguments passed to \code{stats::loess}, \code{mgcv::gam},
+#'            \code{moving_average}, or \code{moving_median}. Typically
+#'            includes tuning parameter(s), which in some cases are required.
+#'            See Details for more information.
 #' @param x An (optional) vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density). If NULL,
 #'          \code{formula} and \code{data} *must* be provided via \code{...}
@@ -2615,27 +2619,25 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param return_fitobject Boolean indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
-#' @param ... Arguments passed to \code{stats::loess}, \code{mgcv::gam},
-#'            \code{moving_average}, or \code{moving_median}.
-#'            
+#'
+#' @details 
 #'            For \code{moving_average} and \code{moving_median}, 
-#'            \code{window_width_n} is required and sets the number of
-#'            data points wide the moving window is. Larger values will
-#'            be more "smoothed"
+#'            passing \code{window_width_n} via \code{...} is required and 
+#'            sets the number of data points wide the moving window is. Larger 
+#'            values of \code{window_width_n} will produce more "smoothed"
+#'            data
 #'            
 #'            For \code{loess}, the \code{span} argument sets the fraction of
 #'            data points that should be included in each calculation. It's
 #'            typically best to specify, since the default of 0.75 is often
-#'            too large for growth curves data. Larger values will be more
-#'            "smoothed"
+#'            too large for growth curves data. Larger values of \code{span} 
+#'            will produce more more "smoothed" data
 #'            
 #'            For \code{gam}, both arguments to \code{gam} and \code{s} can
-#'            be provided via \code{...}. Most frequently, the the \code{k} 
+#'            be provided via \code{...}. Most frequently, the \code{k} 
 #'            argument to \code{s} sets the number of "knots" the
 #'            spline-fitting can use. Smaller values will be more "smoothed".
-#'            See Details for additional arguments options.
-#'
-#' @details 
+#'            
 #'            When using \code{sm_method = "gam"}, advanced users may also modify 
 #'            other parameters of \code{s()}, including the smoothing basis 
 #'            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
@@ -2645,19 +2647,18 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'            computationally intensive to calculate. For growth curves data, 
 #'            this is unlikely to be relevant.
 #'            
-#'          As an alternative to passing \code{y}, for more advanced needs 
-#'          with \code{loess} or \code{gam}, \code{formula} and \code{data} can 
-#'          be passed to \code{smooth_data} via the \code{...} argument 
-#'          (in lieu of \code{y}).
+#'            As an alternative to passing \code{y}, for more advanced needs 
+#'            with \code{loess} or \code{gam}, \code{formula} and \code{data} 
+#'            can be passed to \code{smooth_data} via the \code{...} argument 
+#'            (in lieu of \code{y}).
 #'          
-#'          In this case, the formula should specify the response (e.g. density) 
-#'          and predictors. For \code{gam} smoothing, the formula should
-#'          typically be of the format: y ~ s(x), which uses 
-#'          \code{mgcv::s} to smooth the data. 
-#'          The data argument should be a \code{data.frame} containing the
-#'          variables in the formula.
-#'          In such cases, \code{subset_by} can still be specified as a vector
-#'          as long as \code{nrow(data)}
+#'            In this case, the formula should specify the response (e.g. density) 
+#'            and predictors. For \code{gam} smoothing, the formula should
+#'            typically be of the format: y ~ s(x), which uses 
+#'            \code{mgcv::s} to smooth the data. The data argument should be a 
+#'            \code{data.frame} containing the variables in the formula.
+#'            In such cases, \code{subset_by} can still be specified as a vector
+#'            as long as \code{nrow(data)}
 #' 
 #' @return If return_fitobject == FALSE:
 #' 

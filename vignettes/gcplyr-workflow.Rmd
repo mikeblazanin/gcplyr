@@ -191,11 +191,11 @@ Timepoint | Well | Measurement |
 # Importing data
 Once you've determined what format your data is in, you can begin importing it using the `read_*` or `import_*` functions of `gcplyr`. 
 
-If your data is block-shaped, you'll use `import_blockmeasures` and you can start in the next section: **[Importing block-shaped data]**. 
+**If your data is block-shaped:** use `import_blockmeasures` and start in the next section: **[Importing block-shaped data]**
 
-If your data is wide-shaped, you'll use `read_wides` and you can skip down to the **[Importing wide-shaped data]** section. 
+**If your data is wide-shaped:** use `read_wides` and skip down to the **[Importing wide-shaped data]** section
 
-In the unlikely event your data is already tidy, you'll use `read_tidys` and you can skip down to the **[Importing tidy-shaped data]** section.
+**If your data is already tidy-shaped:** use `read_tidys` and skip down to the **[Importing tidy-shaped data]** section.
 
 ## Importing block-shaped data
 To import block-shaped data, use the `import_blockmeasures` function. `import_blockmeasures` only requires a list of filenames (or relative file paths) and **will return a wide-shaped data.frame** that you can save in R. 
@@ -238,10 +238,13 @@ for (i in 1:length(temp_filenames)) {
 }
 ```
 
-If you've saved all the files to a single folder, you can easily get a vector with all their names using `list.files`:
+If you've saved all the files to a single folder, you can easily get a vector with all their names using `list.files`. If your folder contains other files, you can specify a regular expression `pattern` to limit it to just those you want to import:
 ```{r}
-list.files(pattern = ".csv")
-temp_filenames <- list.files(pattern = ".csv")
+#Here we print all the files we're going to read
+list.files(pattern = "Plate1.*csv")
+
+#Here we save them to the temp_filenames variable
+temp_filenames <- list.files(pattern = "Plate1.*csv")
 ```
 
 Here's what one of the files looks like (where the values are absorbance/optical density):
@@ -364,7 +367,7 @@ imported_blockdata <- import_blockmeasures(
 And now if we take a look at the resulting object, we can see that the time metadata has been incorporated.
 
 ```{r}
-head(imported_blockdata, c(6, 10))
+head(imported_blockdata, c(6, 8))
 ```
 
 ### Notes for more advanced use
@@ -409,7 +412,7 @@ Here's what the start of the file looks like (where the values are absorbance/op
 #Let's take a peek at what this file looks like
 print_df(head(read.csv("widedata.csv", header = FALSE, 
                        colClasses = "character"), 
-              c(6, 8)))
+              c(10, 10)))
 ```
 
 This file contains all the reads for a single plate taken across all timepoints. We can see that the first two rows contain some metadata saved by the plate reader, like the name of the experiment and the date of the experiment. Then, we can see that the data starts on the 5th row with a header. The first column contains the timepoint information, and each subsequent column corresponds to a well in the plate. 
@@ -423,7 +426,7 @@ imported_widedata <- read_wides(files = "widedata.csv", startrow = 5)
 The resulting `data.frame` looks like this:
 
 ```{r}
-print_df(head(imported_widedata, c(6, 8)))
+head(imported_widedata, c(6, 10))
 ```
 
 Note that *read_wides automatically saves the filename* the data was imported from into the first column of the output `data.frame`. This is done to ensure that later on, `data.frames` from multiple plates can be combined without fear of losing the identity of each plate.
@@ -455,7 +458,7 @@ imported_widedata <- read_wides(files = "widedata.csv",
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, 2),
                                                 "start_date" = c(2, 2)))
-print_df(head(imported_widedata, c(6, 5)))
+head(imported_widedata, c(6, 8))
 ```
 
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
@@ -528,6 +531,7 @@ To import block-shaped design files, you can use the `import_blockdesigns` funct
 #### A basic example
 
 
+
 Let's take a look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
@@ -552,6 +556,7 @@ head(my_design, 20)
 ```
 
 #### Importing multiple block-shaped design elements
+
 
 
 What do you do if you have multiple design components? For instance, what if you have several different bacterial strains each with several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
@@ -584,6 +589,7 @@ head(my_design, 20)
 ```
 
 #### Notes for more advanced use
+
 
 
 Note that `import_blockdesigns` is essentially a wrapper function that calls `read_blocks`, `paste_blocks`, `trans_block_to_wide`, `trans_wide_to_tidy`, and then `separate_tidys`. Any arguments for those functions can be passed to `import_blockdesigns`. 

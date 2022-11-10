@@ -2616,7 +2616,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
 #' @param na.rm Boolean whether NA's should be removed before analyzing
-#' @param ... Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
+#' @param ... Arguments passed to \code{stats::loess}, \code{mgcv::gam},
 #'            \code{moving_average}, or \code{moving_median}.
 #'            
 #'            For \code{moving_average} and \code{moving_median}, 
@@ -2676,8 +2676,8 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'         fitted values and the input values
 #' 
 #' @export
-smooth_data <- function(x = NULL, y = NULL, method, subset_by = NULL,
-                        return_fitobject = FALSE, ...) {
+smooth_data <- function(..., x = NULL, y = NULL, method, subset_by = NULL,
+                        return_fitobject = FALSE) {
   browser()
   if(!method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("method must be one of: moving-average, moving-median, gam, or loess")

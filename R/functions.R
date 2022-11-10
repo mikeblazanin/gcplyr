@@ -2608,7 +2608,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'          \code{formula} and \code{data} *must* be provided via \code{...}
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
-#'                  "moving-average", "moving-median', "loess", and "gam"
+#'                  "moving-average", "moving-median", "loess", and "gam"
 #' @param subset_by A vector as long as the number of rows of data. 
 #'                  Each unique value of this vector will be smoothed
 #'                  independently of the others.
@@ -2678,9 +2678,10 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
-  if(!missing("method")) { #method arg deprecated in v0.11
-    warning("'method' is deprecated, use 'sm_method' instead. 'method' is now
-used exclusively to be passed via ... to smoothing sub-functions")
+  if("method" %in% names(list(...)) &
+     list(...)["method"] %in% c("moving-average","moving-median","loess","gam")){
+    stop("'method' is deprecated, use 'sm_method' instead. 'method' is now
+reserved for passing 'method' arg via ... to loess or gam")
   }
 
   if(!sm_method %in% c("moving-average", "moving-median", "gam", "loess")) {

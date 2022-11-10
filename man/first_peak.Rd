@@ -11,6 +11,7 @@ first_peak(
   width_limit_n = NULL,
   height_limit = NULL,
   return = "index",
+  return_endpoints = TRUE,
   ...
 )
 }

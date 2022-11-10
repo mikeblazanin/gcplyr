@@ -5,36 +5,16 @@
 \title{Smooth data}
 \usage{
 smooth_data(
+  ...,
   x = NULL,
   y = NULL,
-  method,
+  sm_method,
   subset_by = NULL,
-  return_fitobject = FALSE,
-  na.rm = TRUE,
-  ...
+  return_fitobject = FALSE
 )
 }
 \arguments{
-\item{x}{An (optional) vector of predictor values to smooth along (e.g. time)}
-
-\item{y}{A vector of response values to be smoothed (e.g. density). If NULL,
-\code{formula} and \code{data} *must* be provided via \code{...}}
-
-\item{method}{Argument specifying which smoothing method should
-be used to smooth data. Options include 
-"moving-average", "moving-median', "loess", and "gam"}
-
-\item{subset_by}{A vector as long as the number of rows of data. 
-Each unique value of this vector will be smoothed
-independently of the others.}
-
-\item{return_fitobject}{Boolean indicating whether entire object returned
-by fitting function should be returned. If FALSE,
-just fitted values are returned.}
-
-\item{na.rm}{Boolean whether NA's should be removed before analyzing}
-
-\item{...}{Other arguments passed to \code{stats::loess}, \code{mgcv::gam},
+\item{...}{Arguments passed to \code{stats::loess}, \code{mgcv::gam},
 \code{moving_average}, or \code{moving_median}.
 
 For \code{moving_average} and \code{moving_median}, 
@@ -53,6 +33,25 @@ be provided via \code{...}. Most frequently, the the \code{k}
 argument to \code{s} sets the number of "knots" the
 spline-fitting can use. Smaller values will be more "smoothed".
 See Details for additional arguments options.}
+
+\item{x}{An (optional) vector of predictor values to smooth along (e.g. time)}
+
+\item{y}{A vector of response values to be smoothed (e.g. density). If NULL,
+\code{formula} and \code{data} *must* be provided via \code{...}}
+
+\item{sm_method}{Argument specifying which smoothing method should
+be used to smooth data. Options include 
+"moving-average", "moving-median", "loess", and "gam"}
+
+\item{subset_by}{A vector as long as the number of rows of data. 
+Each unique value of this vector will be smoothed
+independently of the others.}
+
+\item{return_fitobject}{Boolean indicating whether entire object returned
+by fitting function should be returned. If FALSE,
+just fitted values are returned.}
+
+\item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
 \value{
 If return_fitobject == FALSE:
@@ -74,11 +73,11 @@ If return_fitobject == FALSE:
 This function calls other functions to smooth growth curve data
 }
 \details{
-When using \code{method = "gam"}, advanced users may also modify 
+When using \code{sm_method = "gam"}, advanced users may also modify 
            other parameters of \code{s()}, including the smoothing basis 
            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
            the default), cubic regressions (\code{bs = "cr"}), or many other 
-           options (see \code{?mcgv::s}). We recommend leaving the default 
+           options (see \code{?mcgv::s}). I recommend leaving the default 
            thin plate regressions, whose main drawback is that they are 
            computationally intensive to calculate. For growth curves data, 
            this is unlikely to be relevant.

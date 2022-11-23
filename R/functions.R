@@ -2613,9 +2613,13 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
 #'                  "moving-average", "moving-median", "loess", and "gam"
-#' @param subset_by A vector as long as the number of rows of data. 
-#'                  Each unique value of this vector will be smoothed
+#' @param subset_by An optional vector as long as \code{y}. 
+#'                  \code{y} will be split by the unique values of this vector 
+#'                  and the derivative for each group will be calculated 
 #'                  independently of the others.
+#'                  
+#'                  This provides an internally-implemented approach similar
+#'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
 #' @param return_fitobject Boolean indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
@@ -2989,9 +2993,13 @@ moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
 #'                
 #'                If a vector of blank values is specified, blank values are
 #'                assumed to be in the same order as unique(subset_by)  
-#' @param subset_by if subset_by is provided, it should be a vector (same 
-#'                  length as y), the unique values of which will 
-#'                  separate calculations
+#' @param subset_by An optional vector as long as \code{y}. 
+#'                  \code{y} will be split by the unique values of this vector 
+#'                  and the derivative for each group will be calculated 
+#'                  independently of the others.
+#'                  
+#'                  This provides an internally-implemented approach similar
+#'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
 #' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @return A vector of values for the plain (if \code{percapita = FALSE})
 #'         or per-capita (if \code{percapita = TRUE}) difference 

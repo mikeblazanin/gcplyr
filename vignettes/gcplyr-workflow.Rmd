@@ -1112,6 +1112,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   geom_point() +
   facet_wrap(~Well)
 ```
+
 Well that doesn't look so bad! Let's take a quick peek at the data using a log scale for the y-axis. Log scales are particularly useful for plotting growth curves because exponential growth is a straight line when plotted on a log scale.
 
 ```{r}
@@ -1129,7 +1130,7 @@ So, how can we smooth our data? Well, `smooth_data` has four different smoothing
 * `moving-average` is a simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
 * `moving-median` is another simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
 * `loess` is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
-* `gam` is also a spline-fitting approach that is often recommended over `loess`, although you should evaluate its efficacy for your own data
+* `gam` is also spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
 
 **Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. For whichever smoothing method you're using, **you should plot smoothing with multiple different tuning parameter values**, then choose the value that smooths the data as little as is necessary to reduce noise. Make sure to plot the smoothing for every well in your data, so that you're choosing the best setting for all your data and not just one well.
 
@@ -1141,7 +1142,7 @@ Since your dataframe likely includes data from multiple wells (or even plates), 
 
 ## Smoothing with moving-average
 
-For `moving-average`, the tuning parameter is `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
+For `moving-average`, the tuning parameter is `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide). Note that `moving-average` creates `NA` values at the beginning and end of your time series.
 
 ```{r}
 ex_dat_mrg$smoothed3 <- 
@@ -1173,7 +1174,7 @@ Here we can see that `moving-average` has helped reduce the effects of some of t
 
 ## Smoothing with moving-median
 
-For `moving-median`, the tuning parameter is also `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide).
+For `moving-median`, the tuning parameter is also `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide). Note that `moving-median` creates `NA` values at the beginning and end of your time series.
 
 ```{r}
 ex_dat_mrg$smoothed3 <-
@@ -1315,7 +1316,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Here we can clearly see when the slope of the total population was increasing the fastest, and when it declines in the phage-added wells. But we can also see something surprising in Well A1 that may not have been immediately apparent visually: there is a second, slower, burst of growth later on. Such a pattern is common in bacterial growth curves and is called *diauxic growth*. Additionally, we can see in Well E11 when the bacteria start to grow again following near-extinction by phages, presumably after evolving resistance to the phage.
+Here we can clearly see when the slope of the total population was increasing the fastest, and when it declines in the phage-added wells. But we can also see something surprising in Well A1 that may not have been immediately apparent visually: there is a second, slower, burst of growth later on. Such a pattern is common in bacterial growth curves and is called *diauxic growth*. Additionally, we can see in Well E11 when the bacteria start to grow again following near-extinction by phages, presumably after evolving resistance to the phage. (Note that the last value in the time series always becomes `NA` with `calc_deriv`)
 
 ## Per-capita derivative
 If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, along with a vector of `subset_by` values (as needed), but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.

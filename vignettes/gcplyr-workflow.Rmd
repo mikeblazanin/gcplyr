@@ -1972,7 +1972,9 @@ ggplot(data = filter(sim_dat_sum, Well != "averaged"),
              lty = 2)
 ```
 
-Here we can see that the maximum per-capita growth rate of the "average well" (red line) is not the same as the true average maximum per-capita growth rate of all the wells (dashed line). While this bias in the "average well" might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be higher than the true average growth rate. Moreover, calculating the average at the beginning means that we would not have the ability to plot this distribution of growth rates between wells; we would only have the single value of the red line, with no way to directly visualize how biased or not it is. By visualizing the distribution directly, we can see that it is skewed and that perhaps we should use a transformed metric (e.g. the log growth rate) for further analyses.
+Here we can see that the maximum per-capita growth rate of the "average well" (red line) is not the same as the true average maximum per-capita growth rate of all the wells (dashed line). While this bias in the "average well" might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be higher than the true average growth rate. Moreover, **the "average well" is often biased in many summarized statistics**, not just growth rate. 
+
+Additionally, calculating the "average well" means that we would not have the ability to plot this distribution of growth rates between wells; we would only have the single value of the red line, with no way to directly visualize how biased or not it is. By visualizing the distribution directly, we can see that it is skewed and that perhaps we should use a transformed metric (e.g. the log growth rate) for further analyses.
 
 ## Carrying out statistical testing
 

@@ -1154,7 +1154,7 @@ head(ex_dat_mrg)
 
 This is a rather simple example, but in the next sections I show how we can use `mutate` with `smooth_data` and `calc_deriv` to create new columns containing smoothed data and derivatives. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the `gcplyr` processing functions, which (as a reminder) are best used *within* `mutate`.
 
-#Processing data: smoothing
+# Processing data: smoothing
 Oftentimes, growth curve data produced by a plate reader will be noisy, and some degree of smoothing before analysis is necessary for analyses to succeed. `gcplyr` has a `smooth_data` function that can carry out such smoothing. **Generally, you should carry out as little smoothing as is necessary for your analyses to work**.
 
 Let's take a look at a few wells from our example data, which have some noise.

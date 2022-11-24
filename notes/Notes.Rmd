@@ -21,6 +21,7 @@ gcer
 13. git push
 14. git checkout develop
 15. Update DESCRIPTION to development version number (add .9000 at end of previous version)
+16. Add new release on GitHub
 
 
 #Managing master & develop branches:

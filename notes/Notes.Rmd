@@ -14,6 +14,7 @@ gcer
 7. R CMD INSTALL gcplyr_X.X.X.tar.gz
 8. Re-knit README.Rmd
 9. Save & commit newly generated README.md file
+      in bash: git commit -m "commit msg here" --no-verify
 10. Push everything
 11. git checkout master
 12. git merge develop

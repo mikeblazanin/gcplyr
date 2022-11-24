@@ -8,7 +8,7 @@ gcer
 1. Save & commit all changes to code
 2. Re-build vignettes (see code in vignette to re-build all formats at once)
 3. Commit new vignettes
-4. Update DESCRIPTION with version and date, commit
+4. Decide new version number, update DESCRIPTION version (dropping .9000) and date, commit
 5. R CMD build gcplyr
 6. R CMD check gcplyr_X.X.X.tar.gz
 7. R CMD INSTALL gcplyr_X.X.X.tar.gz
@@ -19,7 +19,7 @@ gcer
 12. git merge develop
 13. git push
 14. git checkout develop
-15. Update DESCRIPTION to newest development version number
+15. Update DESCRIPTION to development version number (add .9000 at end of previous version)
 
 
 #Managing master & develop branches:

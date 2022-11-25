@@ -1914,8 +1914,7 @@ In the code below, I simulate the growth of 96 different wells of bacteria. All 
 ```{r}
 #Define the function that calculates density according to Baranyi-Roberts eq
 baranyi_gr <- function(r, k, q0, m, init_dens, times) {
-  #Note: these eqs are the integral of the derivative presented in the
-  # text above
+  #Note: these eqs are the integral of the dN/dt eq in the text above
   #Acclimation function
   a <- times + 1/m*log((exp(-m*times)+q0)/(1+q0))
   #Density function
@@ -1975,7 +1974,7 @@ ggplot(data = filter(sim_dat_sum, Well != "averaged"),
 
 Here we can see that the maximum per-capita growth rate of the "average well" (red line) is not the same as the true average maximum per-capita growth rate of all the wells (dashed line). While this bias in the "average well" might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be higher than the true average growth rate. Moreover, **the "average well" is often biased in many summarized statistics**, not just growth rate. 
 
-Additionally, calculating the "average well" means that we would not have the ability to plot this distribution of growth rates between wells; we would only have the single value of the red line, with no way to directly visualize how biased or not it is. By visualizing the distribution directly, we can see that it is skewed and that perhaps we should use a transformed metric (e.g. the log growth rate) for further analyses.
+Additionally, calculating the "average well" means that we would not have the ability to plot this distribution of growth rates between wells; we would only have the single value of the red line, with no way to directly visualize how biased or not it is. By visualizing the distribution directly, we can see that it is skewed and that perhaps we should use a transformed metric (e.g. the log growth rate) for any analyses that assume normality.
 
 ## Carrying out statistical testing
 
@@ -1994,7 +1993,7 @@ Regardless of your approach, you should:
 - incorporate random effects for any technical replicates you have
 - incorporate random effects for any potential batch effects in-play
 
-There are a number of excellent resources out there to learn how to do this sort of mixed-effects modeling, including what I think is [a good introductory guide to the process by Michael Clark](https://m-clark.github.io/mixed-models-with-R/).
+There are a number of excellent resources out there to learn how to do this sort of mixed-effects modeling, including what I think is **[a good introductory guide to the process by Michael Clark](https://m-clark.github.io/mixed-models-with-R/)**.
 
 
 # Combining growth curves data with other data

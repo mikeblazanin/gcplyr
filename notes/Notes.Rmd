@@ -4,6 +4,13 @@ growthcurvalyzer
 gcanalyzer
 gcer
 
+#Target journals
+mSystems?
+mBio?
+mSphere - explicitly has a Resource Reports article type
+Spectrum - ASM's Plos One
+MRA
+
 #Every new version
 1. Save & commit all changes to code
 2. Re-build vignettes (see code in vignette to re-build all formats at once)

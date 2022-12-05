@@ -7,9 +7,10 @@ gcer
 #Target journals
 mSystems?
 mBio?
-mSphere - explicitly has a Resource Reports article type
+mSphere - explicitly has a Resource Reports article type, maybe if I have to
+          write a bunch for dissertation anyways?
 Spectrum - ASM's Plos One
-MRA
+MRA - articles are super short like 1 page very easy to write very fast reviews
 
 #Every new version
 1. Save & commit all changes to code

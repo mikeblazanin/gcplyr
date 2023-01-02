@@ -12,6 +12,8 @@ mSphere - explicitly has a Resource Reports article type, maybe if I have to
 Spectrum - ASM's Plos One
 MRA - articles are super short like 1 page very easy to write very fast reviews
 
+JOSS
+
 #Every new version
 1. Save & commit all changes to code
 2. Re-build vignettes (see code in vignette to re-build all formats at once)

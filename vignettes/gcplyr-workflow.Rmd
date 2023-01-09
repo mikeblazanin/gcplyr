@@ -2064,8 +2064,8 @@ Generally, fitting growth dynamics with a model has greater power to accurately 
 
 A number of `R` packages implement fitting-style approaches, which I list here for readers to explore on their own. At some point in the future, I hope to incorporate more direct examples of how to use tidy-shaped data imported and manipulated by `gcplyr` with these packages.
 
-* `growthcurver`
-* `QurvE`
+* [`growthcurver`](https://github.com/sprouffske/growthcurver)
+* [`QurvE`](https://nicwir.github.io/QurvE/)
 * `AUDIT` (including `growr` and `mtpview1`)
 * `growthrates`
 * `drc`

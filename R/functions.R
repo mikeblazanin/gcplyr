@@ -373,6 +373,93 @@ reorder_xy <- function(x = NULL, y) {
 }
 
 
+#' A function that gets windows for moving-window like calculations
+#' 
+#' @param x Vector of x values
+#' @param y Vector of y values
+#' @param width_limit Width of the window (in units of \code{x}).
+#' @param width_limit_n Width of the window (in number of \code{y} values).
+#' @param height_limit The maximum change in \code{y} within each window.
+#' @param edge_NA Boolean for whether windows that pass the edge of the data
+#'                should be returned as NA or simply truncated at the edge
+#'                of the data.
+#'                
+#'                For instance, moving average-like functions typically want
+#'                edge_NA = TRUE so as not to calculate a moving-average
+#'                on points near the edge of the domain with smaller n
+#'                
+#'                In contrast, extrema-finding typically want edge_NA = FALSE
+#'                so that searching simply stops at the edge of the data
+#' @return A list of vectors, where each vector contains the indices
+#'         of the data in the window centered at that point
+#'         
+get_windows <- function(x, y, window_width_n = NULL, window_width = NULL, 
+                        window_height = NULL, edge_NA) {
+  if(any(c(is.na(x), is.na(y)))) {
+    stop("NA's must be removed before getting windows")}
+  if(!all(order(x) != 1:length(x))) {
+    stop("data must be ordered before getting windows")}
+  
+  window_starts <- matrix(data = 1, nrow = length(x), ncol = 3)
+  window_ends <- matrix(data = length(x), nrow = length(x), ncol = 3)
+  
+  if(!is.null(window_width_n)) {
+    temp <- 
+      lapply(X = as.list(1:length(x)),
+             xvals = x,
+             FUN = function(xidx, xvals) {
+               which(abs(xidx - 1:length(xvals)) <= (window_width_n - 1)/2)})
+    window_starts[, 1] <- sapply(temp, function(x) {min(x, na.rm = TRUE)})
+    window_ends[, 1] <- sapply(temp, function(x) {max(x, na.rm = TRUE)})
+    if(edge_NA) {
+      window_starts[(1:length(x) + (window_width_n - 1)/2 > length(x)) |
+                    (1:length(x) - (window_width_n - 1)/2 < 1), 1] <- NA
+      window_ends[(1:length(x) + (window_width_n - 1)/2 > length(x)) |
+                  (1:length(x) - (window_width_n - 1)/2 < 1), 1] <- NA
+    }
+  }
+  if(!is.null(window_width)) {
+    temp <- lapply(X = as.list(1:length(x)),
+           xvals = x,
+           FUN = function(xidx, xvals) {
+             min(which(abs(xvals - xvals[xidx]) <= window_width/2))})
+    window_starts[, 2] <- sapply(temp, function(x) {min(x, na.rm = TRUE)})
+    window_ends[, 2] <- sapply(temp, function(x) {max(x, na.rm = TRUE)})
+    if(edge_NA) {
+      window_starts[(x + window_width/2 > max(x)) |
+                    (x - window_width/2 < min(x)), 2] <- NA
+      window_ends[(x + window_width/2 > max(x)) |
+                  (x - window_width/2 < min(x)), 2] <- NA
+    }
+  }
+  if(!is.null(window_height)) {
+    #First calculate all points by all points whether they're close enough
+    # to each other
+    ygrid <- lapply(X = y, yvals = y, window_height = window_height,
+                    FUN = function(y, yvals, window_height) {
+                      which(abs(y-yvals) <= window_height)})
+    #Then find the smallest blocks of contiguous points that are within the
+    # height limit & merge them with previous windows
+    for (i in 1:length(ygrid)) {
+      window_starts[i, 3] <- 
+        ygrid[[i]][
+          max(which(ygrid[[i]] <= i & c(TRUE, diff(ygrid[[i]]) != 1)))]
+      window_ends[i, 3] <-
+        ygrid[[i]][
+          min(which(ygrid[[i]] >= i & c(diff(ygrid[[i]]) != 1, TRUE)))]
+    }
+  }
+  
+  #Calculate the most-conservative window starts & window ends
+  # then fill in the sequence of values between them & return
+  return(apply(matrix(ncol = 2, nrow = nrow(window_starts),
+                      apply(window_starts, MARGIN = 1, FUN = max),
+                      apply(window_ends, MARGIN = 1, FUN = min)),
+               MARGIN = 1,
+               FUN = function(x) {seq(from = x[1], to = x[2])}))
+}
+
+
 
 # Read functions ----
 

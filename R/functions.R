@@ -10,8 +10,8 @@
       "## gcplyr (Version ", ver, ", Build Date: ", build_date, ")\n",
       "## See http://github.com/mikeblazanin/gcplyr for additional documentation\n",
       "## Please cite software as:\n",
-      "##   Blazanin, Michael. ", year, ". 'gcplyr: manipulation and analysis of\n",
-      "##   growth curves data.' R package version ", ver, "\n",
+      "##   Blazanin, Michael. ", year, ". 'gcplyr: manipulate and analyze growth\n",
+      "##   curve data.' R package version ", ver, "\n",
       "## \n",
       sep = ""))
 }

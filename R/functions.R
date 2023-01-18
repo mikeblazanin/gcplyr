@@ -397,7 +397,7 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
                         window_height = NULL, edge_NA) {
   if(any(c(is.na(x), is.na(y)))) {
     stop("NA's must be removed before getting windows")}
-  if(!all(order(x) != 1:length(x))) {
+  if(!all(order(x) == 1:length(x))) {
     stop("data must be ordered before getting windows")}
   
   window_starts <- matrix(data = 1, nrow = length(x), ncol = 3)
@@ -409,8 +409,8 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
              xvals = x,
              FUN = function(xidx, xvals) {
                which(abs(xidx - 1:length(xvals)) <= (window_width_n - 1)/2)})
-    window_starts[, 1] <- sapply(temp, function(x) {min(x, na.rm = TRUE)})
-    window_ends[, 1] <- sapply(temp, function(x) {max(x, na.rm = TRUE)})
+    window_starts[, 1] <- sapply(temp, min)
+    window_ends[, 1] <- sapply(temp, max)
     if(edge_NA) {
       window_starts[(1:length(x) + (window_width_n - 1)/2 > length(x)) |
                     (1:length(x) - (window_width_n - 1)/2 < 1), 1] <- NA
@@ -418,13 +418,14 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
                   (1:length(x) - (window_width_n - 1)/2 < 1), 1] <- NA
     }
   }
+  ##TODO: fix so that can't start later than i or end earlier than i
   if(!is.null(window_width)) {
     temp <- lapply(X = as.list(1:length(x)),
            xvals = x,
            FUN = function(xidx, xvals) {
-             min(which(abs(xvals - xvals[xidx]) <= window_width/2))})
-    window_starts[, 2] <- sapply(temp, function(x) {min(x, na.rm = TRUE)})
-    window_ends[, 2] <- sapply(temp, function(x) {max(x, na.rm = TRUE)})
+             which(abs(xvals - xvals[xidx]) <= window_width/2)})
+    window_starts[, 2] <- sapply(temp, min)
+    window_ends[, 2] <- sapply(temp, max)
     if(edge_NA) {
       window_starts[(x + window_width/2 > max(x)) |
                     (x - window_width/2 < min(x)), 2] <- NA
@@ -453,8 +454,9 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
   #Calculate the most-conservative window starts & window ends
   # then fill in the sequence of values between them & return
   return(apply(matrix(ncol = 2, nrow = nrow(window_starts),
-                      apply(window_starts, MARGIN = 1, FUN = max),
-                      apply(window_ends, MARGIN = 1, FUN = min)),
+                      data = c(
+                        apply(window_starts, MARGIN = 1, FUN = max),
+                        apply(window_ends, MARGIN = 1, FUN = min))),
                MARGIN = 1,
                FUN = function(x) {seq(from = x[1], to = x[2])}))
 }

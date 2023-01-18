@@ -3066,7 +3066,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
   windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
                          window_width = window_width, edge_NA = TRUE)
   #Calculate median
-  results <- sapply(windows, y = y, FUN = function(x, y) {median(y[x])})
+  results <- sapply(windows, y = y, FUN = function(x, y) {stats::median(y[x])})
   #Put back in original order
   results <- results[order(order_temp[["order"]])]
   #Add NA's
@@ -3252,7 +3252,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                              window_width_n = window_width_n, 
                              window_width = window_width)
       for (j in which(!is.na(windows))) {
-        temp <- lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
+        temp <- stats::lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
                                                 myx = sub_x[windows[[j]]]))
         if(trans_y == "linear") {
           sub_ans[j] <- temp$coefficients["myx"]*x_scale

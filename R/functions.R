@@ -390,11 +390,20 @@ reorder_xy <- function(x = NULL, y) {
 #'                
 #'                In contrast, extrema-finding typically want edge_NA = FALSE
 #'                so that searching simply stops at the edge of the data
+#' @param force_height_multi_n 
+#'                Boolean for whether windows limits set by \code{window_height}
+#'                should always have at least 3 data points in them (or 2 
+#'                data points for windows located at the edge of the domain)
+#'                         
+#'                This is necessary for window-finding with window_height 
+#'                because otherwise you can end up with windows that contain 
+#'                only a single data-point, counting as both a max and a min
 #' @return A list of vectors, where each vector contains the indices
 #'         of the data in the window centered at that point
 #'         
 get_windows <- function(x, y, window_width_n = NULL, window_width = NULL, 
-                        window_height = NULL, edge_NA) {
+                        window_height = NULL, edge_NA, 
+                        force_height_multi_n = FALSE) {
   if(any(c(is.na(x), is.na(y)))) {
     stop("NA's must be removed before getting windows")}
   if(!all(order(x) == 1:length(x))) {
@@ -439,7 +448,7 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
                     FUN = function(y, yvals, window_height) {
                       which(abs(y-yvals) <= window_height)})
     #Then find the smallest blocks of contiguous points that are within the
-    # height limit & merge them with previous windows
+    # height limit
     for (i in 1:length(ygrid)) {
       window_starts[i, 3] <- 
         ygrid[[i]][
@@ -447,6 +456,11 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
       window_ends[i, 3] <-
         ygrid[[i]][
           min(which(ygrid[[i]] >= i & c(diff(ygrid[[i]]) != 1, TRUE)))]
+      #Force windows to include at least one point either side if specified
+      if(force_height_multi_n) {
+        window_starts[i, 3] <- min(max(i-1, 1), window_starts[i, 3])
+        window_ends[i, 3] <- max(min(i+1, length(ygrid)), window_ends[i, 3])
+      }
     }
   }
   
@@ -3347,7 +3361,8 @@ find_local_extrema <- function(y, x = NULL,
   #Numeric checks/coercion
   if(!canbe.numeric(y)) {stop("y must be numeric")
   } else {y <- as.numeric(y)}
-  if(!is.null(x)) {
+  if(is.null(x)) {x <- 1:length(y)
+  } else {
     if(!canbe.numeric(x)) {stop("x must be numeric")
     } else {x <- as.numeric(x)}
   }
@@ -3377,7 +3392,7 @@ find_local_extrema <- function(y, x = NULL,
   
   windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
               window_width = window_width, window_height = window_height,
-              edge_NA = FALSE)
+              edge_NA = FALSE, force_height_multi_n = TRUE)
   
   #ID extrema as those points that are the local max or min
   # in the window centered on them (all non-local extrema should point to

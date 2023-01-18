@@ -53,23 +53,23 @@ test_that("Moving median returns correctly", {
                        rnorm(100, sd = 0.5))
   
   expect_error(moving_median(formula = dens ~ time + treat,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_median(formula = ~ time,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_median(formula = dens ~ lime,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_median(formula = lens ~ time,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_median(formula = dens ~ time,
-                              data = data, window_width = 4))
+                              data = data, window_width_n = 4))
   expect_identical(moving_median(formula = dens ~ time,
-                                  data = data, window_width = 1),
+                                  data = data, window_width_n = 1),
                    expected = data$dens)
   
   manual_expect_win5 <- c(NA, NA, rep(0, (nrow(data)-4)), NA, NA)
   for (i in 3:98) {manual_expect_win5[i] <- median(data$dens[(i-2):(i+2)])}
   expect_equal(moving_median(formula = dens ~ time,
-                              data = data, window_width = 5),
+                              data = data, window_width_n = 5),
                expected = manual_expect_win5)
   
   #Now test with out-of-order data

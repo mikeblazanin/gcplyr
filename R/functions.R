@@ -3089,8 +3089,8 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #' @param return One of c("difference", "derivative") for whether the
 #'               differences in \code{y} should be returned, or the
 #'               derivative of \code{y} with respect to \code{x}
-#' @param percapita When percapita = TRUE, the differences of y are 
-#'                  divided by y
+#' @param percapita When percapita = TRUE, the per-capita difference or
+#'                  derivative is returned
 #' @param x_scale Factor to scale x by in denominator of derivative calculation
 #'                
 #'                Set x_scale to the ratio of the the units of 
@@ -3131,16 +3131,35 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #'                  included in each window will meet both the 
 #'                  \code{window_width} and the \code{window_width_n}
 #' @param trans_y  One of \code{c("linear", "log")} specifying the
-#'                 transformation of y-values used when using non-default
-#'                 windows to calculate slopes. 
-#'                 
-#'                 For growth expected to be exponential or nearly-exponential, 
-#'                 \code{"log"} is recommended, since exponential growth
-#'                 is linear when log-transformed. However, log-transformations
-#'                 must be used with care, since y-values at or below 0 will
-#'                 become undefined and results will be more sensitive
-#'                 to incorrect values of \code{blank}.
+#'                 transformation of y-values.
+#' 
+#'                 \code{'log'} is only available when calculating per-capita
+#'                 derivatives using a fitting approach (when non-default 
+#'                 values are specified for \code{window_width} or 
+#'                 \code{window_width_n}).
+#' 
+#'                 For per-capita growth expected to be exponential or 
+#'                 nearly-exponential, \code{"log"} is recommended, since 
+#'                 exponential growth is linear when log-transformed. However, 
+#'                 log-transformations must be used with care, since y-values 
+#'                 at or below 0 will become undefined and results will be 
+#'                 more sensitive to incorrect values of \code{blank}.
 #' @param na.rm Boolean whether NA's should be removed before analyzing
+#' 
+#' @details For per-capita derivatives, \code{trans_y = 'linear'} and
+#'          \code{trans_y = 'log'} approach the same value as time resolution
+#'          increases. 
+#'          
+#'          For instance, let's assume exponential growth \eqn{N = e^rt} with 
+#'          per-capita growth rate \eqn{r}.
+#'          
+#'          With \code{trans_y = 'linear'}, note that \eqn{dN/dt = r e^rt = r N}. 
+#'          So we can calculate per-capita growth rate as \eqn{r = dN/dt * 1/N}. 
+#'          
+#'          With \code{trans_y = 'log'}, note that \eqn{log(N) = log(e^rt) = rt}.
+#'          So we can calculate per-capita growth rate as the slope of a linear
+#'          fit of \eqn{log(N)} against time, \eqn{r = log(N)/t}.
+#' 
 #' @return A vector of values for the plain (if \code{percapita = FALSE})
 #'         or per-capita (if \code{percapita = TRUE}) difference 
 #'         (if \code{return = "difference"}) or derivative 
@@ -3166,6 +3185,9 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   
   if(!trans_y %in% c("linear", "log")) {
     stop("trans_y must be one of c('linear', 'log')")}
+  
+  if(trans_y == "log" && (return == "difference" | percapita == FALSE)) {
+    stop("when trans_y = 'log', return must be 'derivative' and percapita must be 'TRUE'")}
   
   if(is.null(y)) {stop("y must be provided")}
   if(length(x_scale) > 1) {stop("x_scale must be a single value")}
@@ -3225,11 +3247,12 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       }
     } else {
       sub_ans <- rep(NA, length(sub_x))
-      if(trans_y == "log") {sub_y <- log10(sub_y)}
+      if(trans_y == "log") {sub_y <- log(sub_y)}
       windows <- get_windows(x = sub_x, y = sub_y, edge_NA = TRUE,
                              window_width_n = window_width_n, 
                              window_width = window_width)
       for (j in which(!is.na(windows))) {
+        ##TODO: add x_scale
         temp <- lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
                                                 myx = sub_x[windows[[j]]]))
         if(trans_y == "linear") {
@@ -3239,11 +3262,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
               sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
           }
         } else {
-          sub_ans[j] <- 10**temp$coefficients["myx"]
-          if(percapita) {
-            sub_ans[j] <- 
-              sub_ans[j]/(10**temp$fitted.values[which(windows[[j]] == j)])
-          }
+          sub_ans[j] <- temp$coefficients["myx"]
         }
       }
     }

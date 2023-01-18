@@ -1,10 +1,26 @@
 library(testthat)
 library(gcplyr)
 
+#The goal of these tests is to prevent unintended matches of arguments
+#to a function that calls some sub-function with ...
+#Note that this includes full arg name matches, as well as partial
+#matching
+#Unfortunately, there's no good way to automate this sort of testing
+#that I could figure out, so it involved manually listing all functions
+#and their subfunction calls, then automatically generating lists of all
+#args that could match (completely or incompletely), then manually
+#checking that all those matches are ok
+#
+#Steps:
+#1. confirm that gcplyr_function_subfunction_calls.csv is still up-to-date
+#2. run tests below
+#3. if full_matches fails, update full_matches_ref
+#4. if part_matches fails, update part_matches_ref
+
 test_that("all functions included in gcplyr_function_subfunction_calls.csv", {
   #This file is a manually generated list of all functions in gcplyr
   # (run: getNamespaceExports("gcplyr")[order(getNamespaceExports("gcplyr"))])
-  #And all sub-functions called by those functions
+  #And all exported sub-functions called by those functions
   myfile <- read.csv(test_path("allfunctions_argumentsmatching_files", 
             "gcplyr_function_subfunction_calls.csv"))
   
@@ -18,7 +34,7 @@ test_that("all functions included in gcplyr_function_subfunction_calls.csv", {
 
 test_that("all full arg matches have been checked", {
   #This file is a manually generated list of all functions in gcplyr
-  #And all sub-functions called by those functions
+  #And all exported sub-functions called by those functions
   calls <- read.csv(test_path("allfunctions_argumentsmatching_files", 
                      "gcplyr_function_subfunction_calls.csv"))
   #This file contains a previously generated full_matches file

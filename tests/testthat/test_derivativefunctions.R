@@ -44,33 +44,33 @@ test_that("calc_deriv returns correctly with fitting utilized", {
                expected = c(NA, NA, seq(from = 6, to = 16, by = 2), NA, NA))
   
   #Regular data, percap using log transformation
-  x <- seq(from = 0, to = 9, by = 0.001)
+  x <- seq(from = 0, to = 9, by = 1)
   y <- exp(x)
   expect_equal(calc_deriv(x = x, y = y, percapita = TRUE, blank = 0,
                           window_width_n = 3, trans_y = "log"),
                expected = c(NA, rep(1, length(x)-2), NA))
+  #with x_scale
+  expect_equal(calc_deriv(x = x, y = y, percapita = TRUE, blank = 0,
+                          window_width_n = 3, trans_y = "log", x_scale = 10),
+               expected = c(NA, rep(10, length(x)-2), NA))
+  
   #percap using linear (which as time resolution approaches infinity
   # approaches the same value)
+  x <- seq(from = 0, to = 9, by = 0.001)
+  y <- exp(x)
   expect_equal(tolerance = 0.00001,
                calc_deriv(x = x, y = y, percapita = TRUE, 
                           blank = 0, window_width_n = 3),
                expected = c(NA, rep(1, length(x)-2), NA))
+  #with x_scale
+  expect_equal(tolerance = 0.00001,
+               calc_deriv(x = x, y = y, percapita = TRUE, x_scale = 10,
+                          blank = 0, window_width_n = 3),
+               expected = c(NA, rep(10, length(x)-2), NA))
   
   expect_error(calc_deriv(x = x, y = y, percapita = FALSE, trans_y = "log",
                           blank = 0, window_width_n = 3))
   expect_error(calc_deriv(x = x, y = y, return = "difference", trans_y = "log",
                           blank = 0, window_width_n = 3))
-  
-  ##with x_scale
-  #Regular data, percap using log transformation
-  expect_equal(calc_deriv(x = x, y = y, percapita = TRUE, blank = 0,
-                          window_width_n = 3, trans_y = "log", x_scale = 10),
-               expected = c(NA, rep(10, length(x)-2), NA))
-  #percap using linear (which as time resolution approaches infinity
-  # approaches the same value)
-  expect_equal(tolerance = 0.00001,
-               calc_deriv(x = x, y = y, percapita = TRUE, x_scale = 10,
-                          blank = 0, window_width_n = 3),
-               expected = c(NA, rep(10, length(x)-2), NA))
 })
 

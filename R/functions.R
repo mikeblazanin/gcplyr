@@ -3199,11 +3199,18 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       for (j in which(!is.na(windows))) {
         temp <- lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
                                                 myx = sub_x[windows[[j]]]))
-        if(trans_y == "linear") {sub_ans[j] <- temp$coefficients["myx"]
-        } else {sub_ans[j] <- 10**temp$coefficients["myx"]}
-        if(percapita) {
-          sub_ans[j] <- 
-            sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
+        if(trans_y == "linear") {
+          sub_ans[j] <- temp$coefficients["myx"]
+          if(percapita) {
+            sub_ans[j] <- 
+              sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
+          }
+        } else {
+          sub_ans[j] <- 10**temp$coefficients["myx"]
+          if(percapita) {
+            sub_ans[j] <- 
+              sub_ans[j]/(10**temp$fitted.values[which(windows[[j]] == j)])
+          }
         }
       }
     }

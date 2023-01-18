@@ -1,19 +1,17 @@
 Type: Package
 Package: gcplyr
-Title: Manipulates and Analyzes Growth Curves Data
+Title: Manipulate and Analyze Growth Curve Data
 Version: 0.11.2.9000
-Date: 2022-11-24
+Date: 2023-01-18
 Author: Mike Blazanin
 Maintainer: Mike Blazanin <mikeblazanin@gmail.com>
-Description: This is a package containing functions for use in importing,
-    reshaping, processing, and analyzing growth curves data as output by
-    plate readers. This package can handle importing data that is
-    block-shaped as well as data that is "wide" shaped (where each column
-    corresponds to a single well in the plate). It reshapes such data into
-    a consistent format, which can then be processed and analyzed using
-    the functions provided. This package also contains functions enabling
-    the association of experimental design factors with the imported data,
-    for ease of downstream analysis.
+Description: Easy import, manipulation, and model-free analysis of
+    bacterial growth curve data, as commonly output by plate readers.
+    Tools for reshaping common plate reader outputs into 'tidy' formats and
+    merging them with design information, making data easy to work with using 
+    `gcplyr` and other packages. Also streamlines common growth curve
+    processing steps, like smoothing and calculating derivatives, and
+    facilitates model-free characterization and analysis of growth data.
 License: MIT + file LICENSE.md
 Depends: 
     R (>= 2.10)

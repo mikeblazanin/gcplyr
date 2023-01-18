@@ -3252,17 +3252,16 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                              window_width_n = window_width_n, 
                              window_width = window_width)
       for (j in which(!is.na(windows))) {
-        ##TODO: add x_scale
         temp <- lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
                                                 myx = sub_x[windows[[j]]]))
         if(trans_y == "linear") {
-          sub_ans[j] <- temp$coefficients["myx"]
+          sub_ans[j] <- temp$coefficients["myx"]*x_scale
           if(percapita) {
             sub_ans[j] <- 
               sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
           }
         } else {
-          sub_ans[j] <- temp$coefficients["myx"]
+          sub_ans[j] <- temp$coefficients["myx"]*x_scale
         }
       }
     }

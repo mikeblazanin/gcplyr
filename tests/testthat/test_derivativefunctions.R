@@ -61,7 +61,16 @@ test_that("calc_deriv returns correctly with fitting utilized", {
   expect_error(calc_deriv(x = x, y = y, return = "difference", trans_y = "log",
                           blank = 0, window_width_n = 3))
   
-  #with x_scale
-  stop()
+  ##with x_scale
+  #Regular data, percap using log transformation
+  expect_equal(calc_deriv(x = x, y = y, percapita = TRUE, blank = 0,
+                          window_width_n = 3, trans_y = "log", x_scale = 10),
+               expected = c(NA, rep(10, length(x)-2), NA))
+  #percap using linear (which as time resolution approaches infinity
+  # approaches the same value)
+  expect_equal(tolerance = 0.00001,
+               calc_deriv(x = x, y = y, percapita = TRUE, x_scale = 10,
+                          blank = 0, window_width_n = 3),
+               expected = c(NA, rep(10, length(x)-2), NA))
 })
 

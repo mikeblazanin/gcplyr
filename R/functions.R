@@ -2981,10 +2981,14 @@ moving_average <- function(formula, data, window_width_n = NULL,
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_median <- function(formula, data, window_width_n, window_width,
-                          na.rm = TRUE) {
+moving_median <- function(formula, data, window_width_n = NULL, 
+                          window_width = NULL, na.rm = TRUE) {
+  if(is.null(window_width) & is.null(window_width_n)) {
+    stop("window_width or window_width_n must be provided")}
+  
   #Check window width
-  if(window_width_n %% 2 == 0) {stop("window_width_n must be an odd number")}
+  if(!is.null(window_width_n) && window_width_n %% 2 == 0) {
+    stop("window_width_n must be an odd number")}
   
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}

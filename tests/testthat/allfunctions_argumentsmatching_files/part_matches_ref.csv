@@ -1,6 +1,6 @@
 gcplyr_func,other_func,gcplyr_arg,other_args,checked
 first_below,gcplyr::find_threshold_crosses,return_endpoints,return,x
-first_peak,gcplyr::find_local_extrema,width_limit_n,width_limit,x
+first_peak,gcplyr::find_local_extrema,window_width_n,window_width,x
 first_peak,gcplyr::find_local_extrema,return_endpoints,return,x
 import_blockmeasures,gcplyr::uninterleave,num_plates,n,x
 read_blocks,readxl::read_xls,na.strings,na,x

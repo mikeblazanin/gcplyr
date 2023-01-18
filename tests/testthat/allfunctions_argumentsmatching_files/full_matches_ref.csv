@@ -1,6 +1,6 @@
 gcplyr_func,other_func,matches,checked
 first_below,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endpoints, subset, na.rm",x
-first_peak,gcplyr::find_local_extrema,"y, x, width_limit, width_limit_n, height_limit, return, return_endpoints",x
+first_peak,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
 import_blockdesigns,gcplyr::paste_blocks,sep,x
 import_blockdesigns,gcplyr::read_blocks,"files, block_names",x
 import_blockdesigns,gcplyr::separate_tidy,sep,x

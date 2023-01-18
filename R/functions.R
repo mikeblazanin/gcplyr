@@ -3403,40 +3403,41 @@ find_next_extrema <- function(cnt_pos, y, x = NULL,
 #' 
 #' This function takes a vector of \code{y} values and returns a vector
 #' of the indices of all local value extrema (by default, this includes both
-#' local minima and local maxima)
-#' Either width_limit_n or height_limit must be provided
+#' local minima and local maxima). One of \code{window_width}, 
+#' \code{window_width_n}, or \code{window_height} must be provided
 #' 
 #' @details 
-#' If multiple of width_limit, width_limit_n, and height_limit are provided, 
-#' steps are limited conservatively (a single step must meet all criteria)
+#' If multiple of \code{window_width}, \code{window_width_n}, or 
+#' \code{window_height} are provided, steps are limited conservatively 
+#' (a single step must meet all criteria)
 #' 
 #' This function is designed to be compatible for use within
 #'  dplyr::group_by and dplyr::summarize
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
-#' @param width_limit Width of the window (in units of \code{x}) used to
+#' @param window_width Width of the window (in units of \code{x}) used to
 #'                   search for local extrema. A narrower width will be more
 #'                   sensitive to narrow local maxima/minima, while a wider
 #'                   width will be less sensitive to local maxima/minima.
-#' @param width_limit_n The maximum number of data points a single 
+#' @param window_width_n The maximum number of data points a single 
 #'                      extrema-search step is allowed to take. For example,
 #'                      when maxima-finding, the function will not pass
-#'                      a valley consisting of more than \code{width_limit_n}
+#'                      a valley consisting of more than \code{window_width_n}
 #'                      data points.
 #'                      
-#'                      A smaller \code{width_limit_n} will be more sensitive 
+#'                      A smaller \code{window_width_n} will be more sensitive 
 #'                      to narrow local maxima/minima, while a larger 
-#'                      \code{width_limit_n} will be less sensitive to 
+#'                      \code{window_width_n} will be less sensitive to 
 #'                      narrow local maxima/minima.
-#' @param height_limit The maximum change in \code{y} a single extrema-search
+#' @param window_height The maximum change in \code{y} a single extrema-search
 #'                     step is allowed to take.  For example, when 
 #'                     maxima-finding, the function will not pass a
-#'                     valley deeper than \code{height_limit}.
+#'                     valley deeper than \code{window_height}.
 #'                     
-#'                     A smaller \code{height_limit} will be more sensitive 
+#'                     A smaller \code{window_height} will be more sensitive 
 #'                     to shallow local maxima/minima, while a larger 
-#'                     \code{height_limit} will be less sensitive to 
+#'                     \code{window_height} will be less sensitive to 
 #'                     shallow maxima/minima.
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
@@ -3452,6 +3453,9 @@ find_next_extrema <- function(cnt_pos, y, x = NULL,
 #'               If \code{return = "index"}, index will be for the whole 
 #'               vector and not the subset of the vector
 #' @param na.rm Boolean whether NA's should be removed before analyzing
+#' @param width_limit Deprecated, use \code{window_width} instead
+#' @param width_limit_n Deprecated, use \code{window_width_n} instead
+#' @param height_limit Deprecated, use \code{window_height} instead
 #' @return If \code{return = "index"}, a vector of indices corresponding 
 #'           to local extrema in the data
 #'           
@@ -3463,30 +3467,43 @@ find_next_extrema <- function(cnt_pos, y, x = NULL,
 #' 
 #' @export                             
 find_local_extrema <- function(y, x = NULL, 
-                               width_limit = NULL,
-                               width_limit_n = NULL,
-                               height_limit = NULL,
+                               window_width = NULL,
+                               window_width_n = NULL,
+                               window_height = NULL,
                                return = "index",
                                return_maxima = TRUE, return_minima = TRUE,
                                return_endpoints = TRUE,
-                               subset = NULL, na.rm = TRUE) {
+                               subset = NULL, na.rm = TRUE,
+                               width_limit = NULL, width_limit_n = NULL,
+                               height_limit = NULL) {
+  #width_limit, width_limit_n, and height_limit deprecated in 11.2.9000
+  if(!missing("width_limit")) {
+    warning("width_limit deprecated, use window_width instead")
+    window_width <- width_limit
+  }
+  if(!missing("width_limit_n")) {
+    warning("width_limit_n deprecated, use window_width_n instead")
+    window_width_n <- width_limit_n
+  }
+  if(!missing("height_limit")) {
+    warning("height_limit deprecated, use window_width instead")
+    window_height <- height_limit
+  }
+  
   #Check inputs
   if (!return_maxima & !return_minima) {
     stop("Both return_maxima and return_minima are FALSE, at least one must be TRUE")
   }
   #Check inputs
-  if (is.null(width_limit_n) & is.null(height_limit) & is.null(width_limit)) {
-    stop("Either width_limit, width_limit_n, or height_limit must be provided")
+  if (is.null(window_width_n) & is.null(window_height) & is.null(window_width)) {
+    stop("Either window_width, window_width_n, or window_height must be provided")
   }
-  if (!is.null(width_limit) & is.null(x)) {
-    stop("width_limit is specified, but x is not provided")
+  if (!is.null(window_width) & is.null(x)) {
+    stop("window_width is specified, but x is not provided")
   }
-  if (!is.null(width_limit_n)) {
-    if (width_limit_n%%2 == 0) {
-      warning("width_limit_n must be odd, will use ", width_limit_n-1, " as width_limit_n\n")
-      width_limit_n <- width_limit_n - 1
-    }
-  }
+  if (!is.null(window_width_n) && window_width_n%%2 == 0) {
+    stop("window_width_n must be an odd number")}
+  
   if (!return %in% c("x", "y", "index")) {
     stop('return must be one of "x", "y", or "index"')
   }
@@ -3526,49 +3543,19 @@ find_local_extrema <- function(y, x = NULL,
   x <- order_temp[["x"]]
   y <- order_temp[["y"]]
   
-  #Start finding extrema
-  cnt_pos <- 1
-  ##Find first maxima
-  maxima_list <- c(find_next_extrema(cnt_pos, y, x = x,
-                                     width_limit = width_limit,
-                                     width_limit_n = width_limit_n,
-                                     height_limit = height_limit,
-                                     looking_for = "maxima"))
-  ##Find first minima
-  minima_list <- c(find_next_extrema(cnt_pos, y, x = x,
-                                     width_limit = width_limit,
-                                     width_limit_n = width_limit_n,
-                                     height_limit = height_limit,
-                                     looking_for = "minima"))
+  windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
+              window_width = window_width, window_height = window_height,
+              edge_NA = FALSE)
   
-  ##Check for next extrema until...
-  while (TRUE) {
-    #we're finding repeats
-    if (any(duplicated(c(minima_list, maxima_list)))) {break}
-    #or we hit the end of the y
-    if (length(y) %in% c(maxima_list, minima_list)) {break}
-    
-    #Since maxima & minima must alternate, always start with furthest one 
-    # we've found so far
-    cnt_pos <- max(c(minima_list, maxima_list))
-    #we're looking for a maxima next
-    if (cnt_pos %in% minima_list) {
-      maxima_list <- c(maxima_list,
-                       find_next_extrema(cnt_pos, y, x = x,
-                                         width_limit = width_limit,
-                                         width_limit_n = width_limit_n,
-                                         height_limit = height_limit,
-                                         looking_for = "maxima"))
-      #we're looking for a minima next
-    } else if (cnt_pos %in% maxima_list) {
-      minima_list <- c(minima_list,
-                       find_next_extrema(cnt_pos, y, x = x,
-                                         width_limit = width_limit,
-                                         width_limit_n = width_limit_n,
-                                         height_limit = height_limit,
-                                         looking_for = "minima"))
-    }
-  }
+  #ID extrema as those points that are the local max or min
+  # in the window centered on them (all non-local extrema should point to
+  # some other point in the window centered on them)
+  maxima_list <- 
+    which(1:length(windows) ==
+          sapply(X = windows, y = y, FUN = function(x, y) {x[which.max(y[x])]}))
+  minima_list <- 
+    which(1:length(windows) ==
+          sapply(X = windows, y = y, FUN = function(x, y) {x[which.min(y[x])]}))
   
   #Combine maxima & minima y & remove duplicates
   output <- c()
@@ -3580,8 +3567,6 @@ find_local_extrema <- function(y, x = NULL,
     if (length(y) %in% output) {
       output <- output[-which(output == length(y))]}
   }
-  #Remove duplicates
-  output <- unique(output)
   
   #Return as specified
   if (return == "index") {
@@ -3617,38 +3602,38 @@ find_local_extrema <- function(y, x = NULL,
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
 #'               first peak in y values
-#' @param width_limit Width of the window (in units of \code{x}) used to
+#' @param window_width Width of the window (in units of \code{x}) used to
 #'                   search for local extrema. A narrower width will be more
 #'                   sensitive to narrow local maxima/minima, while a wider
 #'                   width will be less sensitive to local maxima/minima.
-#' @param width_limit_n The maximum number of data points a single 
+#' @param window_width_n The maximum number of data points a single 
 #'                      extrema-search step is allowed to take. For example,
 #'                      when maxima-finding, the function will not pass
-#'                      a valley consisting of more than \code{width_limit_n}
+#'                      a valley consisting of more than \code{window_width_n}
 #'                      data points.
 #'                      
-#'                      A smaller \code{width_limit_n} will be more sensitive 
+#'                      A smaller \code{window_width_n} will be more sensitive 
 #'                      to narrow local maxima/minima, while a larger 
-#'                      \code{width_limit_n} will be less sensitive to 
+#'                      \code{window_width_n} will be less sensitive to 
 #'                      narrow local maxima/minima.
 #'                      
 #'                      If not provided, defaults to ~0.2*length(y)
-#' @param height_limit The maximum change in \code{y} a single extrema-search
+#' @param window_height The maximum change in \code{y} a single extrema-search
 #'                     step is allowed to take.  For example, when 
 #'                     maxima-finding, the function will not pass a
-#'                     valley deeper than \code{height_limit}.
+#'                     valley deeper than \code{window_height}.
 #'                     
-#'                     A smaller \code{height_limit} will be more sensitive 
+#'                     A smaller \code{window_height} will be more sensitive 
 #'                     to shallow local maxima/minima, while a larger 
-#'                     \code{height_limit} will be less sensitive to 
+#'                     \code{window_height} will be less sensitive to 
 #'                     shallow maxima/minima.
 #' @param return_endpoints Should the first or last value in \code{y}
 #'                         be allowed to be returned?
 #' @param ... Other parameters to pass to \code{find_local_extrema}
 #' 
 #' @details 
-#' If none of \code{width_limit}, \code{width_limit_n}, or 
-#' \code{height_limit} are provided, default value of \code{width_limit_n}
+#' If none of \code{window_width}, \code{window_width_n}, or 
+#' \code{window_height} are provided, default value of \code{window_width_n}
 #' will be used.
 #' 
 #' This function is designed to be compatible for use within
@@ -3656,13 +3641,13 @@ find_local_extrema <- function(y, x = NULL,
 #'                    
 #' @export      
 first_peak <- function(y, x = NULL, 
-                       width_limit = NULL,
-                       width_limit_n = NULL,
-                       height_limit = NULL,
+                       window_width = NULL,
+                       window_width_n = NULL,
+                       window_height = NULL,
                        return = "index", return_endpoints = TRUE, 
                        ...) {
-  if(is.null(width_limit) & is.null(width_limit_n) & is.null(height_limit)) {
-    width_limit_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
+  if(is.null(window_width) & is.null(window_width_n) & is.null(window_height)) {
+    window_width_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
   }
   
   if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
@@ -3674,9 +3659,9 @@ please use find_local_extrema for more flexibility")
                             return_maxima = TRUE,
                             return_minima = FALSE,
                             return_endpoints = return_endpoints,
-                            width_limit = width_limit,
-                            width_limit_n = width_limit_n,
-                            height_limit = height_limit,
+                            window_width = window_width,
+                            window_width_n = window_width_n,
+                            window_height = window_height,
                             return = return, ...)[1])
 }
 

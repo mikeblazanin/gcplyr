@@ -377,9 +377,9 @@ reorder_xy <- function(x = NULL, y) {
 #' 
 #' @param x Vector of x values
 #' @param y Vector of y values
-#' @param width_limit Width of the window (in units of \code{x}).
-#' @param width_limit_n Width of the window (in number of \code{y} values).
-#' @param height_limit The maximum change in \code{y} within each window.
+#' @param window_width Width of the window (in units of \code{x}).
+#' @param window_width_n Width of the window (in number of \code{y} values).
+#' @param window_height The maximum change in \code{y} within each window.
 #' @param edge_NA Boolean for whether windows that pass the edge of the data
 #'                should be returned as NA or simply truncated at the edge
 #'                of the data.

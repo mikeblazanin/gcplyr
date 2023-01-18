@@ -2899,9 +2899,14 @@ reserved for passing 'method' arg via ... to loess or gam")
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
+moving_average <- function(formula, data, window_width_n = NULL, 
+                           window_width = NULL, na.rm = TRUE) {
+  if(is.null(window_width) & is.null(window_width_n)) {
+    stop("window_width or window_width_n must be provided")}
+  
   #Check window width
-  if(window_width_n %% 2 == 0) {stop("window_width_n must be an odd number")}
+  if(!is.null(window_width_n) && window_width_n %% 2 == 0) {
+      stop("window_width_n must be an odd number")}
   
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}
@@ -2943,28 +2948,11 @@ moving_average <- function(formula, data, window_width_n, na.rm = TRUE) {
   x <- order_temp[["x"]]
   y <- order_temp[["y"]]
   
-    #Check that there is sufficient data
-  if(length(x) < window_width_n) {
-    results <- rep(NA, nrow(data))
-    warning("not enough data given window_width_n, returning NA's\n")
-  } else { 
-    #there is sufficient data so calculate moving average
-    window_radius <- (window_width_n - 1)/2
-    results <- c(rep(NA, window_radius),
-                 rep(0, (nrow(data)-2*window_radius)),
-                 rep(NA, window_radius))
-    
-    for (i in 1:window_width_n) {
-      offset <- i - 1 - window_radius
-      
-      results[(1 + window_radius):(length(results) - window_radius)] <-
-        results[(1 + window_radius):(length(results) - window_radius)] +
-        y[(1 + window_radius + offset): 
-            (length(results) - window_radius + offset)]
-    }
-    results <- results/window_width_n
-  }
-  
+  #Get windows
+  windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
+                         window_width = window_width, edge_NA = TRUE)
+  #Calculate average
+  results <- sapply(windows, y = y, FUN = function(x, y) {mean(y[x])})
   #Put back in original order
   results <- results[order(order_temp[["order"]])]
   #Add NA's

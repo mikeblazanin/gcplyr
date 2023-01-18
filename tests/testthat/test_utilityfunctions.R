@@ -72,3 +72,26 @@ test_that("reorder_xy returns correctly", {
   expect_equal(reorder_xy(x = c(5, 8, 2, 4), y = 1:4), 
                list(x = c(2, 4, 5, 8), y = c(3, 4, 1, 2), order = c(3, 4, 1, 2)))
 })
+
+test_that("get_windows returns correctly", {
+  expect_equal(
+    get_windows(x = 1:10, y = 1:10, window_width_n = 3, edge_NA = FALSE),
+    list(c(1, 2), c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5, 6),
+         c(5, 6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), c(9, 10)))
+  expect_equal(
+    get_windows(x = c(1:5, 7:11), y = 1:10, window_width = 2, edge_NA = FALSE),
+    list(c(1, 2), c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5),
+         c(6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), c(9, 10)))
+  expect_equal(
+    get_windows(x = 1:10, y = c(1:5, 7:11), window_height = 1, edge_NA = FALSE),
+    list(c(1, 2), c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5),
+         c(6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), c(9, 10)))
+  expect_equal(
+    get_windows(x = 1:10, y = 1:10, window_width_n = 3, edge_NA = TRUE),
+    list(NA, c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5, 6),
+         c(5, 6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), NA))
+  expect_equal(
+    get_windows(x = c(1:5, 7:11), y = 1:10, window_width = 2, edge_NA = TRUE),
+    list(NA, c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5),
+         c(6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), NA))
+})

@@ -28,9 +28,13 @@ See Details for more information.}
 be used to smooth data. Options include 
 "moving-average", "moving-median", "loess", and "gam"}
 
-\item{subset_by}{A vector as long as the number of rows of data. 
-Each unique value of this vector will be smoothed
-independently of the others.}
+\item{subset_by}{An optional vector as long as \code{y}. 
+\code{y} will be split by the unique values of this vector 
+and the derivative for each group will be calculated 
+independently of the others.
+
+This provides an internally-implemented approach similar
+to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
 \item{return_fitobject}{Boolean indicating whether entire object returned
 by fitting function should be returned. If FALSE,

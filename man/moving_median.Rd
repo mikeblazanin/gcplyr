@@ -4,7 +4,13 @@
 \alias{moving_median}
 \title{Moving median smoothing}
 \usage{
-moving_median(formula, data, window_width_n, na.rm = TRUE)
+moving_median(
+  formula,
+  data,
+  window_width_n = NULL,
+  window_width = NULL,
+  na.rm = TRUE
+)
 }
 \arguments{
 \item{formula}{Formula specifying the numeric response (density) 
@@ -12,8 +18,10 @@ and numeric predictor (time).}
 
 \item{data}{Dataframe containing variables in \code{formula}}
 
-\item{window_width_n}{Number of data points wide the moving average window is
+\item{window_width_n}{Number of data points wide the moving median window is
 (therefore, must be an odd number of points)}
+
+\item{window_width}{Width of the moving median window (in units of \code{x})|}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }

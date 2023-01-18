@@ -12,6 +12,9 @@ calc_deriv(
   x_scale = 1,
   blank = NULL,
   subset_by = NULL,
+  window_width = NULL,
+  window_width_n = NULL,
+  trans_y = "linear",
   na.rm = TRUE
 )
 }
@@ -24,8 +27,8 @@ calc_deriv(
 differences in \code{y} should be returned, or the
 derivative of \code{y} with respect to \code{x}}
 
-\item{percapita}{When percapita = TRUE, the differences of y are 
-divided by y}
+\item{percapita}{When percapita = TRUE, the per-capita difference or
+derivative is returned}
 
 \item{x_scale}{Factor to scale x by in denominator of derivative calculation
 
@@ -40,9 +43,49 @@ Is required when \code{percapita = TRUE}.
 If a vector of blank values is specified, blank values are
 assumed to be in the same order as unique(subset_by)}
 
-\item{subset_by}{if subset_by is provided, it should be a vector (same 
-length as y), the unique values of which will 
-separate calculations}
+\item{subset_by}{An optional vector as long as \code{y}. 
+\code{y} will be split by the unique values of this vector 
+and the derivative for each group will be calculated 
+independently of the others.
+
+This provides an internally-implemented approach similar
+to \code{dplyr::group_by} and \code{dplyr::mutate}}
+
+\item{window_width_n, window_width}{Set how many data points are used to determine
+the slope at each point.
+     
+When both are \code{NULL}, \code{calc_deriv} 
+calculates the difference or derivative
+of each point with the next point, appending
+\code{NA} at the end.
+     
+When one or both are specified, a linear regression 
+is fit to all points in the window to determine the 
+slope.
+     
+\code{window_width_n} specifies the width of the
+window in number of data points. \code{window_width}
+specifies the width of the window in units of \code{x}.
+     
+When using \code{window_width} and \code{window_width_n} 
+at the same time, windows are conservative. Points 
+included in each window will meet both the 
+\code{window_width} and the \code{window_width_n}}
+
+\item{trans_y}{One of \code{c("linear", "log")} specifying the
+                transformation of y-values.
+
+                \code{'log'} is only available when calculating per-capita
+                derivatives using a fitting approach (when non-default 
+                values are specified for \code{window_width} or 
+                \code{window_width_n}).
+
+                For per-capita growth expected to be exponential or 
+                nearly-exponential, \code{"log"} is recommended, since 
+                exponential growth is linear when log-transformed. However, 
+                log-transformations must be used with care, since y-values 
+                at or below 0 will become undefined and results will be 
+                more sensitive to incorrect values of \code{blank}.}
 
 \item{na.rm}{Boolean whether NA's should be removed before analyzing}
 }
@@ -52,9 +95,24 @@ A vector of values for the plain (if \code{percapita = FALSE})
         (if \code{return = "difference"}) or derivative 
         (if \code{return = "derivative"}) between \code{y} values. Vector
         will be the same length as \code{y},  with \code{NA} appended 
-        to the end
+        to the ends
 }
 \description{
 Provided a vector of y values, this function returns either the plain
 or per-capita difference or derivative between sequential values
+}
+\details{
+For per-capita derivatives, \code{trans_y = 'linear'} and
+         \code{trans_y = 'log'} approach the same value as time resolution
+         increases. 
+         
+         For instance, let's assume exponential growth \eqn{N = e^rt} with 
+         per-capita growth rate \eqn{r}.
+         
+         With \code{trans_y = 'linear'}, note that \eqn{dN/dt = r e^rt = r N}. 
+         So we can calculate per-capita growth rate as \eqn{r = dN/dt * 1/N}. 
+         
+         With \code{trans_y = 'log'}, note that \eqn{log(N) = log(e^rt) = rt}.
+         So we can calculate per-capita growth rate as the slope of a linear
+         fit of \eqn{log(N)} against time, \eqn{r = log(N)/t}.
 }

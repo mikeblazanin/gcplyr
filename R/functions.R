@@ -3900,7 +3900,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
                             wellnames_Excel = TRUE, lookup_tbl_start = 1,
                             pattern_split = "", colnames_first = FALSE,
                             ...) {
-  
+  #Deprecated in v0.10.2
   .Deprecated("make_design")
   
   #Do we need to include a plate_name argument?
@@ -4034,7 +4034,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 #'
 block_tidydesign <- function(tidydesign, collapse = NULL,
                              wellnames_sep = "_", wellnames_colname = "Well") {
-  
+  #Deprecated in v0.10.2
   .Deprecated("make_design")
   
   #Get rownames & colnames from well column

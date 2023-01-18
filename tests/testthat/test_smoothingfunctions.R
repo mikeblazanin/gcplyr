@@ -8,15 +8,15 @@ test_that("Moving average returns correctly", {
                        rnorm(100, sd = 0.5))
   
   expect_error(moving_average(formula = dens ~ time + treat,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_average(formula = ~ time,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_average(formula = dens ~ lime,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_average(formula = lens ~ time,
-                              data = data, window_width = 3))
+                              data = data, window_width_n = 3))
   expect_error(moving_average(formula = dens ~ time,
-                              data = data, window_width = 4))
+                              data = data, window_width_n = 4))
   expect_identical(moving_average(formula = dens ~ time,
                                   data = data, window_width = 0),
                    expected = data$dens)
@@ -93,7 +93,7 @@ test_that("smooth_data returns properly for moving-average", {
   for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
   expect_equal(smooth_data(x = data$time, y = data$dens,
                            sm_method = "moving-average",
-                           window_width = 5),
+                           window_width_n = 5),
                expected = manual_expect_win5)
   data2 <- data.frame("time" = c(1:100, 1:100),
                       "dens" = c(data$dens, data$dens + 10),
@@ -101,7 +101,7 @@ test_that("smooth_data returns properly for moving-average", {
   expect_equal(smooth_data(x = data2$time, y = data2$dens,
                            sm_method = "moving-average",
                            subset_by = data2$treat,
-                           window_width = 5),
+                           window_width_n = 5),
                expected = c(manual_expect_win5, manual_expect_win5 + 10))
 })
 

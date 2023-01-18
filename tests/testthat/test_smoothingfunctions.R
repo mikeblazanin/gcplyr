@@ -18,13 +18,16 @@ test_that("Moving average returns correctly", {
   expect_error(moving_average(formula = dens ~ time,
                               data = data, window_width = 4))
   expect_identical(moving_average(formula = dens ~ time,
-                                  data = data, window_width = 1),
+                                  data = data, window_width = 0),
+                   expected = data$dens)
+  expect_identical(moving_average(formula = dens ~ time,
+                                  data = data, window_width_n = 1),
                    expected = data$dens)
   
   manual_expect_win5 <- c(NA, NA, rep(0, (nrow(data)-4)), NA, NA)
   for (i in 3:98) {manual_expect_win5[i] <- mean(data$dens[(i-2):(i+2)])}
   expect_equal(moving_average(formula = dens ~ time,
-                                  data = data, window_width = 5),
+                                  data = data, window_width_n = 5),
                    expected = manual_expect_win5)
   
   #Now test with out-of-order data

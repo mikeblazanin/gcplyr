@@ -24,7 +24,7 @@ test_that("first_peak matches find_local_extrema results", {
     find_local_extrema(y = (20 - abs(12 - 1:20)),
                        return_minima = FALSE,
                        return_endpoints = FALSE,
-                       width_limit_n = 3))
+                       window_width_n = 3))
   expect_equal(
     first_peak(y = (20 - abs(12 - 1:20)), return = "y"), 20)
   expect_equal(
@@ -36,64 +36,84 @@ test_that("find_local_extrema works correctly", {
   dat <- data.frame(x = 1:20, y = (20 - abs(12 - 1:20)) + 5*(1:20 == 2))
   
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 5),
+                                  window_width_n = 5),
                c(2, 12))
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  height_limit = 3),
+                                  window_height = 3),
                c(2, 12))
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 13),
+                                  window_width_n = 13),
                12)
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  height_limit = 5),
+                                  window_height = 5),
                12)
   
   #data out of order
   dat <- dat[c(14:20, 1:13), ]
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 5),
+                                  window_width_n = 5),
                c(9, 19))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  height_limit = 3),
+                                  window_height = 3),
                c(9, 19))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 13),
+                                  window_width_n = 13),
                19)
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  height_limit = 5),
+                                  window_height = 5),
                19)
   
   #data with NA's
   dat$x[8] <- NA
   dat$y[20] <- NA
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 5),
+                                  window_width_n = 5),
                c(9, 19))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  height_limit = 3),
+                                  window_height = 3),
                c(9, 19))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 13),
+                                  window_width_n = 13),
                19)
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  height_limit = 5),
+                                  window_height = 5),
                19)
   
   #with subset
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 5, 
+                                  window_width_n = 5, 
                                   subset = dat$x<10 & !is.na(dat$x)),
                c(9, 16))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  height_limit = 3, 
+                                  window_height = 3, 
                                   subset = dat$x>5 & !is.na(dat$x)),
                c(19))
   
   #data where last index is maxima
   dat <- data.frame(x = 1:20, y = (1:20)**2)
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  width_limit_n = 3),
+                                  window_width_n = 3),
                20)
+  
+  #data where there are tie values
+  dat <- data.frame(x = 1:20, y = c(1:10, 10:1))
+  expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
+                                  window_width_n = 3),
+               10)
+  
+  #data where peaks are exactly (width_limit-1)/2 apart
+  dat <- data.frame(x = 1:20, y = c(1:7, 2, 7.1, 1:11))
+  expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
+                                  window_width_n = 5),
+               c(9, 20))
+  dat <- data.frame(x = 1:20, y = c(1:7, 2, 7, 1:11))
+  expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
+                                  window_width_n = 5),
+               c(7, 20))
+  dat <- data.frame(x = 1:20, y = c(1:7, 2, 6.9, 1:11))
+  expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
+                                  window_width_n = 5),
+               c(7, 20))
 })
 
 test_that("first_below works correctly with no subset", {

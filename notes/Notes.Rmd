@@ -1,9 +1,3 @@
-# Name options:
-gcplyr
-growthcurvalyzer
-gcanalyzer
-gcer
-
 #Target journals
 mSystems?
 mBio?
@@ -11,8 +5,12 @@ mSphere - explicitly has a Resource Reports article type, maybe if I have to
           write a bunch for dissertation anyways?
 Spectrum - ASM's Plos One
 MRA - articles are super short like 1 page very easy to write very fast reviews
-
 JOSS
+
+#Force-installing new version to re-build vignette & check tests
+R CMD build --no-build-vignettes
+R CMD check --no-build-vignettes --no-tests
+(run R CMD check --help for more options)
 
 #Every new version
 1. Save & commit all changes to code
@@ -136,6 +134,12 @@ git branch -d develop
 ```
 
 The -d means delete.
+
+# Name options:
+gcplyr
+growthcurvalyzer
+gcanalyzer
+gcer
 
 
 #General pipeline:

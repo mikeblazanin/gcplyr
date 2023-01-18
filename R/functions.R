@@ -770,6 +770,11 @@ read_blocks <- function(files, extension = NULL,
       stop("Extension provided by user must be one of: csv, xls, xlsx, tbl")
     }
   }
+  if(any(extension %in% c("xls", "xlsx")) && 
+     !requireNamespace("readxl", quietly = TRUE)) {
+    stop("Package \"readxl\" must be installed to read xls or xlsx files",
+         call. = FALSE)
+  }
   
   #Check metadata for any list entries, if there are and they're not
   # the right length, pass error. Otherwise, replicate as needed
@@ -1060,6 +1065,11 @@ read_wides <- function(files, extension = NULL,
                                  "the number of wides")
     stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
   }
+  if(any(extension %in% c("xls", "xlsx")) && 
+     !requireNamespace("readxl", quietly = TRUE)) {
+    stop("Package \"readxl\" must be installed to read xls or xlsx files",
+         call. = FALSE)
+  }
   
   #Check for names error
   if (!is.null(run_names)) {stopifnot(length(run_names) == nwides)}
@@ -1296,6 +1306,11 @@ read_tidys <- function(files, extension = NULL,
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))
     stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
+  }
+  if(any(extension %in% c("xls", "xlsx")) && 
+     !requireNamespace("readxl", quietly = TRUE)) {
+    stop("Package \"readxl\" must be installed to read xls or xlsx files",
+         call. = FALSE)
   }
   
   #Check for names error
@@ -2829,8 +2844,12 @@ reserved for passing 'method' arg via ... to loess or gam")
     data <- list(...)$data
   }
   
-  if (sm_method == "gam" & substr(as.character(formula[3]), 1, 2) != "s(") {
-    warning("gam method is called without 's()' to smooth\n")}
+  if (sm_method == "gam") {
+    if(!requireNamespace("mgcv", quietly = TRUE)) {
+      stop("Package \"mgcv\" must be installed to use gam", call. = FALSE)}
+    if(substr(as.character(formula[3]), 1, 2) != "s(") {
+      warning("gam method is called without 's()' to smooth\n")}
+  }
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
   } else if (length(subset_by) != nrow(data)) {
     stop("subset_by must be the same length as data")

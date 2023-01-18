@@ -412,13 +412,12 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
     window_starts[, 1] <- sapply(temp, min)
     window_ends[, 1] <- sapply(temp, max)
     if(edge_NA) {
-      window_starts[(1:length(x) + (window_width_n - 1)/2 > length(x)) |
-                    (1:length(x) - (window_width_n - 1)/2 < 1), 1] <- NA
-      window_ends[(1:length(x) + (window_width_n - 1)/2 > length(x)) |
-                  (1:length(x) - (window_width_n - 1)/2 < 1), 1] <- NA
+      window_starts[(1:length(x) + (window_width_n - 1)/2 >= length(x)+1) |
+                    (1:length(x) - (window_width_n - 1)/2 <= 0), 1] <- NA
+      window_ends[(1:length(x) + (window_width_n - 1)/2 >= length(x)+1) |
+                  (1:length(x) - (window_width_n - 1)/2 <= 0), 1] <- NA
     }
   }
-  ##TODO: fix so that can't start later than i or end earlier than i
   if(!is.null(window_width)) {
     temp <- lapply(X = as.list(1:length(x)),
            xvals = x,
@@ -458,7 +457,11 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
                         apply(window_starts, MARGIN = 1, FUN = max),
                         apply(window_ends, MARGIN = 1, FUN = min))),
                MARGIN = 1,
-               FUN = function(x) {seq(from = x[1], to = x[2])}))
+               FUN = function(x) {
+                 if(any(is.na(c(x[1], x[2])))) {NA
+                 } else {seq(from = x[1], to = x[2])}
+               },
+               simplify = FALSE))
 }
 
 

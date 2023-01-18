@@ -3076,22 +3076,63 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #'                  
 #'                  This provides an internally-implemented approach similar
 #'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
+#' @param window_width_n,window_width
+#'                  Set how many data points are used to determine
+#'                  the slope at each point.
+#'                       
+#'                  When both are \code{NULL}, \code{calc_deriv} 
+#'                  calculates the difference or derivative
+#'                  of each point with the next point, appending
+#'                  \code{NA} at the end.
+#'                       
+#'                  When one or both are specified, a linear regression 
+#'                  is fit to all points in the window to determine the 
+#'                  slope.
+#'                       
+#'                  \code{window_width_n} specifies the width of the
+#'                  window in number of data points. \code{window_width}
+#'                  specifies the width of the window in units of \code{x}.
+#'                       
+#'                  When using \code{window_width} and \code{window_width_n} 
+#'                  at the same time, windows are conservative. Points 
+#'                  included in each window will meet both the 
+#'                  \code{window_width} and the \code{window_width_n}
+#' @param trans_y  One of \code{c("linear", "log")} specifying the
+#'                 transformation of y-values used when using non-default
+#'                 windows to calculate slopes. 
+#'                 
+#'                 For growth expected to be exponential or nearly-exponential, 
+#'                 \code{"log"} is recommended, since exponential growth
+#'                 is linear when log-transformed. However, log-transformations
+#'                 must be used with care, since y-values at or below 0 will
+#'                 become undefined and results will be more sensitive
+#'                 to incorrect values of \code{blank}.
 #' @param na.rm Boolean whether NA's should be removed before analyzing
 #' @return A vector of values for the plain (if \code{percapita = FALSE})
 #'         or per-capita (if \code{percapita = TRUE}) difference 
 #'         (if \code{return = "difference"}) or derivative 
 #'         (if \code{return = "derivative"}) between \code{y} values. Vector
 #'         will be the same length as \code{y},  with \code{NA} appended 
-#'         to the end
+#'         to the ends
 #' 
 #' @export   
 calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        x_scale = 1, blank = NULL, subset_by = NULL, 
-                       na.rm = TRUE) {
+                       window_width = NULL, window_width_n = NULL, 
+                       trans_y = "linear", na.rm = TRUE) {
   #Check inputs
+  if(!is.null(window_width_n) && window_width_n %% 2 == 0) {
+    stop("window_width_n must be an odd number")}
+  
   if(!return %in% c("derivative", "difference")) {
-    stop("return must be one of c('derivative', 'difference')")
-  }
+    stop("return must be one of c('derivative', 'difference')")}
+  
+  if(return == "difference" && 
+     (!is.null(window_width_n) | !is.null(window_width))) {
+    stop("return must be 'derivative' when window_width or window_width_n are used")}
+  
+  if(!trans_y %in% c("linear", "log")) {
+    stop("trans_y must be one of c('linear', 'log')")}
   
   if(is.null(y)) {stop("y must be provided")}
   if(length(x_scale) > 1) {stop("x_scale must be a single value")}
@@ -3138,14 +3179,33 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     
     #Blank subtraction
     if(!is.null(blank)) {sub_y <- sub_y - blank[i]}
-    #Calculate differences
-    sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
-    #Percapita (if specified)
-    if(percapita) {sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
-    #Derivative & rescale (if specified)
-    if(return == "derivative") {
-      sub_ans <- sub_ans/
-        ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
+    
+    if(is.null(window_width) & is.null(window_width_n)) {
+      #Calculate differences
+      sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
+      #Percapita (if specified)
+      if(percapita) {sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
+      #Derivative & rescale (if specified)
+      if(return == "derivative") {
+        sub_ans <- sub_ans/
+          ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
+      }
+    } else {
+      sub_ans <- rep(NA, length(sub_x))
+      if(trans_y == "log") {sub_y <- log10(sub_y)}
+      windows <- get_windows(x = sub_x, y = sub_y, edge_NA = TRUE,
+                             window_width_n = window_width_n, 
+                             window_width = window_width)
+      for (j in which(!is.na(windows))) {
+        temp <- lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
+                                                myx = sub_x[windows[[j]]]))
+        if(trans_y == "linear") {sub_ans[j] <- temp$coefficients["myx"]
+        } else {sub_ans[j] <- 10**temp$coefficients["myx"]}
+        if(percapita) {
+          sub_ans[j] <- 
+            sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
+        }
+      }
     }
     
     #Back to original order

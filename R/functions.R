@@ -2897,6 +2897,7 @@ reserved for passing 'method' arg via ... to loess or gam")
 #' @param data Dataframe containing variables in \code{formula}
 #' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
+#' @param window_width Width of the moving average window (in units of \code{x})
 #' @param na.rm Boolean whether NA's should be removed before analyzing
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
@@ -2972,14 +2973,16 @@ moving_average <- function(formula, data, window_width_n = NULL,
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
 #' @param data Dataframe containing variables in \code{formula}
-#' @param window_width_n Number of data points wide the moving average window is
+#' @param window_width_n Number of data points wide the moving median window is
 #'                     (therefore, must be an odd number of points)
+#' @param window_width Width of the moving median window (in units of \code{x})|
 #' @param na.rm Boolean whether NA's should be removed before analyzing
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
+moving_median <- function(formula, data, window_width_n, window_width,
+                          na.rm = TRUE) {
   #Check window width
   if(window_width_n %% 2 == 0) {stop("window_width_n must be an odd number")}
   
@@ -3022,22 +3025,11 @@ moving_median <- function(formula, data, window_width_n, na.rm = TRUE) {
   x <- order_temp[["x"]]
   y <- order_temp[["y"]]
   
-    #Check that there is sufficient data
-  if(length(x) < window_width_n) {
-    results <- rep(NA, nrow(data))
-    warning("not enough data given window_width_n, returning NA's\n")
-  } else { 
-    #there is sufficient data so calculate moving median
-    window_radius <- (window_width_n - 1)/2
-    results <- c(rep(NA, window_radius),
-                 rep(0, (nrow(data)-2*window_radius)),
-                 rep(NA, window_radius))
-    
-    for (i in (window_radius+1):(length(results) - window_radius)) {
-      results[i] <- stats::median(y[(i - window_radius):(i + window_radius)])
-    }
-  }
-  
+  #Get windows
+  windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
+                         window_width = window_width, edge_NA = TRUE)
+  #Calculate median
+  results <- sapply(windows, y = y, FUN = function(x, y) {median(y[x])})
   #Put back in original order
   results <- results[order(order_temp[["order"]])]
   #Add NA's

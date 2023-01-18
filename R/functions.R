@@ -3259,6 +3259,10 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
 #' 
 #' This function is designed to be compatible for use within
 #'  dplyr::group_by and dplyr::summarize
+#'  
+#' In the case of exact ties in \code{y} values within \code{window_width}, 
+#' \code{window_width_n}, and \code{window_height} (as applicable) of each 
+#' other, only the first local extrema is returned.
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
@@ -3322,7 +3326,7 @@ find_local_extrema <- function(y, x = NULL,
                                subset = NULL, na.rm = TRUE,
                                width_limit = NULL, width_limit_n = NULL,
                                height_limit = NULL) {
-  #width_limit, width_limit_n, and height_limit deprecated in 11.2.9000
+  #width_limit, width_limit_n, and height_limit were deprecated in 11.2.9000
   if(!missing("width_limit")) {
     warning("width_limit deprecated, use window_width instead")
     window_width <- width_limit

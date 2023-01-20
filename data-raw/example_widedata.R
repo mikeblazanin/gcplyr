@@ -212,6 +212,7 @@ for (i in 1:96) {
     runif(n = nrow(out), min = 0, max = 0.002) +
     sample(x = c(0, 1), nrow(out), replace = TRUE, prob = c(0.9, 0.1)) *
     rexp(n = nrow(out), rate = 40)
+  out$OD <- out$OD + 0.001
   
   #plot(out$time, log10(out$OD))
   #lines(out$time, log10(out$OD_noised))

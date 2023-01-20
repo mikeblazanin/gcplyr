@@ -134,6 +134,13 @@ colnames(example_widedata) <- c("Time",
 example_widedata$Time <- seq(from = 0, to = 24*60*60,
                              by = 15*60)
 
+#Make copy with no noise
+example_widedata_noiseless <- example_widedata
+
+#Set up df for saving all raw data
+times <- seq(from = 0, to = 24*60, by = 15)
+all_data <- data.frame(matrix(nrow = 96*length(times), ncol = 27))
+
 #Generate vectors of bacterial growth parameters
 set.seed(123)
 uS_vector <- rep(runif(48, min = 0.01, 0.05), 2)
@@ -192,7 +199,6 @@ for (i in 1:96) {
               R = Rdens_init_vector[i], 
               P = Pdens_init_vector[i],
               S2 = 0, R2 = 0)
-  times <- seq(from = 0, to = 24*60, by = 15)
   
   #Run simulation
   out <- as.data.frame(ode(y = Y_init, times = times, func = derivs, parms = params))
@@ -211,11 +217,45 @@ for (i in 1:96) {
   #lines(out$time, log10(out$OD_noised))
   
   #Round
+  out$OD <- round(out$OD, 3)
   out$OD_noised <- round(out$OD_noised, 3)
   
+  example_widedata_noiseless[, i+1] <- out$OD
   example_widedata[, i+1] <- out$OD_noised
+  all_data[((i-1)*length(times)+1):(i*length(times)), 1:9] <- out
+  all_data[((i-1)*length(times)+1):(i*length(times)), 10:22] <-
+    data.frame(matrix(params, nrow = 1, dimnames = list(NULL, names(params))))
+  all_data[((i-1)*length(times)+1):(i*length(times)), 23:27] <-
+    data.frame(
+      matrix(Y_init, nrow = 1, 
+             dimnames = list(NULL, paste(names(Y_init), "_init", sep = ""))))
+      
+      
+      params <- c(u_S = uS_vector[i], u_R = uR_vector[i], 
+                  k = k_vector[i], a_S = aS_vector[i], b = b_vector[i],
+                  q0 = q0_vector[i], m = m_vector[i], v = v_vector[i],
+                  u_S2 = uS2_vector[i], u_R2 = uR2_vector[i], k2 = k2_vector[i],
+                  x = x_vector[i], v2 = v2_vector[i])
+      
+      Y_init <- c(S = Sdens_init_vector[i], 
+                  R = Rdens_init_vector[i], 
+                  P = Pdens_init_vector[i],
+                  S2 = 0, R2 = 0)
 }
-  
+colnames(all_data) <-
+  c(colnames(out), names(params), paste(names(Y_init), "_init", sep = ""))
+
+if(F) {
+  #This code visualizes differences between the newly generated example_widedata
+  #and the example_widedata from the currently-installed version of gcplyr
+  old_widedata <- gcplyr::example_widedata
+  par(mfrow = c(2, 2))
+  for(col in colnames(example_widedata)[2:ncol(example_widedata)]) {
+    plot(example_widedata[, col], type = "l", main = col, col = "red")
+    lines(old_widedata[, col])
+  }
+}
+
 #Code to visualize example data
 ex_lng <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
 ex_lng <- merge_dfs(example_design, ex_lng)
@@ -242,3 +282,8 @@ if(F) {
 
 #Save
 usethis::use_data(example_widedata, overwrite = TRUE)
+usethis::use_data(example_widedata_noiseless, overwrite = TRUE)
+
+#Also save the raw data
+write.csv(all_data, file = "./data-raw/all_data.csv",
+          row.names = FALSE)

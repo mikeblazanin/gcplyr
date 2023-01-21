@@ -29,6 +29,76 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
 ```
 
+# Workflow
+
+1. Introduction
+2. Importing & transforming data
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. **Statistics, merging other data, and other resources**
+
+If you haven't already, load the necessary packages.
+
+```{r setup}
+library(gcplyr)
+
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+```{r}
+#This code was explained in sections 2 through 6
+#Here we're re-running it so it's available for us to work with
+example_tidydata <- trans_wide_to_tidy(example_widedata,
+                                       id_cols = "Time")
+example_design <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"),
+    rows = 1:8, cols = 1:6,
+    pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"),
+    rows = 1:8, cols = 7:12,
+    pattern = "1"))
+ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+ex_dat_mrg$Well <- 
+  factor(ex_dat_mrg$Well,
+         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+ex_dat_mrg <- group_by(ex_dat_mrg, Well, Bacteria_strain, Phage)
+
+ex_dat_mrg <-
+  mutate(ex_dat_mrg,
+         smoothed_med3 = 
+           smooth_data(x = Time, y = Measurements,
+                       sm_method = "moving-median", window_width_n = 3),
+         #Note that for the second round, we're using the 
+         #first smoothing as the input y
+         smoothed = 
+           smooth_data(x = Time, y = smoothed_med3,
+                       sm_method = "moving-average", window_width_n = 3))
+```
+
+
 # Statistical analyses of growth curves data
 
 At this point, we've now summarized our growth curves data into some metrics. How can we best go about drawing statistical conclusions from these data?
@@ -138,7 +208,7 @@ Let's use the `ex_dat_mrg_sum` from an earlier section, where we've summarized o
 
 ```{r}
 ex_dat_mrg_sum <-
-  summarize(grouped_ex_dat_mrg, auc = auc(x = Time, y = smoothed))
+  summarize(ex_dat_mrg, auc = auc(x = Time, y = smoothed))
 ```
 
 
@@ -216,3 +286,15 @@ A number of `R` packages implement fitting-style approaches, which I list here f
 Additionally, one `R` package doesn't implement fitting-style approaches, but does contain useful functionality for plate-reader data analysis:
 
 * `plater`
+
+# What's next?
+
+You've finished all the documentation that I've written (so far). Congratulations! `gcplyr` is a powerful framework to build additional analyses on, since the data is nicely organized. Feel free to reach out to me with any questions, comments, or concerns you might have. I'd love to continue making `gcplyr` as useful for others in the scientific community as it has been for me. You can reach me at mikeblazanin [at] gmail [dot] com.
+
+1. Introduction
+2. Importing & transforming data
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. **Statistics, merging other data, and other resources**

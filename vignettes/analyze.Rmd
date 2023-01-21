@@ -99,6 +99,7 @@ ex_dat_mrg <-
          deriv_percap_hr = calc_deriv(x = Time, y = smoothed,
                                       percapita = TRUE, blank = 0,
                                       x_scale = 3600))
+sample_wells <- c("A1", "F1", "F10", "E11")
 ```
 
 # Analyzing data with summarize {#Analyzing}

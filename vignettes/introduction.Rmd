@@ -1,0 +1,134 @@
+---
+title: "Introduction to using gcplyr"
+author: "Mike Blazanin"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 4
+  word_document:
+    toc: true
+    toc_depth: 4
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+vignette: >
+  %\VignetteIndexEntry{Introduction to using gcplyr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_knit$set(root.dir = tempdir())
+
+#Note: to knit to all output formats simultaneously, run in R console:
+#rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
+```
+
+# Getting started
+`gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). Without `gcplyr`, importing and analyzing plate reader data can be a complicated process that has to be tailored for each experiment, requiring many lines of code. With `gcplyr` many of those steps are now just a single line of code.
+
+This document gives a walkthrough of how to use `gcplyr`'s most common functions.
+
+To get started, all you need is the data file with the growth curve measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
+
+Users often want to combine their data with some information on experimental design elements of their growth curve plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well (see [Reading design elements from files]), or you can just keep it handy to enter it directly through a function later on (see [Generating designs in R]).
+
+Let's get started by loading `gcplyr`. We're also going to load a couple packages we'll need later.
+
+```{r setup}
+library(gcplyr)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+# A quick demo of `gcplyr`
+Before digging into the details of the various options that `gcplyr` provides to users, here's a simple example of what a final `gcplyr` script can look like. This script imports data from files created by a plate reader, combines it with design files created by the user, then calculates the maximum density and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing growth curve data with `gcplyr` can look like.
+
+```{r, include = FALSE}
+#This code just creates a wide-shaped example file
+#Don't worry about how it works - when working with real growth
+#curves data, this file would be created by the plate reader
+write.csv(example_widedata, file = "widedata.csv", row.names = FALSE)
+
+#This code just creates our block designs
+example_design <- make_design(
+  output_format = "blocks",
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"),
+    rows = 1:8, cols = 1:6,
+    pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"),
+    rows = 1:8, cols = 7:12,
+    pattern = "1"))
+write_blocks(example_design)
+```
+
+```{r}
+#Read in our data
+# (our plate reader data is saved in "widedata.csv")
+data_wide <- read_wides(files = "widedata.csv")
+
+#Transform our data to be tidy-shaped
+data_tidy <- 
+  trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
+
+#Import our designs
+# (saved in the files Bacteria_strain.csv and Phage.csv)
+designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"))
+
+#Merge our designs and data
+data_merged <- merge_dfs(data_tidy, designs)
+
+#Plot the data
+ggplot(data = data_merged,
+       aes(x = as.numeric(Time), y = Measurements, color = Well)) +
+  geom_line(aes(lty = Phage)) + 
+  guides(color = "none")
+
+#Voila! 8 lines of code and all your data is imported & plotted!
+
+#Calculate two common metrics of bacterial growth:
+# the maximum density, saving it to a column named 'maxdens'
+# the area-under-the-curve, saving it to a column named 'auc'
+data_sum <- summarize(
+  group_by(data_merged, Well, Bacteria_strain, Phage),
+  maxdens = max(Measurements, na.rm = TRUE),
+  auc = auc(y = Measurements, x = as.numeric(Time)))
+
+#Print some of the max densities and auc's
+head(data_sum)
+
+#Plot the results for max density and area under the curve in presence vs absence of phage
+ggplot(data = data_sum,
+       aes(x = auc, y = maxdens, color = Phage)) +
+  geom_point()
+```
+
+
+

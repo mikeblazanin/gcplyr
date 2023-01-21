@@ -32,7 +32,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Getting started
 `gcplyr` is a package that implements a number of functions to make it easier to import, manipulate, and analyze bacterial growth from data collected in multiwell plate readers ("growth curves"). Without `gcplyr`, importing and analyzing plate reader data can be a complicated process that has to be tailored for each experiment, requiring many lines of code. With `gcplyr` many of those steps are now just a single line of code.
 
-This document gives a walkthrough of how to use `gcplyr`'s most common functions.
+This document gives an introduction of how to use `gcplyr`'s most common functions, and points you to additional documents for more in-depth explanations of each common steps of a growth curve analysis with `gcplyr`.
 
 To get started, all you need is the data file with the growth curve measures saved in a tabular format (.csv, .xls, or .xlsx) to your computer.
 
@@ -56,7 +56,7 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 # A quick demo of `gcplyr`
-Before digging into the details of the various options that `gcplyr` provides to users, here's a simple example of what a final `gcplyr` script can look like. This script imports data from files created by a plate reader, combines it with design files created by the user, then calculates the maximum density and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later sections of this document. Here, we're just providing a demonstration of what analyzing growth curve data with `gcplyr` can look like.
+Before digging into the details of the various options that `gcplyr` provides to users, here's a simple example of what a final `gcplyr` script can look like. This script imports data from files created by a plate reader, combines it with design files created by the user, then calculates the maximum density and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later documents. Here, we're just providing a demonstration of what analyzing growth curve data with `gcplyr` can look like.
 
 ```{r, include = FALSE}
 #This code just creates a wide-shaped example file
@@ -130,5 +130,15 @@ ggplot(data = data_sum,
   geom_point()
 ```
 
+# What's next?
 
+Now that you've read this brief introduction, you probably want to get into a little more detail learning how to use `gcplyr` for your own work. Generally, working with `gcplyr` will follow a number of steps. In your final script, each of these steps is likely to be only one or a few lines of code. We've broken down each of these steps in a document:
+
+1. **Introduction**
+2. Importing & transforming data
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources
 

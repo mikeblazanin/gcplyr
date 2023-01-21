@@ -20,16 +20,17 @@ R CMD check --no-build-vignettes --no-tests
 5. R CMD build gcplyr
 6. R CMD check gcplyr_X.X.X.tar.gz
 7. R CMD INSTALL gcplyr_X.X.X.tar.gz
-8. Re-knit README.Rmd
-9. Save & commit newly generated README.md file
+8. Organize, edit, and proofread NEWS.md. Commit.
+9. Re-knit README.Rmd
+10. Save & commit newly generated README.md file
       in bash: git commit -m "commit msg here" --no-verify
-10. Push everything
-11. git checkout master
-12. git merge develop
-13. git push
-14. git checkout develop
-15. Update DESCRIPTION to development version number (add .9000 at end of previous version)
-16. Add new release on GitHub
+11. Push everything
+12. git checkout master
+13. git merge develop
+14. git push
+15. git checkout develop
+16. Update DESCRIPTION to development version number (add .9000 at end of previous version)
+17. Add new release on GitHub
 
 
 #Managing master & develop branches:

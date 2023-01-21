@@ -29,6 +29,15 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
 ```
 
+# Workflow
+
+1. Introduction
+2. Importing & transforming data
+3. **Incorporating design information**
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources
 
 # Including design elements
 During analysis of growth curve data, we often want to incorporate information about the experimental design. For example, which bacteria are present in which wells, or which wells have received certain treatments. `gcplyr` enables incorporation of design elements in two ways:
@@ -510,3 +519,15 @@ ex_dat_mrg <-
 
 head(ex_dat_mrg)
 ```
+
+# What's next?
+
+Now that you've merged your data and designs, you can pre-process and plot your data
+
+1. Introduction
+2. Importing & transforming data
+3. **Incorporating design information**
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources

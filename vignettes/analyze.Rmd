@@ -1,5 +1,5 @@
 ---
-title: "Analyze data"
+title: "Analyzing data"
 author: "Mike Blazanin"
 date: "`r Sys.Date()`"
 output: 
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = tempdir())
 
 #Note: to knit to all output formats simultaneously, run in R console:
-#rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
+#rmarkdown::render("./vignettes/analyze.Rmd", output_format = "all")
 ```
 
 # Workflow
@@ -141,7 +141,7 @@ First, we need to group our data. As before, `group_by` simply requires the `dat
 #First, drop unneeded columns (optional)
 ex_dat_mrg <- dplyr::select(ex_dat_mrg,
                             Time, Well, Measurements, Bacteria_strain, Phage,
-                            smoothed, deriv, deriv_percap, deriv_percap_hr)
+                            smoothed, deriv, deriv_percap_hr)
 #Then, carry out grouping
 grouped_ex_dat_mrg <- group_by(ex_dat_mrg, Bacteria_strain, Phage, Well)
 ```
@@ -352,21 +352,21 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% wells_tocheck),
              color = "red", size = 1.5)
 ```
 
-Now we can see what's going on. In these wells, `first_peak` seems to have 'gotten stuck' on some earlier smaller peaks. Just like in smoothing, **peak-finding also has tuning parameters**. For `first_peak` and `find_local_extrema`, these are `width_limit_n`, `width_limit` and `height_limit`:
+Now we can see what's going on. In these wells, `first_peak` seems to have 'gotten stuck' on some earlier smaller peaks. Just like in smoothing, **peak-finding also has tuning parameters**. For `first_peak` and `find_local_extrema`, these are `window_width_n`, `window_width` and `window_height`:
 
-* `width_limit` determines the width of the window used to search for peaks and valleys, in units of `x`
-* `width_limit_n` determines the width of the window, in units of number of data points
-* `height_limit` determines the shortest peak or shallowest valley the window will cross, in units of `y`
+* `window_width` determines the width of the window used to search for peaks and valleys, in units of `x`
+* `window_width_n` determines the width of the window, in units of number of data points
+* `window_height` determines the shortest peak or shallowest valley the window will cross, in units of `y`
 
-If we want `first_peak` to be less sensitive to local peaks, we can increase these parameters (the default setting is `width_limit_n` equal to 20% of the length of `y`, but `width_limit` is a better approach since it works in units of seconds). Let's try that:
+If we want `first_peak` to be less sensitive to local peaks, we can increase these parameters (the default setting is `window_width_n` equal to 20% of the length of `y`, but `window_width` is a better approach since it works in units of seconds). Let's try that:
 
 ```{r}
 ex_dat_mrg_sum <-
   summarize(grouped_ex_dat_mrg,
             first_peak_x = first_peak(x = Time, y = smoothed, return = "x",
-                                      width_limit = 35000),
+                                      window_width = 35000),
             first_peak_y = first_peak(x = Time, y = smoothed, return = "y",
-                                      width_limit = 35000))
+                                      window_width = 35000))
 
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% wells_tocheck), 
        aes(x = Time, y = smoothed)) +
@@ -390,10 +390,10 @@ ex_dat_mrg_sum <-
   summarize(grouped_ex_dat_mrg,
             max_growth_rate = first_peak(x = Time[smoothed > 0.005], 
                                          y = deriv_percap_hr[smoothed > 0.005], 
-                                         return = "y", width_limit = 35000),
+                                         return = "y", window_width = 35000),
             lag_time = first_peak(x = Time[smoothed > 0.005], 
                                   y = deriv_percap_hr[smoothed > 0.005], 
-                                  return = "x", width_limit = 35000))
+                                  return = "x", window_width = 35000))
 
 head(ex_dat_mrg_sum)
 
@@ -448,7 +448,7 @@ ex_dat_mrg_sum <-
     grouped_ex_dat_mrg,
     diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
-                                   width_limit_n = 39)[2])
+                                   window_width_n = 39)[2])
 
 #Plot data with vertical line at detected diauxie
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -467,10 +467,10 @@ ex_dat_mrg_sum <-
     grouped_ex_dat_mrg,
     diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
-                                   width_limit_n = 39)[2],
+                                   window_width_n = 39)[2],
     diauxie_idx = find_local_extrema(x = Time, y = deriv, return = "index",
                                    return_maxima = FALSE, return_minima = TRUE,
-                                   width_limit_n = 39)[2],
+                                   window_width_n = 39)[2],
     diauxie_dens = smoothed[diauxie_idx])
 
 #Plot data with a point at the moment of diauxic shift
@@ -495,7 +495,7 @@ ex_dat_mrg_sum <-
     grouped_ex_dat_mrg,
     diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
-                                   width_limit_n = 39)[2],
+                                   window_width_n = 39)[2],
     diauxie_percap = max(deriv_percap_hr[Time >= diauxie_time], na.rm = TRUE),
     diauxie_percap_time = 
       Time[Time >= diauxie_time][

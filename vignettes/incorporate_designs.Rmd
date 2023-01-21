@@ -39,6 +39,19 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data
 7. Statistics, merging other data, and other resources
 
+If you haven't already, load the necessary packages.
+
+```{r setup}
+library(gcplyr)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
 # Including design elements
 During analysis of growth curve data, we often want to incorporate information about the experimental design. For example, which bacteria are present in which wells, or which wells have received certain treatments. `gcplyr` enables incorporation of design elements in two ways:
 
@@ -513,9 +526,7 @@ example_tidydata <- trans_wide_to_tidy(example_widedata,
 And finally, we merge the two using `merge_dfs`, saving the result to `ex_dat_mrg`, short for example_data_merged:
 
 ```{r}
-ex_dat_mrg <-
-  merge_dfs(example_tidydata,
-            example_design)
+ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
 
 head(ex_dat_mrg)
 ```

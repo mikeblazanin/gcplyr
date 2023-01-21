@@ -29,6 +29,17 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
 ```
 
+# Workflow
+
+1. Introduction
+2. **Importing & transforming data**
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources
+
+
 # Data layouts
 With that demonstration done, let's dig into some more details of how your input data might be organized and what `gcplyr` does. Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 
@@ -410,3 +421,15 @@ imported_wides_now_tidy <- trans_wide_to_tidy(
 
 print(head(imported_blocks_now_tidy), row.names = FALSE)
 ```
+
+# What's next?
+
+Now that you've imported and transformed your data to be tidy-shaped, you likely want to incorporate some design information on what went into each well (and plate). Alternatively, if you'd like to skip that step for now, you can go directly to pre-processing and plotting your data
+
+1. Introduction
+2. **Importing & transforming data**
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources

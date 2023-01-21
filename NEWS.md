@@ -1,5 +1,7 @@
 # gcplyr 0.11.2.9000 (development)
 
+* gcplyr-workflow vignette was split into multiple smaller vignettes, with only small changes to content 
+
 * moving average now accepts window_width (and maintains use of window_width_n)
 
 * moving median now accepts window_width (and maintains use of window_width_n)

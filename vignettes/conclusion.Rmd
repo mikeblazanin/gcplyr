@@ -1,5 +1,5 @@
 ---
-title: "Final thoughts"
+title: "Statistics, merging other data, and other resources"
 author: "Mike Blazanin"
 date: "`r Sys.Date()`"
 output: 
@@ -13,7 +13,7 @@ output:
     toc: true
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{Final thoughts}
+  %\VignetteIndexEntry{Statistics, merging other data, and other resources}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = tempdir())
 
 #Note: to knit to all output formats simultaneously, run in R console:
-#rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
+#rmarkdown::render("./vignettes/conclusion.Rmd", output_format = "all")
 ```
 
 # Workflow

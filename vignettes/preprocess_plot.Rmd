@@ -29,6 +29,62 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
 ```
 
+# Workflow
+
+1. Introduction
+2. Importing & transforming data
+3. Incorporating design information
+4. **Pre-processing and plotting your data**
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources
+
+If you haven't already, load the necessary packages.
+
+```{r setup}
+library(gcplyr)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+```{r}
+#This code was explained in sections 2 and 3
+#Here we're re-running it so it's available for us to work with
+example_tidydata <- trans_wide_to_tidy(example_widedata,
+                                       id_cols = "Time")
+example_design <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"),
+    rows = 1:8, cols = 1:6,
+    pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"),
+    rows = 1:8, cols = 7:12,
+    pattern = "1"))
+ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+```
+
+
 # Pre-processing
 Now that we have our data and designs merged, we're almost ready to start processing and analyzing them. However, first we need to carry out any necessary pre-processing steps, like excluding wells that were contaminated or empty, and converting time formats to numeric.
 
@@ -38,10 +94,6 @@ In some cases, we want to remove some of the wells from our growth curves data b
 For instance, let's imagine that we realized that we put the wrong media into Well B1, and so we should remove it from our analyses. In that case, we can simply:
 
 ```{r}
-#We have previously loaded dplyr, but if you haven't already then
-#make sure to add the line:
-#   library(dplyr)
-
 example_data_and_designs_filtered <- filter(ex_dat_mrg, Well != "B1")
 head(example_data_and_designs_filtered)
 ```
@@ -121,3 +173,15 @@ ggplot(data = ex_dat_mrg, aes(x = Time, y = Measurements)) +
 ```
 
 Generally speaking, **from here on you should plot your data frequently**, and in every way you can think of! **After every processing and analysis step, visualize both the input data and output data** to understand what the processing and analysis steps are doing and whether they are the right choices for your particular data (this vignette will be doing that too!)
+
+# What's next?
+
+Now that you've pre-processed and visualized your data, it's time to process (in most cases) and analyze (pretty much always) it! 
+
+1. Introduction
+2. Importing & transforming data
+3. Incorporating design information
+4. **Pre-processing and plotting your data**
+5. Processing your data
+6. Analyzing your data
+7. Statistics, merging other data, and other resources

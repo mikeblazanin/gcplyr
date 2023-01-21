@@ -38,14 +38,13 @@ To get started, all you need is the data file with the growth curve measures sav
 
 Users often want to combine their data with some information on experimental design elements of their growth curve plate(s). For instance, this might include which strains went into which wells. You can save this information into a tabular file as well (see [Reading design elements from files]), or you can just keep it handy to enter it directly through a function later on (see [Generating designs in R]).
 
-Let's get started by loading `gcplyr`. We're also going to load a couple packages we'll need later.
+Let's get started by loading `gcplyr`. We're also going to load a couple other packages we'll need.
 
 ```{r setup}
 library(gcplyr)
 
 library(dplyr)
 library(ggplot2)
-library(lubridate)
 ```
 
 ```{r, include = FALSE}

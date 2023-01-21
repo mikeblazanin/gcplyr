@@ -39,6 +39,18 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data
 7. Statistics, merging other data, and other resources
 
+If you haven't already, load the necessary packages.
+
+```{r setup}
+library(gcplyr)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
 
 # Data layouts
 With that demonstration done, let's dig into some more details of how your input data might be organized and what `gcplyr` does. Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.

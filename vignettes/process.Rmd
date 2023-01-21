@@ -29,6 +29,65 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/gcplyr-workflow.Rmd", output_format = "all")
 ```
 
+# Workflow
+
+1. Introduction
+2. Importing & transforming data
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. **Processing your data**
+6. Analyzing your data
+7. Statistics, merging other data, and other resources
+
+If you haven't already, load the necessary packages.
+
+```{r setup}
+library(gcplyr)
+
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+```{r}
+#This code was explained in sections 2, 3, and 4
+#Here we're re-running it so it's available for us to work with
+example_tidydata <- trans_wide_to_tidy(example_widedata,
+                                       id_cols = "Time")
+example_design <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12,
+    pattern = 1:48,
+    byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"),
+    rows = 1:8, cols = 1:6,
+    pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"),
+    rows = 1:8, cols = 7:12,
+    pattern = "1"))
+ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+ex_dat_mrg$Well <- 
+  factor(ex_dat_mrg$Well,
+         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+```
+
+
+
 # How to process and analyze your data
 With your data and design information pre-processed, **your dataset is now organized in a way that's easy to export and analyze**. It is also at this point that the next steps for what you can do diversify into many options.
 
@@ -352,3 +411,15 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 ```
 
 Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 times/hour (when ignoring the points that seem likely to be noise).
+
+# What's next?
+
+Now that you've processed your data, you're ready to analyze it! 
+
+1. Introduction
+2. Importing & transforming data
+3. Incorporating design information
+4. Pre-processing and plotting your data
+5. **Processing your data**
+6. Analyzing your data
+7. Statistics, merging other data, and other resources

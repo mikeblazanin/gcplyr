@@ -47,19 +47,22 @@ devtools::install_github("mikeblazanin/gcplyr")
 
 ## Getting Started
 
-The best way to get started is to check out the `gcplyr-workflow`
-vignette, which includes examples of all of the most common `gcplyr`
-functions and walks through how to import, manipulate, and analyze
-growth curves data using `gcplyr` from start to finish.
+The best way to get started is to check out the vignettes series, which
+includes examples of all of the most common `gcplyr` functions and walks
+through how to import, manipulate, and analyze growth curves data using
+`gcplyr` from start to finish.
 
-You can [access a pdf of the workflow vignette
-here](./vignettes/gcplyr-workflow.pdf "gcplyr workflow vignette")
+There are seven vignettes that walk through a typical `gcplyr` workflow:
 
-Or, after installing `gcplyr`, run:
-
-``` r
-vignette("gcplyr-workflow")
-```
+1.  [Introduction](./vignettes/introduction.pdf)
+2.  [Importing and transforming data](./vignettes/import_transform.pdf)
+3.  [Incorporating design
+    information](./vignettes/incorporate_designs.pdf)
+4.  [Pre-processing and plotting data](./vignettes/preprocess_plot.pdf)
+5.  [Processing data](./vignettes/process.pdf)
+6.  [Analyzing data](./vignettes/analyze.pdf)
+7.  [Statistics, merging other data, and other
+    resources](./vignettes/conclusion.pdf)
 
 ## Citation
 

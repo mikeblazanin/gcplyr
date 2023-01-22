@@ -72,5 +72,15 @@ test_that("calc_deriv returns correctly with fitting utilized", {
                           blank = 0, window_width_n = 3))
   expect_error(calc_deriv(x = x, y = y, return = "difference", trans_y = "log",
                           blank = 0, window_width_n = 3))
+  
+  #Data with NA's
+  x <- 1:20
+  y <- c(0:5, NA, 7:12, 0, 14:19)
+  expect_no_condition(
+    calc_deriv(x = x, y = y, percapita = TRUE, window_width_n = 3,
+             blank = 0))
+  expect_no_condition(
+  calc_deriv(x = x, y = y, percapita = TRUE, window_width_n = 3,
+             blank = 0, trans_y = "log"))
 })
 

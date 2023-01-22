@@ -3215,7 +3215,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       blank, "blank", needed_len = length(unique(subset_by)),
       needed_name = "the number of unique subset_by values") 
   }
-  
+
   #Calc derivative
   ans <- rep(NA, length(y))
   for (i in 1:length(unique(subset_by))) {
@@ -3252,16 +3252,21 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                              window_width_n = window_width_n, 
                              window_width = window_width)
       for (j in which(!is.na(windows))) {
-        temp <- stats::lm(myy ~ myx, data = data.frame(myy = sub_y[windows[[j]]],
-                                                myx = sub_x[windows[[j]]]))
-        if(trans_y == "linear") {
-          sub_ans[j] <- temp$coefficients["myx"]*x_scale
-          if(percapita) {
-            sub_ans[j] <- 
-              sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
-          }
+        if(any(is.na(sub_y[windows[[j]]]) | is.infinite(sub_y[windows[[j]]]))) {
+          sub_ans[j] <- NA
         } else {
-          sub_ans[j] <- temp$coefficients["myx"]*x_scale
+          temp <- stats::lm(myy ~ myx, 
+                            data = data.frame(myy = sub_y[windows[[j]]],
+                                              myx = sub_x[windows[[j]]]))
+          if(trans_y == "linear") {
+            sub_ans[j] <- temp$coefficients["myx"]*x_scale
+            if(percapita) {
+              sub_ans[j] <- 
+                sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
+            }
+          } else {
+            sub_ans[j] <- temp$coefficients["myx"]*x_scale
+          }
         }
       }
     }

@@ -5,6 +5,10 @@ template:
 authors:
   Mike Blazanin:
     href: https://mikeblazanin.wordpress.com
+    
+navbar:
+  structure:
+    left: [intro, articles, reference]
 
 articles:
 - title: Articles

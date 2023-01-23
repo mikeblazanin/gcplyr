@@ -29,8 +29,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 
 #To do so for all vignettes, copy-paste the code below into console
 # (Ctrl+Enter does not work):
-# for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {
-#   rmarkdown::render(paste0("./vignettes/", fil), output_format = "all")}
+#for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {rmarkdown::render(paste0("./vignettes/", fil), output_format = "all")}
 ```
 
 # Getting started

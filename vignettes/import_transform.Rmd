@@ -121,10 +121,10 @@ Once you've determined what format your data is in, you can begin importing it u
 
 **If your data is already tidy-shaped:** use `read_tidys` and skip down to the **[Importing tidy-shaped data]** section.
 
-## Importing block-shaped data
+# Importing block-shaped data
 To import block-shaped data, use the `import_blockmeasures` function. `import_blockmeasures` only requires a list of filenames (or relative file paths) and **will return a wide-shaped data.frame** that you can save in R. 
 
-### A basic example
+## A basic example
 
 Here's a simple example. First, we need to create a series of example block-shaped `.csv` files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames`.
 
@@ -200,7 +200,7 @@ imported_blockdata <- import_blockmeasures(
   startrow = 4, startcol = "A")
 ```
 
-### Specifying metadata
+## Specifying metadata
 
 Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, with block-shaped data the timepoint is nearly always specified somewhere in the input file. `import_blockmeasures` can include that information as well via the `metadata` argument. 
 
@@ -234,7 +234,7 @@ imported_blockdata <- import_blockmeasures(
   metadata = list("time" = c(2, "C")))
 ```
 
-### Reading multiple blocks from a single file
+## Reading multiple blocks from a single file
 `import_blockmeasures` can also import multiple blocks from a single file, which some plate readers may output. In this case, you simply have to specify a vector of rows and columns that define the location of each block within the file.
 
 First, let's create an example file. **Don't worry about how this code works**, normally this file would be created by the plate reader.
@@ -294,18 +294,18 @@ And now if we take a look at the resulting object, we can see that the time meta
 head(imported_blockdata, c(6, 8))
 ```
 
-### Notes for more advanced use
+## Notes for more advanced use
 Note that `import_blockmeasures` is essentially a wrapper function that calls `read_blocks`, `uninterleave`, and `trans_block_to_wide`. Any arguments for those functions can be passed to `import_blockmeasures`. 
 
 If you find yourself needing even more control over the process of importing block-shaped measures files, each of the functions is available for users to call themselves. So you can run the steps manually, first reading with `read_blocks`, separating plates as needed with `uninterleave`, then transforming to wide with `trans_block_to_wide`.
 
-### What to do next
+## What to do next
 Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Jump directly to the **[Transforming data]** section.
 
-## Importing wide-shaped data
+# Importing wide-shaped data
 To import wide-shaped data, use the `read_wides` function. `read_wides` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-### A basic example
+## A basic example
 Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is know the file name(s) to put in you `R` code. In this example, the file name is `widedata.csv`. 
 
 ```{r}
@@ -369,7 +369,7 @@ Note that if you have multiple files you'd like to read in, you can do so direct
 imported_widedata <- read_wides(files = c("widedata.csv", "widedata2.csv"))
 ```
 
-### Specifying metadata
+## Specifying metadata
 
 Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, many readers will output information like the experiment name and date into a header in the file. `read_wides` can include that information as well via the `metadata` argument.
 
@@ -394,18 +394,18 @@ imported_widedata <- read_wides(files = "widedata.csv",
                                                 "start_date" = c(2, "B")))
 ```
 
-### Reading multiple wides from a single file
+## Reading multiple wides from a single file
 In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
 
-### What to do next
+## What to do next
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **[Transforming data]** section.
 
-## Importing tidy-shaped data
+# Importing tidy-shaped data
 To import tidy-shaped data, you could use the built-in `R` functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-If you've read in your tidy-shaped data, you won't need to transform it, so you can skip down to the **[Including design elements]** section.
+If you've read in your tidy-shaped data, you won't need to transform it, so you can skip down to the **[What's next?]** section.
 
 # Transforming data
 Now that you've gotten your data into the `R` environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.

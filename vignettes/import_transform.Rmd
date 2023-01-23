@@ -31,7 +31,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Where are we so far?
 
 1. Introduction: `vignette("gcplyr")`
-2. **Importing and transforming data: `vignette("import_transform")`**
+2. **Importing and transforming data:** `vignette("import_transform")`
 3. Incorporating design information: `vignette("incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
@@ -441,8 +441,8 @@ Now that you've imported and transformed your data to be tidy-shaped, you likely
 
 1. Introduction: `vignette("gcplyr")`
 2. Importing and transforming data: `vignette("import_transform")`
-**3. Incorporating design information: `vignette("incorporate_designs")`**
-**4. Pre-processing and plotting your data: `vignette("preprocess_plot")`**
+3. **Incorporating design information: `vignette("incorporate_designs")`**
+4. **Pre-processing and plotting your data: `vignette("preprocess_plot")`**
 5. Processing your data: `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
 7. Statistics, merging other data, and other resources: `vignette("conclusion")`

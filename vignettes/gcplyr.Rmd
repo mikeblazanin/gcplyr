@@ -133,7 +133,7 @@ ggplot(data = data_sum,
 Now that you've read this brief introduction, you probably want to get into a little more detail learning how to use `gcplyr` for your own work. Generally, working with `gcplyr` will follow a number of steps, each of which is likely to be only one or a few lines of code in your final script. We've explained each of these steps in a page linked below. To start, we'll learn how to import our data into `R` and transform it into a convenient format.
 
 1. Introduction: `vignette("gcplyr")`
-**2. Importing and transforming data: `vignette("import_transform")`**
+2. **Importing and transforming data: `vignette("import_transform")`**
 3. Incorporating design information: `vignette("incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`

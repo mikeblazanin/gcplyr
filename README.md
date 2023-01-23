@@ -11,12 +11,11 @@ You can also embed plots in R chunks. In that case, don't forget to commit and p
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of gcplyr is to facilitate manipulation and analysis of
-bacterial growth curves data.
+`gcplyr` facilitates manipulation and analysis of bacterial growth curve
+data.
 
-gcplyr is currently in an **Open Beta release**. Most features are
-complete and should be relatively stable. Documentation should be
-complete.
+`gcplyr` is currently in an **Open Beta release**. Most features are
+complete and will be relatively stable. Documentation is complete.
 
 **Please send all questions, requests, comments, and bugs to
 mikeblazanin \[at\] gmail \[dot\] com**
@@ -47,14 +46,15 @@ devtools::install_github("mikeblazanin/gcplyr")
 
 ## Getting Started
 
-The best way to get started is to check out the vignettes series, which
-includes examples of all of the most common `gcplyr` functions and walks
-through how to import, manipulate, and analyze growth curves data using
-`gcplyr` from start to finish.
+The best way to get started is to check out [the online
+documentation](https://mikeblazanin.github.io/gcplyr), which includes
+examples of all of the most common `gcplyr` functions and walks through
+how to import, manipulate, and analyze growth curves data using `gcplyr`
+from start to finish.
 
-There are seven vignettes that walk through a typical `gcplyr` workflow:
+This documentation is also available as a series of pdf vignette files:
 
-1.  [Introduction](./vignettes/introduction.pdf)
+1.  [Introduction](./vignettes/gcplyr.pdf)
 2.  [Importing and transforming data](./vignettes/import_transform.pdf)
 3.  [Incorporating design
     information](./vignettes/incorporate_designs.pdf)

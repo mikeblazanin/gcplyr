@@ -1,0 +1,16 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  analyze: analyze.html
+  conclusion: conclusion.html
+  import_transform: import_transform.html
+  incorporate_designs: incorporate_designs.html
+  introduction: introduction.html
+  preprocess_plot: preprocess_plot.html
+  process: process.html
+last_built: 2023-01-23T05:05Z
+urls:
+  reference: https://mikeblazanin.github.io/gcplyr/reference
+  article: https://mikeblazanin.github.io/gcplyr/articles
+

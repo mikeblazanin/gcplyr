@@ -2,6 +2,10 @@ url: https://mikeblazanin.github.io/gcplyr/
 template:
   bootstrap: 5
 
+authors:
+  Mike Blazanin:
+    href: https://mikeblazanin.wordpress.com
+
 articles:
 - title: Articles
   navbar: ~

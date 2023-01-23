@@ -133,7 +133,7 @@ ggplot(data = data_sum,
 Now that you've read this brief introduction, you probably want to get into a little more detail learning how to use `gcplyr` for your own work. Generally, working with `gcplyr` will follow a number of steps. In your final script, each of these steps is likely to be only one or a few lines of code. We've broken down each of these steps in a document:
 
 1. **Introduction**
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. Processing your data

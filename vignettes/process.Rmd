@@ -31,7 +31,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Workflow
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. **Processing your data**
@@ -416,7 +416,7 @@ Now we can see the bacterial growth rate in more-understandable units: peak grow
 Now that you've processed your data, you're ready to analyze it! 
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. **Processing your data**

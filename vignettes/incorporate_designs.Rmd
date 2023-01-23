@@ -31,7 +31,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Workflow
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. **Incorporating design information**
 4. Pre-processing and plotting your data
 5. Processing your data
@@ -535,7 +535,7 @@ head(ex_dat_mrg)
 Now that you've merged your data and designs, you can pre-process and plot your data
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. **Incorporating design information**
 4. Pre-processing and plotting your data
 5. Processing your data

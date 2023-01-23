@@ -31,7 +31,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Workflow
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. Processing your data
@@ -592,7 +592,7 @@ As we can see, `find_threshold_crosses` has returned the times when the bacteria
 Now that you've analyzed your data, there's just a few more notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. Processing your data

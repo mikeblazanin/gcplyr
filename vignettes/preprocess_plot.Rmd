@@ -31,7 +31,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Workflow
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. **Pre-processing and plotting your data**
 5. Processing your data
@@ -178,7 +178,7 @@ Generally speaking, **from here on you should plot your data frequently**, and i
 Now that you've pre-processed and visualized your data, it's time to process (in most cases) and analyze (pretty much always) it! 
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. **Pre-processing and plotting your data**
 5. Processing your data

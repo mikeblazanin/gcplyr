@@ -31,7 +31,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Workflow
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. Processing your data
@@ -291,7 +291,7 @@ Additionally, one `R` package doesn't implement fitting-style approaches, but do
 You've finished all the documentation that I've written (so far). Congratulations! `gcplyr` is a powerful framework to build additional analyses on, since the data is nicely organized. Feel free to reach out to me with any questions, comments, or concerns you might have. I'd love to continue making `gcplyr` as useful for others in the scientific community as it has been for me. You can reach me at mikeblazanin [at] gmail [dot] com.
 
 1. Introduction
-2. Importing & transforming data
+2. Importing and transforming data
 3. Incorporating design information
 4. Pre-processing and plotting your data
 5. Processing your data

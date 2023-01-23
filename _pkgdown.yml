@@ -17,6 +17,8 @@ navbar:
         href: articles/gcplyr.html
       - text: Importing and transforming data
         href: articles/import_transform.html
+      - text: Incorporating design information
+        href: articles/incorporate_designs.html
       - text: Pre-processing and plotting data
         href: articles/preprocess_plot.html
       - text: Processing data

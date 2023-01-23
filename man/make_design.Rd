@@ -90,6 +90,23 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)}
               
              5. a Boolean for whether this pattern should be filled byrow}
 }
+\value{
+Depends on \code{output_format}:
+
+        If \code{output_format = "blocks"}, a list of \code{data.frame}'s
+        where each \code{data.frame} is block-shaped containing the
+        information for a single design element
+        
+        If \code{output_format = "blocks_pasted"}, a single 
+        \code{data.frame} containing the \code{paste}-ed information
+        for all design elements
+        
+        If \code{output_format = "wide"}, a wide-shaped \code{data.frame}
+        containing all the design elements
+        
+        If \code{output_format = "tidy"}, a tidy-shaped \code{data.frame}
+        containing all the design elements
+}
 \description{
 This is a function to easily input experimental design elements
 for later merging with read data

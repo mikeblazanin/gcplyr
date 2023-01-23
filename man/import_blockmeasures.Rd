@@ -28,6 +28,13 @@ rowname and column name}
 \item{...}{Other arguments to pass to \code{read_blocks}, \code{uninterleave},
 or \code{widen_blocks}}
 }
+\value{
+If \code{num_plates = 1}, a wide-shaped \code{data.frame}
+        containing the measures data.
+        
+        if \code{num_plates} is greater than one, a list of 
+        \code{data.frame}'s, where each \code{data.frame} is wide-shaped.
+}
 \description{
 Function to import blockmeasures from files and return widemeasures
 This function acts as a wrapper to call read_blocks, uninterleave, 

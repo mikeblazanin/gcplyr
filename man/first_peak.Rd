@@ -57,6 +57,16 @@ be allowed to be returned?}
 
 \item{...}{Other parameters to pass to \code{find_local_extrema}}
 }
+\value{
+If \code{return = "index"}, a vector of indices corresponding 
+          to local extrema in the data
+          
+        If \code{return = "x"}, a vector of x values corresponding
+          to local extrema in the data
+         
+        If \code{return = "y"}, a vector of y values corresponding
+          to local extrema in the data
+}
 \description{
 This function takes a vector of \code{y} values and returns the index
 (by default) of the first local maxima. It serves as a wrapper function

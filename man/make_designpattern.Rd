@@ -18,6 +18,9 @@ in \code{values}}
 
 \item{byrow}{Boolean for whether pattern should be created by row}
 }
+\value{
+\code{list(values, rows, cols, pattern, byrow)}
+}
 \description{
 A helper function for use with make_tidydesign
 }

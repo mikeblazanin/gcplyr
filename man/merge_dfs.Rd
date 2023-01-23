@@ -43,8 +43,9 @@ Data.frame containing merged output of \code{x} and
         \code{y}
 }
 \description{
-This function is essentially a wrapper for dplyr::full_join
+This function is essentially a wrapper for \code{dplyr::full_join}
 The most typical use of this function is to merge designs 
 with measures data, or to use the collapse functionality of this 
-function to merge a list of dataframes into a single dataframe
+function to merge a list of dataframes into a single dataframe.
+Merging is done by column-names that match between \code{x} and \code{y}.
 }

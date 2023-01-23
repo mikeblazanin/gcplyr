@@ -30,6 +30,10 @@ design elements.}
 
 See Details for more information}
 }
+\value{
+A tidy-shaped \code{data.frame} containing the design information
+        from \code{files}
+}
 \description{
 Function to import block-shaped designs from files and return tidy designs.
 This function acts as a wrapper to call \code{read_blocks}, 

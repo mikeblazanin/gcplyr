@@ -2747,10 +2747,12 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'
 #' @details 
 #'            For \code{moving_average} and \code{moving_median}, 
-#'            passing \code{window_width_n} via \code{...} is required and 
-#'            sets the number of data points wide the moving window is. Larger 
-#'            values of \code{window_width_n} will produce more "smoothed"
-#'            data
+#'            passing \code{window_width} or \code{window_width_n} via 
+#'            \code{...} is required. \code{window_width} sets the width
+#'            of the moving window in units of \code{x}, while 
+#'            \code{window_width_n} sets the width in units of number
+#'            of data points. Larger values for either will produce more 
+#'            "smoothed" data.
 #'            
 #'            For \code{loess}, the \code{span} argument sets the fraction of
 #'            data points that should be included in each calculation. It's

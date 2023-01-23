@@ -9,6 +9,23 @@ authors:
 navbar:
   structure:
     left: [intro, articles, reference, news]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Introduction
+        href: articles/gcplyr.html
+      - text: Importing and transforming data
+        href: articles/import_transform.html
+      - text: Pre-processing and plotting data
+        href: articles/preprocess_plot.html
+      - text: Processing data
+        href: articles/process.html
+      - text: Analyzing data
+        href: articles/analyze.html
+      - text: Statistics, merging other data, and other resources
+        href: articles/conclusion.html
+      
 
 articles:
 - title: Articles

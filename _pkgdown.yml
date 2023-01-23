@@ -63,9 +63,11 @@ reference:
   - from_excel
 - title: Example data
   desc: "Example wide-shaped data.frames of growth curves data"
+  contents:
   - example_widedata
   - example_widedata_noiseless
 - title: Legacy functions
   desc: "These functions have been deprecated"
+  contents:
   - make_tidydesign
   - block_tidydesign

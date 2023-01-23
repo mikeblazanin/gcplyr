@@ -16,6 +16,9 @@
     <loc>https://mikeblazanin.github.io/gcplyr/articles/conclusion.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gcplyr.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/articles/import_transform.html</loc>
   </url>
   <url>
@@ -23,9 +26,6 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/introduction.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/articles/preprocess_plot.html</loc>
@@ -43,9 +43,6 @@
     <loc>https://mikeblazanin.github.io/gcplyr/news/index.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/add_nas.html</loc>
-  </url>
-  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/auc.html</loc>
   </url>
   <url>
@@ -55,22 +52,10 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/calc_deriv.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/canbe.numeric.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/checkdim_inputs.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/dots_parser.html</loc>
-  </url>
-  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata_noiseless.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/fill_data_metadata.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/find_local_extrema.html</loc>
@@ -88,9 +73,6 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/from_excel.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/get_windows.html</loc>
-  </url>
-  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/import_blockdesigns.html</loc>
   </url>
   <url>
@@ -98,12 +80,6 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/infer_block_metadata.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/infer_names.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/make_design.html</loc>
@@ -136,15 +112,6 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/read_wides.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/reorder_xy.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/rm_nas.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/sep_finder.html</loc>
-  </url>
-  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/separate_tidy.html</loc>
   </url>
   <url>
@@ -155,12 +122,6 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_block_to_wide.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_tidy_to_wide.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_wide_to_block.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_wide_to_tidy.html</loc>

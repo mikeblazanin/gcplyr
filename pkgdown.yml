@@ -4,12 +4,12 @@ pkgdown_sha: ~
 articles:
   analyze: analyze.html
   conclusion: conclusion.html
+  gcplyr: gcplyr.html
   import_transform: import_transform.html
   incorporate_designs: incorporate_designs.html
-  introduction: introduction.html
   preprocess_plot: preprocess_plot.html
   process: process.html
-last_built: 2023-01-23T07:07Z
+last_built: 2023-01-23T08:07Z
 urls:
   reference: https://mikeblazanin.github.io/gcplyr/reference
   article: https://mikeblazanin.github.io/gcplyr/articles

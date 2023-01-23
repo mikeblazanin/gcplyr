@@ -18,14 +18,16 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="nav-item">
+  <a class="nav-link" href="../articles/gcplyr.html">Get started</a>
+</li>
+<li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/introduction.html">Introduction to using gcplyr</a>
-    <a class="dropdown-item" href="../articles/import_transform.html">Importing &amp; transforming data</a>
+    <a class="dropdown-item" href="../articles/import_transform.html">Importing and transforming data</a>
     <a class="dropdown-item" href="../articles/incorporate_designs.html">Incorporating design information</a>
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
@@ -50,9 +52,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="reading-files">Reading files<a class="anchor" aria-label="anchor" href="#reading-files"></a></h2>
       
-      
+      <p class="section-desc"></p><p>Functions for reading files into R</p>
 
       
     </div><div id="" class="section level2">
@@ -62,105 +64,52 @@
 
       <dl><dt>
           
-          <code><a href="add_nas.html">add_nas()</a></code> 
+          <code><a href="read_blocks.html">read_blocks()</a></code> 
         </dt>
-        <dd>A function that adds NA values to a vector or pair of vectors</dd>
+        <dd>Read blockmeasures</dd>
       </dl><dl><dt>
           
-          <code><a href="auc.html">auc()</a></code> 
+          <code><a href="read_wides.html">read_wides()</a></code> 
         </dt>
-        <dd>calculate area under the curve</dd>
+        <dd>Read wides</dd>
       </dl><dl><dt>
           
-          <code><a href="block_tidydesign.html">block_tidydesign()</a></code> 
+          <code><a href="read_tidys.html">read_tidys()</a></code> 
         </dt>
-        <dd>Turn tidydesign into block format</dd>
-      </dl><dl><dt>
-          
-          <code><a href="calc_deriv.html">calc_deriv()</a></code> 
-        </dt>
-        <dd>Calculate derivatives of vector of data</dd>
-      </dl><dl><dt>
-          
-          <code><a href="canbe.numeric.html">canbe.numeric()</a></code> 
-        </dt>
-        <dd>A better version of is.numeric</dd>
-      </dl><dl><dt>
-          
-          <code><a href="checkdim_inputs.html">checkdim_inputs()</a></code> 
-        </dt>
-        <dd>Check dimension of inputs</dd>
-      </dl><dl><dt>
-          
-          <code><a href="dots_parser.html">dots_parser()</a></code> 
-        </dt>
-        <dd>A function that parses dots arguments and only passes the correct ones</dd>
-      </dl><dl><dt>
-          
-          <code><a href="example_widedata.html">example_widedata</a></code> 
-        </dt>
-        <dd>Example noisy growth curve data in wide format</dd>
-      </dl><dl><dt>
-          
-          <code><a href="example_widedata_noiseless.html">example_widedata_noiseless</a></code> 
-        </dt>
-        <dd>Example growth curve data in wide format</dd>
-      </dl><dl><dt>
-          
-          <code><a href="fill_data_metadata.html">fill_data_metadata()</a></code> 
-        </dt>
-        <dd>Fill output data.frame with <code>data</code> and <code>metadata</code></dd>
-      </dl><dl><dt>
-          
-          <code><a href="find_local_extrema.html">find_local_extrema()</a></code> 
-        </dt>
-        <dd>Find local extrema of numeric vector</dd>
-      </dl><dl><dt>
-          
-          <code><a href="find_threshold_crosses.html">find_threshold_crosses()</a></code> 
-        </dt>
-        <dd>Find all points when a numeric vector crosses some threshold</dd>
-      </dl><dl><dt>
-          
-          <code><a href="first_below.html">first_below()</a></code> 
-        </dt>
-        <dd>Find the first point when a numeric vector falls below some threshold</dd>
-      </dl><dl><dt>
-          
-          <code><a href="first_peak.html">first_peak()</a></code> 
-        </dt>
-        <dd>Find the first local peak of a numeric vector</dd>
-      </dl><dl><dt>
-          
-          <code><a href="from_excel.html">from_excel()</a></code> 
-        </dt>
-        <dd>A function that converts base-26 Excel-style letters to numbers</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_windows.html">get_windows()</a></code> 
-        </dt>
-        <dd>A function that gets windows for moving-window like calculations</dd>
-      </dl><dl><dt>
-          
-          <code><a href="import_blockdesigns.html">import_blockdesigns()</a></code> 
-        </dt>
-        <dd>Import blockdesigns</dd>
-      </dl><dl><dt>
+        <dd>Read tidy-shaped files</dd>
+      </dl></div><div class="section level2">
+      <h2 id="importing-files">Importing files<a class="anchor" aria-label="anchor" href="#importing-files"></a></h2>
+      
+      <p class="section-desc"></p><p>Wrapper functions that read and transform data</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="import_blockmeasures.html">import_blockmeasures()</a></code> 
         </dt>
         <dd>Import blockmeasures</dd>
       </dl><dl><dt>
           
-          <code><a href="infer_block_metadata.html">infer_block_metadata()</a></code> 
+          <code><a href="import_blockdesigns.html">import_blockdesigns()</a></code> 
         </dt>
-        <dd>A function that infers whether blocks have nested metadata</dd>
-      </dl><dl><dt>
-          
-          <code><a href="infer_names.html">infer_names()</a></code> 
-        </dt>
-        <dd>An internal function that handles name inference logic for other functions</dd>
-      </dl><dl><dt>
+        <dd>Import blockdesigns</dd>
+      </dl></div><div class="section level2">
+      <h2 id="creating-designs">Creating designs<a class="anchor" aria-label="anchor" href="#creating-designs"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions to facilitate generating designs</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="make_design.html">make_design()</a></code> 
         </dt>
@@ -172,14 +121,61 @@
         <dd>Make design pattern</dd>
       </dl><dl><dt>
           
-          <code><a href="make_tidydesign.html">make_tidydesign()</a></code> 
+          <code><a href="write_blocks.html">write_blocks()</a></code> 
         </dt>
-        <dd>Make tidy design data.frames</dd>
+        <dd>Write block designs to csv</dd>
+      </dl></div><div class="section level2">
+      <h2 id="manipulating-data-in-r">Manipulating data in R<a class="anchor" aria-label="anchor" href="#manipulating-data-in-r"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions that transform, manipulate, or reshape data</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="trans_block_to_wide.html">trans_block_to_wide()</a></code> 
+        </dt>
+        <dd>Transform blocks to wides</dd>
+      </dl><dl><dt>
+          
+          <code><a href="trans_wide_to_tidy.html">trans_wide_to_tidy()</a></code> 
+        </dt>
+        <dd>Pivot widemeasures longer</dd>
       </dl><dl><dt>
           
           <code><a href="merge_dfs.html">merge_dfs()</a></code> 
         </dt>
         <dd>Collapse a list of dataframes, or merge two dataframes together</dd>
+      </dl><dl><dt>
+          
+          <code><a href="paste_blocks.html">paste_blocks()</a></code> 
+        </dt>
+        <dd>Paste a list of blocks into a single block</dd>
+      </dl><dl><dt>
+          
+          <code><a href="separate_tidy.html">separate_tidy()</a></code> 
+        </dt>
+        <dd>Separate a column into multiple columns</dd>
+      </dl></div><div class="section level2">
+      <h2 id="processing-growth-curve-data">Processing growth curve data<a class="anchor" aria-label="anchor" href="#processing-growth-curve-data"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions to smooth or calculate derivatives of growth curve data</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="smooth_data.html">smooth_data()</a></code> 
+        </dt>
+        <dd>Smooth data</dd>
       </dl><dl><dt>
           
           <code><a href="moving_average.html">moving_average()</a></code> 
@@ -192,49 +188,61 @@
         <dd>Moving median smoothing</dd>
       </dl><dl><dt>
           
-          <code><a href="paste_blocks.html">paste_blocks()</a></code> 
+          <code><a href="calc_deriv.html">calc_deriv()</a></code> 
         </dt>
-        <dd>Paste a list of blocks into a single block</dd>
+        <dd>Calculate derivatives of vector of data</dd>
+      </dl></div><div class="section level2">
+      <h2 id="analyzing-growth-curve-data">Analyzing growth curve data<a class="anchor" aria-label="anchor" href="#analyzing-growth-curve-data"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions to analyze growth curve data by summarizing into metrics</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="find_local_extrema.html">find_local_extrema()</a></code> 
+        </dt>
+        <dd>Find local extrema of numeric vector</dd>
       </dl><dl><dt>
           
-          <code><a href="read_blocks.html">read_blocks()</a></code> 
+          <code><a href="first_peak.html">first_peak()</a></code> 
         </dt>
-        <dd>Read blockmeasures</dd>
+        <dd>Find the first local peak of a numeric vector</dd>
       </dl><dl><dt>
           
-          <code><a href="read_tidys.html">read_tidys()</a></code> 
+          <code><a href="find_threshold_crosses.html">find_threshold_crosses()</a></code> 
         </dt>
-        <dd>Read tidy-shaped files</dd>
+        <dd>Find all points when a numeric vector crosses some threshold</dd>
       </dl><dl><dt>
           
-          <code><a href="read_wides.html">read_wides()</a></code> 
+          <code><a href="first_below.html">first_below()</a></code> 
         </dt>
-        <dd>Read wides</dd>
+        <dd>Find the first point when a numeric vector falls below some threshold</dd>
       </dl><dl><dt>
           
-          <code><a href="reorder_xy.html">reorder_xy()</a></code> 
+          <code><a href="auc.html">auc()</a></code> 
         </dt>
-        <dd>A function that reorders x and y based on x</dd>
-      </dl><dl><dt>
+        <dd>calculate area under the curve</dd>
+      </dl></div><div class="section level2">
+      <h2 id="utility-functions">Utility functions<a class="anchor" aria-label="anchor" href="#utility-functions"></a></h2>
+      
+      <p class="section-desc"></p><p>Various functions providing simple utilities</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
-          <code><a href="rm_nas.html">rm_nas()</a></code> 
+          <code><a href="uninterleave.html">uninterleave()</a></code> 
         </dt>
-        <dd>A function that removes na's values from a vector or pair of vectors</dd>
-      </dl><dl><dt>
-          
-          <code><a href="sep_finder.html">sep_finder()</a></code> 
-        </dt>
-        <dd>A function that finds a character not present in block data nor metadata</dd>
-      </dl><dl><dt>
-          
-          <code><a href="separate_tidy.html">separate_tidy()</a></code> 
-        </dt>
-        <dd>Separate a column into multiple columns</dd>
-      </dl><dl><dt>
-          
-          <code><a href="smooth_data.html">smooth_data()</a></code> 
-        </dt>
-        <dd>Smooth data</dd>
+        <dd>Uninterleave list</dd>
       </dl><dl><dt>
           
           <code><a href="to_excel.html">to_excel()</a></code> 
@@ -242,36 +250,54 @@
         <dd>A function that converts numbers into base-26 Excel-style letters</dd>
       </dl><dl><dt>
           
-          <code><a href="trans_block_to_wide.html">trans_block_to_wide()</a></code> 
+          <code><a href="from_excel.html">from_excel()</a></code> 
         </dt>
-        <dd>Transform blocks to wides</dd>
+        <dd>A function that converts base-26 Excel-style letters to numbers</dd>
+      </dl></div><div class="section level2">
+      <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a></h2>
+      
+      <p class="section-desc"></p><p>Example wide-shaped data.frames of growth curves data</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="example_widedata.html">example_widedata</a></code> 
+        </dt>
+        <dd>Example noisy growth curve data in wide format</dd>
       </dl><dl><dt>
           
-          <code><a href="trans_tidy_to_wide.html">trans_tidy_to_wide()</a></code> 
+          <code><a href="example_widedata_noiseless.html">example_widedata_noiseless</a></code> 
         </dt>
-        <dd>Transform tidy dfs into wide (in progress)</dd>
+        <dd>Example growth curve data in wide format</dd>
+      </dl></div><div class="section level2">
+      <h2 id="legacy-functions">Legacy functions<a class="anchor" aria-label="anchor" href="#legacy-functions"></a></h2>
+      
+      <p class="section-desc"></p><p>These functions have been deprecated</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="make_tidydesign.html">make_tidydesign()</a></code> 
+        </dt>
+        <dd>Make tidy design data.frames</dd>
       </dl><dl><dt>
           
-          <code><a href="trans_wide_to_block.html">trans_wide_to_block()</a></code> 
+          <code><a href="block_tidydesign.html">block_tidydesign()</a></code> 
         </dt>
-        <dd>Transform wides into block format (in progress)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="trans_wide_to_tidy.html">trans_wide_to_tidy()</a></code> 
-        </dt>
-        <dd>Pivot widemeasures longer</dd>
-      </dl><dl><dt>
-          
-          <code><a href="uninterleave.html">uninterleave()</a></code> 
-        </dt>
-        <dd>Uninterleave list</dd>
-      </dl><dl><dt>
-          
-          <code><a href="write_blocks.html">write_blocks()</a></code> 
-        </dt>
-        <dd>Write block designs to csv</dd>
+        <dd>Turn tidydesign into block format</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

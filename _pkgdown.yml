@@ -13,3 +13,50 @@ articles:
   - process
   - analyze
   - conclusion
+  
+reference:
+- title: Reading files
+  desc: "Functions for reading files into R"
+  contents:
+    read_blocks
+    read_wides
+    read_tidys
+- title: Importing files
+  desc: "Wrapper functions that read and transform data"
+  contents:
+    import_blockmeasures
+    import_blockdesigns
+- title: Creating designs
+  desc: "Functions to facilitate generating designs"
+  contents:
+    make_design
+    make_designpattern
+    write_blocks
+- title: Manipulating data in R
+  desc: "Functions that transform, manipulate, or reshape data"
+  contents:
+    trans_block_to_wide
+    trans_wide_to_tidy
+    merge_dfs
+    paste_blocks
+    separate_tidy
+- title: Processing growth curve data
+  desc: "Functions to smooth or calculate derivatives of growth curve data"
+  contents:
+    smooth_data
+    moving_average
+    moving_median
+    calc_deriv
+- title: Analyzing growth curve data
+  desc: "Functions to analyze growth curve data by summarizing into metrics"
+  contents:
+    find_local_extrema
+    first_peak
+    find_threshold_crosses
+    first_below
+    auc
+    
+  
+  
+  
+  

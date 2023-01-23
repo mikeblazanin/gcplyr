@@ -28,15 +28,17 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/analyze.Rmd", output_format = "all")
 ```
 
-# Workflow
+# Where are we so far?
 
-1. Introduction
-2. Importing and transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. **Analyzing your data**
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+**6. Analyzing your data: `vignette("analyze")`**
+7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+
+So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, and plotted our data. Now we're going to analyze our data by summarizing our growth curves into a number of metrics.
 
 If you haven't already, load the necessary packages.
 
@@ -591,10 +593,10 @@ As we can see, `find_threshold_crosses` has returned the times when the bacteria
 
 Now that you've analyzed your data, there's just a few more notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
-1. Introduction
-2. Importing and transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. **Analyzing your data**
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+**7. Statistics, merging other data, and other resources: `vignette("conclusion")`**

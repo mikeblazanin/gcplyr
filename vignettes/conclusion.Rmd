@@ -28,15 +28,17 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/conclusion.Rmd", output_format = "all")
 ```
 
-# Workflow
+# Where are we so far?
 
-1. Introduction
-2. Importing and transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. Analyzing your data
-7. **Statistics, merging other data, and other resources**
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+**7. Statistics, merging other data, and other resources: `vignette("conclusion")`**
+
+So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, plotted, and analyzed our data. The only things left are a few notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
 If you haven't already, load the necessary packages.
 
@@ -290,10 +292,10 @@ Additionally, one `R` package doesn't implement fitting-style approaches, but do
 
 You've finished all the documentation that I've written (so far). Congratulations! `gcplyr` is a powerful framework to build additional analyses on, since the data is nicely organized. Feel free to reach out to me with any questions, comments, or concerns you might have. I'd love to continue making `gcplyr` as useful for others in the scientific community as it has been for me. You can reach me at mikeblazanin [at] gmail [dot] com.
 
-1. Introduction
-2. Importing and transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. Analyzing your data
-7. **Statistics, merging other data, and other resources**
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+7. Statistics, merging other data, and other resources: `vignette("conclusion")`

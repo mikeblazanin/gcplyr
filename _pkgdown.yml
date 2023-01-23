@@ -55,7 +55,14 @@ reference:
   - find_threshold_crosses
   - first_below
   - auc
-    
+- title: Utility functions
+  desc: "Various functions providing simple utilities"
+  contents:
+  - uninterleave
+  - to_excel
+  - from_excel
+  
+  
   
   
   

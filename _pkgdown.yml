@@ -6,7 +6,7 @@ articles:
 - title: Articles
   navbar: ~
   contents:
-  - introduction
+  - gcplyr
   - import_transform
   - incorporate_designs
   - preprocess_plot

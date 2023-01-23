@@ -28,15 +28,17 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/analyze.Rmd", output_format = "all")
 ```
 
-# Workflow
+# Where are we so far?
 
-1. Introduction
-2. Importing & transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. **Analyzing your data**
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. **Analyzing your data:** `vignette("analyze")`
+7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+
+So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, and plotted our data. Now we're going to analyze our data by summarizing our growth curves into a number of metrics.
 
 If you haven't already, load the necessary packages.
 
@@ -119,7 +121,7 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 
 But first, we need to familiarize ourselves with one more `dplyr` function:  `summarize`. Why? Because the upcoming `gcplyr` analysis functions *must* be used *within* `dplyr::summarize`. **If you’re already familiar with `dplyr`'s `summarize`, feel free to skip the primer in the next section.** If you’re not familiar yet, don’t worry! Continue to the next section, where I provide a primer that will teach you all you need to know on using `summarize` with `gcplyr` functions.
 
-## Another brief primer on dplyr: summarize
+# Another brief primer on dplyr: summarize
 
 Here we're going to focus on the `summarize` function from `dplyr`, which *must* be used with the `group_by` function we covered in our first primer: **[A brief primer on dplyr]**. `summarize` carries out user-specified calculations on *each* group in a grouped `data.frame` independently, producing a new `data.frame` where each group is now just a single row. 
 
@@ -132,7 +134,7 @@ Since `summarize` will drop columns that the data aren't grouped by and that are
 
 In the next section, I provide a simple example of how the `max` function is used with `group_by` and `summarize` to calculate lag time and the maximum per-capita growth rate. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the remaining `gcplyr` functions.
 
-## Summarizing with simple base functions: maximum and minimum density
+# Summarizing with simple base functions: maximum and minimum density
 One of the most common steps is calculating global maxima and minima of data. For instance, with bacterial growth, maximum density is one of the most commonly measured traits. Here, we'll show how to find it using the built-in `max` function.
 
 First, we need to group our data. As before, `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
@@ -193,7 +195,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
              size = 2, color = "red")
 ```
 
-## Summarizing with simple gcplyr functions: area under the curve
+# Summarizing with simple gcplyr functions: area under the curve
 
 One common metric of growth curves is the total area under the curve. `gcplyr` has an `auc` function to easily calculate this area. Just like `min` and `max`, it needs to be used inside `summarize` on a `data.frame` that has been grouped.
 
@@ -206,7 +208,7 @@ ex_dat_mrg_sum <-
 head(ex_dat_mrg_sum)
 ```
 
-## Summarizing on subsets: maximum growth rate
+# Summarizing on subsets: maximum growth rate
 
 Sometimes, we need to provide limits on the data passed to our simple functions. We can demonstrate this in the process of calculating one of the most common metrics we want to identify: the maximum per-capita growth rate
 
@@ -303,15 +305,15 @@ ggplot(data = dplyr::filter(ex_dat_mrg,
              aes(yintercept = max_growth_rate), lty = 2)
 ```
 
-## Finding local extrema: peak density, maximum growth rate, lag time, and diauxic shifts
+# Finding local extrema: peak density, maximum growth rate, lag time, and diauxic shifts
 
 We've previously shown how you can use `max` and `min` to find the global maxima and minima in data. However, what about *local* maxima or minima? That is, peaks and valleys that are obvious to the eye but aren't the highest or smallest values in the entire time series. In this section, we'll show how you can use the `gcplyr` functions `first_peak` and `find_local_extrema` to find points that are local maxima or minima in your data.
 
-### Finding the first peak: peak density, maximum growth rate, and lag time
+## Finding the first peak: peak density, maximum growth rate, and lag time
 
 One particular special case we're often interested in is the first peak in some set of data. For instance, when bacteria are grown with phages, the density they reach before they start declining due to phage predation (a measure of their susceptibility to the phage)? Alternatively, in the previous section we found the global maximum per-capita growth rate, but some of these maxima happened after near-extinction and recovery. What if we wanted to find the peak growth rate before near-extinction?  
 
-#### Peak density
+### Peak density
 
 
 
@@ -379,7 +381,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% wells_tocheck),
 
 That worked great! 
 
-#### Maximum growth rate and lag time
+### Maximum growth rate and lag time
 
 
 
@@ -411,7 +413,7 @@ Here we can see that in Well E11, `first_peak` has identified the peak growth ra
 
 But what if you want to find an extrema that's *not* the first peak? In the next section, we'll learn how to use `find_local_extrema` to identify all kinds of local extrema.
 
-### Finding any kind of local extrema: diauxic shifts
+## Finding any kind of local extrema: diauxic shifts
 
 We've seen how `first_peak` can be used to identify the first peak in data. But what about other kinds of local extrema? The first minimum? The *second* peak?
 
@@ -485,7 +487,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 Something that was hard to see on the density plot has now been easily quantified and can be visualized exactly where the shift occurs.
 
-### Combining subsets and local extrema: diauxic growth rate
+## Combining subsets and local extrema: diauxic growth rate
 
 In the previous section we identified when the bacteria shifted into their second burst of growth. Can we find out what the peak per-capita growth rate was during that second burst? Yes, we just have to put together some of the things we've learned already. In particular, we're going to combine our use of `find_local_extrema`, `max`, and subsets to find the `max(deriv_percap_hr)` during the times after the diauxic shift:
 
@@ -512,11 +514,11 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
              size = 2, color = "red")
 ```
 
-## Finding threshold-crossings: extinction time and time to density
+# Finding threshold-crossings: extinction time and time to density
 
 We've previously shown how you can find local and global extrema in data, but what if you just want to find when the data passes some threshold value? In this section, we'll show how you can use the `gcplyr` functions `first_below` and `find_threshold_crosses` to find the points when your data crosses user-defined thresholds.
 
-### Finding the first point below a threshold: extinction time
+## Finding the first point below a threshold: extinction time
 
 One common case of threshold-crossing we might be interested in is the first point that our data falls below some threshold density. For instance, when bacteria are grown with phages, the amount of time it takes before the bacterial population falls below some threshold can be a proxy metric for how sensitive the bacteria are to that phage.
 
@@ -551,7 +553,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 All the phage-added wells have a time when the bacteria drop below that threshold, and the plot clearly shows that it's right where we'd expect it.
 
-### Finding any kind of threshold-crossing: time to density
+## Finding any kind of threshold-crossing: time to density
 
 We've seen how `first_below` can be used to identify the first point some data crosses below a threshold. But what about other kinds of threshold-crossing events? The first point it passes above a threshold? The first point it's ever below a threshold, including at the start?
 
@@ -591,10 +593,10 @@ As we can see, `find_threshold_crosses` has returned the times when the bacteria
 
 Now that you've analyzed your data, there's just a few more notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
-1. Introduction
-2. Importing & transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. **Analyzing your data**
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+7. **Statistics, merging other data, and other resources: `vignette("conclusion")`**

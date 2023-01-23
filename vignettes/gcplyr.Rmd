@@ -25,7 +25,11 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = tempdir())
 
 #Note: to knit to all output formats simultaneously, run in R console:
-#rmarkdown::render("./vignettes/introduction.Rmd", output_format = "all")
+#rmarkdown::render("./vignettes/gcplyr.Rmd", output_format = "all")
+
+#To do so for all vignettes, copy-paste the code below into console
+# (Ctrl+Enter does not work):
+#for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {rmarkdown::render(paste0("./vignettes/", fil), output_format = "all")}
 ```
 
 # Getting started
@@ -130,13 +134,13 @@ ggplot(data = data_sum,
 
 # What's next?
 
-Now that you've read this brief introduction, you probably want to get into a little more detail learning how to use `gcplyr` for your own work. Generally, working with `gcplyr` will follow a number of steps. In your final script, each of these steps is likely to be only one or a few lines of code. We've broken down each of these steps in a document:
+Now that you've read this brief introduction, you probably want to get into a little more detail learning how to use `gcplyr` for your own work. Generally, working with `gcplyr` will follow a number of steps, each of which is likely to be only one or a few lines of code in your final script. We've explained each of these steps in a page linked below. To start, we'll learn how to import our data into `R` and transform it into a convenient format.
 
-1. **Introduction**
-2. Importing & transforming data
-3. Incorporating design information
-4. Pre-processing and plotting your data
-5. Processing your data
-6. Analyzing your data
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. **Importing and transforming data: `vignette("import_transform")`**
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+7. Statistics, merging other data, and other resources: `vignette("conclusion")`
 

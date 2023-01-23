@@ -2759,7 +2759,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 }
 
 
-# Preprocessing: Smoothing ----
+# Processing: Smoothing ----
 
 #' Smooth data
 #' 

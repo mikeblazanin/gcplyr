@@ -28,15 +28,17 @@ knitr::opts_knit$set(root.dir = tempdir())
 #rmarkdown::render("./vignettes/incorporate_designs.Rmd", output_format = "all")
 ```
 
-# Workflow
+# Where are we so far?
 
-1. Introduction
-2. Importing & transforming data
-3. **Incorporating design information**
-4. Pre-processing and plotting your data
-5. Processing your data
-6. Analyzing your data
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. **Incorporating design information:** `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+
+So far, we've imported and transformed our measures data into `R`. Now we're going to address how to incorporate some design information on what went into each well (and plate).
 
 If you haven't already, load the necessary packages.
 
@@ -57,18 +59,18 @@ During analysis of growth curve data, we often want to incorporate information a
 1. Design elements can be imported from files
 2. Design elements can be generated programmatically using `make_design`
 
-## Reading design elements from files
+# Reading design elements from files
 Users have two options for how to read design elements from files, depending on the shape of the design files that they have created:
 
 * If design files are block-shaped, they can be read with `import_blockdesigns`
 * If design files are tidy-shaped, they can simply be read with `read_tidys`
 
-### Importing block-shaped design files
+## Importing block-shaped design files
 To import block-shaped design files, you can use the `import_blockdesigns` function, which will return a tidy-shaped designs data frame (or list of data frames).
 
 `import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R. That's right, it reads in block-shaped designs but returns a tidy-shaped data frame! 
 
-#### A basic example
+### A basic example
 
 
 
@@ -95,7 +97,7 @@ my_design <- import_blockdesigns(files = "mydesign.csv",
 head(my_design, 20)
 ```
 
-#### Importing multiple block-shaped design elements
+### Importing multiple block-shaped design elements
 
 
 
@@ -128,7 +130,7 @@ my_design <-
 head(my_design, 20)
 ```
 
-#### Notes for more advanced use
+### Notes for more advanced use
 
 
 
@@ -140,20 +142,20 @@ Additionally, if you've already pasted together your design elements yourself, t
 
 If you find yourself needing even more control over the process of importing block-shaped design files, each of the functions is available for users to call themselves. So you can run the steps manually, first reading with `read_blocks`, pasting as needed with `paste_blocks`, transforming to tidy with `trans_block_to_wide` and `trans_wide_to_tidy`, and finally separating design elements with `separate_tidys`.
 
-### Importing tidy-shaped design files
+## Importing tidy-shaped design files
 Just like measures data, to import tidy-shaped designs you could use the built-in`R`functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
 Once these design elements have been read into the `R` environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging spectrophotometric and design data]** section.
 
-## Generating designs in R
+# Generating designs in R
 If you'd rather make your design data.frames in R, `gcplyr` has a helper function that makes it easy to do so: `make_design`. `make_design` can create:
 
 * block-shaped data.frames with your design information (e.g. for outputting to files)
 * tidy-shaped data.frames with your design information (e.g. for merging with tidy-shaped plate reader data)
 
-### An example with a single design
+## An example with a single design
 
 Let's start with a simple example demonstrating the basic use of `make_design` (we'll move on to more complicated designs afterwards).
 
@@ -212,7 +214,7 @@ my_design_blk
 
 We can see that `make_design` has created a block-shaped `data.frame` containing the design elements as requested, and has attached a `metadata` containing the `block_name` (this is useful for later transformation to tidy-shaped, or if you're generating multiple design elements).
 
-### A few notes on the pattern
+## A few notes on the pattern
 One of the most important elements of every argument passed to `make_design` is the string or vector specifying the pattern of values. 
 
 Oftentimes, it will be most convenient to simply use single-characters to correspond to the values. This is the default behavior of `make_design`, which splits the pattern string into individual characters, and then uses those characters to correspond to the indices of the values you provided.
@@ -281,7 +283,7 @@ my_design_blk <- make_design(
 )
 ```
 
-### Continuing with the example: multiple designs
+## Continuing with the example: multiple designs
 Now let's return to our example growth curve experiment. Imagine that now, *in addition* to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
 
 Row names | Column 1 | Column 2 | Column 3 | ... | Column 11 | Column 12
@@ -405,12 +407,12 @@ my_design_tdy <- make_design(
 head(my_design_tdy, 20)
 ```
 
-### Saving designs to files
+## Saving designs to files
 Often after generating designs in `R` with `make_design`, you'll want to save those designs to files. This might be so that human-readable files documenting your designs are available without opening `R`. Or perhaps it's because you need to post the design files, for instance to Dryad as part of a manuscript submission.
 
 If you'd like to save your designs to files, you can save them either tidy-shaped or block-shaped. Both formats can easily be read back into `R` by `gcplyr`.
 
-#### Saving tidy-shaped designs
+### Saving tidy-shaped designs
 These design files will be less human-readable, but easier to import and merge. Additionally, tidy-shaped files are often better for data repositories, like Dryad. To save tidy-shaped designs, simply use the built-in `write.csv` function.
 
 ```{r}
@@ -419,13 +421,13 @@ write.csv(x = my_design_tdy, file = "tidy_design.csv",
           row.names = FALSE)
 ```
 
-#### Saving block-shaped designs
+### Saving block-shaped designs
 These design files will be more human-readable but require slightly more computational steps to import and merge. For these, use the `gcplyr` function `write_blocks`. Typically, you'll use `write_blocks` to save files in one of two formats:
 
 * `multiple` - each block will be saved to its own `.csv` file
 * `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
 
-##### Saving block-shaped designs to multiple files
+#### Saving block-shaped designs to multiple files
 
 
 The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block.
@@ -440,7 +442,7 @@ print_df(read.csv("Bacteria.csv", header = FALSE, colClasses = "character"))
 print_df(read.csv("Media.csv", header = FALSE, colClasses = "character"))
 ```
 
-##### Saving block-shaped designs to a single file
+#### Saving block-shaped designs to a single file
 
 
 The other setting for `write_blocks` is `output_format = 'single'`. This creates a single `csv` file that contains all the blocks, putting metadata like `block_names` in rows that precede each block.
@@ -457,7 +459,7 @@ print_df(read.csv("Design.csv", header = FALSE, colClasses = "character"))
 
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
 
-#### Best practices for saving designs to files
+### Best practices for saving designs to files
 It's best to leave the `make_design` and `write_blocks` commands in your analysis script, so that every time your analysis is run your design files are kept up to date. Just note that if your `make_design` command has `output_format = blocks`, you'll need to make a version where `output_format = tidy` that you can `merge_dfs` with your plate reader data.
 
 # Merging spectrophotometric and design data
@@ -534,10 +536,10 @@ head(ex_dat_mrg)
 
 Now that you've merged your data and designs, you can pre-process and plot your data
 
-1. Introduction
-2. Importing & transforming data
-3. **Incorporating design information**
-4. Pre-processing and plotting your data
-5. Processing your data
-6. Analyzing your data
-7. Statistics, merging other data, and other resources
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. **Pre-processing and plotting your data: `vignette("preprocess_plot")`**
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+7. Statistics, merging other data, and other resources: `vignette("conclusion")`

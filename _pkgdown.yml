@@ -61,7 +61,14 @@ reference:
   - uninterleave
   - to_excel
   - from_excel
-  
+- title: Example data
+  desc: "Example wide-shaped data.frames of growth curves data"
+  - example_widedata
+  - example_widedata_noiseless
+- title: Legacy functions
+  desc: "These functions have been deprecated"
+  - make_tidydesign
+  - block_tidydesign
   
   
   

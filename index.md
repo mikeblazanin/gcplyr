@@ -50,13 +50,13 @@ The best way to get started is to read through the articles series,
 which breaks down a typical workflow using `gcplyr` from start to
 finish:
 
-1.  vignette(“gcplyr”)
-2.  vignette(“import_transform”)
-3.  vignette(“incorporate_designs”)
-4.  vignette(“preprocess_plot”)
-5.  vignette(“process”)
-6.  vignette(“analyze”)
-7.  vignette(“conclusion”)
+1.  `vignette("gcplyr")`
+2.  `vignette("import_transform")`
+3.  `vignette("incorporate_designs")`
+4.  `vignette("preprocess_plot")`
+5.  `vignette("process")`
+6.  `vignette("analyze")`
+7.  `vignette("conclusion")`
 
 ## Citation
 

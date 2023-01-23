@@ -1435,6 +1435,12 @@ read_tidys <- function(files, extension = NULL,
 #'              
 #'              See help for \code{read_blocks} for more details
 #'              
+#' @return If \code{num_plates = 1}, a wide-shaped \code{data.frame}
+#'         containing the measures data.
+#'         
+#'         if \code{num_plates} is greater than one, a list of 
+#'         \code{data.frame}'s, where each \code{data.frame} is wide-shaped.
+#'              
 #' @export       
 import_blockmeasures <- function(files, num_plates = 1, 
                                  plate_names = NULL,
@@ -1504,6 +1510,9 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              Note that \code{import_blockdesigns} cannot currently handle
 #'              metadata specified via the \code{metadata} argument of
 #'              \code{read_blocks}
+#'              
+#' @return A tidy-shaped \code{data.frame} containing the design information
+#'         from \code{files}
 #' 
 #' @export
 import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
@@ -1634,6 +1643,22 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
 #'
+#' @return Depends on \code{output_format}:
+#' 
+#'         If \code{output_format = "blocks"}, a list of \code{data.frame}'s
+#'         where each \code{data.frame} is block-shaped containing the
+#'         information for a single design element
+#'         
+#'         If \code{output_format = "blocks_pasted"}, a single 
+#'         \code{data.frame} containing the \code{paste}-ed information
+#'         for all design elements
+#'         
+#'         If \code{output_format = "wide"}, a wide-shaped \code{data.frame}
+#'         containing all the design elements
+#'         
+#'         If \code{output_format = "tidy"}, a tidy-shaped \code{data.frame}
+#'         containing all the design elements
+#'         
 #' @examples
 #' make_design(nrows = 8, ncols = 12,
 #'             design_element_name = list(c("A", "B", "C"),
@@ -1816,6 +1841,8 @@ make_design <- function(nrows = NULL, ncols = NULL,
 #' @param pattern Numeric pattern itself, where numbers refer to entries
 #'                in \code{values}
 #' @param byrow Boolean for whether pattern should be created by row
+#' 
+#' @return \code{list(values, rows, cols, pattern, byrow)}
 #' 
 #' @export
 make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
@@ -2507,10 +2534,11 @@ trans_tidy_to_wide <- function() {
 
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 
-#' This function is essentially a wrapper for dplyr::full_join
+#' This function is essentially a wrapper for \code{dplyr::full_join}
 #' The most typical use of this function is to merge designs 
 #' with measures data, or to use the collapse functionality of this 
-#' function to merge a list of dataframes into a single dataframe 
+#' function to merge a list of dataframes into a single dataframe.
+#' Merging is done by column-names that match between \code{x} and \code{y}.
 #'  
 #' @param x First data.frame, or list of data frames, to be joined
 #' @param y Second data.frame, or list of data frames, to be joined
@@ -3538,6 +3566,15 @@ find_local_extrema <- function(y, x = NULL,
 #' @param return_endpoints Should the first or last value in \code{y}
 #'                         be allowed to be returned?
 #' @param ... Other parameters to pass to \code{find_local_extrema}
+#' 
+#' @return If \code{return = "index"}, a vector of indices corresponding 
+#'           to local extrema in the data
+#'           
+#'         If \code{return = "x"}, a vector of x values corresponding
+#'           to local extrema in the data
+#'          
+#'         If \code{return = "y"}, a vector of y values corresponding
+#'           to local extrema in the data
 #' 
 #' @details 
 #' If none of \code{window_width}, \code{window_width_n}, or 

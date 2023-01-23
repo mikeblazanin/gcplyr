@@ -14,6 +14,7 @@ Description: Easy import, manipulation, and model-free analysis of
     processing steps, like smoothing and calculating derivatives, and
     facilitates model-free characterization and analysis of growth data.
 License: MIT + file LICENSE
+URL: https://mikeblazanin.github.io/gcplyr, https://github.com/mikeblazanin/gcplyr
 Depends: 
     R (>= 2.10)
 Imports:

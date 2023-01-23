@@ -29,6 +29,7 @@
 #' @param needed_name What the desired length corresponds to (e.g. number of files)
 #' @return The values of \code{input} coerced to a vector of length \code{needed_len}
 #' 
+#' @noRd
 checkdim_inputs <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
   if (length(input) != needed_len) {
@@ -149,6 +150,7 @@ from_excel <- function(x) {
 #' 
 #' @return The output of \code{FUN} operating on arguments in \code{...}
 #' 
+#' @noRd
 dots_parser <- function(FUN, ...) {
   argnames <- names(formals(FUN))
   dots <- list(...)
@@ -162,6 +164,7 @@ dots_parser <- function(FUN, ...) {
 #' @return TRUE or FALSE whether the blocks contain metadata
 #'         (also passes warning when inferring, or error when unable to)
 #' 
+#' @noRd
 infer_block_metadata <- function(blocks) {
   #Infer nestedness if nested_metadata is set to NULL
   if (all(sapply(blocks, simplify = TRUE, FUN = class) == "data.frame")) {
@@ -187,6 +190,7 @@ infer_block_metadata <- function(blocks) {
 #' @return vector of characters not found in the blocks that can be used
 #'         as a separator without issue (or error if none can be found)
 #' 
+#' @noRd
 sep_finder <- function(blocks, nested_metadata = NULL) {
   if (is.null(nested_metadata)) {
     nested_metadata <- infer_block_metadata(blocks)
@@ -232,6 +236,7 @@ sep_finder <- function(blocks, nested_metadata = NULL) {
 #' @return TRUE if \code{x} is numeric or can be converted to numeric without
 #'         warnings. Otherwise, FALSE
 #' 
+#' @noRd
 canbe.numeric <- function(x) {
   if(is.numeric(x) | 
      tryCatch(
@@ -264,6 +269,7 @@ canbe.numeric <- function(x) {
 #'                            vector of indices where NA's were removed
 #'                            (NULL when none were removed)
 #' 
+#' @noRd
 rm_nas <- function(x = NULL, y = NULL, na.rm, stopifNA = FALSE) {
   if(is.null(x) & is.null(y)) {}
   
@@ -316,6 +322,8 @@ rm_nas <- function(x = NULL, y = NULL, na.rm, stopifNA = FALSE) {
 #' @return A list containing: x with NA's added
 #' 
 #'                            y with NA's added
+#' 
+#' @noRd
 add_nas <- function(x, y = NULL, nas_indices_removed) {
   if(!is.null(nas_indices_removed)) {
     if(!is.null(y) & length(x) != length(y)) {
@@ -360,6 +368,7 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
 #'                            
 #'     \code{return[["y"]][order(return[["order"]])] == y}
 #' 
+#' @noRd
 reorder_xy <- function(x = NULL, y) {
   if(!is.null(x)) {
     #Save orig order info so we can put things back at the end
@@ -400,7 +409,8 @@ reorder_xy <- function(x = NULL, y) {
 #'                only a single data-point, counting as both a max and a min
 #' @return A list of vectors, where each vector contains the indices
 #'         of the data in the window centered at that point
-#'         
+#'      
+#' @noRd   
 get_windows <- function(x, y, window_width_n = NULL, window_width = NULL, 
                         window_height = NULL, edge_NA, 
                         force_height_multi_n = FALSE) {
@@ -498,6 +508,7 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
 #' 
 #' @return a list: list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)
 #' 
+#' @noRd
 infer_names <- function(df,
                         startrow, endrow, startcol, endcol,
                         header, sider) {
@@ -1832,6 +1843,7 @@ make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
 #'         And [[2]] is the updated \code{rs} to be used for subsequent
 #'         calls to \code{fill_data_metadata}
 #' 
+#' @noRd
 fill_data_metadata <- function(output, input, rs, 
                                metadata_include = 1:length(input$metadata)) {
   data <- input$data
@@ -2309,6 +2321,7 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "",
 #' @return A list of block data.frames (if \code{collapse} is not 
 #'         \code{NULL} the list is of length 1)
 #' 
+#' @noRd
 trans_wide_to_block <- function(wides, collapse = NULL,
                              wellnames_sep = "_") {
   
@@ -2487,6 +2500,7 @@ trans_wide_to_tidy <- function(wides,
 
 #' Transform tidy dfs into wide (in progress)
 #' 
+#' @noRd
 trans_tidy_to_wide <- function() {
   
 }
@@ -4056,6 +4070,7 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 #' @return A list of blockdesign data.frames (if \code{collapse} is not
 #'         \code{NULL} the list is of length 1
 #'
+#' @export
 block_tidydesign <- function(tidydesign, collapse = NULL,
                              wellnames_sep = "_", wellnames_colname = "Well") {
   #Deprecated in v0.10.2

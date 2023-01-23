@@ -8,7 +8,7 @@ authors:
     
 navbar:
   structure:
-    left: [intro, articles, reference]
+    left: [intro, articles, reference, news]
 
 articles:
 - title: Articles

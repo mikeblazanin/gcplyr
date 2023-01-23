@@ -25,19 +25,6 @@ navbar:
         href: articles/analyze.html
       - text: Statistics, merging other data, and other resources
         href: articles/conclusion.html
-      
-
-articles:
-- title: Articles
-  navbar: ~
-  contents:
-  - gcplyr
-  - import_transform
-  - incorporate_designs
-  - preprocess_plot
-  - process
-  - analyze
-  - conclusion
   
 reference:
 - title: Reading files

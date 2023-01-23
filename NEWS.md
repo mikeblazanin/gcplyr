@@ -1,26 +1,22 @@
-# gcplyr 0.11.2.9000 (development)
+# gcplyr 0.12
 
-* gcplyr-workflow vignette was split into multiple smaller vignettes, with only small changes to content 
+* There is a new citation. Run citation("gcplyr") to see the new version
 
-* moving average now accepts window_width (and maintains use of window_width_n)
+* smooth_data methods moving-average and moving-median now accept a new smoothing parameter: window_width
 
-* moving median now accepts window_width (and maintains use of window_width_n)
+* find_local_extrema now has arguments window_width, window_width_n, and window_height (for naming consistency with smooth_data and calc_deriv arguments). Arguments width_limit, width_limit_n, and height_limit have been deprecated.
 
-* calc derivs now accepts window_width, window_width_n
+* calc_deriv can now calculate derivatives using a linear fit over multiple data points determined by arguments window_width and/or window_width_n. For per-capita derivatives, y-values can be fit as-supplied and divided by the mid-point y-value, or can be fit after log-transformation
 
-* calc_derivs can now fit on log transformed y vals
+* The gcplyr-workflow vignette was split into multiple smaller vignettes
 
-* find_local_extrema efficiency upgrade
+* A new data.frame is included with gcplyr: example_data_noiseless. This data is the same as example_data but does not include any of the simulated noise present in example_data.
 
-* find_local_extrema now uses window_width, window_width_n, and window_height arguments (width_limit, width_limit_n, and height_limit are deprecated)
+* Some small numerical changes to example_data values occurred on re-generation of example_data.
 
-*mgcv and readxl are now suggested, but not required, for use
+* Packages mgcv and readxl are now Suggests (previously they were Imports), with errors thrown when they are not installed but are required for gcplyr functionality
 
-*new citation format
-
-*example_data_noiseless
-
-*unavoidable changes to example_data
+* find_local_extrema is now much faster
 
 # gcplyr 0.11.2
 

@@ -38,11 +38,12 @@
 <li class="nav-item">
   <a class="nav-link" href="../articles/gcplyr.html">Get started</a>
 </li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/gcplyr.html">Introduction</a>
     <a class="dropdown-item" href="../articles/import_transform.html">Importing and transforming data</a>
+    <a class="dropdown-item" href="../articles/incorporate_designs.html">Incorporating design information</a>
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/analyze.html">Analyzing data</a>
@@ -91,17 +92,30 @@ Blazanin</h4>
     
     
 <div class="section level2">
-<h2 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
+<h2 id="where-are-we-so-far">Where are we so far?<a class="anchor" aria-label="anchor" href="#where-are-we-so-far"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li>Introduction</li>
-<li>Importing and transforming data</li>
-<li><strong>Incorporating design information</strong></li>
-<li>Pre-processing and plotting your data</li>
-<li>Processing your data</li>
-<li>Analyzing your data</li>
-<li>Statistics, merging other data, and other resources</li>
+<li>Introduction: <code><a href="../articles/gcplyr.html">vignette("gcplyr")</a></code>
+</li>
+<li>Importing and transforming data:
+<code><a href="../articles/import_transform.html">vignette("import_transform")</a></code>
+</li>
+<li><strong>Incorporating design information:
+<code><a href="../articles/incorporate_designs.html">vignette("incorporate_designs")</a></code></strong></li>
+<li>Pre-processing and plotting your data:
+<code><a href="../articles/preprocess_plot.html">vignette("preprocess_plot")</a></code>
+</li>
+<li>Processing your data: <code><a href="../articles/process.html">vignette("process")</a></code>
+</li>
+<li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
+</li>
+<li>Statistics, merging other data, and other resources:
+<code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
+</li>
 </ol>
+<p>So far, we’ve imported and transformed our measures data into
+<code>R</code>. Now we’re going to address how to incorporate some
+design information on what went into each well (and plate).</p>
 <p>If you haven’t already, load the necessary packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr">gcplyr</a></span><span class="op">)</span></span>
@@ -1270,13 +1284,23 @@ example_data_merged:</p>
 <p>Now that you’ve merged your data and designs, you can pre-process and
 plot your data</p>
 <ol style="list-style-type: decimal">
-<li>Introduction</li>
-<li>Importing and transforming data</li>
-<li><strong>Incorporating design information</strong></li>
-<li>Pre-processing and plotting your data</li>
-<li>Processing your data</li>
-<li>Analyzing your data</li>
-<li>Statistics, merging other data, and other resources</li>
+<li>Introduction: <code><a href="../articles/gcplyr.html">vignette("gcplyr")</a></code>
+</li>
+<li>Importing and transforming data:
+<code><a href="../articles/import_transform.html">vignette("import_transform")</a></code>
+</li>
+<li>Incorporating design information:
+<code><a href="../articles/incorporate_designs.html">vignette("incorporate_designs")</a></code> <strong>4. Pre-processing
+and plotting your data:
+<code><a href="../articles/preprocess_plot.html">vignette("preprocess_plot")</a></code></strong>
+</li>
+<li>Processing your data: <code><a href="../articles/process.html">vignette("process")</a></code>
+</li>
+<li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
+</li>
+<li>Statistics, merging other data, and other resources:
+<code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
+</li>
 </ol>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

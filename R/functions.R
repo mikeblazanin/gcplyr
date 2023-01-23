@@ -2190,7 +2190,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
 trans_block_to_wide <- function(blocks, wellnames_sep = "", 
                          nested_metadata = NULL, colnames_first = FALSE) {
   
-  if(class(blocks) != "list") {
+  if(!is.list(blocks)) {
     blocks <- list(blocks)
   }
   

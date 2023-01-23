@@ -11,6 +11,9 @@ JOSS
 R CMD build --no-build-vignettes
 R CMD check --no-build-vignettes --no-tests
 (run R CMD check --help for more options)
+Alternatively:
+  install current version with devtools::install() or Ctrl+Shift+B
+  OR devtools::build_rmd("vignettes/my-vignette.Rmd")
 
 #Every new version
 1. Save & commit all changes to code

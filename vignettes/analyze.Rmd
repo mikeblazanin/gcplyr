@@ -1,7 +1,6 @@
 ---
 title: "Analyzing data"
 author: "Mike Blazanin"
-date: "`r Sys.Date()`"
 output: 
   pdf_document:
     toc: true

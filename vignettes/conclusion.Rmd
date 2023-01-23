@@ -1,7 +1,6 @@
 ---
 title: "Statistics, merging other data, and other resources"
 author: "Mike Blazanin"
-date: "`r Sys.Date()`"
 output: 
   pdf_document:
     toc: true

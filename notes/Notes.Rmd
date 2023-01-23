@@ -30,7 +30,8 @@ R CMD check --no-build-vignettes --no-tests
 14. git push
 15. git checkout develop
 16. Update DESCRIPTION to development version number (add .9000 at end of previous version)
-17. Add new release on GitHub
+17. Add new header to NEWS.md for development version number
+18. Add new release on GitHub
 
 
 #Managing master & develop branches:

@@ -69,4 +69,4 @@ There are seven vignettes that walk through a typical `gcplyr` workflow:
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 0.11.2.9000
+data.’ R package version 0.12

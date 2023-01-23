@@ -1,6 +1,6 @@
-# gcplyr 0.12.9000
+# gcplyr 0.12.1
 
-* ITEMS HERE
+* Minor bug fixes
 
 # gcplyr 0.12
 

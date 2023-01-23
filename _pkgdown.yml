@@ -2,3 +2,14 @@ url: https://mikeblazanin.github.io/gcplyr/
 template:
   bootstrap: 5
 
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - introduction
+  - import_transform
+  - incorporate_designs
+  - preprocess_plot
+  - process
+  - analyze
+  - conclusion

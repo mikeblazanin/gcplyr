@@ -222,9 +222,10 @@ skip the primer in the next section.</strong> If you’re not familiar
 yet, don’t worry! Continue to the next section, where I provide a primer
 that will teach you all you need to know on using <code>summarize</code>
 with <code>gcplyr</code> functions.</p>
-<div class="section level3">
-<h3 id="another-brief-primer-on-dplyr-summarize">Another brief primer on dplyr: summarize<a class="anchor" aria-label="anchor" href="#another-brief-primer-on-dplyr-summarize"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="another-brief-primer-on-dplyr-summarize">Another brief primer on dplyr: summarize<a class="anchor" aria-label="anchor" href="#another-brief-primer-on-dplyr-summarize"></a>
+</h2>
 <p>Here we’re going to focus on the <code>summarize</code> function from
 <code>dplyr</code>, which <em>must</em> be used with the
 <code>group_by</code> function we covered in our first primer:
@@ -255,10 +256,10 @@ documentation and examples of its own online. Feel free to explore them
 as desired, but this primer and the coming example should be sufficient
 to use the remaining <code>gcplyr</code> functions.</p>
 </div>
-<div class="section level3">
-<h3 id="summarizing-with-simple-base-functions-maximum-and-minimum-density">Summarizing with simple base functions: maximum and minimum
+<div class="section level2">
+<h2 id="summarizing-with-simple-base-functions-maximum-and-minimum-density">Summarizing with simple base functions: maximum and minimum
 density<a class="anchor" aria-label="anchor" href="#summarizing-with-simple-base-functions-maximum-and-minimum-density"></a>
-</h3>
+</h2>
 <p>One of the most common steps is calculating global maxima and minima
 of data. For instance, with bacterial growth, maximum density is one of
 the most commonly measured traits. Here, we’ll show how to find it using
@@ -353,9 +354,9 @@ line or vertical line on top of our original growth curves data with the
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
 <p><img src="analyze_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
-<div class="section level3">
-<h3 id="summarizing-with-simple-gcplyr-functions-area-under-the-curve">Summarizing with simple gcplyr functions: area under the curve<a class="anchor" aria-label="anchor" href="#summarizing-with-simple-gcplyr-functions-area-under-the-curve"></a>
-</h3>
+<div class="section level2">
+<h2 id="summarizing-with-simple-gcplyr-functions-area-under-the-curve">Summarizing with simple gcplyr functions: area under the curve<a class="anchor" aria-label="anchor" href="#summarizing-with-simple-gcplyr-functions-area-under-the-curve"></a>
+</h2>
 <p>One common metric of growth curves is the total area under the curve.
 <code>gcplyr</code> has an <code>auc</code> function to easily calculate
 this area. Just like <code>min</code> and <code>max</code>, it needs to
@@ -383,9 +384,9 @@ a column titled <code>auc</code>.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5    <span style="text-decoration: underline;">73</span>257 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11   <span style="text-decoration: underline;">26</span>149.</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="summarizing-on-subsets-maximum-growth-rate">Summarizing on subsets: maximum growth rate<a class="anchor" aria-label="anchor" href="#summarizing-on-subsets-maximum-growth-rate"></a>
-</h3>
+<div class="section level2">
+<h2 id="summarizing-on-subsets-maximum-growth-rate">Summarizing on subsets: maximum growth rate<a class="anchor" aria-label="anchor" href="#summarizing-on-subsets-maximum-growth-rate"></a>
+</h2>
 <p>Sometimes, we need to provide limits on the data passed to our simple
 functions. We can demonstrate this in the process of calculating one of
 the most common metrics we want to identify: the maximum per-capita
@@ -518,10 +519,10 @@ growth rate of just the subset</strong> of data points where OD is above
 <span><span class="co">#&gt; Warning: Removed 3 rows containing missing values (`geom_point()`).</span></span></code></pre></div>
 <p><img src="analyze_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
-<div class="section level3">
-<h3 id="finding-local-extrema-peak-density-maximum-growth-rate-lag-time-and-diauxic-shifts">Finding local extrema: peak density, maximum growth rate, lag time,
+<div class="section level2">
+<h2 id="finding-local-extrema-peak-density-maximum-growth-rate-lag-time-and-diauxic-shifts">Finding local extrema: peak density, maximum growth rate, lag time,
 and diauxic shifts<a class="anchor" aria-label="anchor" href="#finding-local-extrema-peak-density-maximum-growth-rate-lag-time-and-diauxic-shifts"></a>
-</h3>
+</h2>
 <p>We’ve previously shown how you can use <code>max</code> and
 <code>min</code> to find the global maxima and minima in data. However,
 what about <em>local</em> maxima or minima? That is, peaks and valleys
@@ -530,10 +531,10 @@ the entire time series. In this section, we’ll show how you can use the
 <code>gcplyr</code> functions <code>first_peak</code> and
 <code>find_local_extrema</code> to find points that are local maxima or
 minima in your data.</p>
-<div class="section level4">
-<h4 id="finding-the-first-peak-peak-density-maximum-growth-rate-and-lag-time">Finding the first peak: peak density, maximum growth rate, and lag
+<div class="section level3">
+<h3 id="finding-the-first-peak-peak-density-maximum-growth-rate-and-lag-time">Finding the first peak: peak density, maximum growth rate, and lag
 time<a class="anchor" aria-label="anchor" href="#finding-the-first-peak-peak-density-maximum-growth-rate-and-lag-time"></a>
-</h4>
+</h3>
 <p>One particular special case we’re often interested in is the first
 peak in some set of data. For instance, when bacteria are grown with
 phages, the density they reach before they start declining due to phage
@@ -542,9 +543,9 @@ Alternatively, in the previous section we found the global maximum
 per-capita growth rate, but some of these maxima happened after
 near-extinction and recovery. What if we wanted to find the peak growth
 rate before near-extinction?</p>
-<div class="section level5">
-<h5 id="peak-density">Peak density<a class="anchor" aria-label="anchor" href="#peak-density"></a>
-</h5>
+<div class="section level4">
+<h4 id="peak-density">Peak density<a class="anchor" aria-label="anchor" href="#peak-density"></a>
+</h4>
 <p>Let’s start with the former example: finding the peak of density.</p>
 <p>To identify the first peak, we can use the <code>gcplyr</code>
 function <code>first_peak</code>. <code>first_peak</code> simply
@@ -648,9 +649,9 @@ it works in units of seconds). Let’s try that:</p>
 <p><img src="analyze_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <p>That worked great!</p>
 </div>
-<div class="section level5">
-<h5 id="maximum-growth-rate-and-lag-time">Maximum growth rate and lag time<a class="anchor" aria-label="anchor" href="#maximum-growth-rate-and-lag-time"></a>
-</h5>
+<div class="section level4">
+<h4 id="maximum-growth-rate-and-lag-time">Maximum growth rate and lag time<a class="anchor" aria-label="anchor" href="#maximum-growth-rate-and-lag-time"></a>
+</h4>
 <p>Now let’s look at the other example: using <code>first_peak</code> to
 find the first peak in per-capita growth rate to find both the maximum
 growth rate and the lag time. As we did earlier, we’ll limit our
@@ -701,9 +702,9 @@ peak? In the next section, we’ll learn how to use
 extrema.</p>
 </div>
 </div>
-<div class="section level4">
-<h4 id="finding-any-kind-of-local-extrema-diauxic-shifts">Finding any kind of local extrema: diauxic shifts<a class="anchor" aria-label="anchor" href="#finding-any-kind-of-local-extrema-diauxic-shifts"></a>
-</h4>
+<div class="section level3">
+<h3 id="finding-any-kind-of-local-extrema-diauxic-shifts">Finding any kind of local extrema: diauxic shifts<a class="anchor" aria-label="anchor" href="#finding-any-kind-of-local-extrema-diauxic-shifts"></a>
+</h3>
 <p>We’ve seen how <code>first_peak</code> can be used to identify the
 first peak in data. But what about other kinds of local extrema? The
 first minimum? The <em>second</em> peak?</p>
@@ -803,9 +804,9 @@ Then, we can get the <code>smoothed</code> value at that index:</p>
 easily quantified and can be visualized exactly where the shift
 occurs.</p>
 </div>
-<div class="section level4">
-<h4 id="combining-subsets-and-local-extrema-diauxic-growth-rate">Combining subsets and local extrema: diauxic growth rate<a class="anchor" aria-label="anchor" href="#combining-subsets-and-local-extrema-diauxic-growth-rate"></a>
-</h4>
+<div class="section level3">
+<h3 id="combining-subsets-and-local-extrema-diauxic-growth-rate">Combining subsets and local extrema: diauxic growth rate<a class="anchor" aria-label="anchor" href="#combining-subsets-and-local-extrema-diauxic-growth-rate"></a>
+</h3>
 <p>In the previous section we identified when the bacteria shifted into
 their second burst of growth. Can we find out what the peak per-capita
 growth rate was during that second burst? Yes, we just have to put
@@ -843,19 +844,19 @@ shift:</p>
 <p><img src="analyze_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="finding-threshold-crossings-extinction-time-and-time-to-density">Finding threshold-crossings: extinction time and time to
+<div class="section level2">
+<h2 id="finding-threshold-crossings-extinction-time-and-time-to-density">Finding threshold-crossings: extinction time and time to
 density<a class="anchor" aria-label="anchor" href="#finding-threshold-crossings-extinction-time-and-time-to-density"></a>
-</h3>
+</h2>
 <p>We’ve previously shown how you can find local and global extrema in
 data, but what if you just want to find when the data passes some
 threshold value? In this section, we’ll show how you can use the
 <code>gcplyr</code> functions <code>first_below</code> and
 <code>find_threshold_crosses</code> to find the points when your data
 crosses user-defined thresholds.</p>
-<div class="section level4">
-<h4 id="finding-the-first-point-below-a-threshold-extinction-time">Finding the first point below a threshold: extinction time<a class="anchor" aria-label="anchor" href="#finding-the-first-point-below-a-threshold-extinction-time"></a>
-</h4>
+<div class="section level3">
+<h3 id="finding-the-first-point-below-a-threshold-extinction-time">Finding the first point below a threshold: extinction time<a class="anchor" aria-label="anchor" href="#finding-the-first-point-below-a-threshold-extinction-time"></a>
+</h3>
 <p>One common case of threshold-crossing we might be interested in is
 the first point that our data falls below some threshold density. For
 instance, when bacteria are grown with phages, the amount of time it
@@ -916,9 +917,9 @@ above to below it.</p>
 that threshold, and the plot clearly shows that it’s right where we’d
 expect it.</p>
 </div>
-<div class="section level4">
-<h4 id="finding-any-kind-of-threshold-crossing-time-to-density">Finding any kind of threshold-crossing: time to density<a class="anchor" aria-label="anchor" href="#finding-any-kind-of-threshold-crossing-time-to-density"></a>
-</h4>
+<div class="section level3">
+<h3 id="finding-any-kind-of-threshold-crossing-time-to-density">Finding any kind of threshold-crossing: time to density<a class="anchor" aria-label="anchor" href="#finding-any-kind-of-threshold-crossing-time-to-density"></a>
+</h3>
 <p>We’ve seen how <code>first_below</code> can be used to identify the
 first point some data crosses below a threshold. But what about other
 kinds of threshold-crossing events? The first point it passes above a
@@ -988,7 +989,6 @@ have an <code>NA</code> value for <code>time_to_05</code>. By comparing
 the times it took each strain to reach an absorbance of 0.1, we could
 learn something about how soon the bacteria started growing and how
 quickly they grew.</p>
-</div>
 </div>
 </div>
 <div class="section level2">

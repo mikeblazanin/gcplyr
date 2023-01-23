@@ -143,9 +143,10 @@ in two ways:</p>
 <code>make_design</code>
 </li>
 </ol>
-<div class="section level3">
-<h3 id="reading-design-elements-from-files">Reading design elements from files<a class="anchor" aria-label="anchor" href="#reading-design-elements-from-files"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="reading-design-elements-from-files">Reading design elements from files<a class="anchor" aria-label="anchor" href="#reading-design-elements-from-files"></a>
+</h2>
 <p>Users have two options for how to read design elements from files,
 depending on the shape of the design files that they have created:</p>
 <ul>
@@ -156,9 +157,9 @@ depending on the shape of the design files that they have created:</p>
 <code>read_tidys</code>
 </li>
 </ul>
-<div class="section level4">
-<h4 id="importing-block-shaped-design-files">Importing block-shaped design files<a class="anchor" aria-label="anchor" href="#importing-block-shaped-design-files"></a>
-</h4>
+<div class="section level3">
+<h3 id="importing-block-shaped-design-files">Importing block-shaped design files<a class="anchor" aria-label="anchor" href="#importing-block-shaped-design-files"></a>
+</h3>
 <p>To import block-shaped design files, you can use the
 <code>import_blockdesigns</code> function, which will return a
 tidy-shaped designs data frame (or list of data frames).</p>
@@ -167,9 +168,9 @@ tidy-shaped designs data frame (or list of data frames).</p>
 frames) in a <strong>tidy format</strong> that you can save in R. That’s
 right, it reads in block-shaped designs but returns a tidy-shaped data
 frame!</p>
-<div class="section level5">
-<h5 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
-</h5>
+<div class="section level4">
+<h4 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
+</h4>
 <p>Let’s take a look at an example. First, we need to create an example
 file for the sake of this tutorial. <strong>Don’t worry how the below
 code works</strong>, just imagine that you’ve created this file in
@@ -225,9 +226,9 @@ will automatically name it according to the file name.</p>
 <span><span class="co">#&gt; 19   B7               Tr2</span></span>
 <span><span class="co">#&gt; 20   B8               Tr2</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="importing-multiple-block-shaped-design-elements">Importing multiple block-shaped design elements<a class="anchor" aria-label="anchor" href="#importing-multiple-block-shaped-design-elements"></a>
-</h5>
+<div class="section level4">
+<h4 id="importing-multiple-block-shaped-design-elements">Importing multiple block-shaped design elements<a class="anchor" aria-label="anchor" href="#importing-multiple-block-shaped-design-elements"></a>
+</h4>
 <p>What do you do if you have multiple design components? For instance,
 what if you have several different bacterial strains each with several
 different treatments? In that case, simply save each design component as
@@ -289,9 +290,9 @@ will automatically name it according to the file name.</p>
 <span><span class="co">#&gt; 19   B7               Tr2           StrA</span></span>
 <span><span class="co">#&gt; 20   B8               Tr2           StrA</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="notes-for-more-advanced-use">Notes for more advanced use<a class="anchor" aria-label="anchor" href="#notes-for-more-advanced-use"></a>
-</h5>
+<div class="section level4">
+<h4 id="notes-for-more-advanced-use">Notes for more advanced use<a class="anchor" aria-label="anchor" href="#notes-for-more-advanced-use"></a>
+</h4>
 <p>Note that <code>import_blockdesigns</code> is essentially a wrapper
 function that calls <code>read_blocks</code>, <code>paste_blocks</code>,
 <code>trans_block_to_wide</code>, <code>trans_wide_to_tidy</code>, and
@@ -316,9 +317,9 @@ and finally separating design elements with
 <code>separate_tidys</code>.</p>
 </div>
 </div>
-<div class="section level4">
-<h4 id="importing-tidy-shaped-design-files">Importing tidy-shaped design files<a class="anchor" aria-label="anchor" href="#importing-tidy-shaped-design-files"></a>
-</h4>
+<div class="section level3">
+<h3 id="importing-tidy-shaped-design-files">Importing tidy-shaped design files<a class="anchor" aria-label="anchor" href="#importing-tidy-shaped-design-files"></a>
+</h3>
 <p>Just like measures data, to import tidy-shaped designs you could use
 the built-in<code>R</code>functions like <code>read.table</code>.
 However, if you need a few more options, you can use the
@@ -337,9 +338,9 @@ learning how to merge them with your data in the <strong><a href="#merging-spect
 spectrophotometric and design data</a></strong> section.</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="generating-designs-in-r">Generating designs in R<a class="anchor" aria-label="anchor" href="#generating-designs-in-r"></a>
-</h3>
+<div class="section level2">
+<h2 id="generating-designs-in-r">Generating designs in R<a class="anchor" aria-label="anchor" href="#generating-designs-in-r"></a>
+</h2>
 <p>If you’d rather make your design data.frames in R,
 <code>gcplyr</code> has a helper function that makes it easy to do so:
 <code>make_design</code>. <code>make_design</code> can create:</p>
@@ -349,9 +350,9 @@ outputting to files)</li>
 <li>tidy-shaped data.frames with your design information (e.g. for
 merging with tidy-shaped plate reader data)</li>
 </ul>
-<div class="section level4">
-<h4 id="an-example-with-a-single-design">An example with a single design<a class="anchor" aria-label="anchor" href="#an-example-with-a-single-design"></a>
-</h4>
+<div class="section level3">
+<h3 id="an-example-with-a-single-design">An example with a single design<a class="anchor" aria-label="anchor" href="#an-example-with-a-single-design"></a>
+</h3>
 <p>Let’s start with a simple example demonstrating the basic use of
 <code>make_design</code> (we’ll move on to more complicated designs
 afterwards).</p>
@@ -517,9 +518,9 @@ has attached a <code>metadata</code> containing the
 <code>block_name</code> (this is useful for later transformation to
 tidy-shaped, or if you’re generating multiple design elements).</p>
 </div>
-<div class="section level4">
-<h4 id="a-few-notes-on-the-pattern">A few notes on the pattern<a class="anchor" aria-label="anchor" href="#a-few-notes-on-the-pattern"></a>
-</h4>
+<div class="section level3">
+<h3 id="a-few-notes-on-the-pattern">A few notes on the pattern<a class="anchor" aria-label="anchor" href="#a-few-notes-on-the-pattern"></a>
+</h3>
 <p>One of the most important elements of every argument passed to
 <code>make_design</code> is the string or vector specifying the pattern
 of values.</p>
@@ -595,9 +596,9 @@ different <code>lookup_tbl_start</code>:</p>
 <span>    <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="continuing-with-the-example-multiple-designs">Continuing with the example: multiple designs<a class="anchor" aria-label="anchor" href="#continuing-with-the-example-multiple-designs"></a>
-</h4>
+<div class="section level3">
+<h3 id="continuing-with-the-example-multiple-designs">Continuing with the example: multiple designs<a class="anchor" aria-label="anchor" href="#continuing-with-the-example-multiple-designs"></a>
+</h3>
 <p>Now let’s return to our example growth curve experiment. Imagine that
 now, <em>in addition</em> to having a different bacterial strain in each
 row, we also have a different media in each column in the plate.</p>
@@ -936,9 +937,9 @@ simply change the <code>output_format</code> argument option to
 <span><span class="co">#&gt; 19   B7     Str1    NA</span></span>
 <span><span class="co">#&gt; 20   B8     Str1  Med7</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="saving-designs-to-files">Saving designs to files<a class="anchor" aria-label="anchor" href="#saving-designs-to-files"></a>
-</h4>
+<div class="section level3">
+<h3 id="saving-designs-to-files">Saving designs to files<a class="anchor" aria-label="anchor" href="#saving-designs-to-files"></a>
+</h3>
 <p>Often after generating designs in <code>R</code> with
 <code>make_design</code>, you’ll want to save those designs to files.
 This might be so that human-readable files documenting your designs are
@@ -948,9 +949,9 @@ manuscript submission.</p>
 <p>If you’d like to save your designs to files, you can save them either
 tidy-shaped or block-shaped. Both formats can easily be read back into
 <code>R</code> by <code>gcplyr</code>.</p>
-<div class="section level5">
-<h5 id="saving-tidy-shaped-designs">Saving tidy-shaped designs<a class="anchor" aria-label="anchor" href="#saving-tidy-shaped-designs"></a>
-</h5>
+<div class="section level4">
+<h4 id="saving-tidy-shaped-designs">Saving tidy-shaped designs<a class="anchor" aria-label="anchor" href="#saving-tidy-shaped-designs"></a>
+</h4>
 <p>These design files will be less human-readable, but easier to import
 and merge. Additionally, tidy-shaped files are often better for data
 repositories, like Dryad. To save tidy-shaped designs, simply use the
@@ -960,9 +961,9 @@ built-in <code>write.csv</code> function.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">my_design_tdy</span>, file <span class="op">=</span> <span class="st">"tidy_design.csv"</span>,</span>
 <span>          row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="saving-block-shaped-designs">Saving block-shaped designs<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs"></a>
-</h5>
+<div class="section level4">
+<h4 id="saving-block-shaped-designs">Saving block-shaped designs<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs"></a>
+</h4>
 <p>These design files will be more human-readable but require slightly
 more computational steps to import and merge. For these, use the
 <code>gcplyr</code> function <code>write_blocks</code>. Typically,
@@ -976,9 +977,9 @@ formats:</p>
 <code>single</code> - all the blocks will be saved to a single
 <code>.csv</code> file, with an empty row in between them</li>
 </ul>
-<div class="section level6">
-<h6 id="saving-block-shaped-designs-to-multiple-files">Saving block-shaped designs to multiple files<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs-to-multiple-files"></a>
-</h6>
+<div class="section level5">
+<h5 id="saving-block-shaped-designs-to-multiple-files">Saving block-shaped designs to multiple files<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs-to-multiple-files"></a>
+</h5>
 <p>The default setting for <code>write_blocks</code> is
 <code>output_format = 'multiple'</code>. This creates one
 <code>csv</code> file for each block, naming the files according to the
@@ -1010,9 +1011,9 @@ formats:</p>
 <span><span class="co">#&gt; G   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
 <span><span class="co">#&gt; H</span></span></code></pre></div>
 </div>
-<div class="section level6">
-<h6 id="saving-block-shaped-designs-to-a-single-file">Saving block-shaped designs to a single file<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs-to-a-single-file"></a>
-</h6>
+<div class="section level5">
+<h5 id="saving-block-shaped-designs-to-a-single-file">Saving block-shaped designs to a single file<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs-to-a-single-file"></a>
+</h5>
 <p>The other setting for <code>write_blocks</code> is
 <code>output_format = 'single'</code>. This creates a single
 <code>csv</code> file that contains all the blocks, putting metadata
@@ -1050,9 +1051,9 @@ like:</p>
 file, and the metadata has been added in rows before each block.</p>
 </div>
 </div>
-<div class="section level5">
-<h5 id="best-practices-for-saving-designs-to-files">Best practices for saving designs to files<a class="anchor" aria-label="anchor" href="#best-practices-for-saving-designs-to-files"></a>
-</h5>
+<div class="section level4">
+<h4 id="best-practices-for-saving-designs-to-files">Best practices for saving designs to files<a class="anchor" aria-label="anchor" href="#best-practices-for-saving-designs-to-files"></a>
+</h4>
 <p>It’s best to leave the <code>make_design</code> and
 <code>write_blocks</code> commands in your analysis script, so that
 every time your analysis is run your design files are kept up to date.
@@ -1060,7 +1061,6 @@ Just note that if your <code>make_design</code> command has
 <code>output_format = blocks</code>, you’ll need to make a version where
 <code>output_format = tidy</code> that you can <code>merge_dfs</code>
 with your plate reader data.</p>
-</div>
 </div>
 </div>
 </div>

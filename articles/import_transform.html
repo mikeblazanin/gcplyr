@@ -418,17 +418,18 @@ data</a></strong> section</p>
 <p><strong>If your data is already tidy-shaped:</strong> use
 <code>read_tidys</code> and skip down to the <strong><a href="#importing-tidy-shaped-data">Importing tidy-shaped
 data</a></strong> section.</p>
-<div class="section level3">
-<h3 id="importing-block-shaped-data">Importing block-shaped data<a class="anchor" aria-label="anchor" href="#importing-block-shaped-data"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="importing-block-shaped-data">Importing block-shaped data<a class="anchor" aria-label="anchor" href="#importing-block-shaped-data"></a>
+</h2>
 <p>To import block-shaped data, use the
 <code>import_blockmeasures</code> function.
 <code>import_blockmeasures</code> only requires a list of filenames (or
 relative file paths) and <strong>will return a wide-shaped
 data.frame</strong> that you can save in R.</p>
-<div class="section level4">
-<h4 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
-</h4>
+<div class="section level3">
+<h3 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
+</h3>
 <p>Here’s a simple example. First, we need to create a series of example
 block-shaped <code>.csv</code> files. <strong>Don’t worry how this code
 works</strong>. When working with real growth curve data, these files
@@ -572,9 +573,9 @@ letter-style functionality).</p>
 <span>  files <span class="op">=</span> <span class="va">temp_filenames</span>,</span>
 <span>  startrow <span class="op">=</span> <span class="fl">4</span>, startcol <span class="op">=</span> <span class="st">"A"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="specifying-metadata">Specifying metadata<a class="anchor" aria-label="anchor" href="#specifying-metadata"></a>
-</h4>
+<div class="section level3">
+<h3 id="specifying-metadata">Specifying metadata<a class="anchor" aria-label="anchor" href="#specifying-metadata"></a>
+</h3>
 <p>Sometimes, your input files will have information you want to import
 that’s not included in the main block of data. For instance, with
 block-shaped data the timepoint is nearly always specified somewhere in
@@ -629,9 +630,9 @@ metadata can also be specified with Excel-style lettering.</p>
 <span>  startrow <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"time"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="reading-multiple-blocks-from-a-single-file">Reading multiple blocks from a single file<a class="anchor" aria-label="anchor" href="#reading-multiple-blocks-from-a-single-file"></a>
-</h4>
+<div class="section level3">
+<h3 id="reading-multiple-blocks-from-a-single-file">Reading multiple blocks from a single file<a class="anchor" aria-label="anchor" href="#reading-multiple-blocks-from-a-single-file"></a>
+</h3>
 <p><code>import_blockmeasures</code> can also import multiple blocks
 from a single file, which some plate readers may output. In this case,
 you simply have to specify a vector of rows and columns that define the
@@ -729,9 +730,9 @@ the time metadata has been incorporated.</p>
 <span><span class="co">#&gt; 5 blocks_single 3600    4e-12   6e-12 3.2e-11  4.0e-12 4.0e-12   4e-12</span></span>
 <span><span class="co">#&gt; 6 blocks_single 4500    4e-12   4e-12   6e-12    4e-12 4.0e-12 4.0e-12</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="notes-for-more-advanced-use">Notes for more advanced use<a class="anchor" aria-label="anchor" href="#notes-for-more-advanced-use"></a>
-</h4>
+<div class="section level3">
+<h3 id="notes-for-more-advanced-use">Notes for more advanced use<a class="anchor" aria-label="anchor" href="#notes-for-more-advanced-use"></a>
+</h3>
 <p>Note that <code>import_blockmeasures</code> is essentially a wrapper
 function that calls <code>read_blocks</code>, <code>uninterleave</code>,
 and <code>trans_block_to_wide</code>. Any arguments for those functions
@@ -743,24 +744,24 @@ manually, first reading with <code>read_blocks</code>, separating plates
 as needed with <code>uninterleave</code>, then transforming to wide with
 <code>trans_block_to_wide</code>.</p>
 </div>
-<div class="section level4">
-<h4 id="what-to-do-next">What to do next<a class="anchor" aria-label="anchor" href="#what-to-do-next"></a>
-</h4>
+<div class="section level3">
+<h3 id="what-to-do-next">What to do next<a class="anchor" aria-label="anchor" href="#what-to-do-next"></a>
+</h3>
 <p>Now that you’ve imported your block-shaped data, you’ll need to
 transform it for later analyses. Jump directly to the <strong><a href="#transforming-data">Transforming data</a></strong> section.</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="importing-wide-shaped-data">Importing wide-shaped data<a class="anchor" aria-label="anchor" href="#importing-wide-shaped-data"></a>
-</h3>
+<div class="section level2">
+<h2 id="importing-wide-shaped-data">Importing wide-shaped data<a class="anchor" aria-label="anchor" href="#importing-wide-shaped-data"></a>
+</h2>
 <p>To import wide-shaped data, use the <code>read_wides</code> function.
 <code>read_wides</code> only requires a filename (or vector of
 filenames, or relative file paths) and will return a
 <code>data.frame</code> (or list of data.frames) that you can save in
 R.</p>
-<div class="section level4">
-<h4 id="a-basic-example-1">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example-1"></a>
-</h4>
+<div class="section level3">
+<h3 id="a-basic-example-1">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example-1"></a>
+</h3>
 <p>Here’s a simple example. First, we need to create an example
 wide-shaped .csv file. <strong>Don’t worry how this code works</strong>.
 When working with real growth curve data, these files would be output by
@@ -855,9 +856,9 @@ case, read_wides will return a list containing all the data.frames:</p>
 <code class="sourceCode R"><span><span class="co">#If we had multiple wide-shaped data files to import</span></span>
 <span><span class="va">imported_widedata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_wides.html">read_wides</a></span><span class="op">(</span>files <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"widedata.csv"</span>, <span class="st">"widedata2.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="specifying-metadata-1">Specifying metadata<a class="anchor" aria-label="anchor" href="#specifying-metadata-1"></a>
-</h4>
+<div class="section level3">
+<h3 id="specifying-metadata-1">Specifying metadata<a class="anchor" aria-label="anchor" href="#specifying-metadata-1"></a>
+</h3>
 <p>Sometimes, your input files will have information you want to import
 that’s not included in the main block of data. For instance, many
 readers will output information like the experiment name and date into a
@@ -892,9 +893,9 @@ metadata can also be specified with Excel-style lettering.</p>
 <span>                                metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"experiment_name"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="st">"B"</span><span class="op">)</span>,</span>
 <span>                                                <span class="st">"start_date"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"B"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="reading-multiple-wides-from-a-single-file">Reading multiple wides from a single file<a class="anchor" aria-label="anchor" href="#reading-multiple-wides-from-a-single-file"></a>
-</h4>
+<div class="section level3">
+<h3 id="reading-multiple-wides-from-a-single-file">Reading multiple wides from a single file<a class="anchor" aria-label="anchor" href="#reading-multiple-wides-from-a-single-file"></a>
+</h3>
 <p>In the rare case that you have multiple wide-shaped datasets saved
 into a single file, <code>read_wides</code> can import that as well.
 Refer to the earlier section <strong><a href="#reading-multiple-blocks-from-a-single-file">Reading multiple
@@ -902,16 +903,16 @@ blocks from a single file</a></strong>, since the syntax for such
 operations is the same for <code>read_wides</code> as it is for
 <code>import_blockmeasures</code>.</p>
 </div>
-<div class="section level4">
-<h4 id="what-to-do-next-1">What to do next<a class="anchor" aria-label="anchor" href="#what-to-do-next-1"></a>
-</h4>
+<div class="section level3">
+<h3 id="what-to-do-next-1">What to do next<a class="anchor" aria-label="anchor" href="#what-to-do-next-1"></a>
+</h3>
 <p>Now that you’ve imported your wide-shaped data, you’ll need to
 transform it for later analyses. Continue on to the <strong><a href="#transforming-data">Transforming data</a></strong> section.</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="importing-tidy-shaped-data">Importing tidy-shaped data<a class="anchor" aria-label="anchor" href="#importing-tidy-shaped-data"></a>
-</h3>
+<div class="section level2">
+<h2 id="importing-tidy-shaped-data">Importing tidy-shaped data<a class="anchor" aria-label="anchor" href="#importing-tidy-shaped-data"></a>
+</h2>
 <p>To import tidy-shaped data, you could use the built-in <code>R</code>
 functions like <code>read.table</code>. However, if you need a few more
 options, you can use the <code>gcplyr</code> function
@@ -925,9 +926,8 @@ filenames, or relative file paths) and will return a
 <code>data.frame</code> (or list of data.frames) that you can save in
 R.</p>
 <p>If you’ve read in your tidy-shaped data, you won’t need to transform
-it, so you can skip down to the <strong>[Including design
-elements]</strong> section.</p>
-</div>
+it, so you can skip down to the <strong><a href="#whats-next">What’s
+next?</a></strong> section.</p>
 </div>
 <div class="section level2">
 <h2 id="transforming-data">Transforming data<a class="anchor" aria-label="anchor" href="#transforming-data"></a>

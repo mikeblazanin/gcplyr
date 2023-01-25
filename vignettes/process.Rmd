@@ -200,7 +200,14 @@ ex_dat_mrg <- group_by(ex_dat_mrg, Well, Bacteria_strain, Phage)
 
 ## Smoothing with moving-average
 
-For `moving-average`, the tuning parameter is `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide). Note that `moving-average` returns `NA` for the `window_width_n`/2 points at the start and end of your data.
+For `moving-average`, there are two tuning parameters to choose between:
+
+* `window_width` specifies how wide the moving window used to calculate the average is in units of `x`.
+* `window_width_n` specifies how many data points wide the moving window used to calculate the average is. 
+
+Specifying the `window_width` or `window_width_n` is required, and larger values will be more "smoothed". Think carefully about whether you want to hold the *amount* of time or the *number* of data points in each window constant (if your data was all collected on constant intervals, then there will be no difference).
+
+Here, we'll show moving averages with `window_width_n` values of 3, 7, or 11 data points wide (because the window is centered on each data point, `window_width_n` must be an odd number of data points wide). Note that `moving-average` returns `NA` for data points at the start and end of your data where the window extends beyond the domain of your data.
 
 ```{r}
 ex_dat_mrg <-
@@ -228,7 +235,16 @@ Here we can see that `moving-average` has helped reduce the effects of some of t
 
 ## Smoothing with moving-median
 
-For `moving-median`, the tuning parameter is also `window_width_n`, which specifies how many data points wide the moving window used to calculate the average is. Specifying the `window_width_n` is required, and larger values will be more "smoothed". Here, we'll show moving averages with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide). Note that `moving-median` returns `NA` for the `window_width_n`/2 points at the start and end of your data.
+
+
+For `moving-median`, there are the same two tuning parameters:
+
+* `window_width` specifies how wide the moving window used to calculate the average is in units of `x`.
+* `window_width_n` specifies how many data points wide the moving window used to calculate the average is. 
+
+Specifying the `window_width` or `window_width_n` is required, and larger values will be more "smoothed". Think carefully about whether you want to hold the *amount* of time or the *number* of data points in each window constant (if your data was all collected on constant intervals, then there will be no difference).
+
+Here, we'll show moving medians with windows that are 3, 7, and 11 data points wide (because the window is centered on each data point, it must be an odd number of data points wide). Note that `moving-median` returns `NA` for data points at the start and end of your data where the window extends beyond the domain of your data.
 
 ```{r}
 ex_dat_mrg <-

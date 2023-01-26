@@ -80,7 +80,6 @@ ex_dat_mrg$Well <-
 ```
 
 
-
 # How to process and analyze your data
 With your data and design information pre-processed, **your dataset is now organized in a way that's easy to export and analyze**. It is also at this point that the next steps for what you can do diversify into many options.
 
@@ -148,7 +147,109 @@ ex_dat_mrg <-
 head(ex_dat_mrg)
 ```
 
-This is a rather simple example, but in the next sections I show how we can use `mutate` with `smooth_data` and `calc_deriv` to create new columns containing smoothed data and derivatives. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer and the coming example should be sufficient to use the `gcplyr` processing functions, which (as a reminder) are best used *within* `mutate`.
+This is a rather simple example, but in the next sections I show how we can use `mutate` with `calc_deriv` and `smooth_data` to create new columns containing derivatives and smoothed data. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use the `gcplyr` processing functions, which (as a reminder) are best used *within* `mutate`.
+
+# Processing data: calculating derivatives {#CalculatingDerivatives}
+
+In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
+
+## A simple derivative
+
+To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point. This is useful for identifying events like population declines, or multiple rounds of growth.
+
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     deriv = calc_deriv(x = Time, y = Measurements))
+```
+
+To visualize these results, let's look at a few wells that are representative of the overall diversity of dynamics in our example data. (In your own code, you should visualize all your data).
+
+```{r}
+sample_wells <- c("A1", "F1", "F10", "E11")
+
+#Now let's plot the derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Here we can see that the derivatives have been calculated, but also that there's a good amount of noise in the plots. If we go back and look at our raw data, we'll see that this noise arises from some random fluctuations in our density values.
+
+```{r}
+#Plot the raw data
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Luckily, `calc_deriv` includes a method that can reduce some of the effects of this noise. Instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. This can help reduce the effect of any single noisy point.
+
+To use the fitting functionality of `calc_deriv`, we need to specify either the `window_width` parameter, or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate it's use by fitting regressions that include five data points.
+
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     deriv5 = calc_deriv(x = Time, y = Measurements, 
+                                        window_width_n = 5))
+
+#Now let's plot the derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv5)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Great! This has removed a lot of the noise, although not quite all of it. Later in the [Smoothing](#Smoothing) and [Calculating Derivatives of Smoothed Data](#DerivsOfSmoothed) sections, we'll see how combining smoothing and derivative-fitting can further reduce the noise in calculated derivatives.
+
+In the meantime, though, let's take a look at our derivatives. From the plots above we can clearly see when the upward slope of the total population was the steepest, and also when the populations have declined in wells with phages. In Well E11 we can even see when the bacteria grow again later after phage-driven declines. But the derivative has also made something more apparent that might not have been obvious visually: if we look in Well A1 we can see that there is a second peak of growth. It's not as steep (the derivative is not as high), but it's there. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+
+## Per-capita derivative
+If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
+
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     deriv_percap5 = calc_deriv(x = Time, y = Measurements,
+                                        percapita = TRUE, blank = 0,
+                                        window_width_n = 5))
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free") +
+  scale_y_log10()
+
+#Now let's plot the per-capita derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap5)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Here we can see that, in Well A1, the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly. 
+
+However, the other wells seem to have a lot of noise obscuring their per-capita growth rates. What happened? Why hasn't our smoothing been sufficient? As I explore later, per-capita growth rates can be strongly affected by even small noise at very low densities, something that can be excluded simply by only analyzing per-capita growth when densities are above some minimum value.
+
+## Changing the derivative units
+
+To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data `x` is the number of *seconds* since the growth curve began. What if we wanted growth rate in *per-hour*? There are 3600 seconds in an hour, so we set `x_scale = 3600`
+
+```{r}
+ex_dat_mrg <- 
+  mutate(ex_dat_mrg,
+         deriv_percap_hr = calc_deriv(x = Time, y = smoothed,
+                                      percapita = TRUE, blank = 0,
+                                      x_scale = 3600))
+
+#Now let's plot the derivative in units of Abs/hour
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap_hr)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 times/hour (when ignoring the points that seem likely to be noise).
+
 
 # Processing data: smoothing {#Smoothing}
 Oftentimes, growth curve data produced by a plate reader will have some noise it it. While sometimes this noise does not hinder analyses, sometimes it's necessary to smooth the data in each well for analyses to succeed. `gcplyr` has a `smooth_data` function that can carry out such smoothing. Generally you should carry out *as little* smoothing as is necessary for your analyses to work. That means that **right now you should skip this section** and go on to the **[Calculating Derivatives](#CalculatingDerivatives)** section, returning to this smoothing section if your derivatives are too noisy to analyze.
@@ -156,10 +257,7 @@ Oftentimes, growth curve data produced by a plate reader will have some noise it
 If you have returned in need of learning to use `smooth_data`, let's start by taking a look at a few wells from our example data, which have some noise.
 
 ```{r}
-#Here we've chosen four wells that, from our previous plot, seem 
-# representative of the overall diversity of dynamics
-#In your own code, you should visualize all your data
-sample_wells <- c("A1", "F1", "F10", "E11")
+
 
 #Plot with a linear y-axis
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -359,67 +457,9 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 Here we can see that the combination of minimal `moving-median` and `moving-average` smoothing has produced a curve that has most of the noise removed with minimal introduction of bias. (Note that the first and last 2 data points are now `NA` because of the smoothing)
 
-# Processing data: calculating derivatives {#CalculatingDerivatives}
+# Processing data: calculating derivatives of smoothed data {#DerivsOfSmoothed}
 
-In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
-
-*If you've previously smoothed your absorbance data, remember to use those smoothed values rather than the original values!*
-
-## A simple derivative
-
-To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point. This is useful for identifying events like population declines, or multiple rounds of growth.
-
-```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
-                     deriv = calc_deriv(x = Time, y = smoothed))
-
-#Now let's plot the derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Here we can clearly see when the slope of the total population was increasing the fastest, and when it declines in the phage-added wells. But we can also see something surprising in Well A1 that may not have been immediately apparent visually: there is a second, slower, burst of growth later on. Such a pattern is common in bacterial growth curves and is called *diauxic growth*. Additionally, we can see in Well E11 when the bacteria start to grow again following near-extinction by phages, presumably after evolving resistance to the phage. (Note that the last value in the time series always becomes `NA` with `calc_deriv` under default settings)
-
-## Per-capita derivative
-If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
-
-```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
-                     deriv_percap = calc_deriv(x = Time, y = smoothed,
-                                        percapita = TRUE, blank = 0))
-
-#Now let's plot the per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv_percap)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Here we can see that, in Well A1, the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly. 
-
-However, the other wells seem to have a lot of noise obscuring their per-capita growth rates. What happened? Why hasn't our smoothing been sufficient? As I explore later, per-capita growth rates can be strongly affected by even small noise at very low densities, something that can be excluded simply by only analyzing per-capita growth when densities are above some minimum value.
-
-## Changing the derivative units
-
-To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data `x` is the number of *seconds* since the growth curve began. What if we wanted growth rate in *per-hour*? There are 3600 seconds in an hour, so we set `x_scale = 3600`
-
-```{r}
-ex_dat_mrg <- 
-  mutate(ex_dat_mrg,
-         deriv_percap_hr = calc_deriv(x = Time, y = smoothed,
-                                      percapita = TRUE, blank = 0,
-                                      x_scale = 3600))
-
-#Now let's plot the derivative in units of Abs/hour
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv_percap_hr)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 times/hour (when ignoring the points that seem likely to be noise).
+TBD
 
 # What's next?
 

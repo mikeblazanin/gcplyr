@@ -38,7 +38,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data: `vignette("analyze")`
 7. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
-So far, we've imported and transformed our measures, combined them with our design information, and pre-processed and plotted our data. Now we're going to do some processing of our raw data: smoothing and calculating derivatives.
+So far, we've imported and transformed our measures, combined them with our design information, and pre-processed and plotted our data. Now we're going to do some processing of our raw data: calculating derivatives.
 
 If you haven't already, load the necessary packages.
 
@@ -59,7 +59,7 @@ print_df <- function(df, col.names = FALSE) {
 ```{r}
 #This code was previously explained
 #Here we're re-running it so it's available for us to work with
-example_tidydata <- trans_wide_to_tidy(example_widedata,
+example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 example_design <- make_design(
   pattern_split = ",", nrows = 8, ncols = 12,
@@ -88,11 +88,11 @@ Broadly speaking, there are two main approaches to analyzing growth curves data:
 1. directly quantify attributes of the growth dynamics
 2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
 
-The remaining functions of `gcplyr` can facilitate analyses following the first approach: directly quantifying attributes of the observed dynamics. If you're interested in exploring model-fitting approaches, which can provide enormous analytical power, check out the **[Other growth curve analysis packages]** section. At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
+The remaining functions of `gcplyr` can facilitate analyses following the first approach: directly quantifying attributes of the observed dynamics. If you're interested in exploring model-fitting approaches, which can provide enormous analytical power, check out the **Other growth curve analysis packages** section in vignette("conclusion"). At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
 
-So, how do we directly quantify attributes of growth curves? First, we may need to carry out smoothing of our data to reduce the effect of noise. Then, we typically need to calculate derivatives of our (smoothed) data. The (smoothed) density and (smoothed) derivatives will be what we analyze to identify features of our growth curves. `gcplyr` has a number of functions that facilitate these steps. 
+So, how do we directly quantify attributes of growth curves? First, we may need to calculate derivatives of our data. The density and derivative values will be what we analyze to identify features of our growth curves. `gcplyr` has a number of functions that facilitate these steps. 
 
-However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The **[Smoothing](#Smoothing)**, **[Calculating Derivatives](#CalculatingDerivatives)** and **[Analyzing](#Analyzing)** sections of this document, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
+However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The [Calculating Derivatives](#CalculatingDerivatives) section of this article, and the [Analyzing Data](vignette("analyze")) and [Dealing with Noise](vignette("noise")) vignettes, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
 
 Before we dig into processing and analyzing our data, we first need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `mutate`. Why? Because the upcoming `gcplyr` processing functions are *best* used **within** `dplyr::mutate`. **If you're already familiar with `dplyr`, feel free to skip this primer.** If you're not familiar yet, don't worry! This section provides a primer that will teach you all you need to know on using `group_by` and `mutate` with `gcplyr` functions.
 
@@ -100,12 +100,12 @@ Before we dig into processing and analyzing our data, we first need to familiari
 
 The `R` package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes right now, we're going to focus on two particular functions: `group_by` and `mutate`.
 
-The `mutate` function in `dplyr` allows users to easily create new columns in their `data.frame`'s. For us, we're going to use `mutate` to create columns with our smoothed data and the derivatives we calculate. However, we want to make sure that smoothing and derivative-calculating are done on *each* unique well independently. In order to do that, we're first going to use the `group_by` function, which allows users to group the rows of their `data.frame`'s into groups that `mutate` will then treat independently.
+The `mutate` function in `dplyr` allows users to easily create new columns in their `data.frame`'s. For us, we're going to use `mutate` to create columns with our data and the derivatives we calculate. However, we want to make sure that derivative-calculating is done on *each* unique well independently. In order to do that, we're first going to use the `group_by` function, which allows users to group the rows of their `data.frame`'s into groups that `mutate` will then treat independently.
 
 For growth curves, this means we will:
 
 1. `group_by` our data so that every unique well is a group
-2. `mutate` to create new columns with our smoothed data and calculated derivatives
+2. `mutate` to create new columns with our data and calculated derivatives
 
 Let's walk through a simple example
 
@@ -147,7 +147,7 @@ ex_dat_mrg <-
 head(ex_dat_mrg)
 ```
 
-This is a rather simple example, but in the next sections I show how we can use `mutate` with `calc_deriv` and `smooth_data` to create new columns containing derivatives and smoothed data. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use the `gcplyr` processing functions, which (as a reminder) are best used *within* `mutate`.
+This is a rather simple example, but in the next sections I show how we can use `mutate` with `calc_deriv` to create new columns containing derivatives. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use the `gcplyr` processing functions, which (as a reminder) are best used *within* `mutate`.
 
 # Processing data: calculating derivatives {#CalculatingDerivatives}
 
@@ -174,61 +174,58 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Here we can see that the derivatives have been calculated, but also that there's a good amount of noise in the plots. If we go back and look at our raw data, we'll see that this noise arises from some random fluctuations in our density values.
+The first thing you might notice is that some of these lines aren't as smooth as you might expect. Why is that? This noise in the derivatives is actually being created by the limited resolution of the plate reader. Since plate readers can commonly only read to a resolution of 0.001, this means that values jump by at least 0.001 at each step, even if the true difference should be smaller.
 
-```{r}
-#Plot the raw data
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = Measurements)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Luckily, `calc_deriv` includes a method that can reduce some of the effects of this noise. Instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. This can help reduce the effect of any single noisy point.
-
-To use the fitting functionality of `calc_deriv`, we need to specify either the `window_width` parameter, or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate it's use by fitting regressions that include five data points.
-
-```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
-                     deriv5 = calc_deriv(x = Time, y = Measurements, 
-                                        window_width_n = 5))
-
-#Now let's plot the derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv5)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Great! This has removed a lot of the noise, although not quite all of it. Later in the [Smoothing](#Smoothing) and [Calculating Derivatives of Smoothed Data](#DerivsOfSmoothed) sections, we'll see how combining smoothing and derivative-fitting can further reduce the noise in calculated derivatives.
-
-In the meantime, though, let's take a look at our derivatives. From the plots above we can clearly see when the upward slope of the total population was the steepest, and also when the populations have declined in wells with phages. In Well E11 we can even see when the bacteria grow again later after phage-driven declines. But the derivative has also made something more apparent that might not have been obvious visually: if we look in Well A1 we can see that there is a second peak of growth. It's not as steep (the derivative is not as high), but it's there. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+That aside, from the plots above we can clearly see when the upward slope of the total population was the steepest, and also when the populations have declined in wells with phages. In Well E11 we can even see when the bacteria grow again later after phage-driven declines. But these derivatives also make something more apparent that might not have been obvious visually in the raw density data: if we look in Well A1 we can see that there is a second peak of growth. It's not as steep (the derivative is not as high), but it's there. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
 
 ## Per-capita derivative
 If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}
 ex_dat_mrg <- mutate(ex_dat_mrg,
-                     deriv_percap5 = calc_deriv(x = Time, y = Measurements,
+                     deriv_percap = calc_deriv(x = Time, y = Measurements,
+                                        percapita = TRUE, blank = 0))
+
+#Now let's plot the per-capita derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Hmm, what's going on here? Well, when bacterial densities are very close to 0, the per-capita growth rate can be very noisy. Luckily, `calc_deriv` includes a method that can reduce some of the effects of this noise. Instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. This can help reduce the effect of low densities.
+
+To use the fitting functionality of `calc_deriv`, we need to specify either the `window_width` parameter, or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate it's use by fitting regressions that include five data points.
+
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
                                         percapita = TRUE, blank = 0,
                                         window_width_n = 5))
 
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = Measurements)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free") +
-  scale_y_log10()
-
-#Now let's plot the per-capita derivative
+#Now let's plot the derivative
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv_percap5)) +
   geom_line() +
   facet_wrap(~Well, scales = "free")
 ```
 
-Here we can see that, in Well A1, the per-capita growth rate peaked much earlier in the time-series than might appear from the density dynamics or non per-capita derivative. We can also see that there was clearly a lag phase at the beginning before the bacteria started growing rapidly. 
+Great! That reduced the effects of low densities greatly! When doing fitting to calculate the per-capita growth rate, we can alternatively do that fitting with log-transformed y-values. Because exponential growth is linear when y-values are log-transformed, this typically gives us a better estimate of the per-capita growth rate, although it can fail when y-values are at or below 0. Check out the documentation for `calc_deriv` for more details.
 
-However, the other wells seem to have a lot of noise obscuring their per-capita growth rates. What happened? Why hasn't our smoothing been sufficient? As I explore later, per-capita growth rates can be strongly affected by even small noise at very low densities, something that can be excluded simply by only analyzing per-capita growth when densities are above some minimum value.
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
+                                        percapita = TRUE, blank = 0,
+                                        window_width_n = 5, trans_y = "log"))
+
+#Now let's plot the derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap5)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Great! Taking a look at our per-capita growth rates, we can see that all the bacteria had a lag period of no growth at the beginning before starting to grow and haveing an early peak in their growth rates. 
 
 ## Changing the derivative units
 
@@ -237,8 +234,9 @@ To convert your x-axis (time) units in your derivative calculations to a differe
 ```{r}
 ex_dat_mrg <- 
   mutate(ex_dat_mrg,
-         deriv_percap_hr = calc_deriv(x = Time, y = smoothed,
+         deriv_percap_hr = calc_deriv(x = Time, y = Measurements,
                                       percapita = TRUE, blank = 0,
+                                      window_width_n = 5, trans_y = "log",
                                       x_scale = 3600))
 
 #Now let's plot the derivative in units of Abs/hour
@@ -248,10 +246,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 times/hour (when ignoring the points that seem likely to be noise).
-
-
-
+Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 divisions/hour.
 
 # What's next?
 

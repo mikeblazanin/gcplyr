@@ -3207,8 +3207,8 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #'         or per-capita (if \code{percapita = TRUE}) difference 
 #'         (if \code{return = "difference"}) or derivative 
 #'         (if \code{return = "derivative"}) between \code{y} values. Vector
-#'         will be the same length as \code{y},  with \code{NA} appended 
-#'         to the ends
+#'         will be the same length as \code{y},  with \code{NA} values 
+#'         at the ends
 #' 
 #' @export   
 calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,

@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = tempdir())
 
 #Note: to knit to all output formats simultaneously, run in R console:
-#rmarkdown::render("./vignettes/analyze.Rmd", output_format = "all")
+#rmarkdown::render("./vignettes/noise.Rmd", output_format = "all")
 ```
 
 # Where are we so far?
@@ -35,14 +35,71 @@ knitr::opts_knit$set(root.dir = tempdir())
 3. Incorporating design information: `vignette("incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
-6. **Analyzing your data:** `vignette("analyze")`
-7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+6. Analyzing your data: `vignette("analyze")`
+7. **Dealing with noise:** vignette("noise")
+8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
-So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, and plotted our data. Now we're going to analyze our data by summarizing our growth curves into a number of metrics.
+So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, plotted, and analyzed our data. Here, we're going to learn potential strategies for dealing with noise in our growth curve data.
 
 If you haven't already, load the necessary packages.
 
+```{r setup}
+library(gcplyr)
 
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+```{r}
+#This code was previously explained
+#Here we're re-running it so it's available for us to work with
+example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
+                                       id_cols = "Time")
+example_design <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
+ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+ex_dat_mrg$Well <- 
+  factor(ex_dat_mrg$Well,
+         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+ex_dat_mrg <- group_by(ex_dat_mrg, Well, Bacteria_strain, Phage)
+ex_dat_mrg <-
+  mutate(ex_dat_mrg,
+         deriv = calc_deriv(x = Time, y = Measurements, x_scale = 3600),
+         deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
+                                        percapita = TRUE, blank = 0,
+                                        window_width_n = 5, trans_y = "log",
+                                    x_scale = 3600))
+sample_wells <- c("A1", "F1", "F10", "E11")
+```
+
+# Figuring out when you have too much noise
+
+
+
+# How we can deal with noise
+
+Broadly speaking, there are three ways `gcplyr` has implemented to deal with noise:
+
+* Smooth the raw data
+* "Smooth" during derivative calculations
+* Analyze less-noisy subsets of the data
 
 # Processing data: smoothing {#Smoothing}
 Oftentimes, growth curve data produced by a plate reader will have some noise it it. While sometimes this noise does not hinder analyses, sometimes it's necessary to smooth the data in each well for analyses to succeed. `gcplyr` has a `smooth_data` function that can carry out such smoothing. Generally you should carry out *as little* smoothing as is necessary for your analyses to work. That means that **right now you should skip this section** and go on to the **[Calculating Derivatives](#CalculatingDerivatives)** section, returning to this smoothing section if your derivatives are too noisy to analyze.
@@ -253,3 +310,261 @@ Here we can see that the combination of minimal `moving-median` and `moving-aver
 # Processing data: calculating derivatives of smoothed data {#DerivsOfSmoothed}
 
 TBD
+
+# Processing data: smoothing during derivative calculation
+
+Here we can see that the derivatives have been calculated, but also that there's a good amount of noise in the plots. If we go back and look at our raw data, we'll see that this noise arises from some random fluctuations in our density values.
+
+```{r}
+#Plot the raw data
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Luckily, `calc_deriv` includes a method that can reduce some of the effects of this noise. Instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. This can help reduce the effect of any single noisy point.
+
+To use the fitting functionality of `calc_deriv`, we need to specify either the `window_width` parameter, or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate it's use by fitting regressions that include five data points.
+
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     deriv5 = calc_deriv(x = Time, y = Measurements, 
+                                        window_width_n = 5))
+
+#Now let's plot the derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv5)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Great! This has removed a lot of the noise, although not quite all of it. Later in the [Smoothing](#Smoothing) and [Calculating Derivatives of Smoothed Data](#DerivsOfSmoothed) sections, we'll see how combining smoothing and derivative-fitting can further reduce the noise in calculated derivatives.
+
+
+
+However, the other wells seem to have a lot of noise obscuring their per-capita growth rates. What happened? Why hasn't our smoothing been sufficient? As I explore later, per-capita growth rates can be strongly affected by even small noise at very low densities, something that can be excluded simply by only analyzing per-capita growth when densities are above some minimum value.
+
+
+First, we may need to carry out smoothing of our data to reduce the effect of noise. Then, we typically need to calculate derivatives of our (smoothed) data. The (smoothed) density and (smoothed) derivatives will be what we analyze to identify features of our growth curves. `gcplyr` has a number of functions that facilitate these steps. 
+
+
+# Summarizing on subsets: maximum growth rate
+
+Sometimes, we need to provide limits on the data passed to our simple functions. We can demonstrate this in the process of calculating one of the most common metrics we want to identify: the maximum per-capita growth rate
+
+Let's look again at our smoothed per-capita growth rates:
+
+```{r}
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap_hr)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+Hmmm, there's a lot of noise in these plots, what's going on? We can begin to understand if we also look at our smoothed density values:
+
+```{r}
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
+```
+
+If we compare these plots with the previous ones, we can begin to see that most of the noise is arising when the bacterial populations are very small. Indeed, **this is common with per-capita growth rates, which are very sensitive to noise at low densities**. What can we do about it? We can simply exclude all the values when the *density* is really low.
+
+Let's plot our per-capita growth rate data at different cutoffs for the minimum *density* of bacteria. Even though these are smoothed values, we'll use points here, since it better showcases where data are being excluded:
+
+```{r}
+for (my_well in sample_wells) {
+  #Title
+  title <- cowplot::ggdraw() + 
+    cowplot::draw_label(paste("Well", my_well), 
+                        fontface = "bold", x = 0, hjust = 0) +
+    theme(plot.margin = margin(0, 0, 0, 7))
+  
+  #Save x and y limits for all plots so they're all on the same axes
+  xdat <- dplyr::filter(ex_dat_mrg, Well == my_well)$Time
+  ydat <- dplyr::filter(ex_dat_mrg, Well == my_well)$deriv_percap_hr
+  xlims <- c(min(xdat[is.finite(xdat)], na.rm = TRUE),
+             max(xdat[is.finite(xdat)], na.rm = TRUE))
+  ylims <- c(min(ydat[is.finite(ydat)], na.rm = TRUE),
+             max(ydat[is.finite(ydat)], na.rm = TRUE))
+  
+  #Plot unfiltered data
+  p1 <- ggplot(data = dplyr::filter(ex_dat_mrg, Well == my_well),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("all data") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  
+  #Plot data with filters for density
+  p2 <- ggplot(data = dplyr::filter(ex_dat_mrg, 
+                                    Well == my_well, smoothed > 0.001),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("data where smoothed > 0.001") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  p3 <- ggplot(data = dplyr::filter(ex_dat_mrg, 
+                                    Well == my_well, smoothed > 0.005),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("data where smoothed > 0.005") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  p4 <- ggplot(data = dplyr::filter(ex_dat_mrg, 
+                                    Well == my_well, smoothed > 0.01),
+               aes(x = Time, y = deriv_percap_hr)) +
+    geom_point() + facet_wrap(~Well, scales = "free") +
+    ggtitle("data where smoothed > 0.01") +
+    xlim(xlims[1], xlims[2]) + ylim(ylims[1], ylims[2])
+  
+  print(cowplot::plot_grid(title, cowplot::plot_grid(p1, p2, p3, p4, ncol = 2),
+                           ncol = 1, rel_heights = c(0.1, 1)))
+}
+```
+
+We can see with a cutoff of 0.001, much of the noise still remains. However, once we use a cutoff of 0.005, they are all basically gone, and no high growth rate values are affected by 0.005 vs 0.01. If we checked this pattern for all the wells (as you should in your own analyses), we would see a similar result. **Now, let's calculate the maximum growth rate of just the subset** of data points where OD is above 0.005. We can specify that subset directly in the summarize command:
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(grouped_ex_dat_mrg,
+            max_growth_rate = max(deriv_percap_hr[smoothed > 0.005], 
+                                  na.rm = TRUE))
+head(ex_dat_mrg_sum)
+```
+
+And now we can visualize our findings:
+
+```{r}
+ggplot(data = dplyr::filter(ex_dat_mrg, 
+                            Well %in% sample_wells, smoothed >= 0.005),
+       aes(x = Time, y = deriv_percap_hr)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free") +
+  ggtitle("data where smoothed density > 0.005") +
+  geom_hline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(yintercept = max_growth_rate), lty = 2)
+```
+
+
+```{r}
+#This code was previously explained
+#Here we're re-running it so it's available for us to work with
+example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
+                                       id_cols = "Time")
+example_design <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE),
+  "Phage" = make_designpattern(
+    values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
+  "Phage" = make_designpattern(
+    values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
+ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+ex_dat_mrg$Well <- 
+  factor(ex_dat_mrg$Well,
+         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+ex_dat_mrg <- group_by(ex_dat_mrg, Well, Bacteria_strain, Phage)
+ex_dat_mrg <-
+  mutate(ex_dat_mrg,
+         smoothed_med3 = 
+           smooth_data(x = Time, y = Measurements,
+                       sm_method = "moving-median", window_width_n = 3),
+         #Note that for the second round, we're using the 
+         #first smoothing as the input y
+         smoothed = 
+           smooth_data(x = Time, y = smoothed_med3,
+                       sm_method = "moving-average", window_width_n = 3),
+         deriv = calc_deriv(x = Time, y = smoothed),
+         deriv_percap_hr = calc_deriv(x = Time, y = smoothed,
+                                      percapita = TRUE, blank = 0,
+                                      x_scale = 3600))
+sample_wells <- c("A1", "F1", "F10", "E11")
+```
+
+
+
+Hmmm, in most of the wells `first_peak` worked perfectly well. However, a few of the wells aren't quite what we'd expect. Let's take a closer look at them:
+
+```{r}
+wells_tocheck <- c("A3", "A12", "B9", "C11", "F4", "F12")
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% wells_tocheck), 
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free") +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% wells_tocheck), 
+             aes(x = first_peak_x, y = first_peak_y), 
+             color = "red", size = 1.5)
+```
+
+Now we can see what's going on. In these wells, `first_peak` seems to have 'gotten stuck' on some earlier smaller peaks. Just like in smoothing, **peak-finding also has tuning parameters**. For `first_peak` and `find_local_extrema`, these are `window_width_n`, `window_width` and `window_height`:
+
+* `window_width` determines the width of the window used to search for peaks and valleys, in units of `x`
+* `window_width_n` determines the width of the window, in units of number of data points
+* `window_height` determines the shortest peak or shallowest valley the window will cross, in units of `y`
+
+If we want `first_peak` to be less sensitive to local peaks, we can increase these parameters (the default setting is `window_width_n` equal to 20% of the length of `y`, but `window_width` is a better approach since it works in units of seconds). Let's try that:
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(grouped_ex_dat_mrg,
+            first_peak_x = first_peak(x = Time, y = smoothed, return = "x",
+                                      window_width = 35000),
+            first_peak_y = first_peak(x = Time, y = smoothed, return = "y",
+                                      window_width = 35000))
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% wells_tocheck), 
+       aes(x = Time, y = smoothed)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free") +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% wells_tocheck), 
+             aes(x = first_peak_x, y = first_peak_y), 
+             color = "red", size = 1.5)
+```
+
+
+ As we did earlier, we'll limit our analyses to data where `smoothed > 0.005`, and visualize using points (even though this is smoothed):
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(grouped_ex_dat_mrg,
+            max_growth_rate = first_peak(x = Time[smoothed > 0.005], 
+                                         y = deriv_percap_hr[smoothed > 0.005], 
+                                         return = "y", window_width = 35000),
+            lag_time = first_peak(x = Time[smoothed > 0.005], 
+                                  y = deriv_percap_hr[smoothed > 0.005], 
+                                  return = "x", window_width = 35000))
+
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg,
+                            Well %in% sample_wells, smoothed > 0.005),
+       aes(x = Time, y = deriv_percap_hr)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free") +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(x = lag_time, y = max_growth_rate),
+             color = "red", size = 2)
+```
+
+Here we can see that in Well E11, `first_peak` has identified the peak growth rate at the beginning of the dynamics, and not the one that occurs later on. This means that our `lag_time` value will actually reflect what we want it to.
+
+But what if you want to find an extrema that's *not* the first peak? In the next section, we'll learn how to use `find_local_extrema` to identify all kinds of local extrema.
+
+
+# What's next?
+
+Now that you've analyzed your data and dealt with any noise, there's just some concluding notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
+
+1. Introduction: `vignette("gcplyr")`
+2. Importing and transforming data: `vignette("import_transform")`
+3. Incorporating design information: `vignette("incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
+5. Processing your data: `vignette("process")`
+6. Analyzing your data: `vignette("analyze")`
+7. Dealing with noise: vignette("noise")
+8. **Statistics, merging other data, and other resources:** `vignette("conclusion")`

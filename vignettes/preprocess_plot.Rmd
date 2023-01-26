@@ -36,7 +36,8 @@ knitr::opts_knit$set(root.dir = tempdir())
 4. **Pre-processing and plotting your data:** `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
-7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+7. Dealing with noise: vignette("noise")
+8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
 So far, we've imported and transformed our measures, then combined them with our design information. Now we're going to do some final pre-processing steps and show how to easily plot our data with `ggplot`.
 
@@ -177,4 +178,5 @@ Now that you've pre-processed and visualized your data, it's time to process (in
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. **Processing your data: `vignette("process")`**
 6. **Analyzing your data: `vignette("analyze")`**
-7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+7. Dealing with noise: vignette("noise")
+8. Statistics, merging other data, and other resources: `vignette("conclusion")`

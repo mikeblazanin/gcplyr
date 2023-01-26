@@ -465,9 +465,9 @@ It's best to leave the `make_design` and `write_blocks` commands in your analysi
 # Merging spectrophotometric and design data
 Once we have both our design and data in the`R`environment and tidy-shaped, we can merge them using `merge_dfs`.
 
-For this, we'll use the data in the `example_widedata` dataset that is included with `gcplyr`, and which was the source for our previous examples with `import_blockmeasures` and `read_wides`.
+For this, we'll use the data in the `example_widedata_noiseless` dataset that is included with `gcplyr`, and which was the source for our previous examples with `import_blockmeasures` and `read_wides`.
 
-In the `example_widedata` dataset, we have 48 different bacterial strains. The left side of the plate has all 48 strains in a single well each, and the right side of the plate also has all 48 strains in a single well each:
+In the `example_widedata_noiseless` dataset, we have 48 different bacterial strains. The left side of the plate has all 48 strains in a single well each, and the right side of the plate also has all 48 strains in a single well each:
 
 Row names | Column 1   | ... | Column 6   | Column 7   | ... | Column 12
 --------- | --------   | --- | --------   | --------   | --- | --------
@@ -517,10 +517,10 @@ Here's what the resulting data.frame looks like:
 head(example_design, 20)
 ```
 
-Now let's transform the `example_widedata` to tidy-shaped.
+Now let's transform the `example_widedata_noiseless` to tidy-shaped.
 
 ```{r}
-example_tidydata <- trans_wide_to_tidy(example_widedata,
+example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 ```
 

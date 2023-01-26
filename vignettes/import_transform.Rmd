@@ -134,10 +134,10 @@ Here's a simple example. First, we need to create a series of example block-shap
 #curves data, all these files would be created by the plate reader
 temp_filenames <- 
   paste("Plate1-", 
-        paste(example_widedata$Time %/% 3600,
-              formatC((example_widedata$Time %% 3600) %/% 60, 
+        paste(example_widedata_noiseless$Time %/% 3600,
+              formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
                       width = 2, flag = 0),
-              formatC((example_widedata$Time %% 3600) %% 60,
+              formatC((example_widedata_noiseless$Time %% 3600) %% 60,
                       width = 2, flag = 0),
               sep = "_"), ".csv", sep = "")
 for (i in 1:length(temp_filenames)) {
@@ -150,11 +150,12 @@ for (i in 1:length(temp_filenames)) {
       matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
              nrow = 12),
       rbind(rep("", 12),
-            matrix(c("Time", example_widedata$Time[i], rep("", 10)), ncol = 12),
+            matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
+                   ncol = 12),
             rep("", 12),
             matrix(1:12, ncol = 12),
             matrix(
-              (example_widedata[i, 2:ncol(example_widedata)]/(5*10**8)),
+              example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
               ncol = 12))
     ), 
     file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
@@ -313,13 +314,13 @@ Here's a simple example. First, we need to create an example wide-shaped .csv fi
 #start on the first row.
 #Don't worry about how it works - when working with real growth
 #curves data, this file would be created by the plate reader
-temp_example_widedata <- example_widedata
+temp_example_widedata <- example_widedata_noiseless
 colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
                                          sep = "")
 modified_example_widedata <-
   rbind(
-    as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata))),
-    colnames(example_widedata),
+    as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata_noiseless))),
+    colnames(example_widedata_noiseless),
     temp_example_widedata)
 modified_example_widedata[1:2, 1:2] <- 
   c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))

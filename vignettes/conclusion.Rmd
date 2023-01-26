@@ -59,7 +59,7 @@ print_df <- function(df, col.names = FALSE) {
 ```{r}
 #This code was previously explained
 #Here we're re-running it so it's available for us to work with
-example_tidydata <- trans_wide_to_tidy(example_widedata,
+example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 example_design <- make_design(
   pattern_split = ",", nrows = 8, ncols = 12,

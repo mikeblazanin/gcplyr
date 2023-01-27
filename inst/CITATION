@@ -9,7 +9,7 @@ citEntry(
   author   = as.person("Michael Blazanin"),
   year     = year,
   note     = note,
-  url      = "http://github.com/mikeblazanin/gcplyr",
+  url      = "https://github.com/mikeblazanin/gcplyr/",
   textVersion = paste(
      "Blazanin, Michael. ", year, ". 'gcplyr: manipulation and analysis of growth curves data.' R package ", note, sep = "")
   )

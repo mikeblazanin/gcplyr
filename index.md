@@ -56,7 +56,8 @@ finish, starting with the introduction:
 4.  Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5.  Processing your data: `vignette("process")`
 6.  Analyzing your data: `vignette("analyze")`
-7.  Statistics, merging other data, and other resources:
+7.  Dealing with noise: `vignette("noise")`
+8.  Statistics, merging other data, and other resources:
     `vignette("conclusion")`
 
 ## Citation
@@ -64,4 +65,4 @@ finish, starting with the introduction:
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 0.12.1
+data.’ R package version 0.12.2

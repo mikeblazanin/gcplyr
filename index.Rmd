@@ -56,7 +56,8 @@ The best way to get started is to read through the articles series, which breaks
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
-7. Statistics, merging other data, and other resources: `vignette("conclusion")`
+7. Dealing with noise: `vignette("noise")`
+8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
 ## Citation
 

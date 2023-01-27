@@ -1664,7 +1664,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'             design_element_name = list(c("A", "B", "C"),
 #'                                        2:7,
 #'                                        2:11,
-#'                                        "11223300", 
+#'                                        "112301", 
 #'                                        TRUE))
 #'                           
 #' ## To be reminded what arguments are needed, use make_designpattern:
@@ -1673,7 +1673,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                  values = c("A", "B", "C"),
 #'                  rows = 2:7, 
 #'                  cols = 2:11,
-#'                  pattern = "11223300",
+#'                  pattern = "112301",
 #'                  byrow = TRUE))              
 #' 
 #' @export         

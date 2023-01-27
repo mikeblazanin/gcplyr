@@ -8,6 +8,6 @@
 ^docs$
 ^pkgdown$
 ^\.github$
-^cran-comments.md
-^index.Rmd
-^index.md
+^cran-comments\.md
+^index\.Rmd
+^index\.md

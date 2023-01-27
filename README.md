@@ -70,4 +70,4 @@ This documentation is also available as a series of pdf vignette files:
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 0.12.1
+data.’ R package version 0.12.2

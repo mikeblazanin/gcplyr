@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 
 `gcplyr` facilitates manipulation and analysis of bacterial growth curve data.
 
-`gcplyr` is currently in an **Open Beta release**. Most features are complete and will be relatively stable. Documentation is complete. 
+`gcplyr` is currently in an **Open Beta release** with features and documentation complete.
 
 **Please send all questions, requests, comments, and bugs to mikeblazanin [at] gmail [dot] com**
 

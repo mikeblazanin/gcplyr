@@ -61,7 +61,8 @@ This documentation is also available as a series of pdf vignette files:
 4.  [Pre-processing and plotting data](./vignettes/preprocess_plot.pdf)
 5.  [Processing data](./vignettes/process.pdf)
 6.  [Analyzing data](./vignettes/analyze.pdf)
-7.  [Statistics, merging other data, and other
+7.  [Dealing with noise](./vignettes/noise.pdf)
+8.  [Statistics, merging other data, and other
     resources](./vignettes/conclusion.pdf)
 
 ## Citation

@@ -148,5 +148,5 @@ Now that you've read this brief introduction, you probably want to get into a li
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
-7. Dealing with noise: vignette("noise")
+7. Dealing with noise: `vignette("noise")`
 8. Statistics, merging other data, and other resources: `vignette("conclusion")`

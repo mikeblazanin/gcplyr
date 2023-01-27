@@ -36,7 +36,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
-7. **Dealing with noise:** vignette("noise")
+7. **Dealing with noise:** `vignette("noise")`
 8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
 So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, plotted, and analyzed our data. Here, we're going to learn potential strategies for dealing with noise in our growth curve data.
@@ -148,7 +148,7 @@ Those values are jumping all over the place, including some where the growth rat
 
 # Fitting during derivative calculation {#FittingDeriv}
 
-One thing we can do is actually something we already did in the Calculating Derivatives article (vignette("process")): instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. In the earlier situation we had used more than two points because of limited resolution at low densities. However, the same solution can apply here. By calculating our derivatives by fitting many points instead of just two, the effect of any single noisy point will be reduced.
+One thing we can do is actually something we already did in the Calculating Derivatives article (`vignette("process")`): instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. In the earlier situation we had used more than two points because of limited resolution at low densities. However, the same solution can apply here. By calculating our derivatives by fitting many points instead of just two, the effect of any single noisy point will be reduced.
 
 To use the fitting functionality of `calc_deriv`, we need to specify either the `window_width` parameter, or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate its use by fitting regressions with more data points. Note that when using `calc_deriv` in this way, you should use *as few* points as is necessary for your analyses to work, so you should visualize different window widths and choose the smallest one that is sufficient for your analyses to succeed.
 
@@ -359,7 +359,7 @@ ex_dat_mrg <-
 #The second round of smoothing with moving-average is plotted in darker colors
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, lty = noise)) +
-  geom_point(aes(y = Measurements)) +
+  geom_line(aes(y = Measurements)) +
   geom_line(aes(y = smoothed_med3), color = "gray20") +
   geom_line(aes(y = smoothed), color = "gray65") +
   facet_wrap(~Well) +
@@ -510,5 +510,5 @@ Now that you've analyzed your data and dealt with any noise, there's just some c
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
-7. Dealing with noise: vignette("noise")
+7. Dealing with noise: `vignette("noise")`
 8. **Statistics, merging other data, and other resources:** `vignette("conclusion")`

@@ -36,7 +36,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. **Processing your data:** `vignette("process")`
 6. Analyzing your data: `vignette("analyze")`
-7. Dealing with noise: vignette("noise")
+7. Dealing with noise: `vignette("noise")`
 8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
 So far, we've imported and transformed our measures, combined them with our design information, and pre-processed and plotted our data. Now we're going to do some processing of our raw data: calculating derivatives.
@@ -259,5 +259,5 @@ Now that you've processed your data, you're ready to analyze it!
 4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
 5. Processing your data: `vignette("process")`
 6. **Analyzing your data: `vignette("analyze")`**
-7. Dealing with noise: vignette("noise")
+7. Dealing with noise: `vignette("noise")`
 8. Statistics, merging other data, and other resources: `vignette("conclusion")`

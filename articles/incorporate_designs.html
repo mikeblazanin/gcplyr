@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/analyze.html">Analyzing data</a>
+    <a class="dropdown-item" href="../articles/noise.html">Dealing with noise</a>
     <a class="dropdown-item" href="../articles/conclusion.html">Statistics, merging other data, and other resources</a>
   </div>
 </li>
@@ -111,6 +112,7 @@ Blazanin</h4>
 </li>
 <li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
 </li>
+<li>Dealing with noise: vignette(“noise”)</li>
 <li>Statistics, merging other data, and other resources:
 <code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
 </li>
@@ -122,11 +124,11 @@ design information on what went into each well (and plate).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 0.12.1, Build Date: 2023-01-22)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 0.12.2, Build Date: 2023-01-27)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 0.12.1</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 0.12.2</span></span>
 <span><span class="co">#&gt; ##</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -1069,14 +1071,14 @@ with your plate reader data.</p>
 </h2>
 <p>Once we have both our design and data in the<code>R</code>environment
 and tidy-shaped, we can merge them using <code>merge_dfs</code>.</p>
-<p>For this, we’ll use the data in the <code>example_widedata</code>
-dataset that is included with <code>gcplyr</code>, and which was the
-source for our previous examples with <code>import_blockmeasures</code>
-and <code>read_wides</code>.</p>
-<p>In the <code>example_widedata</code> dataset, we have 48 different
-bacterial strains. The left side of the plate has all 48 strains in a
-single well each, and the right side of the plate also has all 48
-strains in a single well each:</p>
+<p>For this, we’ll use the data in the
+<code>example_widedata_noiseless</code> dataset that is included with
+<code>gcplyr</code>, and which was the source for our previous examples
+with <code>import_blockmeasures</code> and <code>read_wides</code>.</p>
+<p>In the <code>example_widedata_noiseless</code> dataset, we have 48
+different bacterial strains. The left side of the plate has all 48
+strains in a single well each, and the right side of the plate also has
+all 48 strains in a single well each:</p>
 <table class="table">
 <colgroup>
 <col width="19%">
@@ -1259,10 +1261,10 @@ strains in a single well each:</p>
 <span><span class="co">#&gt; 18   B6       Strain 12    No Phage</span></span>
 <span><span class="co">#&gt; 19   B7        Strain 7 Phage Added</span></span>
 <span><span class="co">#&gt; 20   B8        Strain 8 Phage Added</span></span></code></pre></div>
-<p>Now let’s transform the <code>example_widedata</code> to
+<p>Now let’s transform the <code>example_widedata_noiseless</code> to
 tidy-shaped.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata</span>,</span>
+<code class="sourceCode R"><span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span>,</span>
 <span>                                       id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span></code></pre></div>
 <p>And finally, we merge the two using <code>merge_dfs</code>, saving
 the result to <code>ex_dat_mrg</code>, short for
@@ -1273,12 +1275,12 @@ example_data_merged:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Time Well Measurements Bacteria_strain    Phage</span></span>
-<span><span class="co">#&gt; 1    0   A1        0.003        Strain 1 No Phage</span></span>
-<span><span class="co">#&gt; 2    0   B1        0.001        Strain 7 No Phage</span></span>
+<span><span class="co">#&gt; 1    0   A1        0.002        Strain 1 No Phage</span></span>
+<span><span class="co">#&gt; 2    0   B1        0.002        Strain 7 No Phage</span></span>
 <span><span class="co">#&gt; 3    0   C1        0.002       Strain 13 No Phage</span></span>
 <span><span class="co">#&gt; 4    0   D1        0.002       Strain 19 No Phage</span></span>
 <span><span class="co">#&gt; 5    0   E1        0.002       Strain 25 No Phage</span></span>
-<span><span class="co">#&gt; 6    0   F1        0.001       Strain 31 No Phage</span></span></code></pre></div>
+<span><span class="co">#&gt; 6    0   F1        0.002       Strain 31 No Phage</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="whats-next">What’s next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>
@@ -1300,6 +1302,7 @@ plot your data</p>
 </li>
 <li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
 </li>
+<li>Dealing with noise: vignette(“noise”)</li>
 <li>Statistics, merging other data, and other resources:
 <code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
 </li>

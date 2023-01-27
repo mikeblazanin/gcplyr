@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/analyze.html">Analyzing data</a>
+    <a class="dropdown-item" href="../articles/noise.html">Dealing with noise</a>
     <a class="dropdown-item" href="../articles/conclusion.html">Statistics, merging other data, and other resources</a>
   </div>
 </li>
@@ -120,11 +121,11 @@ load a couple other packages we’ll need.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 0.12.1, Build Date: 2023-01-22)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 0.12.2, Build Date: 2023-01-27)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 0.12.1</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 0.12.2</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -145,7 +146,7 @@ load a couple other packages we’ll need.</p>
 <code>gcplyr</code> provides to users, here’s a simple example of what a
 final <code>gcplyr</code> script can look like. This script imports data
 from files created by a plate reader, combines it with design files
-created by the user, then calculates the maximum density and
+created by the user, then calculates the maximum growth rate and
 area-under-the-curve. <strong>Don’t worry about understanding all the
 details of how the code works right now.</strong> Each of these steps is
 explained in depth in later documents. Here, we’re just providing a
@@ -178,32 +179,38 @@ demonstration of what analyzing growth curve data with
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Voila! 8 lines of code and all your data is imported &amp; plotted!</span></span>
 <span></span>
+<span><span class="co">#Calculate the per-capita growth rate over time in each well</span></span>
+<span><span class="va">data_merged</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">data_merged</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>  percap_deriv <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, percapita <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                            blank <span class="op">=</span> <span class="fl">0</span>, window_width_n <span class="op">=</span> <span class="fl">5</span>, x_scale <span class="op">=</span> <span class="fl">3600</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co">#Calculate two common metrics of bacterial growth:</span></span>
-<span><span class="co"># the maximum density, saving it to a column named 'maxdens'</span></span>
+<span><span class="co"># the maximum growth rate, saving it to a column named max_percap</span></span>
 <span><span class="co"># the area-under-the-curve, saving it to a column named 'auc'</span></span>
 <span><span class="va">data_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">data_merged</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
-<span>  maxdens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  max_percap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">percap_deriv</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  auc <span class="op">=</span> <span class="fu"><a href="../reference/auc.html">auc</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">Time</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Well', 'Bacteria_strain'. You can override</span></span>
 <span><span class="co">#&gt; using the `.groups` argument.</span></span>
 <span></span>
-<span><span class="co">#Print some of the max densities and auc's</span></span>
+<span><span class="co">#Print some of the max growth rates and auc's</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_sum</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain [6]</span></span></span>
-<span><span class="co">#&gt;   Well  Bacteria_strain Phage       maxdens    auc</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage      1.18  <span style="text-decoration: underline;">57</span>433.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A10   Strain 4        Phage Added   0.999 <span style="text-decoration: underline;">20</span>403.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A11   Strain 5        Phage Added   0.984 <span style="text-decoration: underline;">21</span>812.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A12   Strain 6        Phage Added   0.189  <span style="text-decoration: underline;">1</span>652.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A2    Strain 2        No Phage      1.25  <span style="text-decoration: underline;">69</span>537.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A3    Strain 3        No Phage      1.15  <span style="text-decoration: underline;">54</span>776.</span></span>
+<span><span class="co">#&gt;   Well  Bacteria_strain Phage       max_percap    auc</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage         1.00  <span style="text-decoration: underline;">57</span>291.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A10   Strain 4        Phage Added      1.43  <span style="text-decoration: underline;">20</span>060.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A11   Strain 5        Phage Added      1.47  <span style="text-decoration: underline;">21</span>571.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A12   Strain 6        Phage Added      0.789  <span style="text-decoration: underline;">1</span>422.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A2    Strain 2        No Phage         1.31  <span style="text-decoration: underline;">69</span>361.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A3    Strain 3        No Phage         0.915 <span style="text-decoration: underline;">54</span>460.</span></span>
 <span></span>
-<span><span class="co">#Plot the results for max density and area under the curve in presence vs absence of phage</span></span>
+<span><span class="co">#Plot the results for max growth rate and area under the curve in presence vs absence of phage</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_sum</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">auc</span>, y <span class="op">=</span> <span class="va">maxdens</span>, color <span class="op">=</span> <span class="va">Phage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">max_percap</span>, y <span class="op">=</span> <span class="va">auc</span>, color <span class="op">=</span> <span class="va">Phage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gcplyr_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
 </div>
@@ -232,6 +239,7 @@ data into <code>R</code> and transform it into a convenient format.</p>
 </li>
 <li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
 </li>
+<li>Dealing with noise: vignette(“noise”)</li>
 <li>Statistics, merging other data, and other resources:
 <code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
 </li>

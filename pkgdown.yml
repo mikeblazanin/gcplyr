@@ -7,9 +7,10 @@ articles:
   gcplyr: gcplyr.html
   import_transform: import_transform.html
   incorporate_designs: incorporate_designs.html
+  noise: noise.html
   preprocess_plot: preprocess_plot.html
   process: process.html
-last_built: 2023-01-23T22:11Z
+last_built: 2023-01-27T06:20Z
 urls:
   reference: https://mikeblazanin.github.io/gcplyr/reference
   article: https://mikeblazanin.github.io/gcplyr/articles

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/analyze.html">Analyzing data</a>
+    <a class="dropdown-item" href="../articles/noise.html">Dealing with noise</a>
     <a class="dropdown-item" href="../articles/conclusion.html">Statistics, merging other data, and other resources</a>
   </div>
 </li>
@@ -124,11 +125,11 @@ other data, and additional resources for analyzing growth curves.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 0.12.1, Build Date: 2023-01-22)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 0.12.2, Build Date: 2023-01-27)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 0.12.1</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 0.12.2</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -142,30 +143,22 @@ other data, and additional resources for analyzing growth curves.</p>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#This code was explained in sections 2 through 6</span></span>
+<code class="sourceCode R"><span><span class="co">#This code was previously explained</span></span>
 <span><span class="co">#Here we're re-running it so it's available for us to work with</span></span>
-<span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata</span>,</span>
+<span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span>,</span>
 <span>                                       id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span>
 <span><span class="va">example_design</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
 <span>  pattern_split <span class="op">=</span> <span class="st">","</span>, nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  <span class="st">"Bacteria_strain"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
 <span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Strain"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">48</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>,</span>
-<span>    byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, pattern <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  <span class="st">"Bacteria_strain"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
 <span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Strain"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">48</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">12</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>,</span>
-<span>    byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">12</span>, pattern <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  <span class="st">"Phage"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No Phage"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span>,</span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No Phage"</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, pattern <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span>,</span>
 <span>  <span class="st">"Phage"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phage Added"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">12</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phage Added"</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">12</span>, pattern <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">example_tidydata</span>, <span class="va">example_design</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Joining, by = "Well"</span></span>
 <span><span class="va">ex_dat_mrg</span><span class="op">$</span><span class="va">Well</span> <span class="op">&lt;-</span> </span>
@@ -364,12 +357,12 @@ rows.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain [6]</span></span></span>
 <span><span class="co">#&gt;   Well  Bacteria_strain Phage       auc</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage <span style="text-decoration: underline;">55</span>223.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A2    Strain 2        No Phage <span style="text-decoration: underline;">67</span>262.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A3    Strain 3        No Phage <span style="text-decoration: underline;">52</span>592.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A4    Strain 4        No Phage <span style="text-decoration: underline;">70</span>159.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A5    Strain 5        No Phage <span style="text-decoration: underline;">71</span>007.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A6    Strain 6        No Phage <span style="text-decoration: underline;">44</span>141.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage <span style="text-decoration: underline;">55</span>172.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A2    Strain 2        No Phage <span style="text-decoration: underline;">67</span>181.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A3    Strain 3        No Phage <span style="text-decoration: underline;">52</span>392 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A4    Strain 4        No Phage <span style="text-decoration: underline;">70</span>101.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A5    Strain 5        No Phage <span style="text-decoration: underline;">70</span>932.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A6    Strain 6        No Phage <span style="text-decoration: underline;">44</span>079.</span></span></code></pre></div>
 <p>Now, let’s generate some mock antibiotic resistance data. The file
 containing the antibiotic resistance data should have the bacterial
 strain names under the same header <code>Bacterial_strain</code>, so
@@ -407,12 +400,12 @@ collected in the lab.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain [6]</span></span></span>
 <span><span class="co">#&gt;   Well  Bacteria_strain Phage       auc Antibiotic_resis</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage <span style="text-decoration: underline;">55</span>223. TRUE            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A2    Strain 2        No Phage <span style="text-decoration: underline;">67</span>262. FALSE           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A3    Strain 3        No Phage <span style="text-decoration: underline;">52</span>592. TRUE            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A4    Strain 4        No Phage <span style="text-decoration: underline;">70</span>159. FALSE           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A5    Strain 5        No Phage <span style="text-decoration: underline;">71</span>007. FALSE           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A6    Strain 6        No Phage <span style="text-decoration: underline;">44</span>141. TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage <span style="text-decoration: underline;">55</span>172. TRUE            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A2    Strain 2        No Phage <span style="text-decoration: underline;">67</span>181. FALSE           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A3    Strain 3        No Phage <span style="text-decoration: underline;">52</span>392  TRUE            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A4    Strain 4        No Phage <span style="text-decoration: underline;">70</span>101. FALSE           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A5    Strain 5        No Phage <span style="text-decoration: underline;">70</span>932. FALSE           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A6    Strain 6        No Phage <span style="text-decoration: underline;">44</span>079. TRUE</span></span></code></pre></div>
 <p>And now let’s see if there’s a relationship!</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">growth_and_antibiotics</span>, </span>

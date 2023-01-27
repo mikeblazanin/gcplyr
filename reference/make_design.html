@@ -12,7 +12,7 @@ for later merging with read data"><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,7 @@ for later merging with read data"><!-- mathjax --><script src="https://cdnjs.clo
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/analyze.html">Analyzing data</a>
+    <a class="dropdown-item" href="../articles/noise.html">Dealing with noise</a>
     <a class="dropdown-item" href="../articles/conclusion.html">Statistics, merging other data, and other resources</a>
   </div>
 </li>
@@ -164,6 +165,35 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)</p></dd>
 <p>5. a Boolean for whether this pattern should be filled byrow</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>Depends on <code>output_format</code>:</p>
+
+
+<p>If <code>output_format = "blocks"</code>, a list of <code>data.frame</code>'s
+        where each <code>data.frame</code> is block-shaped containing the
+        information for a single design element</p>
+        
+
+<p>If <code>output_format = "blocks_pasted"</code>, a single</p>
+<p></p>
+<p><code>data.frame</code> containing the <code>paste</code>-ed information
+        for all design elements</p>
+        
+
+<p>If <code>output_format = "wide"</code>, a wide-shaped <code>data.frame</code></p>
+
+
+<p>containing all the design elements</p>
+        
+
+<p>If <code>output_format = "tidy"</code>, a tidy-shaped <code>data.frame</code></p>
+
+
+<p>containing all the design elements</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Note that either <code>nrows</code> or <code>block_row_names</code> must be provided

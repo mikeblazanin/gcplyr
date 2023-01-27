@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@
     <a class="dropdown-item" href="../articles/preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/analyze.html">Analyzing data</a>
+    <a class="dropdown-item" href="../articles/noise.html">Dealing with noise</a>
     <a class="dropdown-item" href="../articles/conclusion.html">Statistics, merging other data, and other resources</a>
   </div>
 </li>
@@ -111,6 +112,7 @@ Blazanin</h4>
 </li>
 <li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
 </li>
+<li>Dealing with noise: vignette(“noise”)</li>
 <li>Statistics, merging other data, and other resources:
 <code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
 </li>
@@ -123,11 +125,11 @@ data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 0.12.1, Build Date: 2023-01-22)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 0.12.2, Build Date: 2023-01-27)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 0.12.1</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 0.12.2</span></span>
 <span><span class="co">#&gt; ##</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -442,10 +444,10 @@ names in <code>R</code> in a vector, here we’ve stored the file names in
 <span><span class="co">#curves data, all these files would be created by the plate reader</span></span>
 <span><span class="va">temp_filenames</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Plate1-"</span>, </span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">example_widedata</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">3600</span>,</span>
-<span>              <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">formatC</a></span><span class="op">(</span><span class="op">(</span><span class="va">example_widedata</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">3600</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">60</span>, </span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">3600</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">formatC</a></span><span class="op">(</span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">3600</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">60</span>, </span>
 <span>                      width <span class="op">=</span> <span class="fl">2</span>, flag <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
-<span>              <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">formatC</a></span><span class="op">(</span><span class="op">(</span><span class="va">example_widedata</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">3600</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">60</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/formatc.html" class="external-link">formatC</a></span><span class="op">(</span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">3600</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">60</span>,</span>
 <span>                      width <span class="op">=</span> <span class="fl">2</span>, flag <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
 <span>              sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>, <span class="st">".csv"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">temp_filenames</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -458,11 +460,12 @@ names in <code>R</code> in a vector, here we’ve stored the file names in
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span>, <span class="st">""</span>, <span class="st">""</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"E"</span>, <span class="st">"F"</span>, <span class="st">"G"</span>, <span class="st">"H"</span><span class="op">)</span>, </span>
 <span>             nrow <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">""</span>, <span class="fl">12</span><span class="op">)</span>,</span>
-<span>            <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>, <span class="va">example_widedata</span><span class="op">$</span><span class="va">Time</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">""</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Time"</span>, <span class="va">example_widedata_noiseless</span><span class="op">$</span><span class="va">Time</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">""</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>                   ncol <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">""</span>, <span class="fl">12</span><span class="op">)</span>,</span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, ncol <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
-<span>              <span class="op">(</span><span class="va">example_widedata</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">example_widedata</span><span class="op">)</span><span class="op">]</span><span class="op">/</span><span class="op">(</span><span class="fl">5</span><span class="op">*</span><span class="fl">10</span><span class="op">**</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>              <span class="va">example_widedata_noiseless</span><span class="op">[</span><span class="va">i</span>, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>              ncol <span class="op">=</span> <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>, </span>
 <span>    file <span class="op">=</span> <span class="va">temp_filenames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, quote <span class="op">=</span> <span class="cn">FALSE</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">","</span>,</span>
@@ -515,18 +518,18 @@ folder contains other files, you can specify a regular expression
 absorbance/optical density):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_df</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">temp_filenames</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                                                                               </span></span>
-<span><span class="co">#&gt;    Time       0                                                                               </span></span>
-<span><span class="co">#&gt;                                                                                               </span></span>
-<span><span class="co">#&gt;       1       2     3       4       5       6       7       8        9      10      11      12</span></span>
-<span><span class="co">#&gt; A 6e-12   4e-12 6e-12   6e-12   4e-12   6e-12   4e-12   4e-12    4e-12   4e-12   4e-12   4e-12</span></span>
-<span><span class="co">#&gt; B 2e-12   4e-12 6e-12   4e-12   5e-11   4e-12 2.8e-11   4e-12 1.26e-10   6e-12   2e-12   6e-12</span></span>
-<span><span class="co">#&gt; C 4e-12 3.4e-11 6e-12   4e-12   4e-12   2e-12   6e-12   4e-12    4e-12   4e-12   6e-12   6e-12</span></span>
-<span><span class="co">#&gt; D 4e-12   2e-12 6e-12   6e-12   4e-12   4e-12   6e-12   4e-12    6e-12   4e-12   4e-12   2e-12</span></span>
-<span><span class="co">#&gt; E 4e-12   4e-12 6e-12   6e-12   4e-12   4e-12   2e-12   4e-12    6e-12   2e-12 6.2e-11   6e-12</span></span>
-<span><span class="co">#&gt; F 2e-12   4e-12 4e-12   2e-12   6e-12 1.4e-11   4e-12   4e-12    6e-12 2.2e-11   2e-12   4e-12</span></span>
-<span><span class="co">#&gt; G 4e-12   6e-12 4e-12   6e-12 7.8e-11   6e-12   2e-12   2e-12    6e-12 7.2e-11   2e-12   6e-12</span></span>
-<span><span class="co">#&gt; H 4e-12   2e-12 4e-12 3.8e-11   6e-12   6e-12   2e-12 1.2e-10    4e-12   2e-12   2e-12 3.8e-11</span></span></code></pre></div>
+<span><span class="co">#&gt;                                                                          </span></span>
+<span><span class="co">#&gt;    Time     0                                                            </span></span>
+<span><span class="co">#&gt;                                                                          </span></span>
+<span><span class="co">#&gt;       1     2     3     4     5     6     7     8     9    10    11    12</span></span>
+<span><span class="co">#&gt; A 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; B 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; C 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; D 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; E 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; F 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; G 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; H 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span></code></pre></div>
 <p>This file corresponds to all the reads for a single plate taken at
 the very first timepoint. We can see that the second row of the file
 contains some metadata about the timepoint when this plate read read was
@@ -548,13 +551,13 @@ so you don’t have to specify when your data meets those criteria).</p>
 <span>  files <span class="op">=</span> <span class="va">temp_filenames</span>, startrow <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_blockdata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       block_name       A1      A2      A3       A4      A5      A6      A7</span></span>
-<span><span class="co">#&gt; 1 Plate1-0_00_00    6e-12 4.0e-12   6e-12  6.0e-12 4.0e-12 6.0e-12 4.0e-12</span></span>
-<span><span class="co">#&gt; 2 Plate1-0_15_00 1.36e-10   2e-12 2.0e-12 4.00e-12   6e-12 4.0e-12   4e-12</span></span>
-<span><span class="co">#&gt; 3 Plate1-0_30_00    4e-12 4.0e-12   2e-12    4e-12 2.0e-12   6e-12   6e-12</span></span>
-<span><span class="co">#&gt; 4 Plate1-0_45_00    4e-12   4e-12 3.6e-11    4e-12 3.6e-11   4e-12 4.0e-12</span></span>
-<span><span class="co">#&gt; 5 Plate1-1_00_00    4e-12   6e-12 3.2e-11  4.0e-12 4.0e-12   4e-12   4e-12</span></span>
-<span><span class="co">#&gt; 6 Plate1-1_15_00    4e-12   4e-12   6e-12    4e-12 4.0e-12 4.0e-12   6e-12</span></span></code></pre></div>
+<span><span class="co">#&gt;       block_name    A1    A2    A3    A4    A5    A6    A7</span></span>
+<span><span class="co">#&gt; 1 Plate1-0_00_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 2 Plate1-0_15_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 3 Plate1-0_30_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 4 Plate1-0_45_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 5 Plate1-1_00_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 6 Plate1-1_15_00 0.002 0.003 0.002 0.003 0.003 0.002 0.002</span></span></code></pre></div>
 <p>Here we can see that import_blockmeasures has created a wide-shaped R
 object containing the data from all of our reads. It has also added the
 file names under the <code>block_name</code> column, so that we can
@@ -584,18 +587,18 @@ information as well via the <code>metadata</code> argument.</p>
 <p>For example, let’s return to our most-recent example files:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_df</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">temp_filenames</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                                                                               </span></span>
-<span><span class="co">#&gt;    Time       0                                                                               </span></span>
-<span><span class="co">#&gt;                                                                                               </span></span>
-<span><span class="co">#&gt;       1       2     3       4       5       6       7       8        9      10      11      12</span></span>
-<span><span class="co">#&gt; A 6e-12   4e-12 6e-12   6e-12   4e-12   6e-12   4e-12   4e-12    4e-12   4e-12   4e-12   4e-12</span></span>
-<span><span class="co">#&gt; B 2e-12   4e-12 6e-12   4e-12   5e-11   4e-12 2.8e-11   4e-12 1.26e-10   6e-12   2e-12   6e-12</span></span>
-<span><span class="co">#&gt; C 4e-12 3.4e-11 6e-12   4e-12   4e-12   2e-12   6e-12   4e-12    4e-12   4e-12   6e-12   6e-12</span></span>
-<span><span class="co">#&gt; D 4e-12   2e-12 6e-12   6e-12   4e-12   4e-12   6e-12   4e-12    6e-12   4e-12   4e-12   2e-12</span></span>
-<span><span class="co">#&gt; E 4e-12   4e-12 6e-12   6e-12   4e-12   4e-12   2e-12   4e-12    6e-12   2e-12 6.2e-11   6e-12</span></span>
-<span><span class="co">#&gt; F 2e-12   4e-12 4e-12   2e-12   6e-12 1.4e-11   4e-12   4e-12    6e-12 2.2e-11   2e-12   4e-12</span></span>
-<span><span class="co">#&gt; G 4e-12   6e-12 4e-12   6e-12 7.8e-11   6e-12   2e-12   2e-12    6e-12 7.2e-11   2e-12   6e-12</span></span>
-<span><span class="co">#&gt; H 4e-12   2e-12 4e-12 3.8e-11   6e-12   6e-12   2e-12 1.2e-10    4e-12   2e-12   2e-12 3.8e-11</span></span></code></pre></div>
+<span><span class="co">#&gt;                                                                          </span></span>
+<span><span class="co">#&gt;    Time     0                                                            </span></span>
+<span><span class="co">#&gt;                                                                          </span></span>
+<span><span class="co">#&gt;       1     2     3     4     5     6     7     8     9    10    11    12</span></span>
+<span><span class="co">#&gt; A 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; B 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; C 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; D 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; E 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; F 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; G 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; H 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span></code></pre></div>
 <p>In these files, the timepoint information was located in the 2nd row
 and 3rd column. Here’s how we could specify that metadata in our
 <code>import_blockmeasures</code> command:</p>
@@ -607,13 +610,13 @@ and 3rd column. Here’s how we could specify that metadata in our
 <span>  metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"time"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_blockdata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       block_name time       A1      A2      A3       A4      A5      A6</span></span>
-<span><span class="co">#&gt; 1 Plate1-0_00_00    0    6e-12 4.0e-12   6e-12  6.0e-12 4.0e-12 6.0e-12</span></span>
-<span><span class="co">#&gt; 2 Plate1-0_15_00  900 1.36e-10   2e-12 2.0e-12 4.00e-12   6e-12 4.0e-12</span></span>
-<span><span class="co">#&gt; 3 Plate1-0_30_00 1800    4e-12 4.0e-12   2e-12    4e-12 2.0e-12   6e-12</span></span>
-<span><span class="co">#&gt; 4 Plate1-0_45_00 2700    4e-12   4e-12 3.6e-11    4e-12 3.6e-11   4e-12</span></span>
-<span><span class="co">#&gt; 5 Plate1-1_00_00 3600    4e-12   6e-12 3.2e-11  4.0e-12 4.0e-12   4e-12</span></span>
-<span><span class="co">#&gt; 6 Plate1-1_15_00 4500    4e-12   4e-12   6e-12    4e-12 4.0e-12 4.0e-12</span></span></code></pre></div>
+<span><span class="co">#&gt;       block_name time    A1    A2    A3    A4    A5    A6</span></span>
+<span><span class="co">#&gt; 1 Plate1-0_00_00    0 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 2 Plate1-0_15_00  900 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 3 Plate1-0_30_00 1800 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 4 Plate1-0_45_00 2700 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 5 Plate1-1_00_00 3600 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 6 Plate1-1_15_00 4500 0.002 0.003 0.002 0.003 0.003 0.002</span></span></code></pre></div>
 <p>You can see that the metadata you specified has been added as a
 column in our output <code>data.frame</code>. When specifying metadata,
 the metadata argument must be a list of named vectors. Each vector
@@ -655,26 +658,26 @@ plate reader.</p>
 <code class="sourceCode R"><span><span class="fu">print_df</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"blocks_single.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                       colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span>,</span>
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; block_name Plate1-0_00_00                                                 </span></span>
-<span><span class="co">#&gt;       time              0                                                 </span></span>
-<span><span class="co">#&gt;                         1       2       3        4       5       6       7</span></span>
-<span><span class="co">#&gt;          A          6e-12   4e-12   6e-12    6e-12   4e-12   6e-12   4e-12</span></span>
-<span><span class="co">#&gt;          B          2e-12   4e-12   6e-12    4e-12   5e-11   4e-12 2.8e-11</span></span>
-<span><span class="co">#&gt;          C          4e-12 3.4e-11   6e-12    4e-12   4e-12   2e-12   6e-12</span></span>
-<span><span class="co">#&gt;          D          4e-12   2e-12   6e-12    6e-12   4e-12   4e-12   6e-12</span></span>
-<span><span class="co">#&gt;          E          4e-12   4e-12   6e-12    6e-12   4e-12   4e-12   2e-12</span></span>
-<span><span class="co">#&gt;          F          2e-12   4e-12   4e-12    2e-12   6e-12 1.4e-11   4e-12</span></span>
-<span><span class="co">#&gt;          G          4e-12   6e-12   4e-12    6e-12 7.8e-11   6e-12   2e-12</span></span>
-<span><span class="co">#&gt;          H          4e-12   2e-12   4e-12  3.8e-11   6e-12   6e-12   2e-12</span></span>
-<span><span class="co">#&gt;                                                                           </span></span>
-<span><span class="co">#&gt; block_name Plate1-0_15_00                                                 </span></span>
-<span><span class="co">#&gt;       time            900                                                 </span></span>
-<span><span class="co">#&gt;                         1       2       3        4       5       6       7</span></span>
-<span><span class="co">#&gt;          A       1.36e-10   2e-12   2e-12    4e-12   6e-12   4e-12   4e-12</span></span>
-<span><span class="co">#&gt;          B          4e-12   1e-10   4e-12 1.44e-10   6e-12   2e-12   4e-12</span></span>
-<span><span class="co">#&gt;          C          4e-12   6e-12   2e-12    4e-12   4e-12 3.6e-11   2e-12</span></span>
-<span><span class="co">#&gt;          D          2e-12   4e-12 1.6e-10    4e-12   2e-12   4e-12   6e-12</span></span>
-<span><span class="co">#&gt;          E          4e-12   4e-12   2e-12  1.2e-11   2e-12   2e-12   4e-12</span></span></code></pre></div>
+<span><span class="co">#&gt; block_name Plate1-0_00_00                                    </span></span>
+<span><span class="co">#&gt;       time              0                                    </span></span>
+<span><span class="co">#&gt;                         1     2     3     4     5     6     7</span></span>
+<span><span class="co">#&gt;          A          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          B          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          C          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          D          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          E          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          F          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          G          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          H          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;                                                              </span></span>
+<span><span class="co">#&gt; block_name Plate1-0_15_00                                    </span></span>
+<span><span class="co">#&gt;       time            900                                    </span></span>
+<span><span class="co">#&gt;                         1     2     3     4     5     6     7</span></span>
+<span><span class="co">#&gt;          A          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          B          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          C          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          D          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;          E          0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span></code></pre></div>
 <p>We can see that the first block has some metadata above it, then the
 block of data itself. After that there’s an empty row before the next
 block starts. In fact, if we look at the whole file, we’ll notice that
@@ -697,13 +700,13 @@ to generate the full vector of <code>startrow</code>s and
 successfully:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_blockdata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      block_name       A1      A2      A3       A4      A5      A6      A7</span></span>
-<span><span class="co">#&gt; 1 blocks_single    6e-12 4.0e-12   6e-12  6.0e-12 4.0e-12 6.0e-12 4.0e-12</span></span>
-<span><span class="co">#&gt; 2 blocks_single 1.36e-10   2e-12 2.0e-12 4.00e-12   6e-12 4.0e-12   4e-12</span></span>
-<span><span class="co">#&gt; 3 blocks_single    4e-12 4.0e-12   2e-12    4e-12 2.0e-12   6e-12   6e-12</span></span>
-<span><span class="co">#&gt; 4 blocks_single    4e-12   4e-12 3.6e-11    4e-12 3.6e-11   4e-12 4.0e-12</span></span>
-<span><span class="co">#&gt; 5 blocks_single    4e-12   6e-12 3.2e-11  4.0e-12 4.0e-12   4e-12   4e-12</span></span>
-<span><span class="co">#&gt; 6 blocks_single    4e-12   4e-12   6e-12    4e-12 4.0e-12 4.0e-12   6e-12</span></span></code></pre></div>
+<span><span class="co">#&gt;      block_name    A1    A2    A3    A4    A5    A6    A7</span></span>
+<span><span class="co">#&gt; 1 blocks_single 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 2 blocks_single 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 3 blocks_single 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 4 blocks_single 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 5 blocks_single 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 6 blocks_single 0.002 0.003 0.002 0.003 0.003 0.002 0.002</span></span></code></pre></div>
 <p>Now let’s add some metadata. Because we’re reading from a single
 file, we need to specify the metadata slightly differently. Instead of
 the metadata being a single vector <code>c(row,column)</code> with the
@@ -722,13 +725,13 @@ saved in the second column, in rows 2, 14, 26, 38, … through 1154.</p>
 the time metadata has been incorporated.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_blockdata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      block_name time       A1      A2      A3       A4      A5      A6</span></span>
-<span><span class="co">#&gt; 1 blocks_single    0    6e-12 4.0e-12   6e-12  6.0e-12 4.0e-12 6.0e-12</span></span>
-<span><span class="co">#&gt; 2 blocks_single  900 1.36e-10   2e-12 2.0e-12 4.00e-12   6e-12 4.0e-12</span></span>
-<span><span class="co">#&gt; 3 blocks_single 1800    4e-12 4.0e-12   2e-12    4e-12 2.0e-12   6e-12</span></span>
-<span><span class="co">#&gt; 4 blocks_single 2700    4e-12   4e-12 3.6e-11    4e-12 3.6e-11   4e-12</span></span>
-<span><span class="co">#&gt; 5 blocks_single 3600    4e-12   6e-12 3.2e-11  4.0e-12 4.0e-12   4e-12</span></span>
-<span><span class="co">#&gt; 6 blocks_single 4500    4e-12   4e-12   6e-12    4e-12 4.0e-12 4.0e-12</span></span></code></pre></div>
+<span><span class="co">#&gt;      block_name time    A1    A2    A3    A4    A5    A6</span></span>
+<span><span class="co">#&gt; 1 blocks_single    0 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 2 blocks_single  900 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 3 blocks_single 1800 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 4 blocks_single 2700 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 5 blocks_single 3600 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 6 blocks_single 4500 0.002 0.003 0.002 0.003 0.003 0.002</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="notes-for-more-advanced-use">Notes for more advanced use<a class="anchor" aria-label="anchor" href="#notes-for-more-advanced-use"></a>
@@ -773,13 +776,13 @@ you <code>R</code> code. In this example, the file name is
 <span><span class="co">#start on the first row.</span></span>
 <span><span class="co">#Don't worry about how it works - when working with real growth</span></span>
 <span><span class="co">#curves data, this file would be created by the plate reader</span></span>
-<span><span class="va">temp_example_widedata</span> <span class="op">&lt;-</span> <span class="va">example_widedata</span></span>
+<span><span class="va">temp_example_widedata</span> <span class="op">&lt;-</span> <span class="va">example_widedata_noiseless</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">temp_example_widedata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"V"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">temp_example_widedata</span><span class="op">)</span>,</span>
 <span>                                         sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">modified_example_widedata</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="st">""</span>, nrow <span class="op">=</span> <span class="fl">4</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">example_widedata</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">example_widedata</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="st">""</span>, nrow <span class="op">=</span> <span class="fl">4</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">)</span>,</span>
 <span>    <span class="va">temp_example_widedata</span><span class="op">)</span></span>
 <span><span class="va">modified_example_widedata</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Experiment name"</span>, <span class="st">"Start date"</span>, <span class="st">"Experiment_1"</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -796,15 +799,15 @@ absorbance/optical density):</p>
 <span>                       colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span>, </span>
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Experiment name Experiment_1                                                </span></span>
-<span><span class="co">#&gt;      Start date   2023-01-23                                                </span></span>
+<span><span class="co">#&gt;      Start date   2023-01-27                                                </span></span>
 <span><span class="co">#&gt;                                                                             </span></span>
 <span><span class="co">#&gt;                                                                             </span></span>
 <span><span class="co">#&gt;            Time           A1    B1    C1    D1    E1    F1    G1    H1    A2</span></span>
-<span><span class="co">#&gt;               0        0.003 0.001 0.002 0.002 0.002 0.001 0.002 0.002 0.002</span></span>
-<span><span class="co">#&gt;             900        0.068 0.002 0.002 0.001 0.002 0.002 0.001 0.002 0.001</span></span>
-<span><span class="co">#&gt;            1800        0.002 0.002 0.002 0.003 0.002 0.002 0.003 0.001 0.002</span></span>
-<span><span class="co">#&gt;            2700        0.002 0.003 0.003 0.044 0.135 0.002 0.003 0.012 0.002</span></span>
-<span><span class="co">#&gt;            3600        0.002 0.002 0.003 0.002 0.002 0.002 0.003 0.003 0.003</span></span></code></pre></div>
+<span><span class="co">#&gt;               0        0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;             900        0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;            1800        0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;            2700        0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt;            3600        0.002 0.002 0.002 0.003 0.003 0.002 0.002 0.003 0.002</span></span></code></pre></div>
 <p>This file contains all the reads for a single plate taken across all
 timepoints. We can see that the first two rows contain some metadata
 saved by the plate reader, like the name of the experiment and the date
@@ -827,12 +830,12 @@ criteria. Also note that <code>header = TRUE</code> by default`).</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_widedata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        file Time    A1    B1    C1    D1    E1    F1    G1    H1</span></span>
-<span><span class="co">#&gt; 6  widedata    0 0.003 0.001 0.002 0.002 0.002 0.001 0.002 0.002</span></span>
-<span><span class="co">#&gt; 7  widedata  900 0.068 0.002 0.002 0.001 0.002 0.002 0.001 0.002</span></span>
-<span><span class="co">#&gt; 8  widedata 1800 0.002 0.002 0.002 0.003 0.002 0.002 0.003 0.001</span></span>
-<span><span class="co">#&gt; 9  widedata 2700 0.002 0.003 0.003 0.044 0.135 0.002 0.003 0.012</span></span>
-<span><span class="co">#&gt; 10 widedata 3600 0.002 0.002 0.003 0.002 0.002 0.002 0.003 0.003</span></span>
-<span><span class="co">#&gt; 11 widedata 4500 0.002 0.003 0.002 0.043 0.017 0.001 0.002 0.003</span></span></code></pre></div>
+<span><span class="co">#&gt; 6  widedata    0 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 7  widedata  900 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 8  widedata 1800 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 9  widedata 2700 0.002 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 10 widedata 3600 0.002 0.002 0.002 0.003 0.003 0.002 0.002 0.003</span></span>
+<span><span class="co">#&gt; 11 widedata 4500 0.002 0.003 0.002 0.003 0.003 0.002 0.003 0.003</span></span></code></pre></div>
 <p>Note that <em>read_wides automatically saves the filename</em> the
 data was imported from into the first column of the output
 <code>data.frame</code>. This is done to ensure that later on,
@@ -878,12 +881,12 @@ the 3rd row, 2nd column. Here’s how we could specify that metadata:</p>
 <span>                                                <span class="st">"start_date"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_widedata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        file experiment_name start_date Time    A1    B1    C1    D1</span></span>
-<span><span class="co">#&gt; 6  widedata    Experiment_1 2023-01-23    0 0.003 0.001 0.002 0.002</span></span>
-<span><span class="co">#&gt; 7  widedata    Experiment_1 2023-01-23  900 0.068 0.002 0.002 0.001</span></span>
-<span><span class="co">#&gt; 8  widedata    Experiment_1 2023-01-23 1800 0.002 0.002 0.002 0.003</span></span>
-<span><span class="co">#&gt; 9  widedata    Experiment_1 2023-01-23 2700 0.002 0.003 0.003 0.044</span></span>
-<span><span class="co">#&gt; 10 widedata    Experiment_1 2023-01-23 3600 0.002 0.002 0.003 0.002</span></span>
-<span><span class="co">#&gt; 11 widedata    Experiment_1 2023-01-23 4500 0.002 0.003 0.002 0.043</span></span></code></pre></div>
+<span><span class="co">#&gt; 6  widedata    Experiment_1 2023-01-27    0 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 7  widedata    Experiment_1 2023-01-27  900 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 8  widedata    Experiment_1 2023-01-27 1800 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 9  widedata    Experiment_1 2023-01-27 2700 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 10 widedata    Experiment_1 2023-01-27 3600 0.002 0.002 0.002 0.003</span></span>
+<span><span class="co">#&gt; 11 widedata    Experiment_1 2023-01-27 4500 0.002 0.003 0.002 0.003</span></span></code></pre></div>
 <p>And just like how you can specify <code>startrow</code>,
 <code>startcol</code>, etc. with Excel-style lettering, the location of
 metadata can also be specified with Excel-style lettering.</p>
@@ -965,12 +968,12 @@ columns your non-data (e.g. time and other information) are in via
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_blocks_now_tidy</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     block_name time Well Measurements</span></span>
-<span><span class="co">#&gt;  blocks_single    0   A1        6e-12</span></span>
-<span><span class="co">#&gt;  blocks_single    0   A2        4e-12</span></span>
-<span><span class="co">#&gt;  blocks_single    0   A3        6e-12</span></span>
-<span><span class="co">#&gt;  blocks_single    0   A4        6e-12</span></span>
-<span><span class="co">#&gt;  blocks_single    0   A5        4e-12</span></span>
-<span><span class="co">#&gt;  blocks_single    0   A6        6e-12</span></span></code></pre></div>
+<span><span class="co">#&gt;  blocks_single    0   A1        0.002</span></span>
+<span><span class="co">#&gt;  blocks_single    0   A2        0.002</span></span>
+<span><span class="co">#&gt;  blocks_single    0   A3        0.002</span></span>
+<span><span class="co">#&gt;  blocks_single    0   A4        0.002</span></span>
+<span><span class="co">#&gt;  blocks_single    0   A5        0.002</span></span>
+<span><span class="co">#&gt;  blocks_single    0   A6        0.002</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -995,6 +998,7 @@ data</p>
 </li>
 <li>Analyzing your data: <code><a href="../articles/analyze.html">vignette("analyze")</a></code>
 </li>
+<li>Dealing with noise: vignette(“noise”)</li>
 <li>Statistics, merging other data, and other resources:
 <code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
 </li>

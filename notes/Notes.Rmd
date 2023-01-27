@@ -30,7 +30,7 @@ Alternatively:
 6. R CMD check gcplyr_X.X.X.tar.gz
 7. R CMD INSTALL gcplyr_X.X.X.tar.gz
 8. Organize, edit, and proofread NEWS.md. Commit.
-9. Re-knit README.Rmd
+9. Re-knit README.Rmd and index.Rmd
 10. Save & commit newly generated README.md file
       in bash: git commit -m "commit msg here" --no-verify
 11. Push everything

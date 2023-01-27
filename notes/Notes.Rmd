@@ -13,6 +13,8 @@ mezzo:  testthat::test_file("tests/testthat/mytest.R")
 macro:  devtools::test() 
 macro+: devtools::check()
 
+rhub::check_for_cran
+
 #Force-installing new version to re-build vignette & check tests
 R CMD build --no-build-vignettes
 R CMD check --no-build-vignettes --no-tests

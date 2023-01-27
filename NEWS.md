@@ -1,6 +1,10 @@
-# gcplyr 0.12.1.9000
+# gcplyr 0.12.2
 
-* Things here
+* Improved clarity in vignettes, especially in the calculating derivatives and analyzing data pages
+
+* New vignette on dealing with noise in data
+
+* Small tweaks to other documentation
 
 # gcplyr 0.12.1
 

@@ -10,7 +10,7 @@ articles:
   noise: noise.html
   preprocess_plot: preprocess_plot.html
   process: process.html
-last_built: 2023-01-27T06:20Z
+last_built: 2023-01-27T06:29Z
 urls:
   reference: https://mikeblazanin.github.io/gcplyr/reference
   article: https://mikeblazanin.github.io/gcplyr/articles

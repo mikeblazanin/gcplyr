@@ -27,9 +27,10 @@ test_that("all functions included in gcplyr_function_subfunction_calls.csv", {
   #Here we validate that the current build has no functions that aren't
   # listed in this file. If there are, they must be manually added to
   # gcplyr_function_subfunction_calls.csv
-  expect_equal(unique(myfile$gcplyr_func)[order(unique(myfile$gcplyr_func))], 
-               unique(getNamespaceExports("gcplyr"))[
-                 order(unique(getNamespaceExports("gcplyr")))])
+  expect_equal(
+    unique(getNamespaceExports("gcplyr"))[
+      order(unique(getNamespaceExports("gcplyr")))],
+    unique(myfile$gcplyr_func)[order(unique(myfile$gcplyr_func))])
 })
 
 test_that("all full arg matches have been checked", {

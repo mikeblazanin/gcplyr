@@ -1,5 +1,6 @@
 ﻿gcplyr_func,other_func
 auc,NA
+block_tidydesign,NA
 calc_deriv,NA
 find_local_extrema,NA
 find_threshold_crosses,NA

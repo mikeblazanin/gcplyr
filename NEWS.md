@@ -1,3 +1,5 @@
+# gcplyr 0.12.2.9000
+
 # gcplyr 0.12.2
 
 * Improved clarity in vignettes, especially in the calculating derivatives and analyzing data pages

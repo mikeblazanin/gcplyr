@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,11 +127,11 @@ derivatives.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.0.0, Build Date: 2023-01-30)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.0.1, Build Date: 2023-01-30)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.0.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.0.1</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -347,15 +347,15 @@ population declines, or multiple rounds of growth.</p>
 representative of the overall diversity of dynamics in our example data.
 (In your own code, you should visualize all your data).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#Now let's plot the derivative</span></span>
+<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Now let's plot the derivative</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="process_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>The first thing you might notice is that some of these lines aren’t
 as smooth as you might expect. Why is that? This noise in the
 derivatives is actually being created by the limited resolution of the
@@ -383,7 +383,7 @@ to specify a blank value, i.e. the value of your
 <code>Measurements</code> that corresponds to a population density of 0.
 If your data have already been normalized, simply add
 <code>blank = 0</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
 <span>                     deriv_percap <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
@@ -394,7 +394,7 @@ If your data have already been normalized, simply add
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="process_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>Hmm, what’s going on here? Well, when bacterial densities are very
 close to 0, the per-capita growth rate can be very noisy. Luckily,
 <code>calc_deriv</code> includes a method that can reduce some of the
@@ -409,7 +409,7 @@ specifies how wide the window used to include points for the fitting is
 in units of <code>x</code>, while <code>window_width_n</code> specifies
 it in number of data points. Here, we’ll demonstrate it’s use by fitting
 regressions that include five data points.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
 <span>                     deriv_percap5 <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
 <span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -421,7 +421,7 @@ regressions that include five data points.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="process_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <p>Great! That reduced the effects of low densities greatly! When doing
 fitting to calculate the per-capita growth rate, we can alternatively do
 that fitting with log-transformed y-values. Because exponential growth
@@ -429,7 +429,7 @@ is linear when y-values are log-transformed, this typically gives us a
 better estimate of the per-capita growth rate, although it can fail when
 y-values are at or below 0. Check out the documentation for
 <code>calc_deriv</code> for more details.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
 <span>                     deriv_percap5 <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
 <span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -441,7 +441,7 @@ y-values are at or below 0. Check out the documentation for
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="process_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 <p>Great! Taking a look at our per-capita growth rates, we can see that
 all the bacteria had a lag period of no growth at the beginning before
 starting to grow and having an early peak in their growth rates.</p>
@@ -456,7 +456,7 @@ our example data <code>x</code> is the number of <em>seconds</em> since
 the growth curve began. What if we wanted growth rate in
 <em>per-hour</em>? There are 3600 seconds in an hour, so we set
 <code>x_scale = 3600</code></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
 <span>         deriv_percap_hr <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
@@ -470,7 +470,7 @@ the growth curve began. What if we wanted growth rate in
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="process_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>Now we can see the bacterial growth rate in more-understandable
 units: peak growth rates are often around 1-2 divisions/hour.</p>
 </div>

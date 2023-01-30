@@ -399,7 +399,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   geom_point(alpha = 0.75, size = 0.75) +
   geom_line(linewidth = 1.25, alpha = 0.5, aes(y = smoothed)) +
   facet_wrap(~Well, scales = "free_y") +
-  ggtitle("average then median smoothing") +
+  ggtitle("median then average smoothing") +
   scale_y_log10()
 ```
 
@@ -462,7 +462,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   ylim(NA, 10)
 ```
 
-Here we can see how the combination of smoothing raw data points and smoothing during derivative calculations can lead to much less noisy derivative outputs. However, our per-capita derivatives are still somewhat noisy in some cases (like Well F10). In the next section, we'll discuss the final strategy for dealing with this sort of per-capita derivative specific noise.
+Here we can see that smoothing our raw data has improved our derivatives dramatically. On top of that, the combination of smoothing raw data points and smoothing during derivative calculations can even further lead to less noisy derivatives. However, our per-capita derivatives are still somewhat noisy in some cases (like Well F10). In the next section, we'll discuss a final strategy for dealing with this sort of per-capita derivative specific noise.
 
 # Summarizing on subsets of derivatives {#SubsetAnalysis}
 

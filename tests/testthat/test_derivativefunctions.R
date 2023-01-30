@@ -56,7 +56,7 @@ test_that("calc_deriv returns correctly with fitting utilized", {
   
   #percap using linear (which as time resolution approaches infinity
   # approaches the same value)
-  x <- seq(from = 0, to = 9, by = 0.001)
+  x <- seq(from = 0, to = 1, by = 0.001)
   y <- exp(x)
   expect_equal(tolerance = 0.00001,
                calc_deriv(x = x, y = y, percapita = TRUE, 

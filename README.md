@@ -36,7 +36,8 @@ mikeblazanin \[at\] gmail \[dot\] com**
 
 ## Installation
 
-You can install gcplyr from [GitHub](https://github.com/) by running the
+You can install gcplyr from
+[GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
 following lines in R:
 
 ``` r
@@ -47,7 +48,7 @@ devtools::install_github("mikeblazanin/gcplyr")
 ## Getting Started
 
 The best way to get started is to check out [the online
-documentation](https://mikeblazanin.github.io/gcplyr), which includes
+documentation](https://mikeblazanin.github.io/gcplyr/), which includes
 examples of all of the most common `gcplyr` functions and walks through
 how to import, manipulate, and analyze growth curves data using `gcplyr`
 from start to finish.
@@ -70,4 +71,4 @@ This documentation is also available as a series of pdf vignette files:
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 0.12.2
+data.’ R package version 0.12.3

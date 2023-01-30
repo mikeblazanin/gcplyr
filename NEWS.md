@@ -1,3 +1,7 @@
+# gcplyr 0.12.3
+
+* Tweaks for CRAN compatibility, largely minor documentation changes
+
 # gcplyr 0.12.2
 
 * Improved clarity in vignettes, especially in the calculating derivatives and analyzing data pages

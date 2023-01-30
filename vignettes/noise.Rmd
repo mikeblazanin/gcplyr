@@ -2,12 +2,6 @@
 title: "Dealing with noise"
 author: "Mike Blazanin"
 output: 
-  pdf_document:
-    toc: true
-    toc_depth: 4
-  word_document:
-    toc: true
-    toc_depth: 4
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
@@ -24,8 +18,8 @@ knitr::opts_chunk$set(
 )
 knitr::opts_knit$set(root.dir = tempdir())
 
-#Note: to knit to all output formats simultaneously, run in R console:
-#rmarkdown::render("./vignettes/noise.Rmd", output_format = "all")
+#Note: to knit to pdf, word, and html simultaneously, run in R console:
+#{rmarkdown::render("./vignettes/noise.Rmd", rmarkdown::html_vignette(toc = TRUE, toc_dept = 4)); rmarkdown::render("./vignettes/noise.Rmd", rmarkdown::pdf_document(toc = TRUE, toc_depth = 4)); rmarkdown::render("./vignettes/noise.Rmd", rmarkdown::word_document(toc = TRUE, toc_dept = 4))}
 ```
 
 # Where are we so far?

@@ -1,4 +1,8 @@
-# gcplyr 1.0.0.9000
+# gcplyr 1.0.1
+
+* Readability improvements to "Dealing with noise" vignette
+
+* Minor tweaks to several vignettes to reduce build time for CRAN compatibility
 
 # gcplyr 1.0.0
 

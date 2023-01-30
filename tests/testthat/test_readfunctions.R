@@ -90,7 +90,7 @@ test_that("read_blocks reads data correctly", {
                     formatC(i, width = 3, flag = "0"), ".csv", sep = ""),
               row.names = TRUE)
     if(run_xlsx) {
-      write.xlsx(example_dfs_list[[i]],
+      xlsx::write.xlsx(example_dfs_list[[i]],
                  file = paste("./test_blockcurves_data_xlsx/",
                               formatC(i, width = 3, flag = "0"),
                               ".xlsx", sep = ""),
@@ -239,7 +239,7 @@ test_that("read_wides works correctly", {
   row.names(data) <- 2:101
   write.csv(data, "./test_widecurves_data/test.csv", row.names = FALSE)
   if(run_xlsx) {
-    write.xlsx(data, "./test_widecurves_data/test.xlsx",
+    xlsx::write.xlsx(data, "./test_widecurves_data/test.xlsx",
                sheetName = "Sheet1", col.names = TRUE, row.names = FALSE, 
                append = FALSE)
   }

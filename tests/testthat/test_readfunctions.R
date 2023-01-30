@@ -67,10 +67,13 @@ test_that("infer_names works as expected", {
 
 test_that("read_blocks reads data correctly", {
   #Make test blockcurves data
-  run_xlsx <- TRUE
-  tryCatch(
-    library(xlsx),
-    error = function(e) {run_xlsx <- FALSE}
+  
+  #Only run the Excel tests if xlsx loads successfully
+  run_xlsx <- tryCatch(
+    {library(xlsx)
+     TRUE},
+    error = function(e) {return(FALSE)},
+    warning = function(w) {return(TRUE)}
   )
   
   setwd(tempdir())
@@ -211,10 +214,13 @@ test_that("read_blocks reads data correctly for multiple blocks in one file", {
 
 test_that("read_wides works correctly", {
   #Make test data
-  run_xlsx <- TRUE
-  tryCatch(
-    library(xlsx),
-    error = function(e) {run_xlsx <- FALSE}
+  
+  #Only run the Excel tests if xlsx loads successfully
+  run_xlsx <- tryCatch(
+    {library(xlsx)
+      TRUE},
+    error = function(e) {return(FALSE)},
+    warning = function(w) {return(TRUE)}
   )
   
   setwd(tempdir())

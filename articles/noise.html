@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,11 +127,11 @@ dealing with noise in our growth curve data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 0.12.3, Build Date: 2023-01-30)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 0.12.4, Build Date: 2023-01-30)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 0.12.3</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 0.12.4</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -203,13 +203,13 @@ simulated noise added to it.</p>
 <span><span class="va">noiseless_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">noiseless_data</span>, noise <span class="op">=</span> <span class="st">"No"</span><span class="op">)</span></span>
 <span><span class="va">noisy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">noisy_data</span>, noise <span class="op">=</span> <span class="st">"Yes"</span><span class="op">)</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">noisy_data</span>, <span class="va">noiseless_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining, by = c("Time", "Well", "Measurements", "noise")</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(Time, Well, Measurements, noise)`</span></span>
 <span><span class="co">#&gt; Warning in merge_dfs(noisy_data, noiseless_data): </span></span>
 <span><span class="co">#&gt; merged_df has more rows than x or y, this may indicate</span></span>
 <span><span class="co">#&gt;                mis-matched values in the shared column(s) used to merge </span></span>
 <span><span class="co">#&gt;               (e.g. 'Well')</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">example_design</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining, by = "Well"</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
 <span></span>
 <span><span class="va">ex_dat_mrg</span><span class="op">$</span><span class="va">Well</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">$</span><span class="va">Well</span>,</span>

@@ -44,6 +44,10 @@ Alternatively:
 17. Add new header to NEWS.md for development version number
 18. Add new release on GitHub
 
+#Releasing to CRAN
+run process above
+run rhub::check_for_cran
+devtools::release()
 
 #Managing master & develop branches:
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github

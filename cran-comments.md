@@ -1,6 +1,10 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
+* Cut the build time for vignettes in half
+
+In previous resubmission (v1.0.0), I had:
+
 * Replaced all directed quotes in DESCRIPTION with undirected quotes
 
 * Changed links in README to be absolute

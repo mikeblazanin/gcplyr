@@ -14,9 +14,6 @@ You can also embed plots in R chunks. In that case, don't forget to commit and p
 `gcplyr` facilitates manipulation and analysis of bacterial growth curve
 data.
 
-`gcplyr` is currently in an **Open Beta release** with features and
-documentation complete.
-
 **Please send all questions, requests, comments, and bugs to
 mikeblazanin \[at\] gmail \[dot\] com**
 
@@ -65,4 +62,4 @@ finish, starting with the introduction:
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 0.12.2
+data.’ R package version 0.12.3

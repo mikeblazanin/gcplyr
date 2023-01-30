@@ -1,6 +1,6 @@
-# gcplyr 0.12.3.9000
+# gcplyr 0.12.4
 
-
+* Minor documentation tweaks for CRAN compatibility
 
 # gcplyr 0.12.3
 

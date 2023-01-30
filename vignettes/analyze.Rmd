@@ -83,6 +83,16 @@ ex_dat_mrg <-
 sample_wells <- c("A1", "F1", "F10", "E11")
 ```
 
+```{r, include = FALSE}
+#Here we're only keeping the wells that at one point or another in
+#this vignette we visualize. This cuts down on vignette build time
+#with no visual indication of the change
+ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% c("A1", "A7", "B4", "B10", 
+                                                    "B5", "B11", "F1", "E11", 
+                                                    "F10", "A4", "E2", "H8"))
+```
+
+
 # Analyzing data with summarize {#Analyzing}
 
 Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. For instance, we may calculate metrics like:
@@ -231,10 +241,11 @@ ex_dat_mrg_sum <-
 head(ex_dat_mrg_sum)
 ```
 
-Let's plot these points on all the wells to confirm they are what we expect:
+Let's plot these points on the wells to confirm they are what we expect:
 
 ```{r}
-ggplot(data = ex_dat_mrg, aes(x = Time, y = Measurements)) +
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells), 
+       aes(x = Time, y = Measurements)) +
   geom_line() +
   facet_wrap(~Well, nrow = 8, ncol = 12) +
   geom_point(data = ex_dat_mrg_sum, 

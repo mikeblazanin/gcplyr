@@ -49,14 +49,14 @@ The best way to get started is to check out [the online documentation](https://m
 
 This documentation is also available as a series of pdf vignette files:
 
-1. [Introduction](./vignettes/gcplyr.pdf)
-2. [Importing and transforming data](./vignettes/import_transform.pdf)
-3. [Incorporating design information](./vignettes/incorporate_designs.pdf)
-4. [Pre-processing and plotting data](./vignettes/preprocess_plot.pdf)
-5. [Processing data](./vignettes/process.pdf)
-6. [Analyzing data](./vignettes/analyze.pdf)
-7. [Dealing with noise](./vignettes/noise.pdf)
-8. [Statistics, merging other data, and other resources](./vignettes/conclusion.pdf)
+1. [Introduction](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gcplyr.pdf)
+2. [Importing and transforming data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/import_transform.pdf)
+3. [Incorporating design information](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/incorporate_designs.pdf)
+4. [Pre-processing and plotting data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/preprocess_plot.pdf)
+5. [Processing data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/process.pdf)
+6. [Analyzing data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/analyze.pdf)
+7. [Dealing with noise](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/noise.pdf)
+8. [Statistics, merging other data, and other resources](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/conclusion.pdf)
 
 ## Citation
 

@@ -148,14 +148,6 @@ This is a rather simple example, but in the next sections I show how we can use 
 
 In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
 
-```{r, include = FALSE}
-#For computational speed, let's just keep the wells we'll be focusing on
-# (this is hidden from readers bc from this point on we never print out
-# the df anyway so there's no difference in the output by filtering here)
-ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
-```
-
-
 ## A simple derivative
 
 To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point. This is useful for identifying events like population declines, or multiple rounds of growth.
@@ -169,7 +161,15 @@ To visualize these results, let's look at a few wells that are representative of
 
 ```{r}
 sample_wells <- c("A1", "F1", "F10", "E11")
+```
+```{r, include = FALSE}
+#For computational speed, let's just keep the wells we'll be focusing on
+# (this is hidden from readers bc from this point on we never print out
+# the df anyway so there's no difference in the output by filtering here)
+ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
+```
 
+```{r}
 #Now let's plot the derivative
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv)) +

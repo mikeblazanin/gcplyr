@@ -70,14 +70,6 @@ example_design <- make_design(
 sample_wells <- c("A1", "F1", "F10", "E11")
 ```
 
-```{r, include = FALSE}
-#Here we're only keeping the wells that at one point or another in
-#this vignette we visualize. This cuts down on vignette build time
-#with no visual indication of the change
-ex_dat_mrg <- 
-  dplyr::filter(ex_dat_mrg, Well %in% c("A1", "A2", "A3", sample_wells))
-```
-
 # Introduction
 
 Oftentimes, growth curve data produced by a plate reader will have some noise it it. In model-fitting analysis of growth curves implemented by other packages, the effect of this noise is often eliminated by the fitting step. However, since `gcplyr` does model-free analyses, our approach can sometimes be more sensitive to noise, necessitating steps to reduce the effects of noise.

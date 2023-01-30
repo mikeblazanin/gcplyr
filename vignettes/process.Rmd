@@ -220,7 +220,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Great! Taking a look at our per-capita growth rates, we can see that all the bacteria had a lag period of no growth at the beginning before starting to grow and haveing an early peak in their growth rates. 
+Great! Taking a look at our per-capita growth rates, we can see that all the bacteria had a lag period of no growth at the beginning before starting to grow and having an early peak in their growth rates. 
 
 ## Changing the derivative units
 

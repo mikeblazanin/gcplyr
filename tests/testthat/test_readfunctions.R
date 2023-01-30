@@ -250,7 +250,7 @@ test_that("read_wides works correctly", {
       files = c("./test_widecurves_data/test.csv"),
       names_to_col = NULL)
     expect_equal(data_in,
-                 list("test_widecurves_data/test" = data))
+                 data)
   } else {
     data_in <- read_wides(
       files = c("./test_widecurves_data/test.csv",
@@ -268,7 +268,7 @@ test_that("read_wides works correctly", {
       files = c("./test_widecurves_data/test.csv"),
       names_to_col = "file")
     expect_equal(data_in2,
-                 list("test_widecurves_data/test" = data2))
+                 data2)
   } else {
     data_in2 <- read_wides(
       files = c("./test_widecurves_data/test.csv",
@@ -288,13 +288,13 @@ test_that("read_wides works correctly", {
     data_in3 <- read_wides(
       files = c("./test_widecurves_data/test.csv"),
       metadata = list("row5col5" = c(5, 5), "row12col2" = c(12, 2)))
-    expect_equal(data_in3, list("test_widecurves_data/test" = data3))
+    expect_equal(data_in3, data3)
     
     data_in3_excelnums <- read_wides(
       files = c("./test_widecurves_data/test.csv"),
       metadata = list("row5col5" = c(5, "E"), "row12col2" = c(12, "B")))
     expect_equal(data_in3_excelnums,
-                 list("test_widecurves_data/test" = data3))
+                 data3)
   } else {
     data_in3 <- read_wides(
       files = c("./test_widecurves_data/test.csv",

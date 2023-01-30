@@ -12,7 +12,7 @@ for later merging with read data"><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -206,9 +206,8 @@ and that either <code>ncols</code> or <code>block_col_names</code> must be provi
 <span class="r-in"><span>            design_element_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                                       <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span></span>
 <span class="r-in"><span>                                       <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span></span>
-<span class="r-in"><span>                                       <span class="st">"11223300"</span>, </span></span>
+<span class="r-in"><span>                                       <span class="st">"112301"</span>, </span></span>
 <span class="r-in"><span>                                       <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Total number of wells is not a multiple of pattern length for design_element_name </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Well design_element_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    A1                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    A2                &lt;NA&gt;</span>
@@ -226,73 +225,73 @@ and that either <code>ncols</code> or <code>block_col_names</code> must be provi
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14   B2                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 15   B3                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16   B4                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17   B5                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18   B6                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19   B7                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20   B8                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21   B9                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22  B10                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23  B11                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17   B5                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18   B6                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19   B7                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20   B8                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21   B9                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22  B10                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23  B11                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24  B12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 25   C1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26   C2                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27   C3                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28   C4                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29   C5                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30   C6                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31   C7                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32   C8                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26   C2                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27   C3                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28   C4                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29   C5                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30   C6                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31   C7                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32   C8                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33   C9                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34  C10                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35  C11                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34  C10                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35  C11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 36  C12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 37   D1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38   D2                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38   D2                   B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39   D3                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40   D4                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41   D5                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41   D5                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 42   D6                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 43   D7                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 44   D8                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45   D9                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46  D10                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47  D11                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45   D9                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46  D10                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47  D11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 48  D12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 49   E1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50   E2                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51   E3                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52   E4                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53   E5                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54   E6                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55   E7                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56   E8                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57   E9                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58  E10                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59  E11                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50   E2                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51   E3                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52   E4                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53   E5                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54   E6                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55   E7                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56   E8                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57   E9                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58  E10                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59  E11                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 60  E12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 61   F1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62   F2                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62   F2                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 63   F3                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64   F4                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65   F5                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66   F6                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64   F4                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65   F5                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66   F6                   B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 67   F7                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 68   F8                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69   F9                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69   F9                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 70  F10                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 71  F11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 72  F12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 73   G1                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 74   G2                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75   G3                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76   G4                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77   G5                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78   G6                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79   G7                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80   G8                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81   G9                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82  G10                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83  G11                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75   G3                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76   G4                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77   G5                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78   G6                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79   G7                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80   G8                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81   G9                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82  G10                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83  G11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 84  G12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 85   H1                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 86   H2                &lt;NA&gt;</span>
@@ -313,9 +312,8 @@ and that either <code>ncols</code> or <code>block_col_names</code> must be provi
 <span class="r-in"><span>                 values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                 rows <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, </span></span>
 <span class="r-in"><span>                 cols <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span></span>
-<span class="r-in"><span>                 pattern <span class="op">=</span> <span class="st">"11223300"</span>,</span></span>
+<span class="r-in"><span>                 pattern <span class="op">=</span> <span class="st">"112301"</span>,</span></span>
 <span class="r-in"><span>                 byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>              </span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Total number of wells is not a multiple of pattern length for design_element_name </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Well design_element_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    A1                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2    A2                &lt;NA&gt;</span>
@@ -333,73 +331,73 @@ and that either <code>ncols</code> or <code>block_col_names</code> must be provi
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14   B2                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 15   B3                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16   B4                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17   B5                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18   B6                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19   B7                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20   B8                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21   B9                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22  B10                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23  B11                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17   B5                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18   B6                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19   B7                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20   B8                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21   B9                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22  B10                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23  B11                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24  B12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 25   C1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26   C2                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27   C3                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28   C4                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29   C5                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30   C6                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31   C7                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32   C8                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26   C2                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27   C3                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28   C4                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29   C5                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30   C6                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31   C7                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32   C8                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33   C9                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34  C10                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35  C11                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34  C10                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35  C11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 36  C12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 37   D1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38   D2                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38   D2                   B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39   D3                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40   D4                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41   D5                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41   D5                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 42   D6                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 43   D7                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 44   D8                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45   D9                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46  D10                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47  D11                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45   D9                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46  D10                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47  D11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 48  D12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 49   E1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50   E2                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51   E3                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52   E4                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53   E5                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54   E6                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55   E7                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56   E8                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57   E9                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58  E10                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59  E11                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50   E2                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51   E3                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52   E4                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53   E5                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54   E6                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55   E7                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56   E8                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57   E9                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58  E10                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59  E11                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 60  E12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 61   F1                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62   F2                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62   F2                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 63   F3                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64   F4                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65   F5                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66   F6                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64   F4                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65   F5                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66   F6                   B</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 67   F7                   C</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 68   F8                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69   F9                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69   F9                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 70  F10                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 71  F11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 72  F12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 73   G1                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 74   G2                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75   G3                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76   G4                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77   G5                   C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78   G6                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79   G7                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80   G8                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81   G9                   A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82  G10                   B</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83  G11                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75   G3                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76   G4                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77   G5                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78   G6                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79   G7                   A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80   G8                   B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81   G9                   C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82  G10                &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83  G11                   A</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 84  G12                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 85   H1                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 86   H2                &lt;NA&gt;</span>

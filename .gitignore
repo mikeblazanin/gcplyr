@@ -1,6 +1,7 @@
 .Rproj.user
 vignettes/*.R
 vignettes/*.html
+vignettes/*.docx
 inst/doc
 notes/example_for_mike.csv
 notes/gam_fit.R

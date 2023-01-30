@@ -1,3 +1,5 @@
+# gcplyr 1.0.0.9000
+
 # gcplyr 1.0.0
 
 * There are only minor documentation tweaks for CRAN compatibility since 0.12.3. This is version 1.0.0 because it will be the first to be released on CRAN and denotes that gcplyr will be stable going forward

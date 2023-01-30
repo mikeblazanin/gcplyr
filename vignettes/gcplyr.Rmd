@@ -2,12 +2,6 @@
 title: "Introduction to using gcplyr"
 author: "Mike Blazanin"
 output: 
-  pdf_document:
-    toc: true
-    toc_depth: 4
-  word_document:
-    toc: true
-    toc_depth: 4
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
@@ -24,12 +18,8 @@ knitr::opts_chunk$set(
 )
 knitr::opts_knit$set(root.dir = tempdir())
 
-#Note: to knit to all output formats simultaneously, run in R console:
-#rmarkdown::render("./vignettes/gcplyr.Rmd", output_format = "all")
-
-#To do so for all vignettes, copy-paste the code below into console
-# (Ctrl+Enter does not work):
-#for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {rmarkdown::render(paste0("./vignettes/", fil), output_format = "all")}
+#Note: to knit to pdf, word, and html simultaneously, run in R console:
+#{rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::html_vignette(toc = TRUE, toc_dept = 4)); rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::pdf_document(toc = TRUE, toc_depth = 4)); rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::word_document(toc = TRUE, toc_dept = 4))}
 ```
 
 # Getting started

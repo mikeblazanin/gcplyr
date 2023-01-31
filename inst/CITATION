@@ -1,15 +1,13 @@
-citHeader("To cite gcplyr in publications use:")
-
 year <- sub("-.*", "", meta$Date)
 note <- sprintf("version %s", meta$Version)
 
-citEntry(
-  entry    = "Manual",
-  title    = "{gcplyr}: manipulation and analysis of growth curves data",
-  author   = as.person("Michael Blazanin"),
-  year     = year,
-  note     = note,
-  url      = "https://github.com/mikeblazanin/gcplyr/",
-  textVersion = paste(
-     "Blazanin, Michael. ", year, ". 'gcplyr: manipulation and analysis of growth curves data.' R package ", note, sep = "")
+bibentry(
+  bibtype     = "Manual",
+  header      = "To cite gcplyr in publications use:",
+  title       = "{gcplyr}: manipulation and analysis of growth curves data",
+  author      = as.person("Michael Blazanin"),
+  year        = year,
+  note        = note,
+  url         = "https://github.com/mikeblazanin/gcplyr/",
+  textVersion = paste0("Blazanin, Michael. ", year, ". 'gcplyr: manipulation and analysis of growth curves data.' R package ", note)
   )

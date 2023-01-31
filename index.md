@@ -11,8 +11,15 @@ You can also embed plots in R chunks. In that case, don't forget to commit and p
 <!-- badges: start -->
 <!-- badges: end -->
 
-`gcplyr` facilitates manipulation and analysis of bacterial growth curve
-data.
+`gcplyr` facilitates import, manipulation and model-free analysis of
+bacterial growth curve data, as commonly output by plate readers. The
+package provides tools for reshaping common plate reader outputs into
+‘tidy’ formats and merging them with design information, making data
+easy to work with using ‘gcplyr’ and other packages. Also streamlines
+common growth curveprocessing steps, like smoothing and calculating
+derivatives, and facilitates model-free characterization and analysis of
+growth data to extract parameters like growth rate/doubling time,
+carrying capacity, diauxic shifts, extinction, and more.
 
 **Please send all questions, requests, comments, and bugs to
 mikeblazanin \[at\] gmail \[dot\] com**
@@ -62,4 +69,4 @@ finish, starting with the introduction:
 Please cite software as:
 
 Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 1.0.1
+data.’ R package version 1.0.1.9000

@@ -1,6 +1,6 @@
-# gcplyr 1.0.1.9000
+# gcplyr 1.0.2
 
-stuff here
+* Tweaks to CITATION for CRAN compatibility
 
 # gcplyr 1.0.1
 

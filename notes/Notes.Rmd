@@ -47,7 +47,7 @@ Alternatively:
 #Releasing to CRAN
 run process above
 run rhub::check_for_cran
-devtools::release()
+devtools::release(args = "--compact-vignettes=gs+qpdf")
 
 #Managing master & develop branches:
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github

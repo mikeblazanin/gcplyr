@@ -68,5 +68,5 @@ finish, starting with the introduction:
 
 Please cite software as:
 
-Blazanin, Michael. 2022. ‘gcplyr: manipulate and analyze growth curve
+Blazanin, Michael. 2023. ‘gcplyr: manipulate and analyze growth curve
 data.’ R package version 1.0.2

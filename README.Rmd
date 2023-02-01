@@ -67,4 +67,4 @@ ver <- packageDescription("gcplyr", lib.loc = gcplyr_lib)$Version
 
 Please cite software as:
 
- Blazanin, Michael. 2022. 'gcplyr: manipulate and analyze growth curve data.' R package version `r ver`
+ Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth curve data.' R package version `r ver`

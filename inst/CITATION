@@ -4,10 +4,10 @@ note <- sprintf("version %s", meta$Version)
 bibentry(
   bibtype     = "Manual",
   header      = "To cite gcplyr in publications use:",
-  title       = "{gcplyr}: manipulation and analysis of growth curves data",
+  title       = "{gcplyr}: manipulate and analyze growth curve data",
   author      = as.person("Michael Blazanin"),
   year        = year,
   note        = note,
   url         = "https://github.com/mikeblazanin/gcplyr/",
-  textVersion = paste0("Blazanin, Michael. ", year, ". 'gcplyr: manipulation and analysis of growth curves data.' R package ", note)
+  textVersion = paste0("Blazanin, Michael. ", year, ". 'gcplyr: manipulate and analyze growth curve data.' R package ", note)
   )

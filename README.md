@@ -57,7 +57,7 @@ devtools::install_github("mikeblazanin/gcplyr")
 The best way to get started is to check out [the online
 documentation](https://mikeblazanin.github.io/gcplyr/), which includes
 examples of all of the most common `gcplyr` functions and walks through
-how to import, manipulate, and analyze growth curves data using `gcplyr`
+how to import, manipulate, and analyze growth curve data using `gcplyr`
 from start to finish.
 
 This documentation is also available as a series of pdf vignette files:

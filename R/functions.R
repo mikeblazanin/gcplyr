@@ -3968,6 +3968,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
 #'              
+#' @return a tidy-shaped \code{data.frame} containing all the design elements
+#' 
 #' @export
 make_tidydesign <- function(nrows = NULL, ncols = NULL,
                             block_row_names = NULL, block_col_names = NULL,

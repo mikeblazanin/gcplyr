@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 * Information on the experimental design of a set of growth curves might be saved in a file or may only be recorded non-digitally (e.g. in a lab notebook). `gcplyr` can import experimental designs from files or allow users to input that information directly through `gcplyr` functions, then merge this design information with previously-imported density data.
 * Once data is tidy-formatted and merged with design information, it's easy to work with and plot using functions from `gcplyr` and popular packages `dplyr` and `ggplot2`.
 * `gcplyr` streamlines a number of different methods to calculate derivatives of your density data.
-* `gcplyr` also implements a number of strategies to deal with noise in your data, including smoothing of raw data and linear fitting during derivatives calculation.
+* `gcplyr` also facilitates several strategies to deal with noise in your data, including smoothing of raw data and linear fitting during derivatives calculation.
 * `gcplyr` facilitates model-free characterization and analysis of growth data to extract parameters like growth rate/doubling time, carrying capacity, diauxic shifts, extinction, and more.
 
 **Please send all questions, requests, comments, and bugs to mikeblazanin [at] gmail [dot] com**

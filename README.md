@@ -31,7 +31,7 @@ bacterial growth curve data, as commonly output by plate readers.
   packages `dplyr` and `ggplot2`.
 - `gcplyr` streamlines a number of different methods to calculate
   derivatives of your density data.
-- `gcplyr` also implements a number of strategies to deal with noise in
+- `gcplyr` also facilitates several strategies to deal with noise in
   your data, including smoothing of raw data and linear fitting during
   derivatives calculation.
 - `gcplyr` facilitates model-free characterization and analysis of

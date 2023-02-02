@@ -1,6 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
+* There are not yet any published works describing the methods in this package. When there are they will be added to the description field of the DESCRIPTION file. In the meantime, I have added a link to the github repo where documentation is available for the methods.
+
 * Cut the build time for vignettes in half
 
 In previous resubmission (v1.0.0), I had:

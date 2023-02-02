@@ -6,7 +6,7 @@
 \usage{
 write_blocks(
   blocks,
-  file = NULL,
+  file,
   output_format = "multiple",
   block_name_location = NULL,
   paste_sep = "_",
@@ -18,39 +18,43 @@ write_blocks(
 \arguments{
 \item{blocks}{list of block-shaped data to be written to file}
 
-\item{file}{The filename or filenames. 
+\item{file}{\code{NULL}, a character string naming a file to write to, or a 
+            vector of character strings naming files to write to. 
 
-            Required when: \code{output_format = "single"}
+            A file name is required when \code{output_format = "single"}
             
-            Optional when:
-            \code{block_name_location = "filename"}
+            A file name can be specified when \code{output_format = "pasted"},
+            or \code{file} can be set to \code{NULL} as long as 
+            \code{block_name_location = "filename"} (where pasted 
+            \code{block_name} metadata will be used for the file name)
             
-            and
-            
-            \code{output_format = "pasted"} or \code{output_format = "multiple"}}
+            File names can be specified when \code{output_format = "multiple"},
+            or \code{file} can be set to \code{NULL} as long as 
+            \code{block_name_location = "filename"} (where the 
+            \code{block_name} metadata will be used for the file names)}
 
 \item{output_format}{One of "single", "pasted", "multiple".
 
                      "single" will write all blocks into a single
                      csv file, with an empty row between successive
-                     blocks
+                     blocks.
                      
                      "pasted" will paste all blocks together using a
                      \code{paste_sep}, and then write that now-pasted
-                     block to a single csv file
+                     block to a single csv file.
                      
-                     "multiple" will write each block to its own csv file}
+                     "multiple" will write each block to its own csv file.}
 
-\item{block_name_location}{Either NULL, 'filename' or 'file'.
+\item{block_name_location}{Either \code{NULL}, 'filename' or 'file'.
 
-                          If NULL, will be automatically selected based
-                          on \code{output_format}. For 
+                          If \code{NULL}, \code{block_name_location} will 
+                          be automatically selected based on 
+                          \code{output_format}. For 
                           \code{output_format = 'single'} and 
                           \code{output_format = 'pasted'}, 
-                          \code{block_name_location} defaults to \code{file}.
+                          \code{block_name_location} defaults to 'file'.
                           For \code{output_format = 'multiple'}, 
-                          \code{block_name_location} defaults to 
-                          \code{filename}
+                          \code{block_name_location} defaults to 'filename'
 
                           If 'filename', the \code{block_name} metadata 
                           will be used as the output file name(s) when

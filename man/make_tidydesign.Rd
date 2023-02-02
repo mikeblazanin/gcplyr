@@ -69,6 +69,9 @@ come first}
               
              5. a Boolean for whether this pattern should be filled byrow}
 }
+\value{
+a tidy-shaped \code{data.frame} containing all the design elements
+}
 \description{
 This is a function to easily input experimental design elements
 for later merging with read data

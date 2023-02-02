@@ -1,8 +1,8 @@
 Type: Package
 Package: gcplyr
 Title: Manipulate and Analyze Growth Curve Data
-Version: 1.0.2.9000
-Date: 2023-01-31
+Version: 1.1.0
+Date: 2023-02-02
 Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 
                comment = c(ORCID = "0000-0003-4630-6235"))
@@ -13,7 +13,7 @@ Description: Easy import, manipulation, and model-free analysis of
     'gcplyr' and other packages. Also streamlines common growth curve
     processing steps, like smoothing and calculating derivatives, and
     facilitates model-free characterization and analysis of growth data.
-    See methods at <https://mikeblazanin.github.io/gcplyr/>
+    See methods at <https://mikeblazanin.github.io/gcplyr/>.
 License: MIT + file LICENSE
 URL: https://mikeblazanin.github.io/gcplyr/, https://github.com/mikeblazanin/gcplyr/
 Depends: 

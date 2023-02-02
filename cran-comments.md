@@ -1,29 +1,21 @@
 ## Resubmission
-This is a resubmission. In this version I have:
+This is a resubmission. In this version (1.1.0) I have:
 
-* There are not yet any published works describing the methods in this package. When there are they will be added to the description field of the DESCRIPTION file. In the meantime, I have added a link to the github repo where documentation is available for the methods.
+* Added a link to the github repo where documentation for the methods in this package is available to the description field of the DESCRIPTION file. There are not yet any published works describing these methods; when there are they will be added to the package DESCRIPTION.
 
-* I added \value for all exported methods (only make_tidydesign was missing one)
+* Added \value for all exported methods (only make_tidydesign was missing one)
 
-* Cut the build time for vignettes in half
+* Changed the behavior of write_blocks so that it does not write by default in the user's home filespace. Users must now specify a file name or NULL for the `file` argument (in which case the file name will be inferred from other arguments). No other functions write to files.
 
-In previous resubmission (v1.0.0), I had:
-
-* Replaced all directed quotes in DESCRIPTION with undirected quotes
-
-* Changed links in README to be absolute
-
-Note that there is currently no doi or arXiv paper out to be added to the package DESCRIPTION. One is in-prep and once available will be added to the DESCRIPTION and the package re-released.
+* Checked all vignettes and tests, and believe they all only write files to tempdir() or tempfile(). No examples write to files.
 
 ## R CMD check results
 
 There were no ERRORs or WARNINGs
 
-There were 2 NOTEs:
+There was 1 NOTE:
 
 * This is a new submission to CRAN
-
-* gcplyr is the name of the package and not misspelled
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package

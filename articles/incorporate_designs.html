@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,11 +125,11 @@ design information on what went into each well (and plate).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.0.2, Build Date: 2023-01-31)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.1.0, Build Date: 2023-02-02)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.0.2</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.1.0</span></span>
 <span><span class="co">#&gt; ##</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -986,10 +986,11 @@ formats:</p>
 <p>The default setting for <code>write_blocks</code> is
 <code>output_format = 'multiple'</code>. This creates one
 <code>csv</code> file for each block, naming the files according to the
-<code>block_names</code> in the metadata for each block.</p>
+<code>block_names</code> in the metadata for each block. To use the
+default naming convention, we set <code>file = NULL</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#See the previous section where we created my_design_blk</span></span>
-<span><span class="fu"><a href="../reference/write_blocks.html">write_blocks</a></span><span class="op">(</span><span class="va">my_design_blk</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/write_blocks.html">write_blocks</a></span><span class="op">(</span><span class="va">my_design_blk</span>, file <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Let's see what the files look like</span></span>
 <span><span class="fu">print_df</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Bacteria.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>

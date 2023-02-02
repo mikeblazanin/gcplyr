@@ -425,11 +425,11 @@ These design files will be more human-readable but require slightly more computa
 #### Saving block-shaped designs to multiple files
 
 
-The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block.
+The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block. To use the default naming convention, we set `file = NULL`.
 
 ```{r}
 #See the previous section where we created my_design_blk
-write_blocks(my_design_blk)
+write_blocks(my_design_blk, file = NULL)
 
 #Let's see what the files look like
 print_df(read.csv("Bacteria.csv", header = FALSE, colClasses = "character"))

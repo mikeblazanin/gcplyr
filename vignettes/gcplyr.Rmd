@@ -85,7 +85,7 @@ example_design <- make_design(
     values = c("Phage Added"),
     rows = 1:8, cols = 7:12,
     pattern = "1"))
-write_blocks(example_design)
+write_blocks(example_design, file = NULL)
 ```
 
 ```{r}

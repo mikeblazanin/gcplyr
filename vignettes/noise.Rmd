@@ -179,7 +179,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   geom_point(alpha = 0.75, size = 0.75) +
   geom_line(linewidth = 1.25, alpha = 0.5, aes(y = deriv9)) +
   facet_wrap(~Well, scales = "free_y") +
-  ggtitle("window_width_n = 5")
+  ggtitle("window_width_n = 9")
 
 #Plot per-capita derivative 5
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -560,7 +560,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg,
              aes(yintercept = max_growth_rate, color = noise), lty = 2)
 ```
 
-Here we can see that by limiting our analyses to just a subset of the data, the maximum per-capita growth rate has now become nearly identical in three of the example wells. Unfortunately, in F1 we haven't been able to eliminate all of the noise. Hopefully this doesn't happen in your data! But if it does, continue to try alternate smoothing, derivative calculating, and subset strategies to try to further reduce the effects of noise on your findings.
+Here we can see that by limiting our analyses to just a subset of the data, the maximum per-capita growth rate has now become nearly identical between the noisy and noiseless data in three of the example wells. Unfortunately, in F1 we haven't been able to eliminate all of the noise. Hopefully this doesn't happen in your data! But if it does, continue to try alternate smoothing, derivative calculating, and subset strategies to try to further reduce the effects of noise on your findings.
 
 # What's next?
 

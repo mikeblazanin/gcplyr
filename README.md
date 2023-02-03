@@ -43,8 +43,15 @@ mikeblazanin \[at\] gmail \[dot\] com**
 
 ## Installation
 
-You can install gcplyr from
-[GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
+You can install the latest released version from CRAN by running the
+following line in R:
+
+``` r
+install.packages("gcplyr")
+```
+
+If you would like to install the latest development version from
+[GitHub](https://github.com/mikeblazanin/gcplyr/), you can run the
 following lines in R:
 
 ``` r

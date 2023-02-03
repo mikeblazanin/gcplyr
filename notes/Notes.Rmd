@@ -5,7 +5,9 @@ mSphere - explicitly has a Resource Reports article type, maybe if I have to
           write a bunch for dissertation anyways?
 Spectrum - ASM's Plos One
 MRA - articles are super short like 1 page very easy to write very fast reviews
-JOSS
+JOSS - out, not on pubmed
+R Journal - out, not on pubmed
+Journal of Statistical Software - out, not on pubmed
 
 #Testing
 micro:  devtools::load_all() and interactively running tests

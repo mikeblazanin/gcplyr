@@ -201,5 +201,16 @@ test_that("find_threshold_crosses works correctly", {
                            threshold = 16.5, return = "index",
                            subset = dat$x < 25),
     c(15, 30))
+  
+  #data where it never crosses
+  find_threshold_crosses(x = 1:10, y = 1:10,
+                         return_falling = FALSE, threshold = 11)
+  
+  #data where endpoint should be returned
+  
+  
+  #data where all values are NA
+  
+  #data where nearly all values are NA
 })
 

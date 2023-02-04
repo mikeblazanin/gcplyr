@@ -3531,17 +3531,17 @@ find_local_extrema <- function(y, x = NULL,
   }
 }
 
-#' Find the first local peak of a numeric vector
+#' Find the first local maxima of a numeric vector
 #' 
 #' This function takes a vector of \code{y} values and returns the index
-#' (by default) of the first local maxima. It serves as a wrapper function
-#' for \code{find_local_extrema}
+#' (by default) of the first local maxima. It serves as a shortcut
+#' for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 #' 
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
-#'               first peak in y values
+#'               first maxima in y values
 #' @param window_width Width of the window (in units of \code{x}) used to
 #'                   search for local extrema. A narrower width will be more
 #'                   sensitive to narrow local maxima/minima, while a wider
@@ -3586,10 +3586,10 @@ find_local_extrema <- function(y, x = NULL,
 #' will be used.
 #' 
 #' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
 #'                    
 #' @export      
-first_peak <- function(y, x = NULL, 
+first_maxima <- function(y, x = NULL, 
                        window_width = NULL,
                        window_width_n = NULL,
                        window_height = NULL,
@@ -3613,6 +3613,168 @@ please use find_local_extrema for more flexibility")
                             window_height = window_height,
                             return = return, ...)[1])
 }
+
+#' Find the first local maxima of a numeric vector
+#' 
+#' This function has been deprecated in favor of the identical new 
+#' function \code{first_maxima}
+#' 
+#' This function takes a vector of \code{y} values and returns the index
+#' (by default) of the first local maxima. It serves as a shortcut
+#' for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
+#' 
+#' @seealso [first_maxima()]
+#' 
+#' @param y Numeric vector of y values in which to identify local extrema
+#' @param x Optional numeric vector of corresponding x values
+#' @param return One of c("index", "x", "y"), determining whether the function
+#'               will return the index, x value, or y value associated with the
+#'               first maxima in y values
+#' @param window_width Width of the window (in units of \code{x}) used to
+#'                   search for local extrema. A narrower width will be more
+#'                   sensitive to narrow local maxima/minima, while a wider
+#'                   width will be less sensitive to local maxima/minima.
+#' @param window_width_n The maximum number of data points a single 
+#'                      extrema-search step is allowed to take. For example,
+#'                      when maxima-finding, the function will not pass
+#'                      a valley consisting of more than \code{window_width_n}
+#'                      data points.
+#'                      
+#'                      A smaller \code{window_width_n} will be more sensitive 
+#'                      to narrow local maxima/minima, while a larger 
+#'                      \code{window_width_n} will be less sensitive to 
+#'                      narrow local maxima/minima.
+#'                      
+#'                      If not provided, defaults to ~0.2*length(y)
+#' @param window_height The maximum change in \code{y} a single extrema-search
+#'                     step is allowed to take.  For example, when 
+#'                     maxima-finding, the function will not pass a
+#'                     valley deeper than \code{window_height}.
+#'                     
+#'                     A smaller \code{window_height} will be more sensitive 
+#'                     to shallow local maxima/minima, while a larger 
+#'                     \code{window_height} will be less sensitive to 
+#'                     shallow maxima/minima.
+#' @param return_endpoints Should the first or last value in \code{y}
+#'                         be allowed to be returned?
+#' @param ... Other parameters to pass to \code{find_local_extrema}
+#' 
+#' @return If \code{return = "index"}, a vector of indices corresponding 
+#'           to local extrema in the data
+#'           
+#'         If \code{return = "x"}, a vector of x values corresponding
+#'           to local extrema in the data
+#'          
+#'         If \code{return = "y"}, a vector of y values corresponding
+#'           to local extrema in the data
+#' 
+#' @details 
+#' If none of \code{window_width}, \code{window_width_n}, or 
+#' \code{window_height} are provided, default value of \code{window_width_n}
+#' will be used.
+#' 
+#' This function is designed to be compatible for use within
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
+#'                    
+#' @export    
+first_peak <- function(y, x = NULL, 
+                         window_width = NULL,
+                         window_width_n = NULL,
+                         window_height = NULL,
+                         return = "index", return_endpoints = TRUE, 
+                         ...) {
+  #First deprecated in v1.1.0.9000
+  .Deprecated("first_maxima")
+  return(first_maxima(y = y, x = x, window_width = window_width,
+                      window_width_n = window_width_n,
+                      window_height = window_height,
+                      return = return, return_endpoints = return_endpoints,
+                      ...))
+}
+
+#' Find the first local minima of a numeric vector
+#' 
+#' This function takes a vector of \code{y} values and returns the index
+#' (by default) of the first local minima. It serves as a shortcut
+#' for \code{find_local_extrema(return_maxima = FALSE, return_minima = TRUE)[1]}
+#' 
+#' @param y Numeric vector of y values in which to identify local extrema
+#' @param x Optional numeric vector of corresponding x values
+#' @param return One of c("index", "x", "y"), determining whether the function
+#'               will return the index, x value, or y value associated with the
+#'               first minima in y values
+#' @param window_width Width of the window (in units of \code{x}) used to
+#'                   search for local extrema. A narrower width will be more
+#'                   sensitive to narrow local maxima/minima, while a wider
+#'                   width will be less sensitive to local maxima/minima.
+#' @param window_width_n The maximum number of data points a single 
+#'                      extrema-search step is allowed to take. For example,
+#'                      when maxima-finding, the function will not pass
+#'                      a valley consisting of more than \code{window_width_n}
+#'                      data points.
+#'                      
+#'                      A smaller \code{window_width_n} will be more sensitive 
+#'                      to narrow local maxima/minima, while a larger 
+#'                      \code{window_width_n} will be less sensitive to 
+#'                      narrow local maxima/minima.
+#'                      
+#'                      If not provided, defaults to ~0.2*length(y)
+#' @param window_height The maximum change in \code{y} a single extrema-search
+#'                     step is allowed to take.  For example, when 
+#'                     maxima-finding, the function will not pass a
+#'                     valley deeper than \code{window_height}.
+#'                     
+#'                     A smaller \code{window_height} will be more sensitive 
+#'                     to shallow local maxima/minima, while a larger 
+#'                     \code{window_height} will be less sensitive to 
+#'                     shallow maxima/minima.
+#' @param return_endpoints Should the first or last value in \code{y}
+#'                         be allowed to be returned?
+#' @param ... Other parameters to pass to \code{find_local_extrema}
+#' 
+#' @return If \code{return = "index"}, a vector of indices corresponding 
+#'           to local extrema in the data
+#'           
+#'         If \code{return = "x"}, a vector of x values corresponding
+#'           to local extrema in the data
+#'          
+#'         If \code{return = "y"}, a vector of y values corresponding
+#'           to local extrema in the data
+#' 
+#' @details 
+#' If none of \code{window_width}, \code{window_width_n}, or 
+#' \code{window_height} are provided, default value of \code{window_width_n}
+#' will be used.
+#' 
+#' This function is designed to be compatible for use within
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
+#'                    
+#' @export      
+first_minima <- function(y, x = NULL, 
+                         window_width = NULL,
+                         window_width_n = NULL,
+                         window_height = NULL,
+                         return = "index", return_endpoints = TRUE, 
+                         ...) {
+  if(is.null(window_width) & is.null(window_width_n) & is.null(window_height)) {
+    window_width_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
+  }
+  
+  if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
+    stop("return_maxima and return_minima cannot be changed in first_peak, 
+please use find_local_extrema for more flexibility")
+  }
+  
+  return(find_local_extrema(y = y, x = x,
+                            return_maxima = FALSE,
+                            return_minima = TRUE,
+                            return_endpoints = return_endpoints,
+                            window_width = window_width,
+                            window_width_n = window_width_n,
+                            window_height = window_height,
+                            return = return, ...)[1])
+}
+
 
 #' Find all points when a numeric vector crosses some threshold
 #' 

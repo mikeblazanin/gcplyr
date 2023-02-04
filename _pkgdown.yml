@@ -67,9 +67,11 @@ reference:
   desc: "Functions to analyze growth curve data by summarizing into metrics"
   contents:
   - find_local_extrema
-  - first_peak
+  - first_maxima
+  - first_minima
   - find_threshold_crosses
   - first_below
+  - first_above
   - auc
 - title: Utility functions
   desc: "Various functions providing simple utilities"
@@ -85,5 +87,6 @@ reference:
 - title: Legacy functions
   desc: "These functions have been deprecated"
   contents:
+  - first_peak
   - make_tidydesign
   - block_tidydesign

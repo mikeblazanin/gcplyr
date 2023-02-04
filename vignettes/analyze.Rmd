@@ -218,7 +218,7 @@ head(ex_dat_mrg_sum)
 
 # Finding local extrema: peak density, maximum growth rate, lag time, and diauxic shifts
 
-We've previously shown how you can use `max` and `min` to find the global maxima and minima in data. However, what about *local* maxima or minima? That is, peaks and valleys that are obvious to the eye but aren't the highest or smallest values in the entire time series. In this section, we'll show how you can use the `gcplyr` functions `first_peak` and `find_local_extrema` to find points that are local maxima or minima in your data.
+We've previously shown how you can use `max` and `min` to find the global maxima and minima in data. However, what about *local* maxima or minima? That is, peaks and valleys that are obvious to the eye but aren't the highest or smallest values in the entire time series. In this section, we'll show how you can use the `gcplyr` functions `first_maxima` and `find_local_extrema` to find points that are local maxima or minima in your data.
 
 ## Finding the first peak: peak density, maximum growth rate, and lag time
 
@@ -230,13 +230,13 @@ One particular special case we're often interested in is the first peak in some 
 
 Let's start with the former example: finding the peak of density.
 
-To identify the first peak, we can use the `gcplyr` function `first_peak`. `first_peak` simply requires the `y` data you want to identify the peak in. In this case, that's `Measurements`. We also need to specify whether we want the function to `return` the `index` of the first peak, the `x` value of the peak, or the `y` value of the peak. We'll get the `x` and `y` values, saving them in columns `first_peak_x` and `first_peak_y`, respectively. As usual, `first_peak` needs to be used inside of a `summarize` command on data that has already been grouped.
+To identify the first peak, we can use the `gcplyr` function `first_maxima`. `first_maxima` simply requires the `y` data you want to identify the peak in. In this case, that's `Measurements`. We also need to specify whether we want the function to `return` the `index` of the first peak, the `x` value of the peak, or the `y` value of the peak. We'll get the `x` and `y` values, saving them in columns `first_maxima_x` and `first_maxima_y`, respectively. As usual, `first_maxima` needs to be used inside of a `summarize` command on data that has already been grouped.
 
 ```{r}
 ex_dat_mrg_sum <-
   summarize(ex_dat_mrg,
-            first_peak_x = first_peak(x = Time, y = Measurements, return = "x"),
-            first_peak_y = first_peak(x = Time, y = Measurements, return = "y"))
+            first_maxima_x = first_maxima(x = Time, y = Measurements, return = "x"),
+            first_maxima_y = first_maxima(x = Time, y = Measurements, return = "y"))
 
 head(ex_dat_mrg_sum)
 ```
@@ -249,11 +249,11 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   geom_line() +
   facet_wrap(~Well, nrow = 8, ncol = 12) +
   geom_point(data = ex_dat_mrg_sum, 
-             aes(x = first_peak_x, y = first_peak_y), 
+             aes(x = first_maxima_x, y = first_maxima_y), 
              color = "red", size = 1.5)
 ```
 
-That worked great! In some cases, you might find that `first_peak` is not sensitive enough, or is too sensitive, for your data. In those cases, you can adjust the tuning parameters to make `first_peak` more or less sensitive to small peaks and valleys. For `first_peak`, the tuning parameters are `window_width`, `window_width_n`, and `window_height`:
+That worked great! In some cases, you might find that `first_maxima` is not sensitive enough, or is too sensitive, for your data. In those cases, you can adjust the tuning parameters to make `first_maxima` more or less sensitive to small peaks and valleys. For `first_maxima`, the tuning parameters are `window_width`, `window_width_n`, and `window_height`:
 
 * `window_width` determines the width of the window used to search for peaks and valleys, in units of `x`
 * `window_width_n` determines the width of the window, in units of number of data points
@@ -263,14 +263,14 @@ That worked great! In some cases, you might find that `first_peak` is not sensit
 
 
 
-Now let's look at the other example: using `first_peak` to find the first peak in per-capita growth rate. Finding this point tells us both what the maximum growth rate is, and how long it took the cells to reach that rate (a measure of lag time). 
+Now let's look at the other example: using `first_maxima` to find the first peak in per-capita growth rate. Finding this point tells us both what the maximum growth rate is, and how long it took the cells to reach that rate (a measure of lag time). 
 
 ```{r}
 ex_dat_mrg_sum <-
   summarize(ex_dat_mrg,
-            max_growth_rate = first_peak(x = Time, y = deriv_percap5, 
+            max_growth_rate = first_maxima(x = Time, y = deriv_percap5, 
                                          return = "y"),
-            lag_time = first_peak(x = Time, y = deriv_percap5, 
+            lag_time = first_maxima(x = Time, y = deriv_percap5, 
                                   return = "x"))
 
 head(ex_dat_mrg_sum)
@@ -288,11 +288,11 @@ But what if you want to find an extrema that's *not* the first peak? In the next
 
 ## Finding any kind of local extrema: diauxic shifts
 
-We've seen how `first_peak` can be used to identify the first peak in data. But what about other kinds of local extrema? The first minimum? The *second* peak?
+We've seen how `first_maxima` can be used to identify the first peak in data. But what about other kinds of local extrema? The first minimum? The *second* peak?
 
-In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. In fact, `first_peak` is really just a special case of `find_local_extrema`. Just like `first_peak`, `find_local_extrema` only requires a vector of y data in which to find the local extrema, and can return the `index`, `x` value, or `y` value of the extrema it finds.
+In order to identify these kinds of extrema, we can use the more-general function `find_local_extrema`. In fact, `first_maxima` is really just a special case of `find_local_extrema`. Just like `first_maxima`, `find_local_extrema` only requires a vector of y data in which to find the local extrema, and can return the `index`, `x` value, or `y` value of the extrema it finds.
 
-Unlike `first_peak`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`. However, `find_local_extrema` will always return a vector of all the extrema found, so users must use brackets to select which one they want `summarize` to save.
+Unlike `first_maxima`, `find_local_extrema` returns a vector containing *all* of the local extrema found under the given settings. Users can alter which kinds of local extrema are reported using the arguments `return_maxima`, `return_minima`, and `return_endpoints`. However, `find_local_extrema` will always return a vector of all the extrema found, so users must use brackets to select which one they want `summarize` to save.
 
 Let's dig into an example: identifying diauxic shifts. To refresh your memory on what we saw in the derivatives article, here's a plot of the derivative of some of the wells over time.
 

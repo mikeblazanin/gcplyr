@@ -53,8 +53,8 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 ```{r}
-#This code was previously explained
-#Here we're re-running it so it's available for us to work with
+# This code was previously explained
+# Here we're re-running it so it's available for us to work with
 example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 example_design <- make_design(
@@ -124,9 +124,9 @@ Let's use `lubridate` to convert this text into a usable format. `lubridate` has
 Since the example has all three, we'll use `hms`. Once `hms` has parsed the text, we'll use another function to convert the output of `hms` into a pure numeric value: `time_length`. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
 
 ```{r}
-#We have previously loaded lubridate, but if you haven't already then
-#make sure to add the line:
-#   library(lubridate)
+# We have previously loaded lubridate, but if you haven't already then
+# make sure to add the line:
+#    library(lubridate)
 
 ex_dat_mrg$Time <- time_length(hms(ex_dat_mrg$Time))
 
@@ -146,11 +146,11 @@ Once your data has been merged and times have been converted to numeric, we can 
 **We'll be using this format to plot our data throughout the remainder of this vignette**
 
 ```{r}
-#We have previously loaded ggplot2, but if you haven't already then
-#make sure to add the line:
-#    library(ggplot2)
+# We have previously loaded ggplot2, but if you haven't already then
+# make sure to add the line:
+#     library(ggplot2)
 
-#First, we'll reorder the Well levels so they plot in the correct order
+# First, we'll reorder the Well levels so they plot in the correct order
 ex_dat_mrg$Well <- 
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))

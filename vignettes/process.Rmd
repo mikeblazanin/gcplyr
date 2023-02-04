@@ -52,8 +52,8 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 ```{r}
-#This code was previously explained
-#Here we're re-running it so it's available for us to work with
+# This code was previously explained
+# Here we're re-running it so it's available for us to work with
 example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 example_design <- make_design(
@@ -163,14 +163,14 @@ To visualize these results, let's look at a few wells that are representative of
 sample_wells <- c("A1", "F1", "F10", "E11")
 ```
 ```{r, include = FALSE}
-#For computational speed, let's just keep the wells we'll be focusing on
-# (this is hidden from readers bc from this point on we never print out
-# the df anyway so there's no difference in the output by filtering here)
+# For computational speed, let's just keep the wells we'll be focusing on
+#  (this is hidden from readers bc from this point on we never print out
+#  the df anyway so there's no difference in the output by filtering here)
 ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
 ```
 
 ```{r}
-#Now let's plot the derivative
+# Now let's plot the derivative
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv)) +
   geom_line() +
@@ -189,7 +189,7 @@ ex_dat_mrg <- mutate(ex_dat_mrg,
                      deriv_percap = calc_deriv(x = Time, y = Measurements,
                                         percapita = TRUE, blank = 0))
 
-#Now let's plot the per-capita derivative
+# Now let's plot the per-capita derivative
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv_percap)) +
   geom_line() +
@@ -206,7 +206,7 @@ ex_dat_mrg <- mutate(ex_dat_mrg,
                                         percapita = TRUE, blank = 0,
                                         window_width_n = 5))
 
-#Now let's plot the derivative
+# Now let's plot the derivative
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv_percap5)) +
   geom_line() +
@@ -221,7 +221,7 @@ ex_dat_mrg <- mutate(ex_dat_mrg,
                                         percapita = TRUE, blank = 0,
                                         window_width_n = 5, trans_y = "log"))
 
-#Now let's plot the derivative
+# Now let's plot the derivative
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv_percap5)) +
   geom_line() +
@@ -242,7 +242,7 @@ ex_dat_mrg <-
                                       window_width_n = 5, trans_y = "log",
                                       x_scale = 3600))
 
-#Now let's plot the derivative in units of Abs/hour
+# Now let's plot the derivative in units of Abs/hour
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv_percap_hr)) +
   geom_line() +

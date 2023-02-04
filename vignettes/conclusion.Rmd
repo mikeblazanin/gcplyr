@@ -52,8 +52,8 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 ```{r}
-#This code was previously explained
-#Here we're re-running it so it's available for us to work with
+# This code was previously explained
+# Here we're re-running it so it's available for us to work with
 example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 example_design <- make_design(
@@ -79,8 +79,8 @@ ex_dat_mrg <-
          smoothed_med3 = 
            smooth_data(x = Time, y = Measurements,
                        sm_method = "moving-median", window_width_n = 3),
-         #Note that for the second round, we're using the 
-         #first smoothing as the input y
+         # Note that for the second round, we're using the 
+         # first smoothing as the input y
          smoothed = 
            smooth_data(x = Time, y = smoothed_med3,
                        sm_method = "moving-average", window_width_n = 3))
@@ -104,22 +104,22 @@ Where $N$ is the population size, $q_{0}$ is a parameter controlling the initial
 In the code below, I simulate the growth of 96 different wells of bacteria. All the bacteria are identical, except that they differ in the rate at which they acclimate.
 
 ```{r}
-#Define the function that calculates density according to Baranyi-Roberts eq
+# Define the function that calculates density according to Baranyi-Roberts eq
 baranyi_gr <- function(r, k, q0, m, init_dens, times) {
-  #Note: these eqs are the integral of the dN/dt eq in the text above
-  #Acclimation function
+  # Note: these eqs are the integral of the dN/dt eq in the text above
+  # Acclimation function
   a <- times + 1/m*log((exp(-m*times)+q0)/(1+q0))
-  #Density function
+  # Density function
   return(k/(1-(1-(k/init_dens))*exp(-r*a)))
 }
 
-#Set up our wide-shaped data frame
+# Set up our wide-shaped data frame
 times <- seq(from = 0, to = 24*60, by = 15)
 sim_dat <- as.data.frame(matrix(NA, nrow = length(times), ncol = 98))
 sim_dat[, 1] <- times
 colnames(sim_dat) <- c("time", "averaged", paste("Well", 1:96, sep = ""))
 
-#Simulate growth
+# Simulate growth
 for (i in 3:ncol(sim_dat)) {
   sim_dat[, i] <- baranyi_gr(times = sim_dat$time, 
                              r = 0.02, k = 1, q0 = 0.5,
@@ -127,16 +127,16 @@ for (i in 3:ncol(sim_dat)) {
                              init_dens = 0.001)
 }
 
-#Calculate the "average well"
+# Calculate the "average well"
 sim_dat[, "averaged"] <- rowMeans(sim_dat[, 3:ncol(sim_dat)])
 
-#Transform to tidy and calculate per-capita growth rate                  
+# Transform to tidy and calculate per-capita growth rate                  
 sim_dat_tdy <- trans_wide_to_tidy(sim_dat, id_cols = "time")
 sim_dat_tdy <- mutate(group_by(sim_dat_tdy, Well),
                       percap_deriv = calc_deriv(y = Measurements, x = time,
                                                 percapita = TRUE, blank = 0))
 
-#Plot the growth in our wells
+# Plot the growth in our wells
 ggplot(data = filter(sim_dat_tdy, Well != "averaged"), 
        aes(x = time, y = Measurements, group = Well)) +
   geom_line(alpha = 0.1) +
@@ -147,13 +147,13 @@ ggplot(data = filter(sim_dat_tdy, Well != "averaged"),
 Here we've plotted each individual well in black, with the "average well" plotted in red. We can clearly see that our different wells are varying in how quickly they're acclimating. Our average well appears to reflect the data pretty well, does it give a good measure for our average maximum per-capita growth rate?
 
 ```{r}
-#Summarize our data
+# Summarize our data
 sim_dat_sum <- summarize(group_by(sim_dat_tdy, Well),
                          max_growth_rate = max(percap_deriv, na.rm = TRUE))
 
-#Plot the maximum per-capita growth rates of each well
-# Add a red line for the max growth rate of the "average well"
-# Add a dashed line for the true average growth rate of all the wells
+# Plot the maximum per-capita growth rates of each well
+#  Add a red line for the max growth rate of the "average well"
+#  Add a dashed line for the true average growth rate of all the wells
 ggplot(data = filter(sim_dat_sum, Well != "averaged"), 
        aes(x = max_growth_rate)) +
   geom_histogram() +

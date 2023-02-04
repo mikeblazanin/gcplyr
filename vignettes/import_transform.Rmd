@@ -124,9 +124,9 @@ To import block-shaped data, use the `import_blockmeasures` function. `import_bl
 Here's a simple example. First, we need to create a series of example block-shaped `.csv` files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames`.
 
 ```{r}
-#This code just creates a series of block-shaped example files
-#Don't worry about how it works - when working with real growth
-#curves data, all these files would be created by the plate reader
+# This code just creates a series of block-shaped example files
+# Don't worry about how it works - when working with real growth
+# curves data, all these files would be created by the plate reader
 temp_filenames <- 
   paste("Plate1-", 
         paste(example_widedata_noiseless$Time %/% 3600,
@@ -160,10 +160,10 @@ for (i in 1:length(temp_filenames)) {
 
 If you've saved all the files to a single folder, you can easily get a vector with all their names using `list.files`. If your folder contains other files, you can specify a regular expression `pattern` to limit it to just those you want to import:
 ```{r}
-#Here we print all the files we're going to read
+# Here we print all the files we're going to read
 list.files(pattern = "Plate1.*csv")
 
-#Here we save them to the temp_filenames variable
+# Here we save them to the temp_filenames variable
 temp_filenames <- list.files(pattern = "Plate1.*csv")
 ```
 
@@ -178,7 +178,7 @@ This file corresponds to all the reads for a single plate taken at the very firs
 If we want to read these files into `R`, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`). Since our data doesn't start on the first row and column of the file, we simply need to specify what row/column it does start on using the `startrow`, `startcol`, `endrow`, and `endcol` arguments. (`import_blockmeasures` assumes that your data starts on the first row and column and ends on the last row and column, so you don't have to specify when your data meets those criteria).
 
 ```{r}
-#Now let's read it with import_blockmeasures
+# Now let's read it with import_blockmeasures
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames, startrow = 4)
 
@@ -190,7 +190,7 @@ Here we can see that import_blockmeasures has created a wide-shaped R object con
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `import_blockmeasures` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but I do so just to show this letter-style functionality).
 
 ```{r}
-#We can specify rows or columns by Excel-style letters too
+# We can specify rows or columns by Excel-style letters too
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames,
   startrow = 4, startcol = "A")
@@ -209,7 +209,7 @@ print_df(read.csv(temp_filenames[1], header = FALSE, colClasses = "character"))
 In these files, the timepoint information was located in the 2nd row and 3rd column. Here's how we could specify that metadata in our `import_blockmeasures` command:
 
 ```{r}
-#Reading the blockcurves files with metadata included
+# Reading the blockcurves files with metadata included
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames,
   startrow = 4,
@@ -223,7 +223,7 @@ You can see that the metadata you specified has been added as a column in our ou
 And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
 
 ```{r}
-#Reading the blockcurves files with metadata included
+# Reading the blockcurves files with metadata included
 imported_blockdata <- import_blockmeasures(
   files = temp_filenames,
   startrow = 4,
@@ -236,9 +236,9 @@ imported_blockdata <- import_blockmeasures(
 First, let's create an example file. **Don't worry about how this code works**, normally this file would be created by the plate reader.
 
 ```{r}
-#This code just creates an example file with multiple blocks
-#Don't worry about how it works - when working with real growth
-#curves data, this would be created by the plate reader
+# This code just creates an example file with multiple blocks
+# Don't worry about how it works - when working with real growth
+# curves data, this would be created by the plate reader
 write_blocks(read_blocks(files = temp_filenames,
                          startrow = 4,
                          metadata = list("time" = c(2, "C"))),
@@ -305,10 +305,10 @@ To import wide-shaped data, use the `read_wides` function. `read_wides` only req
 Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is know the file name(s) to put in you `R` code. In this example, the file name is `widedata.csv`. 
 
 ```{r}
-#This code just creates a wide-shaped example file where the data doesn't
-#start on the first row.
-#Don't worry about how it works - when working with real growth
-#curves data, this file would be created by the plate reader
+# This code just creates a wide-shaped example file where the data doesn't
+# start on the first row.
+# Don't worry about how it works - when working with real growth
+# curves data, this file would be created by the plate reader
 temp_example_widedata <- example_widedata_noiseless
 colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
                                          sep = "")
@@ -329,7 +329,7 @@ write.table(modified_example_widedata, file = "widedata2.csv",
 Here's what the start of the file looks like (where the values are absorbance/optical density):
 
 ```{r}
-#Let's take a peek at what this file looks like
+# Let's take a peek at what this file looks like
 print_df(head(read.csv("widedata.csv", header = FALSE, 
                        colClasses = "character"), 
               c(10, 10)))
@@ -361,7 +361,7 @@ imported_widedata <- read_wides(files = "widedata.csv",
 Note that if you have multiple files you'd like to read in, you can do so directly with a single `read_wides` command. In this case, read_wides will return a list containing all the data.frames:
 
 ```{r}
-#If we had multiple wide-shaped data files to import
+# If we had multiple wide-shaped data files to import
 imported_widedata <- read_wides(files = c("widedata.csv", "widedata2.csv"))
 ```
 

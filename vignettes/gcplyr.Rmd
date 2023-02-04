@@ -58,12 +58,12 @@ print_df <- function(df, col.names = FALSE) {
 Before digging into the details of the various options that `gcplyr` provides to users, here's a simple example of what a final `gcplyr` script can look like. This script imports data from files created by a plate reader, combines it with design files created by the user, then calculates the maximum growth rate and area-under-the-curve. **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later documents. Here, we're just providing a demonstration of what analyzing growth curve data with `gcplyr` can look like.
 
 ```{r, include = FALSE}
-#This code just creates a wide-shaped example file
-#Don't worry about how it works - when working with real growth
-#curves data, this file would be created by the plate reader
+# This code just creates a wide-shaped example file
+# Don't worry about how it works - when working with real growth
+# curves data, this file would be created by the plate reader
 write.csv(example_widedata_noiseless, file = "widedata.csv", row.names = FALSE)
 
-#This code just creates our block designs
+# This code just creates our block designs
 example_design <- make_design(
   output_format = "blocks",
   pattern_split = ",", nrows = 8, ncols = 12,
@@ -89,47 +89,48 @@ write_blocks(example_design, file = NULL)
 ```
 
 ```{r}
-#Read in our data
-# (our plate reader data is saved in "widedata.csv")
+# Read in our data
+#  (our plate reader data is saved in "widedata.csv")
 data_wide <- read_wides(files = "widedata.csv")
 
-#Transform our data to be tidy-shaped
+# Transform our data to be tidy-shaped
 data_tidy <- 
   trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
 
-#Import our designs
-# (saved in the files Bacteria_strain.csv and Phage.csv)
+# Import our designs
+#  (saved in the files Bacteria_strain.csv and Phage.csv)
 designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"))
 
-#Merge our designs and data
+# Merge our designs and data
 data_merged <- merge_dfs(data_tidy, designs)
 
-#Plot the data
+# Plot the data
 ggplot(data = data_merged,
        aes(x = as.numeric(Time), y = Measurements, color = Well)) +
   geom_line(aes(lty = Phage)) + 
   guides(color = "none")
 
-#Voila! 8 lines of code and all your data is imported & plotted!
+# Voila! 8 lines of code and all your data is imported & plotted!
 
-#Calculate the per-capita growth rate over time in each well
+# Calculate the per-capita growth rate over time in each well
 data_merged <- mutate(
   group_by(data_merged, Well),
   percap_deriv = calc_deriv(y = Measurements, x = Time, percapita = TRUE, 
                             blank = 0, window_width_n = 5, x_scale = 3600))
 
-#Calculate two common metrics of bacterial growth:
-# the maximum growth rate, saving it to a column named max_percap
-# the area-under-the-curve, saving it to a column named 'auc'
+# Calculate two common metrics of bacterial growth:
+#  the maximum growth rate, saving it to a column named max_percap
+#  the area-under-the-curve, saving it to a column named 'auc'
 data_sum <- summarize(
   group_by(data_merged, Well, Bacteria_strain, Phage),
   max_percap = max(percap_deriv, na.rm = TRUE),
   auc = auc(y = Measurements, x = as.numeric(Time)))
 
-#Print some of the max growth rates and auc's
+# Print some of the max growth rates and auc's
 head(data_sum)
 
-#Plot the results for max growth rate and area under the curve in presence vs absence of phage
+# Plot the results for max growth rate and area under the curve in 
+#  presence vs absence of phage
 ggplot(data = data_sum,
        aes(x = max_percap, y = auc, color = Phage)) +
   geom_point()

@@ -52,8 +52,8 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 ```{r}
-#This code was previously explained
-#Here we're re-running it so it's available for us to work with
+# This code was previously explained
+# Here we're re-running it so it's available for us to work with
 example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 example_design <- make_design(
@@ -84,9 +84,9 @@ sample_wells <- c("A1", "F1", "F10", "E11")
 ```
 
 ```{r, include = FALSE}
-#Here we're only keeping the wells that at one point or another in
-#this vignette we visualize. This cuts down on vignette build time
-#with no visual indication of the change
+# Here we're only keeping the wells that at one point or another in
+# this vignette we visualize. This cuts down on vignette build time
+# with no visual indication of the change
 ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% c("A1", "A7", "B4", "B10", 
                                                     "B5", "B11", "F1", "E11", 
                                                     "F10", "A4", "E2", "H8"))
@@ -130,11 +130,11 @@ One of the most common steps is calculating global maxima (or minima) of data. F
 First, we need to group our data. As before, `group_by` simply requires the `data.frame` to be grouped, and the names of the columns we want to group by.
 
 ```{r}
-#First, drop unneeded columns (optional)
+# First, drop unneeded columns (optional)
 ex_dat_mrg <- dplyr::select(ex_dat_mrg,
                             Time, Well, Measurements, Bacteria_strain, Phage,
                             deriv, deriv_percap5)
-#Then, carry out grouping
+# Then, carry out grouping
 ex_dat_mrg <- group_by(ex_dat_mrg, Bacteria_strain, Phage, Well)
 ```
 
@@ -324,7 +324,7 @@ ex_dat_mrg_sum <-
                                    return_maxima = FALSE, return_minima = TRUE,
                                    window_width_n = 39)[2])
 
-#Plot data with vertical line at detected diauxie
+# Plot data with vertical line at detected diauxie
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv)) +
   geom_line() +
@@ -347,7 +347,7 @@ ex_dat_mrg_sum <-
                                    window_width_n = 39)[2],
     diauxie_dens = Measurements[diauxie_idx])
 
-#Plot data with a point at the moment of diauxic shift
+# Plot data with a point at the moment of diauxic shift
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = Measurements)) +
   geom_line() +
@@ -376,7 +376,7 @@ ex_dat_mrg_sum <-
         which.max(deriv_percap5[Time >= diauxie_time])]
     )
 
-#Plot data with a point at the moment of peak diauxic growth rate
+# Plot data with a point at the moment of peak diauxic growth rate
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
        aes(x = Time, y = deriv_percap5)) +
   geom_line() +

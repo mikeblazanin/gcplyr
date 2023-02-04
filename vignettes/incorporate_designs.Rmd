@@ -428,10 +428,10 @@ These design files will be more human-readable but require slightly more computa
 The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block. To use the default naming convention, we set `file = NULL`.
 
 ```{r}
-#See the previous section where we created my_design_blk
+# See the previous section where we created my_design_blk
 write_blocks(my_design_blk, file = NULL)
 
-#Let's see what the files look like
+# Let's see what the files look like
 print_df(read.csv("Bacteria.csv", header = FALSE, colClasses = "character"))
 
 print_df(read.csv("Media.csv", header = FALSE, colClasses = "character"))
@@ -445,10 +445,10 @@ The other setting for `write_blocks` is `output_format = 'single'`. This creates
 Let's take a look what the `single` output format looks like:
 
 ```{r}
-#See the previous section where we created my_design_blk
+# See the previous section where we created my_design_blk
 write_blocks(my_design_blk, file = "Design.csv", output_format = "single")
 
-#Let's see what the file looks like
+# Let's see what the file looks like
 print_df(read.csv("Design.csv", header = FALSE, colClasses = "character"))
 ```
 

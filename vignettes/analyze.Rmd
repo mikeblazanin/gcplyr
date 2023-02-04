@@ -247,8 +247,8 @@ Let's plot these points on the wells to confirm they are what we expect:
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells), 
        aes(x = Time, y = Measurements)) +
   geom_line() +
-  facet_wrap(~Well, nrow = 8, ncol = 12) +
-  geom_point(data = ex_dat_mrg_sum, 
+  facet_wrap(~Well) +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
              aes(x = first_maxima_x, y = first_maxima_y), 
              color = "red", size = 1.5)
 ```

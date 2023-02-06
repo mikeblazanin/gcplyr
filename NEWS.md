@@ -1,6 +1,16 @@
-# gcplyr 1.1.0.9000
+# gcplyr 1.2.0
 
-abcdef
+* The function first_peak has been renamed to first_maxima. first_peak will continue to function normally for a long time but with a warning to use first_maxima instead.
+
+* New functions have been added that are shortcuts for common use cases: first_minima and first_above
+
+* Bug fixes for find_threshold_crossings related to return_endpoints = TRUE
+
+* Bug fixes for find_threshold_crossings and find_local_extrema when input values are NA
+
+* Style and content improvements in vignettes 
+
+* Help pages have been improved
 
 # gcplyr 1.1.0
 

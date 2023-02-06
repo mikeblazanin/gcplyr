@@ -1412,8 +1412,8 @@ read_tidys <- function(files, extension = NULL,
 #' Import blockmeasures
 #' 
 #' Function to import blockmeasures from files and return widemeasures
-#' This function acts as a wrapper to call read_blocks, uninterleave, 
-#' then trans_block_to_wide in one go
+#' This function acts as a wrapper to call \code{read_blocks}, 
+#' \code{uninterleave}, then \code{trans_block_to_wide} in one go
 #' 
 #' @param files Vector of filenames (as strings), each of which is a 
 #'              block-shaped file containing measures data. File formats
@@ -1434,6 +1434,11 @@ read_tidys <- function(files, extension = NULL,
 #'              \code{metadata} - specifying metadata to \code{read_blocks}
 #'              
 #'              See help for \code{read_blocks} for more details
+#'              
+#'              If you find yourself needing more control, you can run the 
+#'              steps manually, first reading with \code{read_blocks}, 
+#'              separating plates as needed with \code{uninterleave}, 
+#'              then transforming to wide with \code{trans_block_to_wide}.
 #'              
 #' @return If \code{num_plates = 1}, a wide-shaped \code{data.frame}
 #'         containing the measures data.

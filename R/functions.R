@@ -3697,7 +3697,6 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
                                    return_rising = TRUE, return_falling = TRUE,
                                    return_endpoints = TRUE,  
                                    subset = NULL, na.rm = TRUE) {
-  browser()
   if (!return %in% c("x", "index")) {
     stop('return must be "x" or "index"')
   }

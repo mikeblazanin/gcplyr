@@ -231,6 +231,6 @@ test_that("find_threshold_crosses works correctly", {
                3)
   expect_equal(find_threshold_crosses(y = c(NA, NA, 3, NA, NA), threshold = 5,
                                       return_falling = FALSE),
-               3)
+               NA)
 })
 

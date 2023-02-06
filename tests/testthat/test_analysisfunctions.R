@@ -203,14 +203,33 @@ test_that("find_threshold_crosses works correctly", {
     c(15, 30))
   
   #data where it never crosses
-  find_threshold_crosses(x = 1:10, y = 1:10,
-                         return_falling = FALSE, threshold = 11)
+  expect_equal(find_threshold_crosses(y = 1:10, return_falling = FALSE, 
+                                      threshold = 11),
+               NA)
   
-  #data where endpoint should be returned
-  
+  #data where startpoint should be returned
+  expect_equal(find_threshold_crosses(y = 10:20, threshold = 9), 1)
+  expect_equal(find_threshold_crosses(y = 1:10, threshold = 10), 1)
+  expect_equal(find_threshold_crosses(y = c(1:5, 1:5), threshold = 3), 
+               c(1,4, 6, 9))
+  expect_equal(find_threshold_crosses(x = 2:12, y = 10:20, 
+                                      threshold = 9, return = "x"), 2)
+  expect_equal(find_threshold_crosses(x = 2:11, y = 1:10, 
+                                      threshold = 10, return = "x"), 2)
+  expect_equal(find_threshold_crosses(x = 2:11, y = c(1:5, 1:5), 
+                                      threshold = 3, return = "x"), 
+               c(2, 4, 6.5, 9))
   
   #data where all values are NA
+  expect_equal(find_threshold_crosses(y = rep(NA, 5), threshold = 5), NA)
   
   #data where nearly all values are NA
+  expect_equal(find_threshold_crosses(y = c(NA, NA, 3, NA, NA), threshold = 5),
+               3)
+  expect_equal(find_threshold_crosses(y = c(NA, NA, 3, NA, NA), threshold = 5,
+                                      return_falling = FALSE),
+               3)
+  
+  #data where never reaches threshold
 })
 

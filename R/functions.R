@@ -3680,6 +3680,9 @@ use find_local_extrema for more flexibility")
 #'           
 #'    If \code{return = "x"}, the returned value(s) are the x value(s) 
 #'    corresponding to threshold crossing(s)
+#'    
+#'    If no threshold-crossings are detected that meet the criteria, will
+#'    return \code{NA}
 #'          
 #' @name ThresholdFunctions
 NULL
@@ -3692,6 +3695,7 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
                                    return_rising = TRUE, return_falling = TRUE,
                                    return_endpoints = TRUE,  
                                    subset = NULL, na.rm = TRUE) {
+  browser()
   if (!return %in% c("x", "index")) {
     stop('return must be "x" or "index"')
   }
@@ -3720,6 +3724,8 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   #remove nas
   narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
   
+  if(length(narm_temp$y) == 0) {return(NA)}
+  
   #reorder
   order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
   
@@ -3745,7 +3751,7 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
                                   y[1:(length(y)-1)] >= threshold))
   }
   
-  if(length(out_idx) == 0) {out_idx <- NA
+  if(length(out_idx) == 0) {return(NA)
   } else {out_idx <- out_idx[order(out_idx)]}
   
   if(return == "index") {
@@ -3763,21 +3769,19 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
     return(out_idx[order(out_idx)])
     
   } else { #return = "x"
-    #To do linear interpolation when the first point is included, 
-    # we add a buffer value at the beginning of x and y that is a duplicate 
-    # of x[1] and y[1] and add 1 to all the indices to reflect that addition
-    x <- c(x[1], x)
-    y <- c(y[1], y)
-    out_idx <- out_idx + 1
+    if(out_idx[1] == 1) {x2 <- x[1]; out_idx <- out_idx[-1]
+    } else {x2 <- NULL}
     
-    #Use linear interpolation to determine exact x values of crossing events
-    x1 <- x[(out_idx-1)]
-    x3 <- x[out_idx]
-    y1 <- y[(out_idx-1)]
-    y3 <- y[out_idx]
-    y2 <- threshold
-    
-    x2 <- (y2-y1)*(x3-x1)/(y3-y1) + x1
+    if(length(out_idx) > 0) {
+      #Use linear interpolation to determine exact x values of crossing events
+      x1 <- x[(out_idx-1)]
+      x3 <- x[out_idx]
+      y1 <- y[(out_idx-1)]
+      y3 <- y[out_idx]
+      y2 <- threshold
+      
+      x2 <- c(x2, (y2-y1)*(x3-x1)/(y3-y1) + x1)
+    }
     return(x2)
   }
 }

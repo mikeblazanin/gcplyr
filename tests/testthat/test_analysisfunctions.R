@@ -79,6 +79,9 @@ test_that("find_local_extrema works correctly", {
                                   window_height = 5),
                19)
   
+  #Data that is all NA's
+  expect_equal(find_local_extrema(y = rep(NA, 10), window_width_n = 3), NA)
+  
   #with subset
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
                                   window_width_n = 5, 
@@ -229,7 +232,5 @@ test_that("find_threshold_crosses works correctly", {
   expect_equal(find_threshold_crosses(y = c(NA, NA, 3, NA, NA), threshold = 5,
                                       return_falling = FALSE),
                3)
-  
-  #data where never reaches threshold
 })
 

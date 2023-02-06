@@ -3509,6 +3509,8 @@ find_local_extrema <- function(y, x = NULL,
   #remove nas
   narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
   
+  if(length(narm_temp$y) == 0) {return(NA)}
+  
   #reorder
   order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
   

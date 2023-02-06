@@ -3336,9 +3336,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
 
 #' Find local extrema of a numeric vector
 #' 
-#' These functions takes a vector of \code{y} values and identify all
-#' local value extrema. One of \code{window_width}, \code{window_width_n}, 
-#' or \code{window_height} must be provided.
+#' These functions take a vector of \code{y} values and identify local extrema.
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
@@ -3382,10 +3380,17 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
 #' @param width_limit Deprecated, use \code{window_width} instead
 #' @param width_limit_n Deprecated, use \code{window_width_n} instead
 #' @param height_limit Deprecated, use \code{window_height} instead
-#' @param ... (for \code{first_maxima} and \code{first_minima}, other 
+#' @param ... (for \code{first_maxima} and \code{first_minima}), other 
 #'            parameters to pass to \code{find_local_extrema}
 #' 
 #' @details 
+#' For \code{find_local_extrema}, one of \code{window_width}, 
+#' \code{window_width_n}, or \code{window_height} must be provided.
+#' 
+#' For \code{first_minima} and \code{first_maxima}, if none of 
+#' \code{window_width}, \code{window_width_n}, or \code{window_height} are 
+#' provided, \code{window_width_n} is set to 20% of the data by default.
+#' 
 #' If multiple of \code{window_width}, \code{window_width_n}, or 
 #' \code{window_height} are provided, steps are limited conservatively 
 #' (a single step must meet all criteria)
@@ -3395,10 +3400,6 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
 #'  
 #' In the case of exact ties in \code{y} values within a window, only the 
 #' first local extrema is returned.
-#' 
-#' For \code{first_minima} and \code{first_maxima}, if none of 
-#' \code{window_width}, \code{window_width_n}, or \code{window_height} are 
-#' provided, \code{window_width_n} is set to 20% of the data by default.
 #' 
 #' @return 
 #'    \code{find_local_extrema} returns a vector corresponding to all the 
@@ -3607,14 +3608,13 @@ use find_local_extrema for more flexibility")
 }
 
 
-#' Find all points when a numeric vector crosses some threshold
+#' Find point(s) when a numeric vector crosses some threshold
 #' 
-#' This function takes a vector of \code{y} values and 
-#' returns the index or x value of every point where the \code{y} values
-#' cross some threshold y value.
+#' These functions take a vector of \code{y} values and identify points where
+#' the \code{y} values cross some \code{threshold} y value.
 #' 
 #' @param y Numeric vector of y values in which to identify threshold
-#'          crossing events
+#'          crossing event(s)
 #' @param x Optional numeric vector of corresponding x values
 #' @param threshold Threshold y value of interest
 #' @param return One of \code{c("index", "x")}, determining whether the function
@@ -3644,10 +3644,37 @@ use find_local_extrema for more flexibility")
 #' @param na.rm Boolean whether NA's should be removed before analyzing.
 #'              If \code{return = 'index'}, indices will refer to the original
 #'              \code{y} vector *including* \code{NA} values
-#' @return A vector of indices (\code{return = "index"}) or x values
-#'         (\code{return = "x"}) for when \code{y} crossed \code{threshold}
-#'                    
-#' @export    
+#' @param ... (for \code{first_above} and \code{first_below}) other arguments 
+#'            to pass to \code{find_threshold_crosses}
+#'              
+#' @details 
+#' This function is designed to be compatible for use within
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
+#'  
+#' @return 
+#'    \code{find_threshold_crosses} returns a vector corresponding to all the 
+#'    threshold crossings.
+#' 
+#'    \code{first_above} returns only the first time the \code{y} values
+#'    rise above the threshold, so is a shortcut for 
+#'    \code{find_threshold_crosses(return_rising = TRUE, return_falling = FALSE)[1]}
+#' 
+#'    \code{first_below} returns only the first time the \code{y} values
+#'    fall below the threshold, so is a shortcut for 
+#'    \code{find_threshold_crosses(return_rising = FALSE, return_falling = TRUE)[1]}
+#' 
+#'    If \code{return = "index"}, the returned value(s) are the indices
+#'    immediately following threshold crossing(s)
+#'           
+#'    If \code{return = "x"}, the returned value(s) are the x value(s) 
+#'    corresponding to threshold crossing(s)
+#'          
+#' @name ThresholdFunctions
+NULL
+
+
+#' @rdname ThresholdFunctions
+#' @export 
 find_threshold_crosses <- function(y, x = NULL, threshold,
                                    return = "index",
                                    return_rising = TRUE, return_falling = TRUE,
@@ -3743,46 +3770,8 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   }
 }
 
-#' Find the first point when a numeric vector falls below some threshold
-#' 
-#' This function takes a vector of \code{y} values and 
-#' returns the index (by default) of the first point that falls
-#' below some threshold y value. This function is essentially a shortcut for 
-#' \code{find_threshold_crosses(return_rising = FALSE, return_falling = TRUE)[1]}
-#' 
-#' @param y Numeric vector of y values in which to identify first below point
-#' @param x Optional numeric vector of corresponding x values
-#' @param threshold Threshold y value of interest
-#' @param return One of \code{c("index", "x")}, determining whether the function
-#'               will return the \code{index} or \code{x} value associated with 
-#'               the first-below point.
-#'               
-#'               If \code{index}, it will refer to the first data point
-#'               below the threshold.
-#'               
-#'               If \code{x}, it will use linear interpolation and the data
-#'               points immediately before and after the threshold-crossing
-#'               to return the exact \code{x} value when \code{y} first
-#'               came below \code{threshold}
-#' @param return_endpoints Boolean for whether startpoint should be returned
-#'                      when the startpoint is below \code{threshold}
-#' @param subset A vector of Boolean values indicating which x and y values
-#'               should be included (TRUE) or excluded (FALSE).
-#'               
-#'               If \code{return = "index"}, index will be for the whole 
-#'               vector and not the subset of the vector
-#' @param na.rm Boolean whether NA's should be removed before analyzing.
-#'              If \code{return = 'index'}, indices will refer to the original
-#'              \code{y} vector *including* \code{NA} values
-#' @param ... Other arguments to pass to \code{find_threshold_crosses}
-#' @return A vector of indices (\code{return = "index"}) or x values
-#'         (\code{return = "x"}) for when \code{y} crossed \code{threshold}
-#'         
-#' @details 
-#' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
-#'                    
-#' @export    
+#' @rdname ThresholdFunctions
+#' @export  
 first_below <- function(y, x = NULL, threshold, 
                         return = "index", return_endpoints = TRUE,
                         subset = NULL, na.rm = TRUE, ...) {
@@ -3799,46 +3788,8 @@ please use find_threshold_crosses for more flexibility")
                                 na.rm = na.rm, ...)[1])
 }
 
-#' Find the first point when a numeric vector falls above some threshold
-#' 
-#' This function takes a vector of \code{y} values and 
-#' returns the index (by default) of the first point that falls
-#' above some threshold y value. This function is essentially a shortcut for 
-#' \code{find_threshold_crosses(return_rising = TRUE, return_falling = FALSE)[1]}
-#' 
-#' @param y Numeric vector of y values in which to identify first above point
-#' @param x Optional numeric vector of corresponding x values
-#' @param threshold Threshold y value of interest
-#' @param return One of \code{c("index", "x")}, determining whether the function
-#'               will return the \code{index} or \code{x} value associated with 
-#'               the first-above point.
-#'               
-#'               If \code{index}, it will refer to the first data point
-#'               above the threshold.
-#'               
-#'               If \code{x}, it will use linear interpolation and the data
-#'               points immediately before and after the threshold-crossing
-#'               to return the exact \code{x} value when \code{y} first
-#'               came above \code{threshold}
-#' @param return_endpoints Boolean for whether startpoint should be returned
-#'                      when the startpoint is above \code{threshold}
-#' @param subset A vector of Boolean values indicating which x and y values
-#'               should be included (TRUE) or excluded (FALSE).
-#'               
-#'               If \code{return = "index"}, index will be for the whole 
-#'               vector and not the subset of the vector
-#' @param na.rm Boolean whether NA's should be removed before analyzing.
-#'              If \code{return = 'index'}, indices will refer to the original
-#'              \code{y} vector *including* \code{NA} values
-#' @param ... Other arguments to pass to \code{find_threshold_crosses}
-#' @return A vector of indices (\code{return = "index"}) or x values
-#'         (\code{return = "x"}) for when \code{y} crossed \code{threshold}
-#'         
-#' @details 
-#' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
-#'                    
-#' @export    
+#' @rdname ThresholdFunctions
+#' @export 
 first_above <- function(y, x = NULL, threshold, 
                         return = "index", return_endpoints = TRUE,
                         subset = NULL, na.rm = TRUE, ...) {

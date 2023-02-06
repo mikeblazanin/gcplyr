@@ -33,7 +33,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 7. Dealing with noise: `vignette("noise")`
 8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
-So far, we've imported and transformed our measures data into `R`. Now we're going to address how to incorporate some design information on what went into each well (and plate).
+So far, we've imported and transformed our measures data into `R`. Now we're going to address how to incorporate our experimental design.
 
 If you haven't already, load the necessary packages.
 
@@ -49,27 +49,26 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 # Including design elements
-During analysis of growth curve data, we often want to incorporate information about the experimental design. For example, which bacteria are present in which wells, or which wells have received certain treatments. `gcplyr` enables incorporation of design elements in two ways:
+We often want to combine information about the experimental design with our data. `gcplyr` enables incorporation of design elements in two ways:
 
-1. Design elements can be imported from files
-2. Design elements can be generated programmatically using `make_design`
+1. Designs can be imported from files
+2. Designs can be generated in `R` using `make_design`
 
 # Reading design elements from files
-Users have two options for how to read design elements from files, depending on the shape of the design files that they have created:
+Users can read block-shaped or tidy-shaped design files:
 
 * If design files are block-shaped, they can be read with `import_blockdesigns`
 * If design files are tidy-shaped, they can simply be read with `read_tidys`
 
 ## Importing block-shaped design files
-To import block-shaped design files, you can use the `import_blockdesigns` function, which will return a tidy-shaped designs data frame (or list of data frames).
+To import block-shaped design files, use `import_blockdesigns`, which will return a tidy-shaped designs data frame (or list of data frames).
 
-`import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R. That's right, it reads in block-shaped designs but returns a tidy-shaped data frame! 
+`import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R.
 
 ### A basic example
 
 
-
-Let's take a look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
+Let's look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
 
 ```{r}
 write.csv(
@@ -84,7 +83,7 @@ Now let's take a look at what the file looks like:
 print_df(read.csv("mydesign.csv", header = FALSE, colClasses = "character"))
 ```
 
-Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`. Since this block contains the treatment numbers, we've given the `block_names` as "Treatment_numbers". If no `block_names` is provided, `import_blockdesigns` will automatically name it according to the file name.
+Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns` saving it with the column name `Treatment_numbers`.
 
 ```{r}
 my_design <- import_blockdesigns(files = "mydesign.csv", 
@@ -95,8 +94,7 @@ head(my_design, 20)
 ### Importing multiple block-shaped design elements
 
 
-
-What do you do if you have multiple design components? For instance, what if you have several different bacterial strains each with several different treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
+What do you do if you have multiple designs? For instance, what if you have several strains each in several treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
 
 First, let's create another example designs file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
 
@@ -116,7 +114,7 @@ print_df(read.csv("mydesign2.csv", header = FALSE, colClasses = "character"))
 
 Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
 
-Let's now import both designs using `import_blockdesigns`. Since our two blocks contain the treatment numbers and then the strain letters, we've given the `block_names` as `c("Treatment_numbers", "Strain_letters")`. If no `block_names` is provided, `import_blockdesigns` will automatically name it according to the file name.
+Let's now import both designs using `import_blockdesigns`, saving them to columns named `Treatment_numbers` and `Strain_letters`.
 
 ```{r}
 my_design <- 
@@ -125,36 +123,24 @@ my_design <-
 head(my_design, 20)
 ```
 
-### Notes for more advanced use
-
-
-
-Note that `import_blockdesigns` is essentially a wrapper function that calls `read_blocks`, `paste_blocks`, `trans_block_to_wide`, `trans_wide_to_tidy`, and then `separate_tidys`. Any arguments for those functions can be passed to `import_blockdesigns`. 
-
-For instance, if your design files do not start on the first row and first column, you can specify a `startrow` or `startcol` just like when you were using `read_blocks`. Or if your designs are located in a sheet other than the first sheet, you can specify `sheet`.
-
-Additionally, if you've already pasted together your design elements yourself, then you should specify what string is being used as a separator via the `sep` argument (that gets passed to `separate_tidys`).
-
-If you find yourself needing even more control over the process of importing block-shaped design files, each of the functions is available for users to call themselves. So you can run the steps manually, first reading with `read_blocks`, pasting as needed with `paste_blocks`, transforming to tidy with `trans_block_to_wide` and `trans_wide_to_tidy`, and finally separating design elements with `separate_tidys`.
-
 ## Importing tidy-shaped design files
-Just like measures data, to import tidy-shaped designs you could use the built-in`R`functions like `read.table`. However, if you need a few more options, you can use the `gcplyr` function `read_tidys`. Unlike the built-in option, `read_tidys` can import multiple tidy-shaped files at once, can add the filename as a column in the resulting data.frame, and can handle files where the tidy-shaped information doesn't start on the first row and column.
+You can import tidy-shaped designs with `read_tidys`.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
 Once these design elements have been read into the `R` environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging spectrophotometric and design data]** section.
 
 # Generating designs in R
-If you'd rather make your design data.frames in R, `gcplyr` has a helper function that makes it easy to do so: `make_design`. `make_design` can create:
+If you'd rather make your design data.frames in R, `make_design` can create:
 
-* block-shaped data.frames with your design information (e.g. for outputting to files)
-* tidy-shaped data.frames with your design information (e.g. for merging with tidy-shaped plate reader data)
+* block-shaped data.frames with your design information (for saving to files)
+* tidy-shaped data.frames with your design information (for saving to files and merging with tidy-shaped data)
 
 ## An example with a single design
 
-Let's start with a simple example demonstrating the basic use of `make_design` (we'll move on to more complicated designs afterwards).
+Let's start with a simple design.
 
-For example, let's imagine a growth curve experiment where a 96 well plate (12 columns and 8 rows) has a different bacterial strain in each row, but the first and last columns and first and last rows were left empty.
+Imagine you have a 96 well plate (12 columns and 8 rows) with a different bacterial strain in each row, leaving the first and last rows and columns empty.
 
 Row names | Column 1 | Column 2  | Column 3  | ... | Column 11 | Column 12
 --------- | -------- | --------  | --------  | --- | --------- | --------
@@ -166,7 +152,7 @@ Row G     | Blank    | Strain #5 | Strain #5 | ... | Strain #5 | Blank
 Row G     | Blank    | Strain #6 | Strain #6 | ... | Strain #6 | Blank
 Row H     | Blank    | Blank     | Blank     | ... | Blank     | Blank
 
-Typing a design like this manually into a spreadsheet can be tedious. But generating a design `data.frame` using `make_design` is easier. 
+Typing a design like this manually into a spreadsheet can be tedious. But generating it with `make_design` is easier. 
 
 `make_design` first needs some general information, like the `nrows` and `ncols` in the plate, and the `output_format` you'd like (typically `blocks` or `tidy`).
 
@@ -194,31 +180,37 @@ my_design_blk <- make_design(
 So for our example above, we can see:
 
 * the possible values are `c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6")`
-* the rows these values should be applied to are rows `2:7`
-* the columns these values should be applied to are columns `2:11`
+* the rows these values should be applied to are `2:7`
+* the columns these values should be applied to are `2:11`
 * the pattern these values should be filled in by is `"123456"`
-* and these values should *not* be filled by row, they should be filled by column
-
-This entire list is passed with a name (here, "Bacteria"), that will be used as the resulting column header.
-
-What does the result look like?
+* and these values should *not* be filled by row (they should be filled by column)
 
 ```{r}
 my_design_blk
 ```
 
-We can see that `make_design` has created a block-shaped `data.frame` containing the design elements as requested, and has attached a `metadata` containing the `block_name` (this is useful for later transformation to tidy-shaped, or if you're generating multiple design elements).
+This produces a `data.frame` with `Bacteria` as the `block_name` in the metadata. If we save this design to a file or transform it to tidy-shaped, this `block_name` metadata will come in handy.
 
 ## A few notes on the pattern
-One of the most important elements of every argument passed to `make_design` is the string or vector specifying the pattern of values. 
+The pattern in `make_design` is flexible to make it easy to input designs. 
 
-Oftentimes, it will be most convenient to simply use single-characters to correspond to the values. This is the default behavior of `make_design`, which splits the pattern string into individual characters, and then uses those characters to correspond to the indices of the values you provided.
+**The "0" character is reserved for `NA` values**, and can put into your pattern anywhere you'd like to have the value be `NA`
 
-For instance, in the example above, I used the numbers 1 through 6 to correspond to the values `"Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6"`.
+```{r}
+my_design_blk <- make_design(
+  output_format = "blocks",
+  nrows = 8, ncols = 12, 
+  Bacteria = list(c("Str1", "Str2", "Str3", 
+                    "Str4", "Str5", "Str6"),
+                  2:7,
+                  2:11,
+                  "123056",
+                  FALSE)
+)
+my_design_blk
+```
 
-It's important to **note that the "0" character is reserved for `NA` values.** There is an example of this later.
-
-If you have more than 9 values, you can use letters (uppercase and/or lowercase). In that case, you just have to specify a `lookup_tbl_start` so that the function knows what letter you're using as the `1` index. If no `lookup_tbl_start` is specified, the default is to count numbers first, then uppercase letters, then lowercase letters. For instance, in the previous example, I could have equivalently done:
+In the previous examples, I used the numbers 1 through 6 to correspond to our values. If you have more than 9 values, you can use letters too. By default, the order is numbers first, then uppercase letters, then lowercase letters (so "A" is the 10th index). However, if you'd like to only use letters, you can simply specify a different `lookup_tbl_start` so that `make_design` knows what letter you're using as the `1` index.
 
 ```{r}
 my_design_blk <- make_design(
@@ -233,37 +225,7 @@ my_design_blk <- make_design(
 )
 ```
 
-Or I could have done:
-
-```{r}
-my_design_blk <- make_design(
-  output_format = "blocks",
-  nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = list(
-    c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
-    2:7,
-    2:11,
-    "abcdef",
-    FALSE)
-)
-```
-
-Alternatively, you can use a separating character like a comma to delineate your indices. If you are doing so in order to use multicharacter indices (like numbers with more than one digit), all your indices will have to be numeric.
-
-```{r}
-my_design_blk <- make_design(
-  output_format = "blocks",
-  nrows = 8, ncols = 12, pattern_split = ",",
-  Bacteria = list(
-    c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
-    2:7,
-    2:11,
-    "1,2,3,4,5,6",
-    FALSE)
-)
-```
-
-If you find it easier to input the pattern as a vector rather than as a string that needs to be split, you can do that too. Just like when passing a string, if you're not using numbers, then uppercase letters, then lowercase letters for your indices, make sure to specify a different `lookup_tbl_start`:
+You can also specify the pattern as a vector rather than a string.
 
 ```{r}
 my_design_blk <- make_design(
@@ -279,7 +241,7 @@ my_design_blk <- make_design(
 ```
 
 ## Continuing with the example: multiple designs
-Now let's return to our example growth curve experiment. Imagine that now, *in addition* to having a different bacterial strain in each row, we also have a different media in each column in the plate. 
+Now let's return to our example growth curve experiment. *In addition* to having a different bacterial strain in each row, we now also have a different media in each column of the plate. 
 
 Row names | Column 1 | Column 2 | Column 3 | ... | Column 11 | Column 12
 --------- | -------- | -------- | -------- | --- | --------- | --------
@@ -289,7 +251,7 @@ Row B     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
 Row G     | Blank    | Media #1 | Media #2 | ... | Media #10 | Blank
 Row H     | Blank    | Blank    | Blank    | ... | Blank     | Blank
 
-We can generate both the bacterial strain design and the media design simply by adding an additional argument to our make_design call.
+We can generate both designs with `make_design`:
 
 ```{r}
 my_design_blk <- make_design(
@@ -313,35 +275,7 @@ my_design_blk <- make_design(
 my_design_blk
 ```
 
-Here we can see that two blocks have been created, one with our bacterial strains, and one with our media.
-
-Now, imagine after the experiment we discover that Bacterial Strain 4 and Media #6 were contaminated, and we'd like to exclude them from our analyses by marking them as `NA` in the design. We can simply modify our pattern string, placing a 0 anywhere we would like an `NA` to be filled in.
-
-```{r}
-my_design_blk <- make_design(
-  output_format = "blocks",
-  nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = list(c("Str1", "Str2", "Str3", 
-                    "Str4", "Str5", "Str6"),
-                  2:7,
-                  2:11,
-                  "abc0ef",
-                  FALSE),
-  Media = list(c("Med1", "Med2", "Med3",
-                 "Med4", "Med5", "Med6",
-                 "Med7", "Med8", "Med9",
-                 "Med10", "Med11", "Med12"),
-               2:7,
-               2:11,
-               "abcde0ghij")
-  )
-
-my_design_blk
-```
-
-Now we can see that our design has been easily modified to place NA's for those wells, which we can use after merging our designs with our data to exclude all of those wells from analyses.
-
-However, the real strength of `make_design` is that it is not limited to simple alternating patterns. The pattern specified can be any pattern, which `make_design` will replicate sufficient times to cover the entire set of listed wells.
+However, the real strength of `make_design` is that it is not limited to simple alternating patterns. `make_design` can use irregular patterns too, replicating them as needed to fill all the wells.
 
 ```{r}
 my_design_blk <- make_design(
@@ -360,7 +294,7 @@ my_design_blk <- make_design(
 my_design_blk
 ```
 
-`gcplyr` also includes an optional helper function for `make_design` called `make_designpattern`. `make_designpattern` just helps by reminding the user what arguments are necessary for each design and ensuring they're in the correct order. For example, the following produces the same `data.frame` as the above code:
+There is also an optional helper function called `make_designpattern`. `make_designpattern` just reminds us what arguments are necessary for each design. For example:
 
 ```{r}
 my_design_blk <- make_design(
@@ -381,7 +315,7 @@ my_design_blk <- make_design(
 my_design_blk
 ```
 
-So far, we've been using the `blocks` option for `output_format`, because it's easy to see that our design matches what we'd intended with that format. However, **for merging our designs with plate reader data, we need it tidy-shaped**. Luckily, there's no need to transform it yourself, simply change the `output_format` argument option to `tidy`.
+**For merging our designs with plate reader data, we need it tidy-shaped**, so we just need to change the `output_format` to `tidy`.
 
 ```{r}
 my_design_tdy <- make_design(
@@ -403,9 +337,7 @@ head(my_design_tdy, 20)
 ```
 
 ## Saving designs to files
-Often after generating designs in `R` with `make_design`, you'll want to save those designs to files. This might be so that human-readable files documenting your designs are available without opening `R`. Or perhaps it's because you need to post the design files, for instance to Dryad as part of a manuscript submission.
-
-If you'd like to save your designs to files, you can save them either tidy-shaped or block-shaped. Both formats can easily be read back into `R` by `gcplyr`.
+If you'd like to save the designs you've created with `make_design` to files, you just need to decide if you'd like them tidy-shaped or block-shaped. Both formats can easily be read back into `R` by `gcplyr`.
 
 ### Saving tidy-shaped designs
 These design files will be less human-readable, but easier to import and merge. Additionally, tidy-shaped files are often better for data repositories, like Dryad. To save tidy-shaped designs, simply use the built-in `write.csv` function.
@@ -417,7 +349,7 @@ write.csv(x = my_design_tdy, file = "tidy_design.csv",
 ```
 
 ### Saving block-shaped designs
-These design files will be more human-readable but require slightly more computational steps to import and merge. For these, use the `gcplyr` function `write_blocks`. Typically, you'll use `write_blocks` to save files in one of two formats:
+These design files will be more human-readable but slightly more computationally involved to import and merge. For these, use the `gcplyr` function `write_blocks`. Typically, you'll use `write_blocks` to save files in one of two formats:
 
 * `multiple` - each block will be saved to its own `.csv` file
 * `single` - all the blocks will be saved to a single `.csv` file, with an empty row in between them
@@ -425,7 +357,7 @@ These design files will be more human-readable but require slightly more computa
 #### Saving block-shaped designs to multiple files
 
 
-The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block, naming the files according to the `block_names` in the metadata for each block. To use the default naming convention, we set `file = NULL`.
+The default setting for `write_blocks` is `output_format = 'multiple'`. This creates one `csv` file for each block. If we set `file = NULL`, the default is to name the files according to the `block_names` in the metadata.
 
 ```{r}
 # See the previous section where we created my_design_blk
@@ -453,9 +385,6 @@ print_df(read.csv("Design.csv", header = FALSE, colClasses = "character"))
 ```
 
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
-
-### Best practices for saving designs to files
-It's best to leave the `make_design` and `write_blocks` commands in your analysis script, so that every time your analysis is run your design files are kept up to date. Just note that if your `make_design` command has `output_format = blocks`, you'll need to make a version where `output_format = tidy` that you can `merge_dfs` with your plate reader data.
 
 # Merging spectrophotometric and design data
 Once we have both our design and data in the`R`environment and tidy-shaped, we can merge them using `merge_dfs`.
@@ -486,7 +415,7 @@ Let's generate our design:
 
 ```{r}
 example_design <- make_design(
-  pattern_split = ",", nrows = 8, ncols = 12,
+  nrows = 8, ncols = 12,
   "Bacteria_strain" = make_designpattern(
     values = paste("Strain", 1:48),
     rows = 1:8, cols = 1:6,
@@ -519,7 +448,7 @@ example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 ```
 
-And finally, we merge the two using `merge_dfs`, saving the result to `ex_dat_mrg`, short for example_data_merged:
+And finally, we merge the two using `merge_dfs`, saving the result to `ex_dat_mrg`, short for example_data_merged. `merge_dfs` merges using columns with the same name between the two data.frames.
 
 ```{r}
 ex_dat_mrg <- merge_dfs(example_tidydata, example_design)

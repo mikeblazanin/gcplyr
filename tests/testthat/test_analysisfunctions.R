@@ -18,17 +18,17 @@ test_that("auc returns correctly with xlim", {
   expect_error(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, NA)))
 })
 
-test_that("first_peak matches find_local_extrema results", {
+test_that("first_maxima matches find_local_extrema results", {
   expect_equal(
-    first_peak(y = (20 - abs(12 - 1:20))),
+    first_maxima(y = (20 - abs(12 - 1:20))),
     find_local_extrema(y = (20 - abs(12 - 1:20)),
                        return_minima = FALSE,
                        return_endpoints = FALSE,
                        window_width_n = 3))
   expect_equal(
-    first_peak(y = (20 - abs(12 - 1:20)), return = "y"), 20)
+    first_maxima(y = (20 - abs(12 - 1:20)), return = "y"), 20)
   expect_equal(
-    first_peak(x = 21:40, y = (20 - abs(12 - 1:20)), return = "x"), 32)
+    first_maxima(x = 21:40, y = (20 - abs(12 - 1:20)), return = "x"), 32)
 })
 
 test_that("find_local_extrema works correctly", {

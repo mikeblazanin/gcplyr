@@ -37,8 +37,8 @@ If \code{num_plates = 1}, a wide-shaped \code{data.frame}
 }
 \description{
 Function to import blockmeasures from files and return widemeasures
-This function acts as a wrapper to call read_blocks, uninterleave, 
-then trans_block_to_wide in one go
+This function acts as a wrapper to call \code{read_blocks}, 
+\code{uninterleave}, then \code{trans_block_to_wide} in one go
 }
 \details{
 Common arguments that you may want to provide include:
@@ -50,4 +50,9 @@ Common arguments that you may want to provide include:
              \code{metadata} - specifying metadata to \code{read_blocks}
              
              See help for \code{read_blocks} for more details
+             
+             If you find yourself needing more control, you can run the 
+             steps manually, first reading with \code{read_blocks}, 
+             separating plates as needed with \code{uninterleave}, 
+             then transforming to wide with \code{trans_block_to_wide}.
 }

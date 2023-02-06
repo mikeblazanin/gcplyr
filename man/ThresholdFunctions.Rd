@@ -102,6 +102,9 @@ to pass to \code{find_threshold_crosses}}
           
    If \code{return = "x"}, the returned value(s) are the x value(s) 
    corresponding to threshold crossing(s)
+   
+   If no threshold-crossings are detected that meet the criteria, will
+   return \code{NA}
 }
 \description{
 These functions take a vector of \code{y} values and identify points where

@@ -33,7 +33,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 7. Dealing with noise: `vignette("noise")`
 8. Statistics, merging other data, and other resources: `vignette("conclusion")`
 
-Previously, we gave an overview and quick demonstration of what `gcplyr` can do. Here, we're going to start going into more detail just how you can carry out each step of an analysis with your own data.
+Previously, we gave a quick demonstration of what `gcplyr` can do. Here, we're going into more detail about how to import your data into `R` and and transform it into a better layout.
 
 If you haven't already, load the necessary packages.
 
@@ -49,11 +49,11 @@ print_df <- function(df, col.names = FALSE) {
 ```
 
 # Data layouts
-With the previous demonstration in mind, let's dig into some more details of how your input data might be organized and what `gcplyr` does. Growth curve data and design elements can be organized in one of three different tabular layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
+Growth curve data and designs can be organized in one of three different layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 
-Tidy-shaped data is the best layout for analyses, but most plate readers output block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped into wide-shaped data, and wide-shaped data into tidy-shaped data, then running any analyses.
+Tidy-shaped data is the best layout for analyses, but most plate readers output block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped and wide-shaped data into tidy-shaped data, then running analyses.
 
-So, what are these three data layouts, and how can you tell which of them your data is in?
+So, how can you tell which layout your data is in?
 
 **Block-shaped**
 
@@ -94,7 +94,7 @@ Time      | A1 | A2 | A3  | ... | H11 | H12
 
 In tidy-shaped data, there is a single column that contains all the plate reader measurements, with each unique measurement having its own row. Additional columns specify the timepoint, which well the data comes from, and any other design elements.
 
-Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. For instance, with a 96 well plate and 100 timepoints, that will be 9600 rows. (Yes, that's a lot of rows! But don't worry, tidy-shaped data is the best format for downstream analyses.) Tidy-shaped data is common in a number of `R` packages, including `ggplot`, where it's sometimes called a "long" format. If you want to read more about tidy-shaped data and why it's ideal for analyses, see: Wickham, Hadley. Tidy data. The Journal of Statistical Software, vol. 59, 2014.
+Note that, in tidy-shaped data, the number of rows equals the number of wells times the number of timepoints. Yes, that's a lot of rows! But tidy-shaped data is the best format for analyses, and is common in a number of `R` packages, including `ggplot`, where it's sometimes called a "long" format.
 
 
 Timepoint | Well | Measurement | 
@@ -175,7 +175,7 @@ print_df(read.csv(temp_filenames[1], header = FALSE, colClasses = "character"))
 
 This file corresponds to all the reads for a single plate taken at the very first timepoint. We can see that the second row of the file contains some metadata about the timepoint when this plate read read was taken. Then, the data itself starts with column headers on row 4 and rownames in column 1. 
 
-If we want to read these files into `R`, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`). Since our data doesn't start on the first row and column of the file, we simply need to specify what row/column it does start on using the `startrow`, `startcol`, `endrow`, and `endcol` arguments. (`import_blockmeasures` assumes that your data starts on the first row and column and ends on the last row and column, so you don't have to specify when your data meets those criteria).
+If we want to read these files into `R`, we simply provide `import_blockmeasures` with the vector of file names, and save the result to some `R` object (here, `imported_blockdata`). `import_blockmeasures` assumes your data starts on the first row and column, and ends on the last row and column, unless you specify otherwise.
 
 ```{r}
 # Now let's read it with import_blockmeasures
@@ -185,9 +185,9 @@ imported_blockdata <- import_blockmeasures(
 head(imported_blockdata, c(6, 8))
 ```
 
-Here we can see that import_blockmeasures has created a wide-shaped R object containing the data from all of our reads. It has also added the file names under the `block_name` column, so that we can easily track which row came from which file.
+Here we can see that `import_blockmeasures` has created a wide-shaped R object containing the data from all of our reads. It has also added the file names under the `block_name` column, so that we can easily track which row came from which file.
 
-If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `import_blockmeasures` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but I do so just to show this letter-style functionality).
+If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns are coded by letter. `import_blockmeasures` allows you to specify the column by letter too.
 
 ```{r}
 # We can specify rows or columns by Excel-style letters too
@@ -220,7 +220,7 @@ head(imported_blockdata, c(6, 8))
 
 You can see that the metadata you specified has been added as a column in our output `data.frame`. When specifying metadata, the metadata argument must be a list of named vectors. Each vector should have two elements specifying the location of the metadata in the input files: the first element is the row, the second element is the column.
 
-And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
+You can also specify the location of metadata with Excel-style lettering.
 
 ```{r}
 # Reading the blockcurves files with metadata included
@@ -255,7 +255,7 @@ print_df(head(read.csv("blocks_single.csv", header = FALSE,
               c(20, 8)))
 ```
 
-We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `import_blockmeasures` (in this example we don't *have* to specify a start column, since the data starts in the first column, but I do to be explicit):
+We can see that the first block has some metadata above it, then the block of data itself. After that there's an empty row before the next block starts. In fact, if we look at the whole file, we'll notice that all the blocks go from column 1 ("A" in Excel) to column 13 ("M" in Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23, 35, 47, etc. When we look in the file, we can also see that the very last block starts on row 1155 and ends on row 1163. Let's read this information in using `import_blockmeasures`:
 
 ```{r}
 imported_blockdata <- import_blockmeasures(
@@ -289,11 +289,6 @@ And now if we take a look at the resulting object, we can see that the time meta
 ```{r}
 head(imported_blockdata, c(6, 8))
 ```
-
-## Notes for more advanced use
-Note that `import_blockmeasures` is essentially a wrapper function that calls `read_blocks`, `uninterleave`, and `trans_block_to_wide`. Any arguments for those functions can be passed to `import_blockmeasures`. 
-
-If you find yourself needing even more control over the process of importing block-shaped measures files, each of the functions is available for users to call themselves. So you can run the steps manually, first reading with `read_blocks`, separating plates as needed with `uninterleave`, then transforming to wide with `trans_block_to_wide`.
 
 ## What to do next
 Now that you've imported your block-shaped data, you'll need to transform it for later analyses. Jump directly to the **[Transforming data]** section.
@@ -337,7 +332,7 @@ print_df(head(read.csv("widedata.csv", header = FALSE,
 
 This file contains all the reads for a single plate taken across all timepoints. We can see that the first two rows contain some metadata saved by the plate reader, like the name of the experiment and the date of the experiment. Then, we can see that the data starts on the 5th row with a header. The first column contains the timepoint information, and each subsequent column corresponds to a well in the plate. 
 
-If we want to read this file into `R`, we simply provide `read_wides` with the file name, and save the result to some `R` object (here, `imported_widedata`). Since our data doesn't start on the first row and column of the file, we simply need to specify what row/column it does start on using the `startrow`, `startcol`, `endrow`, and `endcol` arguments. (`read_wides` assumes that your data starts on the first row and column and ends on the last row and column, so you don't have to specify when you data meets those criteria. Also note that `header = TRUE` by default`). 
+If we want to read this file into `R`, we simply provide `read_wides` with the file name, and save the result to some `R` object (here, `imported_widedata`). `read_wides` assumes your data starts on the first row and column, and ends on the last row and column, unless you specify otherwise.
 
 ```{r}
 imported_widedata <- read_wides(files = "widedata.csv", startrow = 5)
@@ -351,7 +346,7 @@ head(imported_widedata, c(6, 10))
 
 Note that *read_wides automatically saves the filename* the data was imported from into the first column of the output `data.frame`. This is done to ensure that later on, `data.frames` from multiple plates can be combined without fear of losing the identity of each plate.
 
-If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns aren't nicely numbered. Instead, they're coded by letter. Rather than have to count by hand what columns your data starts and ends on, just specify the column by letter and `read_wides` will translate that to a number for you! (in this example we don't have to specify a start column, since the data starts in the first column, but I do so just to show this letter-style functionality).
+If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns are coded by letter. `read_wides` allows you to specify the column by letter too.
 
 ```{r}
 imported_widedata <- read_wides(files = "widedata.csv",
@@ -367,7 +362,7 @@ imported_widedata <- read_wides(files = c("widedata.csv", "widedata2.csv"))
 
 ## Specifying metadata
 
-Sometimes, your input files will have information you want to import that's not included in the main block of data. For instance, many readers will output information like the experiment name and date into a header in the file. `read_wides` can include that information as well via the `metadata` argument.
+Sometimes, your input files will have information you want to import that's not included in the main block of data. `read_wides` can include that information as well via the `metadata` argument.
 
 The `metadata` argument should be a list of named vectors. Each vector should be of length 2, with the first entry specifying the row and the second entry specifying the column where the metadata is located.
 
@@ -381,7 +376,7 @@ imported_widedata <- read_wides(files = "widedata.csv",
 head(imported_widedata, c(6, 8))
 ```
 
-And just like how you can specify `startrow`, `startcol`, etc. with Excel-style lettering, the location of metadata can also be specified with Excel-style lettering.
+You can also specify the location of metadata with Excel-style lettering.
 
 ```{r}
 imported_widedata <- read_wides(files = "widedata.csv",
@@ -391,7 +386,7 @@ imported_widedata <- read_wides(files = "widedata.csv",
 ```
 
 ## Reading multiple wides from a single file
-In the rare case that you have multiple wide-shaped datasets saved into a single file, `read_wides` can import that as well. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
+`read_wides` can read multiple wide-shaped datasets from a single file. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
 
 ## What to do next
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **[Transforming data]** section.

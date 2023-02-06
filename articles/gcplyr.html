@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,30 +102,25 @@ Without <code>gcplyr</code>, importing and analyzing plate reader data
 can be a complicated process that has to be tailored for each
 experiment, requiring many lines of code. With <code>gcplyr</code> many
 of those steps are now just a single line of code.</p>
-<p>This document gives an introduction of how to use
-<code>gcplyr</code>’s most common functions, and points you to
-additional documents for more in-depth explanations of each common steps
-of a growth curve analysis with <code>gcplyr</code>.</p>
-<p>To get started, all you need is the data file with the growth curve
-measures saved in a tabular format (.csv, .xls, or .xlsx) to your
-computer.</p>
-<p>Users often want to combine their data with some information on
-experimental design elements of their growth curve plate(s). For
-instance, this might include which strains went into which wells. You
-can save this information into a tabular file as well (see [Reading
-design elements from files]), or you can just keep it handy to enter it
-directly through a function later on (see [Generating designs in
-R]).</p>
+<p>This document gives an introduction of how to use <code>gcplyr</code>
+for each step of a growth curve analysis.</p>
+<p>To get started, you need your growth curve data file saved to your
+computer (.csv, .xls, or .xlsx).</p>
+<p>Users often want to combine their data with some information on the
+experimental design of their plate(s). You can save this information
+into a tabular file as well, or you can just keep it handy to enter
+directly in <code>R</code> (see
+<code>vignette(incorporate_designs)</code>).</p>
 <p>Let’s get started by loading <code>gcplyr</code>. We’re also going to
 load a couple other packages we’ll need.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.1.0, Build Date: 2023-02-02)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.2.0, Build Date: 2023-02-06)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.1.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.2.0</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -142,34 +137,34 @@ load a couple other packages we’ll need.</p>
 <div class="section level2">
 <h2 id="a-quick-demo-of-gcplyr">A quick demo of <code>gcplyr</code><a class="anchor" aria-label="anchor" href="#a-quick-demo-of-gcplyr"></a>
 </h2>
-<p>Before digging into the details of the various options that
-<code>gcplyr</code> provides to users, here’s a simple example of what a
-final <code>gcplyr</code> script can look like. This script imports data
-from files created by a plate reader, combines it with design files
-created by the user, then calculates the maximum growth rate and
-area-under-the-curve. <strong>Don’t worry about understanding all the
-details of how the code works right now.</strong> Each of these steps is
-explained in depth in later documents. Here, we’re just providing a
-demonstration of what analyzing growth curve data with
-<code>gcplyr</code> can look like.</p>
+<p>Before digging into the details, here’s a simple demonstration of
+what a final <code>gcplyr</code> script can look like. This script:</p>
+<ol style="list-style-type: decimal">
+<li>imports data from files created by a plate reader</li>
+<li>combines it with design files created by the user</li>
+<li>calculates the maximum growth rate and area-under-the-curve</li>
+</ol>
+<p><strong>Don’t worry about understanding all the details of how the
+code works right now.</strong> Each of these steps is explained in depth
+in later articles.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Read in our data</span></span>
-<span><span class="co"># (our plate reader data is saved in "widedata.csv")</span></span>
+<code class="sourceCode R"><span><span class="co"># Read in our data</span></span>
+<span><span class="co">#  (our plate reader data is saved in "widedata.csv")</span></span>
 <span><span class="va">data_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_wides.html">read_wides</a></span><span class="op">(</span>files <span class="op">=</span> <span class="st">"widedata.csv"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Transform our data to be tidy-shaped</span></span>
+<span><span class="co"># Transform our data to be tidy-shaped</span></span>
 <span><span class="va">data_tidy</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span>wides <span class="op">=</span> <span class="va">data_wide</span>, id_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"file"</span>, <span class="st">"Time"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Import our designs</span></span>
-<span><span class="co"># (saved in the files Bacteria_strain.csv and Phage.csv)</span></span>
+<span><span class="co"># Import our designs</span></span>
+<span><span class="co">#  (saved in the files Bacteria_strain.csv and Phage.csv)</span></span>
 <span><span class="va">designs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_blockdesigns.html">import_blockdesigns</a></span><span class="op">(</span>files <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria_strain.csv"</span>, <span class="st">"Phage.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Merge our designs and data</span></span>
+<span><span class="co"># Merge our designs and data</span></span>
 <span><span class="va">data_merged</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">data_tidy</span>, <span class="va">designs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
 <span></span>
-<span><span class="co">#Plot the data</span></span>
+<span><span class="co"># Plot the data</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_merged</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">Time</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">Well</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>lty <span class="op">=</span> <span class="va">Phage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -177,17 +172,17 @@ demonstration of what analyzing growth curve data with
 <p><img src="gcplyr_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Voila! 8 lines of code and all your data is imported &amp; plotted!</span></span>
+<span><span class="co"># Voila! 8 lines of code and all your data is imported &amp; plotted!</span></span>
 <span></span>
-<span><span class="co">#Calculate the per-capita growth rate over time in each well</span></span>
+<span><span class="co"># Calculate the per-capita growth rate over time in each well</span></span>
 <span><span class="va">data_merged</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">data_merged</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>  percap_deriv <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, percapita <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                            blank <span class="op">=</span> <span class="fl">0</span>, window_width_n <span class="op">=</span> <span class="fl">5</span>, x_scale <span class="op">=</span> <span class="fl">3600</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Calculate two common metrics of bacterial growth:</span></span>
-<span><span class="co"># the maximum growth rate, saving it to a column named max_percap</span></span>
-<span><span class="co"># the area-under-the-curve, saving it to a column named 'auc'</span></span>
+<span><span class="co"># Calculate two common metrics of bacterial growth:</span></span>
+<span><span class="co">#  the maximum growth rate, saving it to a column named max_percap</span></span>
+<span><span class="co">#  the area-under-the-curve, saving it to a column named 'auc'</span></span>
 <span><span class="va">data_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">data_merged</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
 <span>  max_percap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">percap_deriv</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
@@ -195,7 +190,7 @@ demonstration of what analyzing growth curve data with
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Well', 'Bacteria_strain'. You can override</span></span>
 <span><span class="co">#&gt; using the `.groups` argument.</span></span>
 <span></span>
-<span><span class="co">#Print some of the max growth rates and auc's</span></span>
+<span><span class="co"># Print some of the max growth rates and auc's</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_sum</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain [6]</span></span></span>
@@ -208,7 +203,8 @@ demonstration of what analyzing growth curve data with
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A2    Strain 2        No Phage         1.31  <span style="text-decoration: underline;">69</span>361.</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A3    Strain 3        No Phage         0.915 <span style="text-decoration: underline;">54</span>460.</span></span>
 <span></span>
-<span><span class="co">#Plot the results for max growth rate and area under the curve in presence vs absence of phage</span></span>
+<span><span class="co"># Plot the results for max growth rate and area under the curve in </span></span>
+<span><span class="co">#  presence vs absence of phage</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_sum</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">max_percap</span>, y <span class="op">=</span> <span class="va">auc</span>, color <span class="op">=</span> <span class="va">Phage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -217,13 +213,11 @@ demonstration of what analyzing growth curve data with
 <div class="section level2">
 <h2 id="whats-next">What’s next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>
 </h2>
-<p>Now that you’ve read this brief introduction, you probably want to
-get into a little more detail learning how to use <code>gcplyr</code>
-for your own work. Generally, working with <code>gcplyr</code> will
-follow a number of steps, each of which is likely to be only one or a
-few lines of code in your final script. We’ve explained each of these
-steps in a page linked below. To start, we’ll learn how to import our
-data into <code>R</code> and transform it into a convenient format.</p>
+<p>Generally, working with <code>gcplyr</code> will follow a number of
+steps, each of which is likely to be only one or a few lines of code in
+your final script. We’ve explained each of these steps in a page linked
+below. To start, we’ll learn how to import our data into <code>R</code>
+and transform it into a convenient format.</p>
 <ol style="list-style-type: decimal">
 <li>Introduction: <code><a href="../articles/gcplyr.html">vignette("gcplyr")</a></code>
 </li>

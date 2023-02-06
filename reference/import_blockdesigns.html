@@ -16,7 +16,7 @@ and separate_tidys in one go"><!-- mathjax --><script src="https://cdnjs.cloudfl
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,10 +128,16 @@ design elements.</p></dd>
 <p><code>wellnames_sep</code> - specifying what character (or "" for none)
              should be used when pasting together the rownames and
              column names. Note that this should be chosen to match
-             the wellnames in your measures.</p>             
+             the well names in your measures.</p>             
 <p>Note that <code>import_blockdesigns</code> cannot currently handle
              metadata specified via the <code>metadata</code> argument of
-             <code>read_blocks</code></p>
+             <code>read_blocks</code></p>             
+<p>If you find yourself needing more control, you can run the 
+             steps manually, first reading with <code>read_blocks</code>,
+             pasting as needed with <code>paste_blocks</code>, 
+             transforming to tidy with <code>trans_block_to_wide</code> and
+             <code>trans_wide_to_tidy</code>, and separating as needed with
+             <code>separate_tidys</code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

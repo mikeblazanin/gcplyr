@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,11 +127,11 @@ dealing with noise in our growth curve data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.1.0, Build Date: 2023-02-02)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.2.0, Build Date: 2023-02-06)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.1.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.2.0</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -145,8 +145,8 @@ dealing with noise in our growth curve data.</p>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#This code was previously explained</span></span>
-<span><span class="co">#Here we're re-running it so it's available for us to work with</span></span>
+<code class="sourceCode R"><span><span class="co"># This code was previously explained</span></span>
+<span><span class="co"># Here we're re-running it so it's available for us to work with</span></span>
 <span><span class="va">example_design</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
 <span>  pattern_split <span class="op">=</span> <span class="st">","</span>, nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  <span class="st">"Bacteria_strain"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
@@ -194,12 +194,12 @@ data</a></li>
 is a version of the same example data we’ve been working with but with
 simulated noise added to it.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#This is the data we've been working with previously</span></span>
+<code class="sourceCode R"><span><span class="co"># This is the data we've been working with previously</span></span>
 <span><span class="va">noiseless_data</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span>, id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span>
-<span><span class="co">#This is the same data but with simulated noise added</span></span>
+<span><span class="co"># This is the same data but with simulated noise added</span></span>
 <span><span class="va">noisy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata</span>, id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span>
-<span><span class="co">#We'll add some identifiers and then merge them together</span></span>
+<span><span class="co"># We'll add some identifiers and then merge them together</span></span>
 <span><span class="va">noiseless_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">noiseless_data</span>, noise <span class="op">=</span> <span class="st">"No"</span><span class="op">)</span></span>
 <span><span class="va">noisy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">noisy_data</span>, noise <span class="op">=</span> <span class="st">"Yes"</span><span class="op">)</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">noisy_data</span>, <span class="va">noiseless_data</span><span class="op">)</span></span>
@@ -215,12 +215,12 @@ simulated noise added to it.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">$</span><span class="va">Well</span>,</span>
 <span>         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span>, each <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#For computational speed, let's just keep the wells we'll be focusing on</span></span>
-<span><span class="co"># (for your own analyses, you should skip this step and continue using</span></span>
-<span><span class="co"># all of your data)</span></span>
+<span><span class="co"># For computational speed, let's just keep the wells we'll be focusing on</span></span>
+<span><span class="co">#  (for your own analyses, you should skip this step and continue using</span></span>
+<span><span class="co">#  all of your data)</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Plot with a linear y-axis</span></span>
+<span><span class="co"># Plot with a linear y-axis</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -228,7 +228,7 @@ simulated noise added to it.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot with a log y-axis</span></span>
+<span><span class="co"># Plot with a log y-axis</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -255,7 +255,7 @@ like.</p>
 <span>         deriv_percap <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, x_scale <span class="op">=</span> <span class="fl">3600</span>,</span>
 <span>                                   percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Plot derivative</span></span>
+<span><span class="co"># Plot derivative</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -264,7 +264,7 @@ like.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot per-capita derivative</span></span>
+<span><span class="co"># Plot per-capita derivative</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -312,7 +312,7 @@ sufficient for your analyses to succeed.</p>
 <span>                                   percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                                   window_width_n <span class="op">=</span> <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Plot derivative 5</span></span>
+<span><span class="co"># Plot derivative 5</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -324,19 +324,19 @@ sufficient for your analyses to succeed.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot derivative 9</span></span>
+<span><span class="co"># Plot derivative 9</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.25</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">deriv9</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"window_width_n = 5"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"window_width_n = 9"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 8 rows containing missing values (`geom_point()`).</span></span>
 <span><span class="co">#&gt; Warning: Removed 16 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
 <p><img src="noise_files/figure-html/unnamed-chunk-5-2.png" width="700"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot per-capita derivative 5</span></span>
+<span><span class="co"># Plot per-capita derivative 5</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -349,7 +349,7 @@ sufficient for your analyses to succeed.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-5-3.png" width="700"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot per-capita derivative 9</span></span>
+<span><span class="co"># Plot per-capita derivative 9</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -453,7 +453,7 @@ the window extends beyond the domain of your data.</p>
 <span>         smoothed9 <span class="op">=</span> <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>              sm_method <span class="op">=</span> <span class="st">"moving-average"</span>, window_width_n <span class="op">=</span> <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -466,7 +466,7 @@ the window extends beyond the domain of your data.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -521,7 +521,7 @@ domain of your data.</p>
 <span>           <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>                       sm_method <span class="op">=</span> <span class="st">"moving-median"</span>, window_width_n <span class="op">=</span> <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -535,7 +535,7 @@ domain of your data.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -580,7 +580,7 @@ and larger values are more “smoothed”. Here, we’ll show
 <span>         smoothed35 <span class="op">=</span> <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>                                 sm_method <span class="op">=</span> <span class="st">"loess"</span>, span <span class="op">=</span> <span class="fl">.35</span>, degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -592,7 +592,7 @@ and larger values are more “smoothed”. Here, we’ll show
 <p><img src="noise_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -638,7 +638,7 @@ analyses. Here, we’ll show <code>gam</code> smoothing with
 <span>         smoothed8 <span class="op">=</span> <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>                                 sm_method <span class="op">=</span> <span class="st">"gam"</span>, k <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -653,7 +653,7 @@ analyses. Here, we’ll show <code>gam</code> smoothing with
 <p><img src="noise_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -702,7 +702,7 @@ both can be done in one step):</p>
 <span>           <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">smoothed_med3</span>,</span>
 <span>                       sm_method <span class="op">=</span> <span class="st">"moving-average"</span>, window_width_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
+<span><span class="co"># What does the smoothed data look like compared to the 'true' noiseless data?</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -730,8 +730,8 @@ multiple points for calculating derivatives can be a powerful
 combination for reducing the effects of noise while minimizing the
 introduction of bias.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Note here that we're calculating derivatives of the smoothed column generated</span></span>
-<span><span class="co"># in the previous section by combining moving median and moving average smoothing</span></span>
+<code class="sourceCode R"><span><span class="co"># Note here that we're calculating derivatives of the smoothed column generated</span></span>
+<span><span class="co">#  in the previous section by combining moving median and moving average smoothing</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">noise</span><span class="op">)</span>,</span>
 <span>         deriv_raw <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, x_scale <span class="op">=</span> <span class="fl">3600</span><span class="op">)</span>,</span>
@@ -747,7 +747,7 @@ introduction of bias.</p>
 <span>                                   percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                                   window_width_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Plot derivative of smoothed data</span></span>
+<span><span class="co"># Plot derivative of smoothed data</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_raw</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -759,7 +759,7 @@ introduction of bias.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot derivative of smoothed data with smoothing during calc_deriv</span></span>
+<span><span class="co"># Plot derivative of smoothed data with smoothing during calc_deriv</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_raw</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -771,7 +771,7 @@ introduction of bias.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot per-capita derivative of smoothed data</span></span>
+<span><span class="co"># Plot per-capita derivative of smoothed data</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap_raw</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -784,7 +784,7 @@ introduction of bias.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-11-3.png" width="700"></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co">#Plot per-capita derivative of smoothed data with smoothing during calc_deriv</span></span>
+<span><span class="co"># Plot per-capita derivative of smoothed data with smoothing during calc_deriv</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap_raw</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -812,7 +812,7 @@ are near 0, we can simply exclude data points where the density is near
 0.</p>
 <p>Let’s look again at our smoothed per-capita growth rates:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Plot per-capita derivative of smoothed data with smoothing during calc_deriv</span></span>
+<code class="sourceCode R"><span><span class="co"># Plot per-capita derivative of smoothed data with smoothing during calc_deriv</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap_raw</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.75</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
@@ -842,13 +842,13 @@ low.</p>
 the minimum <em>density</em> of bacteria:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">my_well</span> <span class="kw">in</span> <span class="va">sample_wells</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co">#Title</span></span>
+<span>  <span class="co"># Title</span></span>
 <span>  <span class="va">title</span> <span class="op">&lt;-</span> <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/ggdraw.html" class="external-link">ggdraw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/draw_label.html" class="external-link">draw_label</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Well"</span>, <span class="va">my_well</span><span class="op">)</span>, </span>
 <span>                        fontface <span class="op">=</span> <span class="st">"bold"</span>, x <span class="op">=</span> <span class="fl">0</span>, hjust <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">margin</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co">#Save x and y limits for all plots so they're all on the same axes</span></span>
+<span>  <span class="co"># Save x and y limits for all plots so they're all on the same axes</span></span>
 <span>  <span class="va">xdat</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op">==</span> <span class="va">my_well</span><span class="op">)</span><span class="op">$</span><span class="va">Time</span></span>
 <span>  <span class="va">ydat</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op">==</span> <span class="va">my_well</span><span class="op">)</span><span class="op">$</span><span class="va">deriv_percap3</span></span>
 <span>  <span class="va">xlims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">xdat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">xdat</span><span class="op">)</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
@@ -856,14 +856,14 @@ the minimum <em>density</em> of bacteria:</p>
 <span>  <span class="va">ylims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">ydat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">ydat</span><span class="op">)</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>             <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">ydat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">ydat</span><span class="op">)</span><span class="op">]</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co">#Plot unfiltered data</span></span>
+<span>  <span class="co"># Plot unfiltered data</span></span>
 <span>  <span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op">==</span> <span class="va">my_well</span><span class="op">)</span>,</span>
 <span>               <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap3</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"all data"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="va">xlims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">xlims</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="va">ylims</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">ylims</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co">#Plot data with filters for density</span></span>
+<span>  <span class="co"># Plot data with filters for density</span></span>
 <span>  <span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, </span>
 <span>                                    <span class="va">Well</span> <span class="op">==</span> <span class="va">my_well</span>, <span class="va">smoothed</span> <span class="op">&gt;</span> <span class="fl">0.001</span><span class="op">)</span>,</span>
 <span>               <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap3</span>, color <span class="op">=</span> <span class="va">noise</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -942,11 +942,11 @@ the bacteria when their density is at least 0.01.</p>
 <p><img src="noise_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 <p>Here we can see that by limiting our analyses to just a subset of the
 data, the maximum per-capita growth rate has now become nearly identical
-in three of the example wells. Unfortunately, in F1 we haven’t been able
-to eliminate all of the noise. Hopefully this doesn’t happen in your
-data! But if it does, continue to try alternate smoothing, derivative
-calculating, and subset strategies to try to further reduce the effects
-of noise on your findings.</p>
+between the noisy and noiseless data in three of the example wells.
+Unfortunately, in F1 we haven’t been able to eliminate all of the noise.
+Hopefully this doesn’t happen in your data! But if it does, continue to
+try alternate smoothing, derivative calculating, and subset strategies
+to try to further reduce the effects of noise on your findings.</p>
 </div>
 <div class="section level2">
 <h2 id="whats-next">What’s next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>

@@ -46,6 +46,12 @@
     <loc>https://mikeblazanin.github.io/gcplyr/news/index.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/ExtremaFunctions.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/auc.html</loc>
   </url>
   <url>
@@ -59,15 +65,6 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata_noiseless.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/find_local_extrema.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/find_threshold_crosses.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/first_below.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/first_peak.html</loc>

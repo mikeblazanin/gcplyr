@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,36 +118,32 @@ Blazanin</h4>
 <code><a href="../articles/conclusion.html">vignette("conclusion")</a></code>
 </li>
 </ol>
-<p>Previously, we gave an overview and quick demonstration of what
-<code>gcplyr</code> can do. Here, we’re going to start going into more
-detail just how you can carry out each step of an analysis with your own
-data.</p>
+<p>Previously, we gave a quick demonstration of what <code>gcplyr</code>
+can do. Here, we’re going into more detail about how to import your data
+into <code>R</code> and and transform it into a better layout.</p>
 <p>If you haven’t already, load the necessary packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.1.0, Build Date: 2023-02-02)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.2.0, Build Date: 2023-02-06)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.1.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.2.0</span></span>
 <span><span class="co">#&gt; ##</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-layouts">Data layouts<a class="anchor" aria-label="anchor" href="#data-layouts"></a>
 </h2>
-<p>With the previous demonstration in mind, let’s dig into some more
-details of how your input data might be organized and what
-<code>gcplyr</code> does. Growth curve data and design elements can be
-organized in one of three different tabular layouts: block-shaped,
-wide-shaped, and tidy-shaped, described below.</p>
+<p>Growth curve data and designs can be organized in one of three
+different layouts: block-shaped, wide-shaped, and tidy-shaped, described
+below.</p>
 <p>Tidy-shaped data is the best layout for analyses, but most plate
 readers output block-shaped or wide-shaped data, and most user-created
 design files will be block-shaped. Thus, <code>gcplyr</code> works by
-reshaping block-shaped into wide-shaped data, and wide-shaped data into
-tidy-shaped data, then running any analyses.</p>
-<p>So, what are these three data layouts, and how can you tell which of
-them your data is in?</p>
+reshaping block-shaped and wide-shaped data into tidy-shaped data, then
+running analyses.</p>
+<p>So, how can you tell which layout your data is in?</p>
 <p><strong>Block-shaped</strong></p>
 <p>In block-shaped data, the organization of the data corresponds
 directly with the layout of the physical multi-well plate it was
@@ -352,14 +348,10 @@ plate reader measurements, with each unique measurement having its own
 row. Additional columns specify the timepoint, which well the data comes
 from, and any other design elements.</p>
 <p>Note that, in tidy-shaped data, the number of rows equals the number
-of wells times the number of timepoints. For instance, with a 96 well
-plate and 100 timepoints, that will be 9600 rows. (Yes, that’s a lot of
-rows! But don’t worry, tidy-shaped data is the best format for
-downstream analyses.) Tidy-shaped data is common in a number of
-<code>R</code> packages, including <code>ggplot</code>, where it’s
-sometimes called a “long” format. If you want to read more about
-tidy-shaped data and why it’s ideal for analyses, see: Wickham, Hadley.
-Tidy data. The Journal of Statistical Software, vol. 59, 2014.</p>
+of wells times the number of timepoints. Yes, that’s a lot of rows! But
+tidy-shaped data is the best format for analyses, and is common in a
+number of <code>R</code> packages, including <code>ggplot</code>, where
+it’s sometimes called a “long” format.</p>
 <table class="table">
 <thead><tr class="header">
 <th>Timepoint</th>
@@ -440,9 +432,9 @@ would be output by the plate reader. All you need to do is put the file
 names in <code>R</code> in a vector, here we’ve stored the file names in
 <code>temp_filenames</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#This code just creates a series of block-shaped example files</span></span>
-<span><span class="co">#Don't worry about how it works - when working with real growth</span></span>
-<span><span class="co">#curves data, all these files would be created by the plate reader</span></span>
+<code class="sourceCode R"><span><span class="co"># This code just creates a series of block-shaped example files</span></span>
+<span><span class="co"># Don't worry about how it works - when working with real growth</span></span>
+<span><span class="co"># curves data, all these files would be created by the plate reader</span></span>
 <span><span class="va">temp_filenames</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Plate1-"</span>, </span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span><span class="op">$</span><span class="va">Time</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%/%</a></span> <span class="fl">3600</span>,</span>
@@ -477,7 +469,7 @@ a vector with all their names using <code>list.files</code>. If your
 folder contains other files, you can specify a regular expression
 <code>pattern</code> to limit it to just those you want to import:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Here we print all the files we're going to read</span></span>
+<code class="sourceCode R"><span><span class="co"># Here we print all the files we're going to read</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"Plate1.*csv"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "Plate1-0_00_00.csv"  "Plate1-0_15_00.csv"  "Plate1-0_30_00.csv" </span></span>
 <span><span class="co">#&gt;  [4] "Plate1-0_45_00.csv"  "Plate1-1_00_00.csv"  "Plate1-1_15_00.csv" </span></span>
@@ -513,7 +505,7 @@ folder contains other files, you can specify a regular expression
 <span><span class="co">#&gt; [94] "Plate1-9_00_00.csv"  "Plate1-9_15_00.csv"  "Plate1-9_30_00.csv" </span></span>
 <span><span class="co">#&gt; [97] "Plate1-9_45_00.csv"</span></span>
 <span></span>
-<span><span class="co">#Here we save them to the temp_filenames variable</span></span>
+<span><span class="co"># Here we save them to the temp_filenames variable</span></span>
 <span><span class="va">temp_filenames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"Plate1.*csv"</span><span class="op">)</span></span></code></pre></div>
 <p>Here’s what one of the files looks like (where the values are
 absorbance/optical density):</p>
@@ -539,15 +531,11 @@ rownames in column 1.</p>
 <p>If we want to read these files into <code>R</code>, we simply provide
 <code>import_blockmeasures</code> with the vector of file names, and
 save the result to some <code>R</code> object (here,
-<code>imported_blockdata</code>). Since our data doesn’t start on the
-first row and column of the file, we simply need to specify what
-row/column it does start on using the <code>startrow</code>,
-<code>startcol</code>, <code>endrow</code>, and <code>endcol</code>
-arguments. (<code>import_blockmeasures</code> assumes that your data
-starts on the first row and column and ends on the last row and column,
-so you don’t have to specify when your data meets those criteria).</p>
+<code>imported_blockdata</code>). <code>import_blockmeasures</code>
+assumes your data starts on the first row and column, and ends on the
+last row and column, unless you specify otherwise.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Now let's read it with import_blockmeasures</span></span>
+<code class="sourceCode R"><span><span class="co"># Now let's read it with import_blockmeasures</span></span>
 <span><span class="va">imported_blockdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_blockmeasures.html">import_blockmeasures</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">temp_filenames</span>, startrow <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
@@ -559,20 +547,16 @@ so you don’t have to specify when your data meets those criteria).</p>
 <span><span class="co">#&gt; 4 Plate1-0_45_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
 <span><span class="co">#&gt; 5 Plate1-1_00_00 0.002 0.002 0.002 0.002 0.002 0.002 0.002</span></span>
 <span><span class="co">#&gt; 6 Plate1-1_15_00 0.002 0.003 0.002 0.003 0.003 0.002 0.002</span></span></code></pre></div>
-<p>Here we can see that import_blockmeasures has created a wide-shaped R
-object containing the data from all of our reads. It has also added the
-file names under the <code>block_name</code> column, so that we can
-easily track which row came from which file.</p>
+<p>Here we can see that <code>import_blockmeasures</code> has created a
+wide-shaped R object containing the data from all of our reads. It has
+also added the file names under the <code>block_name</code> column, so
+that we can easily track which row came from which file.</p>
 <p>If you’re looking at your data in Excel or a similar spreadsheet
-program, you’ll notice that the columns aren’t nicely numbered. Instead,
-they’re coded by letter. Rather than have to count by hand what columns
-your data starts and ends on, just specify the column by letter and
-<code>import_blockmeasures</code> will translate that to a number for
-you! (in this example we don’t have to specify a start column, since the
-data starts in the first column, but I do so just to show this
-letter-style functionality).</p>
+program, you’ll notice that the columns are coded by letter.
+<code>import_blockmeasures</code> allows you to specify the column by
+letter too.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#We can specify rows or columns by Excel-style letters too</span></span>
+<code class="sourceCode R"><span><span class="co"># We can specify rows or columns by Excel-style letters too</span></span>
 <span><span class="va">imported_blockdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_blockmeasures.html">import_blockmeasures</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">temp_filenames</span>,</span>
 <span>  startrow <span class="op">=</span> <span class="fl">4</span>, startcol <span class="op">=</span> <span class="st">"A"</span><span class="op">)</span></span></code></pre></div>
@@ -604,7 +588,7 @@ information as well via the <code>metadata</code> argument.</p>
 and 3rd column. Here’s how we could specify that metadata in our
 <code>import_blockmeasures</code> command:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Reading the blockcurves files with metadata included</span></span>
+<code class="sourceCode R"><span><span class="co"># Reading the blockcurves files with metadata included</span></span>
 <span><span class="va">imported_blockdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_blockmeasures.html">import_blockmeasures</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">temp_filenames</span>,</span>
 <span>  startrow <span class="op">=</span> <span class="fl">4</span>,</span>
@@ -624,11 +608,10 @@ the metadata argument must be a list of named vectors. Each vector
 should have two elements specifying the location of the metadata in the
 input files: the first element is the row, the second element is the
 column.</p>
-<p>And just like how you can specify <code>startrow</code>,
-<code>startcol</code>, etc. with Excel-style lettering, the location of
-metadata can also be specified with Excel-style lettering.</p>
+<p>You can also specify the location of metadata with Excel-style
+lettering.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Reading the blockcurves files with metadata included</span></span>
+<code class="sourceCode R"><span><span class="co"># Reading the blockcurves files with metadata included</span></span>
 <span><span class="va">imported_blockdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_blockmeasures.html">import_blockmeasures</a></span><span class="op">(</span></span>
 <span>  files <span class="op">=</span> <span class="va">temp_filenames</span>,</span>
 <span>  startrow <span class="op">=</span> <span class="fl">4</span>,</span>
@@ -645,9 +628,9 @@ location of each block within the file.</p>
 this code works</strong>, normally this file would be created by the
 plate reader.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#This code just creates an example file with multiple blocks</span></span>
-<span><span class="co">#Don't worry about how it works - when working with real growth</span></span>
-<span><span class="co">#curves data, this would be created by the plate reader</span></span>
+<code class="sourceCode R"><span><span class="co"># This code just creates an example file with multiple blocks</span></span>
+<span><span class="co"># Don't worry about how it works - when working with real growth</span></span>
+<span><span class="co"># curves data, this would be created by the plate reader</span></span>
 <span><span class="fu"><a href="../reference/write_blocks.html">write_blocks</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_blocks.html">read_blocks</a></span><span class="op">(</span>files <span class="op">=</span> <span class="va">temp_filenames</span>,</span>
 <span>                         startrow <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>                         metadata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"time"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="st">"C"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -686,9 +669,7 @@ all the blocks go from column 1 (“A” in Excel) to column 13 (“M” in
 Excel), they start on rows 3, 15, 27, 39, etc, and end on rows 11, 23,
 35, 47, etc. When we look in the file, we can also see that the very
 last block starts on row 1155 and ends on row 1163. Let’s read this
-information in using <code>import_blockmeasures</code> (in this example
-we don’t <em>have</em> to specify a start column, since the data starts
-in the first column, but I do to be explicit):</p>
+information in using <code>import_blockmeasures</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imported_blockdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_blockmeasures.html">import_blockmeasures</a></span><span class="op">(</span></span>
 <span>  <span class="st">"blocks_single.csv"</span>,</span>
@@ -735,20 +716,6 @@ the time metadata has been incorporated.</p>
 <span><span class="co">#&gt; 6 blocks_single 4500 0.002 0.003 0.002 0.003 0.003 0.002</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="notes-for-more-advanced-use">Notes for more advanced use<a class="anchor" aria-label="anchor" href="#notes-for-more-advanced-use"></a>
-</h3>
-<p>Note that <code>import_blockmeasures</code> is essentially a wrapper
-function that calls <code>read_blocks</code>, <code>uninterleave</code>,
-and <code>trans_block_to_wide</code>. Any arguments for those functions
-can be passed to <code>import_blockmeasures</code>.</p>
-<p>If you find yourself needing even more control over the process of
-importing block-shaped measures files, each of the functions is
-available for users to call themselves. So you can run the steps
-manually, first reading with <code>read_blocks</code>, separating plates
-as needed with <code>uninterleave</code>, then transforming to wide with
-<code>trans_block_to_wide</code>.</p>
-</div>
-<div class="section level3">
 <h3 id="what-to-do-next">What to do next<a class="anchor" aria-label="anchor" href="#what-to-do-next"></a>
 </h3>
 <p>Now that you’ve imported your block-shaped data, you’ll need to
@@ -773,10 +740,10 @@ the plate reader. All you need to do is know the file name(s) to put in
 you <code>R</code> code. In this example, the file name is
 <code>widedata.csv</code>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#This code just creates a wide-shaped example file where the data doesn't</span></span>
-<span><span class="co">#start on the first row.</span></span>
-<span><span class="co">#Don't worry about how it works - when working with real growth</span></span>
-<span><span class="co">#curves data, this file would be created by the plate reader</span></span>
+<code class="sourceCode R"><span><span class="co"># This code just creates a wide-shaped example file where the data doesn't</span></span>
+<span><span class="co"># start on the first row.</span></span>
+<span><span class="co"># Don't worry about how it works - when working with real growth</span></span>
+<span><span class="co"># curves data, this file would be created by the plate reader</span></span>
 <span><span class="va">temp_example_widedata</span> <span class="op">&lt;-</span> <span class="va">example_widedata_noiseless</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">temp_example_widedata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"V"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">temp_example_widedata</span><span class="op">)</span>,</span>
 <span>                                         sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
@@ -795,12 +762,12 @@ you <code>R</code> code. In this example, the file name is
 <p>Here’s what the start of the file looks like (where the values are
 absorbance/optical density):</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Let's take a peek at what this file looks like</span></span>
+<code class="sourceCode R"><span><span class="co"># Let's take a peek at what this file looks like</span></span>
 <span><span class="fu">print_df</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"widedata.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                       colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span>, </span>
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Experiment name Experiment_1                                                </span></span>
-<span><span class="co">#&gt;      Start date   2023-02-03                                                </span></span>
+<span><span class="co">#&gt;      Start date   2023-02-06                                                </span></span>
 <span><span class="co">#&gt;                                                                             </span></span>
 <span><span class="co">#&gt;                                                                             </span></span>
 <span><span class="co">#&gt;            Time           A1    B1    C1    D1    E1    F1    G1    H1    A2</span></span>
@@ -817,14 +784,10 @@ with a header. The first column contains the timepoint information, and
 each subsequent column corresponds to a well in the plate.</p>
 <p>If we want to read this file into <code>R</code>, we simply provide
 <code>read_wides</code> with the file name, and save the result to some
-<code>R</code> object (here, <code>imported_widedata</code>). Since our
-data doesn’t start on the first row and column of the file, we simply
-need to specify what row/column it does start on using the
-<code>startrow</code>, <code>startcol</code>, <code>endrow</code>, and
-<code>endcol</code> arguments. (<code>read_wides</code> assumes that
-your data starts on the first row and column and ends on the last row
-and column, so you don’t have to specify when you data meets those
-criteria. Also note that <code>header = TRUE</code> by default`).</p>
+<code>R</code> object (here, <code>imported_widedata</code>).
+<code>read_wides</code> assumes your data starts on the first row and
+column, and ends on the last row and column, unless you specify
+otherwise.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imported_widedata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_wides.html">read_wides</a></span><span class="op">(</span>files <span class="op">=</span> <span class="st">"widedata.csv"</span>, startrow <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting <code>data.frame</code> looks like this:</p>
@@ -843,13 +806,9 @@ data was imported from into the first column of the output
 <code>data.frames</code> from multiple plates can be combined without
 fear of losing the identity of each plate.</p>
 <p>If you’re looking at your data in Excel or a similar spreadsheet
-program, you’ll notice that the columns aren’t nicely numbered. Instead,
-they’re coded by letter. Rather than have to count by hand what columns
-your data starts and ends on, just specify the column by letter and
-<code>read_wides</code> will translate that to a number for you! (in
-this example we don’t have to specify a start column, since the data
-starts in the first column, but I do so just to show this letter-style
-functionality).</p>
+program, you’ll notice that the columns are coded by letter.
+<code>read_wides</code> allows you to specify the column by letter
+too.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imported_widedata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_wides.html">read_wides</a></span><span class="op">(</span>files <span class="op">=</span> <span class="st">"widedata.csv"</span>,</span>
 <span>                                startrow <span class="op">=</span> <span class="fl">5</span>, startcol <span class="op">=</span> <span class="st">"A"</span><span class="op">)</span></span></code></pre></div>
@@ -857,17 +816,16 @@ functionality).</p>
 do so directly with a single <code>read_wides</code> command. In this
 case, read_wides will return a list containing all the data.frames:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#If we had multiple wide-shaped data files to import</span></span>
+<code class="sourceCode R"><span><span class="co"># If we had multiple wide-shaped data files to import</span></span>
 <span><span class="va">imported_widedata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_wides.html">read_wides</a></span><span class="op">(</span>files <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"widedata.csv"</span>, <span class="st">"widedata2.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="specifying-metadata-1">Specifying metadata<a class="anchor" aria-label="anchor" href="#specifying-metadata-1"></a>
 </h3>
 <p>Sometimes, your input files will have information you want to import
-that’s not included in the main block of data. For instance, many
-readers will output information like the experiment name and date into a
-header in the file. <code>read_wides</code> can include that information
-as well via the <code>metadata</code> argument.</p>
+that’s not included in the main block of data. <code>read_wides</code>
+can include that information as well via the <code>metadata</code>
+argument.</p>
 <p>The <code>metadata</code> argument should be a list of named vectors.
 Each vector should be of length 2, with the first entry specifying the
 row and the second entry specifying the column where the metadata is
@@ -882,15 +840,14 @@ the 3rd row, 2nd column. Here’s how we could specify that metadata:</p>
 <span>                                                <span class="st">"start_date"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imported_widedata</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        file experiment_name start_date Time    A1    B1    C1    D1</span></span>
-<span><span class="co">#&gt; 6  widedata    Experiment_1 2023-02-03    0 0.002 0.002 0.002 0.002</span></span>
-<span><span class="co">#&gt; 7  widedata    Experiment_1 2023-02-03  900 0.002 0.002 0.002 0.002</span></span>
-<span><span class="co">#&gt; 8  widedata    Experiment_1 2023-02-03 1800 0.002 0.002 0.002 0.002</span></span>
-<span><span class="co">#&gt; 9  widedata    Experiment_1 2023-02-03 2700 0.002 0.002 0.002 0.002</span></span>
-<span><span class="co">#&gt; 10 widedata    Experiment_1 2023-02-03 3600 0.002 0.002 0.002 0.003</span></span>
-<span><span class="co">#&gt; 11 widedata    Experiment_1 2023-02-03 4500 0.002 0.003 0.002 0.003</span></span></code></pre></div>
-<p>And just like how you can specify <code>startrow</code>,
-<code>startcol</code>, etc. with Excel-style lettering, the location of
-metadata can also be specified with Excel-style lettering.</p>
+<span><span class="co">#&gt; 6  widedata    Experiment_1 2023-02-06    0 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 7  widedata    Experiment_1 2023-02-06  900 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 8  widedata    Experiment_1 2023-02-06 1800 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 9  widedata    Experiment_1 2023-02-06 2700 0.002 0.002 0.002 0.002</span></span>
+<span><span class="co">#&gt; 10 widedata    Experiment_1 2023-02-06 3600 0.002 0.002 0.002 0.003</span></span>
+<span><span class="co">#&gt; 11 widedata    Experiment_1 2023-02-06 4500 0.002 0.003 0.002 0.003</span></span></code></pre></div>
+<p>You can also specify the location of metadata with Excel-style
+lettering.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imported_widedata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_wides.html">read_wides</a></span><span class="op">(</span>files <span class="op">=</span> <span class="st">"widedata.csv"</span>,</span>
 <span>                                startrow <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -900,9 +857,8 @@ metadata can also be specified with Excel-style lettering.</p>
 <div class="section level3">
 <h3 id="reading-multiple-wides-from-a-single-file">Reading multiple wides from a single file<a class="anchor" aria-label="anchor" href="#reading-multiple-wides-from-a-single-file"></a>
 </h3>
-<p>In the rare case that you have multiple wide-shaped datasets saved
-into a single file, <code>read_wides</code> can import that as well.
-Refer to the earlier section <strong><a href="#reading-multiple-blocks-from-a-single-file">Reading multiple
+<p><code>read_wides</code> can read multiple wide-shaped datasets from a
+single file. Refer to the earlier section <strong><a href="#reading-multiple-blocks-from-a-single-file">Reading multiple
 blocks from a single file</a></strong>, since the syntax for such
 operations is the same for <code>read_wides</code> as it is for
 <code>import_blockmeasures</code>.</p>

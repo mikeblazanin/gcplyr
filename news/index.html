@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,15 @@
       <small>Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.2.0" id="gcplyr-120">gcplyr 1.2.0<a class="anchor" aria-label="anchor" href="#gcplyr-120"></a></h2>
+<ul><li><p>The function first_peak has been renamed to first_maxima. first_peak will continue to function normally for a long time but with a warning to use first_maxima instead.</p></li>
+<li><p>New functions have been added that are shortcuts for common use cases: first_minima and first_above</p></li>
+<li><p>Bug fixes for find_threshold_crossings related to return_endpoints = TRUE</p></li>
+<li><p>Bug fixes for find_threshold_crossings and find_local_extrema when input values are NA</p></li>
+<li><p>Style and content improvements in vignettes</p></li>
+<li><p>Help pages have been improved</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="gcplyr-110">gcplyr 1.1.0<a class="anchor" aria-label="anchor" href="#gcplyr-110"></a></h2><p class="text-muted">CRAN release: 2023-02-03</p>
 <ul><li><p>The default behavior of <code>write_blocks</code> has changed: users are now required to specify the <code>file</code> argument to be either <code>NULL</code>, a file name, or a vector of file names. For the old default naming, specify <code>file = NULL</code>. This change is required for CRAN compatibility.</p></li>

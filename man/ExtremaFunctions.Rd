@@ -102,7 +102,7 @@ vector and not the subset of the vector}
 
 \item{height_limit}{Deprecated, use \code{window_height} instead}
 
-\item{...}{(for \code{first_maxima} and \code{first_minima}, other 
+\item{...}{(for \code{first_maxima} and \code{first_minima}), other 
 parameters to pass to \code{find_local_extrema}}
 }
 \value{
@@ -125,11 +125,16 @@ parameters to pass to \code{find_local_extrema}}
    corresponding to local extrema in the data
 }
 \description{
-These functions takes a vector of \code{y} values and identify all
-local value extrema. One of \code{window_width}, \code{window_width_n}, 
-or \code{window_height} must be provided.
+These functions take a vector of \code{y} values and identify local extrema.
 }
 \details{
+For \code{find_local_extrema}, one of \code{window_width}, 
+\code{window_width_n}, or \code{window_height} must be provided.
+
+For \code{first_minima} and \code{first_maxima}, if none of 
+\code{window_width}, \code{window_width_n}, or \code{window_height} are 
+provided, \code{window_width_n} is set to 20% of the data by default.
+
 If multiple of \code{window_width}, \code{window_width_n}, or 
 \code{window_height} are provided, steps are limited conservatively 
 (a single step must meet all criteria)
@@ -139,8 +144,4 @@ This function is designed to be compatible for use within
  
 In the case of exact ties in \code{y} values within a window, only the 
 first local extrema is returned.
-
-For \code{first_minima} and \code{first_maxima}, if none of 
-\code{window_width}, \code{window_width_n}, or \code{window_height} are 
-provided, \code{window_width_n} is set to 20% of the data by default.
 }

@@ -18,6 +18,10 @@ knitr::opts_chunk$set(
 )
 knitr::opts_knit$set(root.dir = tempdir())
 
+#To re-build all pdf vignettes (only ones that are git checked-in), 
+# copy-paste the code below into console (Ctrl+Enter does not work):
+#for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::pdf_document(toc = TRUE, toc_depth = 4))}
+
 #Note: to knit to pdf, word, and html simultaneously, run in R console:
 #{rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::html_vignette(toc = TRUE, toc_dept = 4)); rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::pdf_document(toc = TRUE, toc_depth = 4)); rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::word_document(toc = TRUE, toc_dept = 4))}
 

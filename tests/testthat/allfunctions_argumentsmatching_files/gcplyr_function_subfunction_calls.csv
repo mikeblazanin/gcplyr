@@ -4,7 +4,10 @@ block_tidydesign,NA
 calc_deriv,NA
 find_local_extrema,NA
 find_threshold_crosses,NA
+first_above,gcplyr::find_threshold_crosses
 first_below,gcplyr::find_threshold_crosses
+first_maxima,gcplyr::find_local_extrema
+first_minima,gcplyr::find_local_extrema
 first_peak,gcplyr::find_local_extrema
 from_excel,NA
 import_blockdesigns,gcplyr::read_blocks

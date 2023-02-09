@@ -3924,6 +3924,53 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 }
 
 
+#' calculate lag time
+#' 
+#' This function takes a vector of \code{x} and \code{y} values
+#' and returns a scalar for the area under the curve, calculated using 
+#' the trapezoid rule
+#'  
+#' @param rate Numeric value or vector of per-capita growth rate (slope)
+#'             to use when calculating lag time
+#' @param y0 Numeric value or vector of y value (density) to find the 
+#'           intersection of the growth rate line
+#' @param x1 x value (time) when rate was achieved
+#' @param y1 y value (density) when rate was achieved 
+#' @param trans_y  One of \code{c("linear", "log")} specifying the
+#'                 transformation of y-values.
+#' 
+#'                 \code{'log'} is the default, producing calculations of
+#'                 lag time assuming a transition to exponential growth
+#'                 
+#'                 \code{'linear'} is available for alternate uses
+#' 
+#' @details 
+#' This function is designed to be compatible for use within
+#'  dplyr::group_by and dplyr::summarize
+#'
+#' @return A scalar or vector of the lag time(s)
+#'             
+#' @export
+lag_time <- function(rate, y0, x1, y1, trans_y = "log") {
+  if(!canbe.numeric(rate)) {stop("rate must be numeric")}
+  if(!canbe.numeric(x1)) {stop("x1 must be numeric")}
+  if(!canbe.numeric(y1)) {stop("y1 must be numeric")}
+  if(!canbe.numeric(y0)) {stop("y0 must be numeric")}
+  rate <- as.numeric(rate)
+  y0 <- as.numeric(y0)
+  x1 <- as.numeric(x1)
+  y1 <- as.numeric(y1)
+  if(length(unique(sapply(list(rate, y0, x1, y1), length))) != 1) {
+    stop("rate, y0, x1, y1 must all be the same length")}
+  
+  if(!trans_y %in% c("linear", "log")) {
+    stop("trans_y must be one of c('linear', 'log')")}
+  if(trans_y == "log") {y0 <- log(y0); y1 <- log(y1)}
+  
+  return((y0-y1)/rate + x1)
+}
+
+
 # Legacy Code ----
 
 #' Find the first local maxima of a numeric vector

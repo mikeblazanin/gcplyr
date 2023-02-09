@@ -18,6 +18,36 @@ test_that("auc returns correctly with xlim", {
   expect_error(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, NA)))
 })
 
+test_that("lag_time returns correctly", {
+  baranyi_func <- function(r, k, v, q0, m, d0, t_vals) {
+    #Copied from Ram et al 2019
+    if (anyNA(c(r, k, v, q0, m, d0, t_vals))) {return(NA)}
+    if (q0 < 0) {q0 <- 0}
+    a <- t_vals + 1/m*log((exp(-m*t_vals)+q0)/(1+q0))
+    d <- k/(1-(1-((k/d0)**v))*exp(-r*v*a))**(1/v)
+    return(d)
+  }
+  x <- seq(from = 0, to = 200, by = 3)
+  y <- baranyi_func(r = .1, k = 1, v = 1, q0 = .01, m = .1, d0 = 0.001, 
+                    t_vals = x)
+  deriv <- gcplyr::calc_deriv(y = y, x = x, percapita = TRUE, 
+                              blank = 0, trans_y = "log", window_width_n = 5)
+  y0 <- min(y, na.rm = TRUE)
+  y1 <- y[which.max(deriv)]
+  x1 <- x[which.max(deriv)]
+  m <- max(deriv, na.rm = TRUE)
+  lag <- lag_time(rate = m, y0 = y0, x1 = x1, y1 = y1)
+  expect_equal(log(y1) - m*x1 + m*lag, log(y0))
+  if(F) {
+    plot(x, log(y))
+    points(x1, log(y1), col = "red")
+    abline(a = log(y1) - m*x1, b = m)
+    abline(h = log(y0), lty = 2)
+    abline(v = lag, lty = 2)
+    plot(x, deriv)
+  }
+})
+
 test_that("first_maxima matches find_local_extrema results", {
   expect_equal(
     first_maxima(y = (20 - abs(12 - 1:20))),

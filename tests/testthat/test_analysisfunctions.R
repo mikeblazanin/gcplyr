@@ -45,6 +45,7 @@ test_that("lag_time returns correctly", {
     abline(h = log(y0), lty = 2)
     abline(v = lag, lty = 2)
     plot(x, deriv)
+    abline(h = m)
   }
 })
 

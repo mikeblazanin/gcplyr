@@ -194,7 +194,7 @@ This produces a `data.frame` with `Bacteria` as the `block_name` in the metadata
 ## A few notes on the pattern
 The pattern in `make_design` is flexible to make it easy to input designs. 
 
-**The "0" character is reserved for `NA` values**, and can put into your pattern anywhere you'd like to have the value be `NA`
+**The "0" character is reserved for `NA` values**, and can be put into your pattern anywhere you'd like to have the value be `NA`
 
 ```{r}
 my_design_blk <- make_design(

@@ -2580,6 +2580,9 @@ trans_tidy_to_wide <- function() {
 merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
                              collapse = FALSE, names_to = NA,
                              ...) {
+  if(!collapse & (inherits(x, "list") | inherits(y, "list"))) {
+    stop("if x or y are a list, collapse must be TRUE")}
+  
   if(collapse) {
     #First define the worker func that collapses the df's
     collapse_list <- function(listdfs, names_to) {

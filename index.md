@@ -36,15 +36,15 @@ mikeblazanin \[at\] gmail \[dot\] com**
 
 ## Installation
 
-You can install the latest released version from CRAN by running the
-following line in R:
+You can install the version most-recently released on CRAN by running
+the following line in R:
 
 ``` r
 install.packages("gcplyr")
 ```
 
-If you would like to install the latest development version from
-[GitHub](https://github.com/mikeblazanin/gcplyr/), you can run the
+You can install the most recently-released version from
+[GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
 following lines in R:
 
 ``` r
@@ -73,4 +73,4 @@ finish, starting with the introduction:
 Please cite software as:
 
 Blazanin, Michael. 2023. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 1.2.0
+data.’ R package version 1.1.0

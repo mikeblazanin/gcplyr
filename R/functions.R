@@ -615,11 +615,16 @@ infer_names <- function(df,
 #'                  provided filenames. When extension is not "csv", "xls", or
 #'                  "xlsx" will use \code{utils::read.table}
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
-#'                 the measures data are in \code{files},
-#'                 can be a vector or list the same length as \code{files}, or
-#'                 a single value that applies to all \code{files}.
-#'                 If not provided data is presumed to begin on the first
-#'                 row and column of the files.
+#'                 the measures data are located in \code{files}.
+#'                 
+#'                 Can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}. Values
+#'                 can be numeric or a string that will be automatically
+#'                 converted to numeric by \code{from_excel}.
+#'                 
+#'                 If not provided, data is presumed to begin on the first
+#'                 row and column of the file(s) and end on the last row and
+#'                 column of the file(s).
 #' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
 #'                 is located on. Defaults to the first sheet if not specified
 #' @param metadata (optional) non-spectrophotometric data that should be 
@@ -954,11 +959,17 @@ read_blocks <- function(files, extension = NULL,
 #'                  If none provided, \code{read_wides} will infer file 
 #'                  extension from provided filenames. When extension is not 
 #'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
-#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
-#'                  the data is located. If none provided assumes the entire
-#'                  file is data.
-#'                  Can be specified as a numeric or using base-26 Excel letter
-#'                  notation
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
+#'                 the data are located in \code{files}.
+#'                 
+#'                 Can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}. Values
+#'                 can be numeric or a string that will be automatically
+#'                 converted to numeric by \code{from_excel}.
+#'                 
+#'                 If not provided, data is presumed to begin on the first
+#'                 row and column of the file(s) and end on the last row and
+#'                 column of the file(s).
 #' @param header Boolean for whether there is a header to the data. If FALSE
 #'               columns are simple numbered. If TRUE is the row above
 #'               \code{startrow} (if startrow is specified) or the first row
@@ -1226,12 +1237,17 @@ read_wides <- function(files, extension = NULL,
 #'                  If none provided, \code{read_tidys} will infer file 
 #'                  extension from provided filenames. When extension is not 
 #'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
-#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
-#'                  the data is located. If none provided assumes the entire
-#'                  file is data.
-#'                  
-#'                  Can be specified as a numeric or using base-26 Excel letter
-#'                  notation
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
+#'                 the data are located in \code{files}.
+#'                 
+#'                 Can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}. Values
+#'                 can be numeric or a string that will be automatically
+#'                 converted to numeric by \code{from_excel}.
+#'                 
+#'                 If not provided, data is presumed to begin on the first
+#'                 row and column of the file(s) and end on the last row and
+#'                 column of the file(s).
 #' @param sheet The sheet of the input files where data is located (if input
 #'              files are .xls or .xlsx). If not specified defaults to the first
 #' @param run_names Names to give the tidy files read in. By default uses the
@@ -1425,7 +1441,8 @@ read_tidys <- function(files, extension = NULL,
 #'                      rowname and column name
 #' @param ... Other arguments to pass to \code{read_blocks}, \code{uninterleave},
 #'            or \code{widen_blocks}
-#' @details     Common arguments that you may want to provide include:
+#' @details     Common arguments that you may want to provide via \code{...}
+#'              include:
 #' 
 #'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
 #'              \code{sheet} - specifying the location of design information 
@@ -1501,7 +1518,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              
 #'              See Details for more information
 #'              
-#' @details     Common arguments that you may want to provide include:
+#' @details     Common arguments that you may want to provide via \code{...}
+#'              include:
 #' 
 #'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
 #'              \code{sheet} - specifying the location of design information 

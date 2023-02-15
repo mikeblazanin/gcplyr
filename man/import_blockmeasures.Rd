@@ -41,7 +41,8 @@ This function acts as a wrapper to call \code{read_blocks},
 \code{uninterleave}, then \code{trans_block_to_wide} in one go
 }
 \details{
-Common arguments that you may want to provide include:
+Common arguments that you may want to provide via \code{...}
+             include:
 
              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
              \code{sheet} - specifying the location of design information 

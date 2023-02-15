@@ -29,12 +29,17 @@ If none provided, \code{read_tidys} will infer file
 extension from provided filenames. When extension is not 
 "csv", "xls", or "xlsx" will use \code{utils::read.table}}
 
-\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
-the data is located. If none provided assumes the entire
-file is data.
+\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
+the data are located in \code{files}.
 
-Can be specified as a numeric or using base-26 Excel letter
-notation}
+Can be a vector or list the same length as \code{files}, or
+a single value that applies to all \code{files}. Values
+can be numeric or a string that will be automatically
+converted to numeric by \code{from_excel}.
+
+If not provided, data is presumed to begin on the first
+row and column of the file(s) and end on the last row and
+column of the file(s).}
 
 \item{sheet}{The sheet of the input files where data is located (if input
 files are .xls or .xlsx). If not specified defaults to the first}

@@ -33,11 +33,16 @@ provided filenames. When extension is not "csv", "xls", or
 "xlsx" will use \code{utils::read.table}}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
-the measures data are in \code{files},
-can be a vector or list the same length as \code{files}, or
-a single value that applies to all \code{files}.
-If not provided data is presumed to begin on the first
-row and column of the files.}
+the measures data are located in \code{files}.
+
+Can be a vector or list the same length as \code{files}, or
+a single value that applies to all \code{files}. Values
+can be numeric or a string that will be automatically
+converted to numeric by \code{from_excel}.
+
+If not provided, data is presumed to begin on the first
+row and column of the file(s) and end on the last row and
+column of the file(s).}
 
 \item{sheet}{(optional) If data is in .xls or .xlsx files, which sheet it 
 is located on. Defaults to the first sheet if not specified}

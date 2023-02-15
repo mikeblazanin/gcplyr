@@ -1655,7 +1655,8 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
 #' @param pattern_split character to split pattern elements provided in
 #'                      \code{...} by, if they're not already a vector
-#' @param ... Each \code{...} argument must be a list with five elements:
+#' @param ... Each \code{...} argument must be named, and must be a list with 
+#'            five elements:
 #' 
 #'              1. a vector of the values
 #'              
@@ -1753,6 +1754,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   }
   
   dot_args <- list(...)
+  if(any(is.null(names(dot_args)))) {stop("Each ... arguments must have a name")}
   
   #Make empty output list
   output <- rep(list(list(

@@ -72,7 +72,8 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)}
 \item{pattern_split}{character to split pattern elements provided in
 \code{...} by, if they're not already a vector}
 
-\item{...}{Each \code{...} argument must be a list with five elements:
+\item{...}{Each \code{...} argument must be named, and must be a list with 
+           five elements:
 
              1. a vector of the values
              

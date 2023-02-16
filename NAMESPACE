@@ -3,6 +3,7 @@
 export(auc)
 export(block_tidydesign)
 export(calc_deriv)
+export(doubling_time)
 export(find_local_extrema)
 export(find_threshold_crosses)
 export(first_above)

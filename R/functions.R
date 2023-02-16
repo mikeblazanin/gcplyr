@@ -3856,9 +3856,8 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
 
 #' @rdname ThresholdFunctions
 #' @export  
-first_below <- function(y, x = NULL, threshold, 
-                        return = "index", return_endpoints = TRUE,
-                        subset = NULL, na.rm = TRUE, ...) {
+first_below <- function(y, x = NULL, threshold, return = "index",
+                        return_endpoints = TRUE, ...) {
   if(any(c("return_rising", "return_falling") %in% names(list(...)))) {
     stop("return_rising and return_falling cannot be changed in first_below,
 please use find_threshold_crosses for more flexibility")
@@ -3874,9 +3873,8 @@ please use find_threshold_crosses for more flexibility")
 
 #' @rdname ThresholdFunctions
 #' @export 
-first_above <- function(y, x = NULL, threshold, 
-                        return = "index", return_endpoints = TRUE,
-                        subset = NULL, na.rm = TRUE, ...) {
+first_above <- function(y, x = NULL, threshold, return = "index",
+                        return_endpoints = TRUE, ...) {
   if(any(c("return_rising", "return_falling") %in% names(list(...)))) {
     stop("return_rising and return_falling cannot be changed in first_below,
 please use find_threshold_crosses for more flexibility")

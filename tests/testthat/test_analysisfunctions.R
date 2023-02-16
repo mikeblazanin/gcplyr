@@ -49,6 +49,21 @@ test_that("lag_time returns correctly", {
   }
 })
 
+test_that("doubling_time returns correctly", {
+  yvals <- log(2)/c(5, 10, 20, 30, 60) #minutes
+  
+  expect_equal(doubling_time(y = yvals),
+               c(5, 10, 20, 30, 60))
+  
+  yvals <- log(2)/(60*c(5, 10, 20, 30, 60)) #seconds
+  expect_equal(doubling_time(y = yvals, x_scale = 60),
+               c(5, 10, 20, 30, 60))
+  
+  yvals <- c(log(2)/c(-5, 10, NA, 30), 0)
+  expect_equal(doubling_time(y = yvals),
+               c(-5, 10, NA, 30, Inf))
+})
+
 test_that("first_maxima matches find_local_extrema results", {
   expect_equal(
     first_maxima(y = (20 - abs(12 - 1:20))),

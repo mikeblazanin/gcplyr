@@ -3367,6 +3367,35 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   return(ans)
 }
 
+
+
+#' Calculate doubling time equivalent of per-capita growth rate
+#' 
+#' Provided a vector of per-capita growth rates, this function returns 
+#' the vector of equivalent doubling times
+#' 
+#' @param y       Vector of per-capita derivative data to calculate the 
+#'                equivalent doubling time of
+#' @param x_scale Numeric to scale per-capita derivative values by
+#'                
+#'                Set x_scale to the ratio of the the units of 
+#'                y to the desired units. E.g. if y is in per-second, but the 
+#'                desired doubling time is in minutes, \code{x_scale = 60} 
+#'                (since there are 60 seconds in 1 minute).
+#' 
+#' @return A vector of values for the doubling time equivalent to the
+#'         per-capita growth rate supplied for \code{y}
+#' 
+#' @export   
+doubling_time <- function(y, x_scale = 1) {
+  #Check inputs
+  if(!canbe.numeric(y)) {stop("y must be numeric")
+  } else {y <- as.numeric(y)}
+  if(!is.numeric(x_scale)) {stop("x_scale must be numeric")}
+  
+  return(log(2)/(x_scale * y))
+}
+
 # Analyze ----
 
 #' Find local extrema of a numeric vector

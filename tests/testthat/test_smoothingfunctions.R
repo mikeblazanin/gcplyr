@@ -198,3 +198,15 @@ test_that("smooth_data returns properly for gam", {
                 k = 5, bs = "cr", subset = 1:90),
     expected = expect6)
 })
+
+test_that("smooth_data checks for grouping", {
+  library(dplyr)
+  if(FALSE) {#to be updated when stackoverflow thread is updated
+  expect_warning(smooth_data(window_width_n = 5, x = mtcars$cyl, y = mtcars$mpg,
+                             sm_method = 'moving-median'))
+  expect_warning(mutate(mtcars,
+                        sm = smooth_data(window_width_n = 5, x = cyl, y = mpg, 
+                                         sm_method = 'moving-median')))
+  }
+  
+})

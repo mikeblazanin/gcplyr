@@ -2895,6 +2895,21 @@ reserved for passing 'method' arg via ... to loess or gam")
     stop("sm_method must be one of: moving-average, moving-median, gam, or loess")
   }
   
+  if(FALSE) { #to-be updated when stackoverflow thread is updated
+    if(all(ls(envir = parent.frame()) == "~")) { #being called within mutate
+      data <- eval(quote(.), parent.frame())
+      if(is.null(subset_by) &
+         !inherits(data, "grouped_df")) {
+        warning("smooth_data called on an ungrouped data.frame and subset_by = NULL")}
+      if(!is.null(subset_by) &
+         inherits(data, "grouped_df")) {
+        warning("smooth_data called with both subset_by and grouping")}
+    } else { #being called outside of mutate
+      if(is.null(subset_by)) {
+        warning("smooth_data called outside of dplyr::mutate and subset_by = NULL")}
+    }
+  }
+  
   #Parse x and y, and/or ... args, into formula and data
   if(!is.null(y)) {
     if (any(c("formula", "data") %in% names(list(...)))) {

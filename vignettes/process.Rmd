@@ -230,6 +230,17 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 Great! Taking a look at our per-capita growth rates, we can see that all the bacteria had a lag period of no growth at the beginning before starting to grow and having an early peak in their growth rates. 
 
+## Converting per-capita growth rates into doubling times
+
+If you'd rather express your per-capita growth rates as a doubling time, simply use the `doubling_time` function to convert your per-capita growth rates into equivalent doubling times.
+
+```{r}
+ex_dat_mrg <- mutate(ex_dat_mrg,
+                     doub_time = doubling_time(y = deriv_percap5))
+head(ex_dat_mrg)
+```
+
+
 ## Changing the derivative units
 
 To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data `x` is the number of *seconds* since the growth curve began. What if we wanted growth rate in *per-hour*? There are 3600 seconds in an hour, so we set `x_scale = 3600`

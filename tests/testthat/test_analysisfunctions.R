@@ -36,7 +36,7 @@ test_that("lag_time returns correctly", {
   y1 <- y[which.max(deriv)]
   x1 <- x[which.max(deriv)]
   m <- max(deriv, na.rm = TRUE)
-  lag <- lag_time(rate = m, y0 = y0, x1 = x1, y1 = y1)
+  lag <- lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1)
   expect_equal(log(y1) - m*x1 + m*lag, log(y0))
   if(F) {
     plot(x, log(y))

@@ -3965,18 +3965,15 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 }
 
 
-#' calculate lag time
+#' Calculate lag time
 #' 
-#' This function takes a vector of \code{x} and \code{y} values
-#' and returns a scalar for the area under the curve, calculated using 
-#' the trapezoid rule
-#'  
-#' @param rate Numeric value or vector of per-capita growth rate (slope)
-#'             to use when calculating lag time
-#' @param y0 Numeric value or vector of y value (density) to find the 
-#'           intersection of the growth rate line
-#' @param x1 x value (time) when rate was achieved
-#' @param y1 y value (density) when rate was achieved 
+#' Lag time is calculated by projecting a tangent line at the point
+#' of maximum (per-capita) derivative backwards to find the time when it
+#' intersects with the starting y-value
+#' 
+#' @param x Vector of x values (typically time)
+#' @param y Vector of y values (typically density)
+#' @param deriv Vector of derivative values (typically per-capita derivative)
 #' @param trans_y  One of \code{c("linear", "log")} specifying the
 #'                 transformation of y-values.
 #' 
@@ -3984,33 +3981,63 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 #'                 lag time assuming a transition to exponential growth
 #'                 
 #'                 \code{'linear'} is available for alternate uses
-#' 
+#' @param na.rm a logical indicating whether missing values should be removed
+#' @param slope Slope to project from x1,y1 to y0 (typically per-capita growth
+#'              rate). If not provided, will be calculated as \code{max(deriv)}
+#' @param x1 x value (typically time) to project slope from. If not provided,
+#'           will be calculated as \code{x[which.max(deriv)]}.
+#' @param y1 y value (typically density) to project slope from. If not provided,
+#'           will be calculated as \code{y[which.max(deriv)]}.
+#' @param y0 y value (typically density) to find intersection of slope from
+#'             x1, y1 with. If not provided, will be calculated as \code{min(y)}
 #' @details 
+#' For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
+#' (using the per-capita derivative and \code{trans_y = 'log'}).
+#' 
+#' Advanced users may wish to use alternate values for the slope, origination
+#' point, or initial y-value. In that case, values can be supplied to
+#' \code{slope}, \code{x1}, \code{y1}, and/or \code{y0}, which will override
+#' the default calculations. If and only if all of \code{slope}, \code{x1}, 
+#' \code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on
+#' their inputs and will return a vector of lag time values.
+#' 
 #' This function is designed to be compatible for use within
 #'  dplyr::group_by and dplyr::summarize
 #'
-#' @return A scalar or vector of the lag time(s)
+#' @return Typically a scalar of the lag time in units of x. See Details for
+#' cases when value will be a vector.
 #'             
 #' @export
-lag_time <- function(rate, y0, x1, y1, trans_y = "log") {
-  if(!canbe.numeric(rate)) {stop("rate must be numeric")}
-  if(!canbe.numeric(x1)) {stop("x1 must be numeric")}
-  if(!canbe.numeric(y1)) {stop("y1 must be numeric")}
-  if(!canbe.numeric(y0)) {stop("y0 must be numeric")}
-  rate <- as.numeric(rate)
-  y0 <- as.numeric(y0)
-  x1 <- as.numeric(x1)
-  y1 <- as.numeric(y1)
-  if(length(unique(sapply(list(rate, y0, x1, y1), length))) != 1) {
-    stop("rate, y0, x1, y1 must all be the same length")}
+lag_time <- function(x = NULL, y = NULL, deriv = NULL, 
+                     trans_y = "log", na.rm = TRUE,
+                     slope = NULL, x1 = NULL, y1 = NULL, y0 = NULL) {
+  x <- make.numeric(x, "x")
+  y <- make.numeric(y, "y")
+  deriv <- make.numeric(deriv, "deriv")
+  slope <- make.numeric(slope, "slope")
+  y0 <- make.numeric(y0, "y0")
+  y1 <- make.numeric(y1, "y1")
+  x1 <- make.numeric(x1, "x1")
+  
+  if(is.null(slope)) {
+    if(is.null(deriv)) {stop("deriv or slope must be provided")}
+    slope <- max(deriv, na.rm = na.rm)}
+  if(is.null(y0)) {
+    if(is.null(y)) {stop("y or y0 must be provided")}
+    y0 <- min(y, na.rm = na.rm)}
+  if(is.null(y1)) {
+    if(is.null(deriv) | is.null(y)) {stop("y1, or deriv and y, must be provided")}
+    y1 <- y[which.max(deriv)]}
+  if(is.null(x1)) {
+    if(is.null(x) | is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
+    x1 <- x[which.max(deriv)]}
   
   if(!trans_y %in% c("linear", "log")) {
     stop("trans_y must be one of c('linear', 'log')")}
   if(trans_y == "log") {y0 <- log(y0); y1 <- log(y1)}
   
-  return((y0-y1)/rate + x1)
+  return((y0-y1)/slope + x1)
 }
-
 
 # Legacy Code ----
 

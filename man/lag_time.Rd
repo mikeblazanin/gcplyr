@@ -2,20 +2,26 @@
 % Please edit documentation in R/functions.R
 \name{lag_time}
 \alias{lag_time}
-\title{calculate lag time}
+\title{Calculate lag time}
 \usage{
-lag_time(rate, y0, x1, y1, trans_y = "log")
+lag_time(
+  x = NULL,
+  y = NULL,
+  deriv = NULL,
+  trans_y = "log",
+  na.rm = TRUE,
+  slope = NULL,
+  x1 = NULL,
+  y1 = NULL,
+  y0 = NULL
+)
 }
 \arguments{
-\item{rate}{Numeric value or vector of per-capita growth rate (slope)
-to use when calculating lag time}
+\item{x}{Vector of x values (typically time)}
 
-\item{y0}{Numeric value or vector of y value (density) to find the 
-intersection of the growth rate line}
+\item{y}{Vector of y values (typically density)}
 
-\item{x1}{x value (time) when rate was achieved}
-
-\item{y1}{y value (density) when rate was achieved}
+\item{deriv}{Vector of derivative values (typically per-capita derivative)}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
                 transformation of y-values.
@@ -24,16 +30,41 @@ intersection of the growth rate line}
                 lag time assuming a transition to exponential growth
                 
                 \code{'linear'} is available for alternate uses}
+
+\item{na.rm}{a logical indicating whether missing values should be removed}
+
+\item{slope}{Slope to project from x1,y1 to y0 (typically per-capita growth
+rate). If not provided, will be calculated as \code{max(deriv)}}
+
+\item{x1}{x value (typically time) to project slope from. If not provided,
+will be calculated as \code{x[which.max(deriv)]}.}
+
+\item{y1}{y value (typically density) to project slope from. If not provided,
+will be calculated as \code{y[which.max(deriv)]}.}
+
+\item{y0}{y value (typically density) to find intersection of slope from
+x1, y1 with. If not provided, will be calculated as \code{min(y)}}
 }
 \value{
-A scalar or vector of the lag time(s)
+Typically a scalar of the lag time in units of x. See Details for
+cases when value will be a vector.
 }
 \description{
-This function takes a vector of \code{x} and \code{y} values
-and returns a scalar for the area under the curve, calculated using 
-the trapezoid rule
+Lag time is calculated by projecting a tangent line at the point
+of maximum (per-capita) derivative backwards to find the time when it
+intersects with the starting y-value
 }
 \details{
+For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
+(using the per-capita derivative and \code{trans_y = 'log'}).
+
+Advanced users may wish to use alternate values for the slope, origination
+point, or initial y-value. In that case, values can be supplied to
+\code{slope}, \code{x1}, \code{y1}, and/or \code{y0}, which will override
+the default calculations. If and only if all of \code{slope}, \code{x1}, 
+\code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on
+their inputs and will return a vector of lag time values.
+
 This function is designed to be compatible for use within
  dplyr::group_by and dplyr::summarize
 }

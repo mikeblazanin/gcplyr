@@ -187,7 +187,7 @@ Note that you can tune the sensitivity of `first_minima` to different heights an
 
 Bacteria often have a period of time before they reach their maximum growth rate. If you would like to quantify this lag time, you can use the `lag_time` function. `lag_time` needs the x and y values, as well as the (per-capita) derivative. It will find the maximum derivative, then project the tangent line with that slope back until it crosses the starting density. 
 
-Below, I calculate lag time and visualize this tangent-line approach. To visualize the approach, I also calculate the max_percap, max_percap_time, max_percap_dens, and min_dens, but you don't have to do that.
+Below, I calculate lag time and visualize this tangent-line approach. To visualize the approach, I also calculate the `max_percap`, `max_percap_time`, `max_percap_dens`, and `min_dens`, but you don't have to do that.
 
 ```{r}
 ex_dat_mrg_sum <- 
@@ -205,6 +205,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   geom_point() +
   facet_wrap(~Well) +
   geom_abline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+              color = "red",
               aes(slope = max_percap,
                   intercept = log(max_percap_dens) - max_percap*max_percap_time)) +
   geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
@@ -214,7 +215,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 ```
 
-Notice how some of the minimum density values aren't actually the *initial* density? We can fix that by overriding the default minimum density calculation with `first_min` via the `y0` argument of `lag_time`.
+Notice how some of the minimum density values aren't actually the *initial* density? We can fix that by overriding the default minimum density calculation with `first_minima` via the `y0` argument of `lag_time`.
 
 ```{r}
 ex_dat_mrg_sum <- 

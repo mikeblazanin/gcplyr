@@ -262,7 +262,7 @@ canbe.numeric <- function(x) {
 #' 
 #' @noRd
 make.numeric <- function(x, varname) {
-  if(is.numeric(x)) {return(x)
+  if(is.null(x) | is.numeric(x)) {return(x)
   } else if(canbe.numeric(x)) {return(as.numeric(x))
   } else {stop(paste(varname, "cannot be coerced to numeric"))}
 }
@@ -3293,7 +3293,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   x_scale <- make.numeric(x_scale, "x_scale")
   if(is.na(x_scale)) {stop("x_scale cannot be NA")}
   
-  if (!is.null(x)) {x <- make.numeric(x, "x")}
+  x <- make.numeric(x, "x")
   y <- make.numeric(y, "y")
 
   #Set up subset_by
@@ -3764,7 +3764,7 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   
   #Numeric checks/coercion
   y <- make.numeric(y, "y")
-  if(!is.null(x)) {x <- make.numeric(x, "x")}
+  x <- make.numeric(x, "x")
   
   #Take subset
   if(!is.null(subset)) {

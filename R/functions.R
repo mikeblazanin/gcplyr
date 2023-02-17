@@ -3957,6 +3957,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     x <- x[(x >= xlim[1]) & (x <= xlim[2])]
   }
   
+  if(any(y < 0)) {warning("some y values are below 0")}
+  
   #Calculate auc
   # area = 0.5 * (y1 + y2) * (x2 - x1)
   return(sum(0.5 * 

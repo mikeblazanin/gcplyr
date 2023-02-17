@@ -230,7 +230,7 @@ sep_finder <- function(blocks, nested_metadata = NULL) {
 #' 
 #' This function works like is.numeric but also checks if x can be coerced to 
 #' numeric without warnings. If is.numeric or can be coerced to numeric, 
-#' returns TRUE. Otherwise, returns
+#' returns TRUE. Otherwise, returns FALSE
 #' 
 #' @param x Vector to check
 #' @return TRUE if \code{x} is numeric or can be converted to numeric without
@@ -252,6 +252,19 @@ canbe.numeric <- function(x) {
   } else {
       return(FALSE)
   }
+}
+
+#' A function that coerces to numeric or returns an error if not possible
+#' 
+#' @param x Value or vector to force to numeric
+#' @param varname Name of the variable to use for error message if needed
+#' @return as.numeric(x) if canbe.numeric(x) == TRUE
+#' 
+#' @noRd
+make.numeric <- function(x, varname) {
+  if(is.numeric(x)) {return(x)
+  } else if(canbe.numeric(x)) {return(as.numeric(x))
+  } else {stop(paste(varname, "cannot be coerced to numeric"))}
 }
 
 #' A function that removes na's values from a vector or pair of vectors
@@ -3063,13 +3076,7 @@ moving_average <- function(formula, data, window_width_n = NULL,
   }
   
   #Check y for being the correct format
-  if(!is.numeric(data[, response_var]) ) {
-    if(!canbe.numeric(data[, response_var])) {
-      stop(paste(response_var, "cannot be coerced to numeric"))
-    } else { #it can be coerced
-      data[, response_var] <- as.numeric(data[, response_var])
-    }
-  }
+  data[, response_var] <- make.numeric(data[, response_var], response_var)
   
   #remove nas
   narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
@@ -3141,13 +3148,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
   }
   
   #Check y for being the correct format
-  if(!is.numeric(data[, response_var]) ) {
-    if(!canbe.numeric(data[, response_var])) {
-      stop(paste(response_var, "cannot be coerced to numeric"))
-    } else { #it can be coerced
-      data[, response_var] <- as.numeric(data[, response_var])
-    }
-  }
+  data[, response_var] <- make.numeric(data[, response_var], response_var)
   
   #remove nas
   narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
@@ -3289,18 +3290,12 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   if(is.null(y)) {stop("y must be provided")}
   if(length(x_scale) > 1) {stop("x_scale must be a single value")}
   
-  if(!is.numeric(x_scale)) {
-    if(!canbe.numeric(x_scale)) {stop("x_scale must be numeric")
-    } else {x_scale <- as.numeric(x_scale)}
-  }
+  x_scale <- make.numeric(x_scale, "x_scale")
   if(is.na(x_scale)) {stop("x_scale cannot be NA")}
   
-  if (!is.null(x)) {
-    if(!canbe.numeric(x)) {stop("x is not numeric")
-    } else {x <- as.numeric(x)}
-  }
-  if(!is.numeric(y)) {y <- as.numeric(y)}
-  
+  if (!is.null(x)) {x <- make.numeric(x, "x")}
+  y <- make.numeric(y, "y")
+
   #Set up subset_by
   if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
   
@@ -3404,10 +3399,9 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
 #' @export   
 doubling_time <- function(y, x_scale = 1) {
   #Check inputs
-  if(!canbe.numeric(y)) {stop("y must be numeric")
-  } else {y <- as.numeric(y)}
-  if(!is.numeric(x_scale)) {stop("x_scale must be numeric")}
-  
+  y <- make.numeric(y, "y")
+  x_scale <- make.numeric(x_scale, "x_scale")
+
   return(log(2)/(x_scale * y))
 }
 
@@ -3552,13 +3546,9 @@ find_local_extrema <- function(y, x = NULL,
   if(is.null(x) & return == "x") {stop('return = "x" but x is not provided')}
   
   #Numeric checks/coercion
-  if(!canbe.numeric(y)) {stop("y must be numeric")
-  } else {y <- as.numeric(y)}
+  y <- make.numeric(y, "y")
   if(is.null(x)) {x <- 1:length(y)
-  } else {
-    if(!canbe.numeric(x)) {stop("x must be numeric")
-    } else {x <- as.numeric(x)}
-  }
+  } else {x <- make.numeric(x)}
   
   #Take subset
   if(!is.null(subset)) {
@@ -3773,12 +3763,8 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   if(return == "x" & is.null(x)) {stop("return = 'x' but x is not provided")}
   
   #Numeric checks/coercion
-  if(!canbe.numeric(y)) {stop("y must be numeric")
-  } else {y <- as.numeric(y)}
-  if(!is.null(x)) {
-    if(!canbe.numeric(x)) {stop("x must be numeric")
-    } else {x <- as.numeric(x)}
-  }
+  y <- make.numeric(y, "y")
+  if(!is.null(x)) {x <- make.numeric(x, "x")}
   
   #Take subset
   if(!is.null(subset)) {
@@ -3920,18 +3906,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     stop(paste("y is not a vector, it is class:", class(y)))
   }
   
-  if(!is.numeric(x)) {
-    if(!canbe.numeric(x)) {stop("x cannot be coerced to numeric")
-    } else {
-      x <- as.numeric(x)
-    }
-  }
-  if(!is.numeric(y)) {
-    if(!canbe.numeric(y)) {stop("y cannot be coerced to numeric")
-    } else {
-      y <- as.numeric(y)
-    }
-  }
+  x <- make.numeric(x)
+  y <- make.numeric(y)
 
   to_keep <- which(!(is.na(x) | is.na(y)))
   x <- x[to_keep]

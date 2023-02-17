@@ -2,6 +2,7 @@
 auc,NA
 block_tidydesign,NA
 calc_deriv,NA
+doubling_time,NA
 find_local_extrema,NA
 find_threshold_crosses,NA
 first_above,gcplyr::find_threshold_crosses

@@ -187,7 +187,7 @@ Note that you can tune the sensitivity of `first_minima` to different heights an
 
 to-be-written
 ```{r}
-stop("write lag time")
+#stop("write lag time")
 ```
 
 # Time to reach threshold density {#dens_thresh}
@@ -251,7 +251,8 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well) +
   geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
              aes(x = max_percap_time, y = max_percap),
-             size = 2, color = "red")
+             size = 2, color = "red") +
+  coord_cartesian(ylim = c(-1, NA))
 ```
 
 # Mid-point time or inflection point {#midpoint}
@@ -305,7 +306,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Area under the curve {#auc}
 
-The area under the curve is a common metric of total bacterial growth, for instance in the presence of antagonists like antibiotics or phages. If you want to calculate the area under the curve, you can use the `gcplyr` function `auc`. Simply specify the Time as the x and Measurements as the y data whose area-under-the-curve you want to calculate.
+The area under the curve is a common metric of total bacterial growth, for instance in the presence of antagonists like antibiotics or phages. If you want to calculate the area under the curve, you can use the `gcplyr` function `auc`. Simply specify Time as the x and Measurements as the y data whose area-under-the-curve you want to calculate.
 
 ```{r}
 ex_dat_mrg_sum <-
@@ -397,7 +398,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
 
 # Peak bacterial density {#peak_dens}
 
-[We previously found the global maximum in bacterial density](#maxdens) using the simple `max` and `which.max` functions. The first *local* maxima can also be of interest. This is especially true when bacteria are grown with phages, where their first peak density can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the first *local* maxima in bacterial density, you can use the gcplyr function `first_maxima`.
+[We previously found the global maximum in bacterial density](#maxdens) using the simple `max` and `which.max` functions. The first *local* maxima can also be of interest. This is especially true when bacteria are grown with phages, where their first peak density can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the first local maxima in bacterial density, you can use the `gcplyr` function `first_maxima`.
 
 `first_maxima` simply requires the `y` data you want to identify the peak in. Specify `Measurements` as the y data and `Time` as the x data, and that we want `first_peak` to `return` the `x` and `y` values associated with the peak. We'll save those in columns `first_maxima_x` and `first_maxima_y`, respectively.
 
@@ -423,9 +424,7 @@ Note that you can tune the sensitivity of `first_maxima` to different heights an
 
 # Extinction time {#extin_time}
 
-The time when bacterial density falls below some threshold can also be of interest. This is especially true when bacteria are grown with phages, where this 'extinction time' can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the extinction time, you can use the `gcplyr` function `first_below`.
-
-If you want to quantify how long it takes bacteria to reach some threshold density, you can use the `first_below` function. In this example, we'll use a Measurements value of 0.15 as our threshold.
+The time when bacterial density falls below some threshold can also be of interest. This is especially true when bacteria are grown with phages, where this 'extinction time' can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the extinction time, you can use the `gcplyr` function `first_below`. In this example, we'll use a Measurements value of 0.15 as our threshold.
 
 ```{r}
 ex_dat_mrg_sum <-

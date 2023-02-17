@@ -66,5 +66,5 @@ the default calculations. If and only if all of \code{slope}, \code{x1},
 their inputs and will return a vector of lag time values.
 
 This function is designed to be compatible for use within
- dplyr::group_by and dplyr::summarize
+ \code{dplyr::group_by} and \code{dplyr::summarize}
 }

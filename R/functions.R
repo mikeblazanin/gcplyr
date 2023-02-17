@@ -3890,7 +3890,7 @@ please use find_threshold_crosses for more flexibility")
 #' 
 #' @details 
 #' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
 #'
 #' @return A scalar for the total area under the curve
 #'             
@@ -4002,7 +4002,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 #' their inputs and will return a vector of lag time values.
 #' 
 #' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
 #'
 #' @return Typically a scalar of the lag time in units of x. See Details for
 #' cases when value will be a vector.

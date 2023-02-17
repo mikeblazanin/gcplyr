@@ -3864,11 +3864,11 @@ please use find_threshold_crosses for more flexibility")
   }
   return(find_threshold_crosses(y = y, x = x,
                                 threshold = threshold,
-                                return = return, subset = subset,
+                                return = return, 
                                 return_endpoints = return_endpoints,
                                 return_rising = FALSE,
                                 return_falling = TRUE,
-                                na.rm = na.rm, ...)[1])
+                                ...)[1])
 }
 
 #' @rdname ThresholdFunctions
@@ -3881,11 +3881,11 @@ please use find_threshold_crosses for more flexibility")
   }
   return(find_threshold_crosses(y = y, x = x,
                                 threshold = threshold,
-                                return = return, subset = subset,
+                                return = return,
                                 return_endpoints = return_endpoints,
                                 return_rising = TRUE,
                                 return_falling = FALSE,
-                                na.rm = na.rm, ...)[1])
+                                ...)[1])
 }
 
 #' calculate area under the curve

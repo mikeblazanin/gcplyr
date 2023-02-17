@@ -185,9 +185,62 @@ Note that you can tune the sensitivity of `first_minima` to different heights an
 
 # Lag time {#lag}
 
-to-be-written
+Bacteria often have a period of time before they reach their maximum growth rate. If you would like to quantify this lag time, you can use the `lag_time` function. `lag_time` needs the x and y values, as well as the (per-capita) derivative. It will find the maximum derivative, then project the tangent line with that slope back until it crosses the starting density. 
+
+Below, I calculate lag time and visualize this tangent-line approach. To visualize the approach, I also calculate the max_percap, max_percap_time, max_percap_dens, and min_dens, but you don't have to do that.
+
 ```{r}
-#stop("write lag time")
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            lag_time = lag_time(y = Measurements, x = Time, 
+                                deriv = deriv_percap5/3600),
+            max_percap = max(deriv_percap5, na.rm = TRUE)/3600,
+            max_percap_time = Time[which.max(deriv_percap5)],
+            max_percap_dens = Measurements[which.max(deriv_percap5)],
+            min_dens = min(Measurements, na.rm = TRUE))
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = log(Measurements))) +
+  geom_point() +
+  facet_wrap(~Well) +
+  geom_abline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+              aes(slope = max_percap,
+                  intercept = log(max_percap_dens) - max_percap*max_percap_time)) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(xintercept = lag_time), lty = 2) +
+  geom_hline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(yintercept = log(min_dens)))
+
+```
+
+Notice how some of the minimum density values aren't actually the *initial* density? We can fix that by overriding the default minimum density calculation with `first_min` via the `y0` argument of `lag_time`.
+
+```{r}
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            min_dens = first_minima(Measurements, return = "y"),
+            lag_time = lag_time(y = Measurements, x = Time, 
+                                deriv = deriv_percap5/3600,
+                                y0 = min_dens),
+            max_percap = max(deriv_percap5, na.rm = TRUE)/3600,
+            max_percap_time = Time[which.max(deriv_percap5)],
+            max_percap_dens = Measurements[which.max(deriv_percap5)])
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = log(Measurements))) +
+  geom_point() +
+  facet_wrap(~Well) +
+  geom_abline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+              color = "red",
+              aes(slope = max_percap,
+                  intercept = log(max_percap_dens) - max_percap*max_percap_time)) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(xintercept = lag_time), lty = 2) +
+  geom_hline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(yintercept = log(min_dens)))
+
 ```
 
 # Time to reach threshold density {#dens_thresh}

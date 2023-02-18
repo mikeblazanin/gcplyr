@@ -76,84 +76,67 @@ ex_dat_mrg$Well <-
 
 
 # How to process and analyze your data
-With your data and design information pre-processed, **your dataset is now organized in a way that's easy to export and analyze**. It is also at this point that the next steps for what you can do diversify into many options.
+With your data and design information pre-processed, **your dataset is now organized in a way that's easy to export and analyze**.
 
 Broadly speaking, there are two main approaches to analyzing growth curves data:
 
-1. directly quantify attributes of the growth dynamics
-2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model
+1. directly quantify attributes of the growth dynamics - **gcplyr facilitates this**
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model - check out the **Other growth curve analysis packages** section in vignette("conclusion") if you're interesting in exploring this approach
 
-The remaining functions of `gcplyr` can facilitate analyses following the first approach: directly quantifying attributes of the observed dynamics. If you're interested in exploring model-fitting approaches, which can provide enormous analytical power, check out the **Other growth curve analysis packages** section in vignette("conclusion"). At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
+At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
 
-So, how do we directly quantify attributes of growth curves? First, we may need to calculate derivatives of our data. The density and derivative values will be what we analyze to identify features of our growth curves. `gcplyr` has a number of functions that facilitate these steps. 
+So, how do we directly quantify attributes of growth curves? Generally, we find features of the density data and its derivatives. Different projects may desire different analyses, so this article and the [Analyzing Data](vignette("analyze")) and [Dealing with Noise](vignette("noise")) articles are written to highlight common analyses, rather than prescribing what everyone should do.
 
-However, unlike the import, transformation, and merging steps we've done so far, different projects may require different analyses, and not all users will have the same analysis steps. The [Calculating Derivatives](#CalculatingDerivatives) section of this article, and the [Analyzing Data](vignette("analyze")) and [Dealing with Noise](vignette("noise")) vignettes, therefore, are written to highlight the functions available and provide examples of common analyses that you may want to run, rather than prescribing a set of analysis steps that everyone must do.
+Below I list common metrics that require derivatives to be calculated. If you intend to calculate any of those metrics, or just want to calculate or plot the derivatives, continue reading. Otherwise, feel free to skip right to the [Analyzing Data](vignette("analyze")) article.
 
-Before we dig into processing and analyzing our data, we first need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `mutate`. Why? Because the upcoming `gcplyr` processing functions are *best* used **within** `dplyr::mutate`. **If you're already familiar with `dplyr`, feel free to skip this primer.** If you're not familiar yet, don't worry! This section provides a primer that will teach you all you need to know on using `group_by` and `mutate` with `gcplyr` functions.
+**Metrics requiring derivatives:**
+
+* the lag time
+* the time to reach some growth rate
+* the maximum per-capita growth rate (i.e. minimum doubling time)
+* the inflection point
+* the density and time when a diauxic shift occurs
+* the maximum per-capita growth rate during diauxie
+
+Before we dig into calculating derivatives, we first need to familiarize ourselves with the `dplyr` package and its functions `group_by` and `mutate`. Why? Because the upcoming `gcplyr` processing functions are *best* used **within** `dplyr::mutate`. **If you're already familiar with `dplyr`, feel free to skip straight to [Calculating Derivatives](#CalculatingDerivatives).** If you're not familiar yet, the primer will teach you all you need to know to use `gcplyr`.
 
 ## A brief primer on dplyr
 
-The `R` package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of this package!) For our purposes right now, we're going to focus on two particular functions: `group_by` and `mutate`.
+The `R` package `dplyr` provides a "grammar of data manipulation" that is useful for a broad array of data analysis tasks (in fact, `dplyr` is the direct inspiration for the name of `gcplyr`!) For our purposes, we're going to focus on two functions: `group_by` and `mutate`.
 
-The `mutate` function in `dplyr` allows users to easily create new columns in their `data.frame`'s. For us, we're going to use `mutate` to create columns with our data and the derivatives we calculate. However, we want to make sure that derivative-calculating is done on *each* unique well independently. In order to do that, we're first going to use the `group_by` function, which allows users to group the rows of their `data.frame`'s into groups that `mutate` will then treat independently.
+The `mutate` function in `dplyr` allows users to easily create new columns in their `data.frame`'s. For us, we're going to use `mutate` to create columns with the derivatives we calculate. However, we want to make sure that derivative-calculating is done on *each* unique well independently. In order to do that, we're first going to use the `group_by` function, which allows users to group the rows of their `data.frame`'s into groups that `mutate` will then treat independently.
 
 For growth curves, this means we will:
 
 1. `group_by` our data so that every unique well is a group
-2. `mutate` to create new columns with our data and calculated derivatives
-
-Let's walk through a simple example
+2. `mutate` to create new columns with our calculated derivatives
 
 For `group_by`, we need to specify the `data.frame` to be grouped, and then we want to list all the columns needed to identify each unique well in our dataset. Typically, this includes all of our design columns along with the plate name and well name. Make sure you're *not* grouping by Time, Absorbance, or anything else that varies *within* a well, since if you do `dplyr` will group timepoints within a well separately.
-
-```{r}
-ex_dat_mrg <- group_by(ex_dat_mrg, Well, Bacteria_strain, Phage)
-
-head(ex_dat_mrg)
-```
-
-Notice that this hasn't changed anything about our `data.frame`, but `R` now knows what the groups are. Now any calculations will be carried out on each unique well independently. 
 
 To use `mutate`, we simply have to specify:
 
 1. the name of the variable we want results saved to
 2. the function that calculates the new column
 
-Note that the function has to return a vector that is as long as the number of data points in the group.
+If you want additional columns, you simply add them to the `mutate`.
 
-For a simple example, in the code below we've simply added one to the `Measurements` values and saved it in a column named `Measurements_plus1`:
-
-```{r}
-ex_dat_mrg <-
-  mutate(ex_dat_mrg,
-         Measurements_plus1 = Measurements+1)
-
-head(ex_dat_mrg)
-```
-
-If you want additional columns, you simply add them to the `mutate`. For instance, if we also want a column with the `Measurements` plus two, we just add that as a second argument:
-
-```{r}
-ex_dat_mrg <-
-  mutate(ex_dat_mrg,
-         Measurements_plus1 = Measurements+1,
-         Measurements_plus2 = Measurements+2)
-
-head(ex_dat_mrg)
-```
-
-This is a rather simple example, but in the next sections I show how we can use `mutate` with `calc_deriv` to create new columns containing derivatives. If you want to learn more, `dplyr` has extensive documentation and examples of its own online. Feel free to explore them as desired, but this primer should be sufficient to use the `gcplyr` processing functions, which (as a reminder) are best used *within* `mutate`.
+As you'll see throughout the rest of this article, we'll be using `group_by` and `mutate` to calculate derivatives. If you want to learn more, `dplyr` has extensive documentation and examples of its own online, but this primer and the coming examples should be sufficient to calculate derivatives with `gcplyr`.
 
 # Processing data: calculating derivatives {#CalculatingDerivatives}
 
-In many cases, identifying features of a growth curve requires looking not only at the absorbance data over time, but the slope of the absorbance data over time. `gcplyr` includes a `calc_deriv` function that can be used to calculate the empirical derivative (slope) of absorbance data over time.
+There are two derivatives we are primarily interested in calculating:
+
+* the plain derivative - the slope of the original density data
+* the per-capita derivative - the growth rate of the cells
+
+`gcplyr` includes a `calc_deriv` to calculate both of these.
 
 ## A simple derivative
 
-To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point. This is useful for identifying events like population declines, or multiple rounds of growth.
+To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point.
 
 ```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
+ex_dat_mrg <- mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
                      deriv = calc_deriv(x = Time, y = Measurements))
 ```
 
@@ -161,6 +144,12 @@ To visualize these results, let's look at a few wells that are representative of
 
 ```{r}
 sample_wells <- c("A1", "F1", "F10", "E11")
+
+# Now let's plot the derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv)) +
+  geom_line() +
+  facet_wrap(~Well, scales = "free")
 ```
 ```{r, include = FALSE}
 # For computational speed, let's just keep the wells we'll be focusing on
@@ -169,23 +158,13 @@ sample_wells <- c("A1", "F1", "F10", "E11")
 ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
 ```
 
-```{r}
-# Now let's plot the derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-The first thing you might notice is that some of these lines aren't as smooth as you might expect. Why is that? This noise in the derivatives is actually being created by the limited resolution of the plate reader. Since plate readers can commonly only read to a resolution of 0.001, this means that values jump by at least 0.001 at each step, even if the true difference should be smaller.
-
-That aside, from the plots above we can clearly see when the upward slope of the total population was the steepest, and also when the populations have declined in wells with phages. In Well E11 we can even see when the bacteria grow again later after phage-driven declines. But these derivatives also make something more apparent that might not have been obvious visually in the raw density data: if we look in Well A1 we can see that there is a second peak of growth. It's not as steep (the derivative is not as high), but it's there. Such a pattern is common in bacterial growth curves and is called *diauxic growth*.
+You might notice that these lines aren't super smooth. Why? The plate reader data has a limited resolution, only to the nearest 0.001, causing the derivative to "jump" when the reading increases.
 
 ## Per-capita derivative
-If we want to calculate the growth rate of the cells, we need to use `calc_deriv` to return the **per-capita** derivative. Just as before, provide the x and y values, but now set `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
+To calculate the per-capita derivative, we simply modify our use of `calc_deriv` with the argument `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
+ex_dat_mrg <- mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
                      deriv_percap = calc_deriv(x = Time, y = Measurements,
                                         percapita = TRUE, blank = 0))
 
@@ -196,27 +175,14 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Hmm, what's going on here? Well, when bacterial densities are very close to 0, the per-capita growth rate can be very noisy. Luckily, `calc_deriv` includes a method that can reduce some of the effects of this noise. Instead of calculating the derivative of each point relative to the next, we can use a moving window of more than two points and fit a linear regression to this data. This can help reduce the effect of low densities.
+These derivatives are very jumpy. Why? The same limited resolution of the plate reader has an amplified effect on the per-capita derivative when densities are very close to 0. Luckily, `calc_deriv` can calculate derives by fitting a linear regression to multiple points, reducing this jumpiness in the derivative.
 
-To use the fitting functionality of `calc_deriv`, we need to specify either the `window_width` parameter, or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate it's use by fitting regressions that include five data points.
+To use this fitting functionality of `calc_deriv`, specify either the `window_width` or `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll demonstrate with five data points.
 
-```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
-                     deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
-                                        percapita = TRUE, blank = 0,
-                                        window_width_n = 5))
-
-# Now let's plot the derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv_percap5)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Great! That reduced the effects of low densities greatly! When doing fitting to calculate the per-capita growth rate, we can alternatively do that fitting with log-transformed y-values. Because exponential growth is linear when y-values are log-transformed, this typically gives us a better estimate of the per-capita growth rate, although it can fail when y-values are at or below 0. Check out the documentation for `calc_deriv` for more details.
+For best practice, I recommend doing this fitting on log-transformed `y` values, since exponentially growing density values are linear when log-transformed. You can achieve this simply by setting `trans_y = 'log'`. With log-transformation, note that `calc_deriv` will return `NA` for any data points where the reading is equal to or below your `blank` value.
 
 ```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
+ex_dat_mrg <- mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
                      deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
                                         percapita = TRUE, blank = 0,
                                         window_width_n = 5, trans_y = "log"))
@@ -228,14 +194,17 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   facet_wrap(~Well, scales = "free")
 ```
 
-Great! Taking a look at our per-capita growth rates, we can see that all the bacteria had a lag period of no growth at the beginning before starting to grow and having an early peak in their growth rates. 
+Great! The jumpiness has been reduced immensely. 
 
 ## Converting per-capita growth rates into doubling times
 
 If you'd rather express your per-capita growth rates as a doubling time, simply use the `doubling_time` function to convert your per-capita growth rates into equivalent doubling times.
 
 ```{r}
-ex_dat_mrg <- mutate(ex_dat_mrg,
+ex_dat_mrg <- mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
+                     deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
+                                        percapita = TRUE, blank = 0,
+                                        window_width_n = 5, trans_y = "log"),
                      doub_time = doubling_time(y = deriv_percap5))
 head(ex_dat_mrg)
 ```
@@ -243,11 +212,11 @@ head(ex_dat_mrg)
 
 ## Changing the derivative units
 
-To convert your x-axis (time) units in your derivative calculations to a different unit, use the `x_scale` argument. Simply specify the ratio of your x units to the desired units. For instance, in our example data `x` is the number of *seconds* since the growth curve began. What if we wanted growth rate in *per-hour*? There are 3600 seconds in an hour, so we set `x_scale = 3600`
+To change the units of your derivatives, use the `x_scale` argument. `x_scale` should be set to the ratio of your `x` units to the units you want. For instance, in our example data `x` is the number of *seconds* since the growth curve began. If we want growth rate in *per-hour*, we set `x_scale = 3600`, since there are 3600 seconds in an hour.
 
 ```{r}
 ex_dat_mrg <- 
-  mutate(ex_dat_mrg,
+  mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
          deriv_percap_hr = calc_deriv(x = Time, y = Measurements,
                                       percapita = TRUE, blank = 0,
                                       window_width_n = 5, trans_y = "log",

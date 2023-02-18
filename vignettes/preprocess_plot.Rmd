@@ -79,14 +79,7 @@ Now that we have our data and designs merged, we're almost ready to start proces
 ## Pre-processing: excluding data
 In some cases, we want to remove some of the wells from our growth curves data before we carry on with downstream analyses. For instance, they may have been left empty, contained negative controls, or were contaminated. We can use `dplyr`'s `filter` function to remove those wells that meet criteria we want to exclude.
 
-For instance, let's imagine that we realized that we put the wrong media into Well B1, and so we should remove it from our analyses. In that case, we can simply:
-
-```{r}
-example_data_and_designs_filtered <- filter(ex_dat_mrg, Well != "B1")
-head(example_data_and_designs_filtered)
-```
-
-Now we can see that all rows from Well B1 have been excluded. We could do something similar if we realized that a Bacterial strain was contaminated. For instance, if strain 13 was contaminated, we could exclude it (and Well B1) as follows:
+For instance, let's imagine that we realized that we put the wrong media into Well B1, and that strain 13 was contaminated. To exclude them from our analyses, we can simply: 
 
 ```{r}
 example_data_and_designs_filtered <- 
@@ -95,13 +88,14 @@ example_data_and_designs_filtered <-
 head(example_data_and_designs_filtered)
 ```
 
-
 ## Pre-processing: converting dates & times into numeric
 Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
 
-First we have to create a data frame with time saved as it might be by a plate reader. As usual, **don't worry how this block of code works**, since it's just creating an example file in the same format as that output by a plate reader.
+First we have to create a data frame with time saved as it might be by a plate reader.
 
 ```{r}
+#Don't worry how this code works, it's just creating an example file
+# in the same format that a plate reader would
 ex_dat_mrg$Time <-
   paste(ex_dat_mrg$Time %/% 3600,
         formatC((ex_dat_mrg$Time %% 3600) %/% 60, 
@@ -109,19 +103,15 @@ ex_dat_mrg$Time <-
         formatC((ex_dat_mrg$Time %% 3600) %% 60,
                 width = 2, flag = 0),
         sep = ":")
-```
 
-Let's take a look at this data.frame. This shows the `Time` column as it might be written by a plate reader.
-
-```{r}
 head(ex_dat_mrg)
 ```
 
 We can see that our `Time` aren't written in an easy numeric. Instead, they're in a format that's easy for a human to understand (but unfortunately not very usable for analysis).
 
-Let's use `lubridate` to convert this text into a usable format. `lubridate` has a whole family of functions that can parse text with hour, minute, and/or second components. You can use `hms` if your text contains hour, minute, and second information, `hm` if it only contains hour and minute information, and `ms` if it only contains minute and second information.
+Let's use `lubridate` to convert this text into a usable format. `lubridate` has a whole family of functions that can parse text with hour, minute, and/or second components. You can use `hms` if your text contains hour, minute, and second information, `hm` if it only contains hour and minute information, and `ms` if it only contains minute and second information. 
 
-Since the example has all three, we'll use `hms`. Once `hms` has parsed the text, we'll use another function to convert the output of `hms` into a pure numeric value: `time_length`. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`. See `?time_length` for details.
+Once `hms` has parsed the text, we'll use `time_length` to convert the output of `hms` into a pure numeric value. By default, `time_length` returns in units of seconds, but you can change that by changing the `unit` argument to `time_length`.
 
 ```{r}
 # We have previously loaded lubridate, but if you haven't already then

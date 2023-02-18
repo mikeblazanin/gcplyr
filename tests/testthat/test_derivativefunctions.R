@@ -84,3 +84,16 @@ test_that("calc_deriv returns correctly with fitting utilized", {
              blank = 0, trans_y = "log"))
 })
 
+test_that("calc_deriv checks for grouping", {
+  library(dplyr)
+  mydf <- data.frame(x = 1:20, y = sqrt(1:20), 
+                     grp = rep(c("A", "B"), each = 10))
+  
+  expect_warning(calc_deriv(x = mydf$x, y = mydf$y),
+                 ".* called outside of dplyr::mutate and subset_by = NULL")
+  expect_warning(mutate(mydf,
+                        deriv = calc_deriv(x = x, y = y)),
+                 ".* called on an ungrouped data.frame and subset_by = NULL")
+  expect_no_warning(mutate(group_by(mydf, grp),
+                           deriv = calc_deriv(x = x, y = y)))
+})

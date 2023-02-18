@@ -5,7 +5,7 @@
 * analyze vignette rework
 * other vignette conciseness
 * various documentation improvements
-* (hopefully) warnings for ungrouped data in smooth_data and calc_deriv
+* warnings for ungrouped data in smooth_data and calc_deriv
 * better warnings in make_design
 
 # gcplyr 1.2.0

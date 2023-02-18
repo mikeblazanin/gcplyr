@@ -201,12 +201,17 @@ test_that("smooth_data returns properly for gam", {
 
 test_that("smooth_data checks for grouping", {
   library(dplyr)
-  if(FALSE) {#to be updated when stackoverflow thread is updated
-  expect_warning(smooth_data(window_width_n = 5, x = mtcars$cyl, y = mtcars$mpg,
-                             sm_method = 'moving-median'))
-  expect_warning(mutate(mtcars,
-                        sm = smooth_data(window_width_n = 5, x = cyl, y = mpg, 
-                                         sm_method = 'moving-median')))
-  }
+  mydf <- data.frame(x = 1:20, y = sqrt(1:20), 
+                     grp = rep(c("A", "B"), each = 10))
   
+  expect_warning(smooth_data(window_width_n = 5, x = mydf$x, y = mydf$y,
+                             sm_method = 'moving-median'),
+                 ".* called outside of dplyr::mutate and subset_by = NULL")
+  expect_warning(mutate(mydf,
+                        sm = smooth_data(window_width_n = 5, x = x, y = y, 
+                                         sm_method = 'moving-median')),
+                 ".* called on an ungrouped data.frame and subset_by = NULL")
+  expect_no_warning(mutate(group_by(mydf, grp),
+                           sm = smooth_data(window_width_n = 5, x = x, y = y, 
+                                            sm_method = 'moving-median')))
 })

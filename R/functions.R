@@ -501,7 +501,36 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
                simplify = FALSE))
 }
 
-
+#' A function that checks if the parent function is being called within
+#' mutate with grouped data or with subset_by specified
+#' 
+#' @param func_name Name of the function to check for
+#' @param inherit_name Name of the attribute to check for
+#' @param name_for_error Name of the function to add to error messages
+#' @param subset_by Subset by function
+#' @return Nothing, but prints warnings
+#' 
+#' @noRd
+check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
+                          name_for_error, subset_by) {
+  parents <- ls(envir = parent.frame(n = 2))
+  if(all(parents == "~")) {
+    ss <- sys.status()
+    funcs <- sapply(ss$sys.calls, function(x) deparse(as.list(x)[[1]]))
+    wf <- which(funcs == func_name)
+    if(length(wf) > 0) {
+      data <- eval(substitute(.data), ss$sys.frames[[max(wf)]])
+      if(is.null(subset_by) & !inherits(data, "grouped_df")) {
+        warning(paste(name_for_error,
+                      "called on an ungrouped data.frame and subset_by = NULL"))
+      }
+    }
+  }
+  if(is.null(subset_by) && (any(parents != "~") || length(wf) == 0)) {
+    warning(paste(name_for_error,
+                  "called outside of dplyr::mutate and subset_by = NULL"))
+  }
+}
 
 # Read functions ----
 
@@ -2907,6 +2936,8 @@ reserved for passing 'method' arg via ... to loess or gam")
   if(!sm_method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("sm_method must be one of: moving-average, moving-median, gam, or loess")
   }
+
+  check_grouped(name_for_error = "smooth_data", subset_by = subset_by)
   
   if(FALSE) { #to-be updated when stackoverflow thread is updated
     if(all(ls(envir = parent.frame()) == "~")) { #being called within mutate
@@ -3295,6 +3326,8 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   
   x <- make.numeric(x, "x")
   y <- make.numeric(y, "y")
+  
+  check_grouped(name_for_error = "calc_deriv", subset_by = subset_by)
 
   #Set up subset_by
   if(is.null(subset_by)) {subset_by <- rep("A", length(y))}

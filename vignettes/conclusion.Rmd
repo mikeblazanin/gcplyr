@@ -93,7 +93,7 @@ At this point, we've now summarized our growth curves data into some metrics. Ho
 
 ## When should we average replicates?
 
-Before we dig into what we to do next, I want to emphasize something we did *not* do in this workflow: averaging different wells together *before* summarization. In my opinion, averaging should only occur after summarization, not before. Why is that? Even wells that have the same contents (i.e. are technical replicates) can still differ in their growth due to biological variation (e.g. stochastic growth dynamics). If we average our density values at the beginning, we may introduce bias and we will not have the ability to visualize or assess the biological variation present in our data.
+Before we dig into what we to do next, I want to emphasize something we did *not* do in this workflow: averaging different wells together *before* summarization. In my opinion, averaging should only occur after summarization, not before. Why? Even wells that have the same contents (i.e. are technical replicates) can still differ in their growth due to biological variation (e.g. stochastic growth dynamics). If we average our density values at the beginning, we may introduce bias and we will not have the ability to visualize or assess the biological variation present in our data.
 
 Let's look at a simple example to demonstrate this point. I'm going to simulate bacterial growth using the Baranyi-Roberts mathematical model of growth, which is logistic growth but with a period of acclimation at the beginning:
 
@@ -122,8 +122,9 @@ colnames(sim_dat) <- c("time", "averaged", paste("Well", 1:96, sep = ""))
 # Simulate growth
 for (i in 3:ncol(sim_dat)) {
   sim_dat[, i] <- baranyi_gr(times = sim_dat$time, 
-                             r = 0.02, k = 1, q0 = 0.5,
-                             m = rgamma(n = 1, shape = 2, scale = 0.02/2),
+                             r = 0.02, k = 1, q0 = 0.01,
+                             m = runif(1, min = 0.01, max = 0.02),
+                             #m = rgamma(n = 1, shape = 2, scale = 0.02/2),
                              init_dens = 0.001)
 }
 
@@ -153,7 +154,7 @@ sim_dat_sum <- summarize(group_by(sim_dat_tdy, Well),
 
 # Plot the maximum per-capita growth rates of each well
 #  Add a red line for the max growth rate of the "average well"
-#  Add a dashed line for the true average growth rate of all the wells
+#  Add a dashed line for the average growth rate of all the wells
 ggplot(data = filter(sim_dat_sum, Well != "averaged"), 
        aes(x = max_growth_rate)) +
   geom_histogram() +
@@ -164,15 +165,15 @@ ggplot(data = filter(sim_dat_sum, Well != "averaged"),
              lty = 2)
 ```
 
-Here we can see that the maximum per-capita growth rate of the "average well" (red line) is not the same as the true average maximum per-capita growth rate of all the wells (dashed line). While this bias in the "average well" might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be higher than the true average growth rate. Moreover, **the "average well" is often biased in many summarized statistics**, not just growth rate. 
+Here we can see that the maximum growth rate of the "average well" (red line) is not the same as the true average maximum growth rate of all the wells (dashed line). While this bias might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be higher than the true average growth rate. Moreover, this bias extends to many other statistics as well.
 
-Additionally, calculating the "average well" means that we would not have the ability to plot this distribution of growth rates between wells; we would only have the single value of the red line, with no way to directly visualize how biased or not it is. By visualizing the distribution directly, we can see that it is skewed and that perhaps we should use a transformed metric (e.g. the log growth rate) for any analyses that assume normality.
+Thus, I recommend against averaging wells together before summarizing, since it often introduces bias and eliminates our ability to visualize variation between replicates.
 
 ## Carrying out statistical testing
 
-With that aside on when to average done, how do you go about running statistics on individual wells? Typically, growth curves experiments will have a highly nested structure. You probably have multiple wells with the same contents (i.e. technical replicates) in each plate. You may also have multiple plates from different runs (creating the possibility of batch effects).
+How do you go about running statistics on analyzed growth curve data? Typically, growth curves experiments will have a highly nested structure. You probably have multiple wells with the same contents (i.e. technical replicates) in each plate. You may also have multiple plates from different runs (creating the possibility of batch effects).
 
-In order to pull apart these effects and test for differences between your treatments, you'll need to do mixed-effects modeling. Unfortunately, it's beyond the scope of this vignette to provide a sufficient explanation of how to do mixed-effects statistics. However, I can provide some guidance:
+In order to pull apart these effects and test for differences between your treatments, you'll likely need to do mixed-effects modeling. Unfortunately, it's beyond the scope of this vignette to provide a sufficient explanation of how to do mixed-effects statistics. However, I can provide some guidance:
 
 For frequentist statistics, the `R` package `lme4` is one of the most-popular implementations of mixed-effects modeling.
 
@@ -181,7 +182,7 @@ For Bayesian statistics, the `R` packages `brms` or `rstanarm` are popular imple
 Regardless of your approach, you should:
 
 - use your your summarized statistics (e.g. `auc`, `max_growth_rate`, `lag_time`, etc.) as your response variable
-- use your design elements (e.g. `Bacteria_strain`, `Phage`) as your explanatory variables
+- use your design elements (e.g. `Bacteria_strain`, `Phage`) as your explanatory variables (i.e. fixed effects)
 - incorporate random effects for any technical replicates you have
 - incorporate random effects for any potential batch effects in-play
 
@@ -192,24 +193,15 @@ There are a number of excellent resources out there to learn how to do this sort
 
 As you approach the end of your growth curves analyses, you have summarized the dynamics of your growth curves into one or a few metrics. At this point, you may wish to pull in other sources of data to compare to your growth curves metrics. Just like merging multiple growth curves data frames together, this can be achieved with `merge_dfs`.
 
-Let's use the `ex_dat_mrg_sum` from an earlier section, where we've summarized our growth curves using area-under-the-curve (although this approach would work with any number of summarized metrics). 
+We'll focus on the area-under-the-curve metric, and on just the bacteria grown in the absence of phages.
 
 ```{r}
 ex_dat_mrg_sum <-
-  summarize(ex_dat_mrg, auc = auc(x = Time, y = smoothed))
+  summarize(dplyr::filter(ex_dat_mrg, Phage == "No Phage"), 
+            auc = auc(x = Time, y = smoothed))
 ```
 
-
-Now imagine that, separately, we've measured the resistance of each of these bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth.
-
-We're just going to focus on the bacterial growth in the absence of phage, so let's use `dplyr::filter` to remove the phage added rows.
-
-```{r}
-ex_dat_mrg_sum <- dplyr::filter(ex_dat_mrg_sum, Phage == "No Phage")
-head(ex_dat_mrg_sum)
-```
-
-Now, let's generate some mock antibiotic resistance data. The file containing the antibiotic resistance data should have the bacterial strain names under the same header `Bacterial_strain`, so that merge_dfs knows to match those two columns. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
+Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. Here we'll generate some mock antibiotic resistance data. Importantly, our data must have matching headers as our growth curve data so that `merge_dfs` knows how to merge the `data.frame`'s. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
 
 ```{r}
 set.seed(123)
@@ -224,17 +216,13 @@ antibiotic_dat <-
 head(antibiotic_dat)
 ```
 
-Great, now we merge our two data frames.
+Great, now we merge our two data frames and see if there's a relationship.
 
 ```{r}
 growth_and_antibiotics <- 
   merge_dfs(ex_dat_mrg_sum, antibiotic_dat)
 head(growth_and_antibiotics)
-```
 
-And now let's see if there's a relationship!
-
-```{r}
 ggplot(data = growth_and_antibiotics, 
        aes(x = Antibiotic_resis, y = auc)) +
   geom_point()

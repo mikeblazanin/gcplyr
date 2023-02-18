@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 
 ## What this package can do
 
-`gcplyr` was created to make it easier to import, wrangle, and do model-free analyses of bacterial growth curve data, as commonly output by plate readers. 
+`gcplyr` was created to make it easier to import, wrangle, and do model-free analyses of microbial growth curve data, as commonly output by plate readers. 
 
 * `gcplyr` can flexibly import all the common data formats output by plate readers and reshape them into 'tidy' formats for analyses.
 * `gcplyr` can import experimental designs from files or directly in `R`, then merge this design information with density data.

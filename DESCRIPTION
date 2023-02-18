@@ -7,7 +7,7 @@ Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 
                comment = c(ORCID = "0000-0003-4630-6235"))
 Description: Easy import, manipulation, and model-free analysis of
-    bacterial growth curve data, as commonly output by plate readers.
+    microbial growth curve data, as commonly output by plate readers.
     Tools for reshaping common plate reader outputs into 'tidy' formats and
     merging them with design information, making data easy to work with using 
     'gcplyr' and other packages. Also streamlines common growth curve

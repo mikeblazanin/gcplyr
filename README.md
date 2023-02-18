@@ -14,7 +14,7 @@ You can also embed plots in R chunks. In that case, don't forget to commit and p
 ## What this package can do
 
 `gcplyr` was created to make it easier to import, wrangle, and do
-model-free analyses of bacterial growth curve data, as commonly output
+model-free analyses of microbial growth curve data, as commonly output
 by plate readers.
 
 - `gcplyr` can flexibly import all the common data formats output by
@@ -83,4 +83,4 @@ This documentation is also available as a series of pdf vignette files:
 Please cite software as:
 
 Blazanin, Michael. 2023. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 1.1.0
+data.’ R package version 1.2.0.9002

@@ -20,7 +20,7 @@ or run names as an added column in the output."><!-- mathjax --><script src="htt
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,11 +113,15 @@ extension from provided filenames. When extension is not
 
 
 <dt>startrow, endrow, startcol, endcol</dt>
-<dd><p>(optional) the rows and columns where
-the data is located. If none provided assumes the entire
-file is data.</p>
-<p>Can be specified as a numeric or using base-26 Excel letter
-notation</p></dd>
+<dd><p>(optional) the rows and columns where 
+the data are located in <code>files</code>.</p>
+<p>Can be a vector or list the same length as <code>files</code>, or
+a single value that applies to all <code>files</code>. Values
+can be numeric or a string that will be automatically
+converted to numeric by <code>from_excel</code>.</p>
+<p>If not provided, data is presumed to begin on the first
+row and column of the file(s) and end on the last row and
+column of the file(s).</p></dd>
 
 
 <dt>sheet</dt>

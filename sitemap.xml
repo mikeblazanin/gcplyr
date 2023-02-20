@@ -61,6 +61,9 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/calc_deriv.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/doubling_time.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata.html</loc>
   </url>
   <url>
@@ -80,6 +83,9 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/lag_time.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/make_design.html</loc>

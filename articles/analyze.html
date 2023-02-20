@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,11 +127,11 @@ curves into a number of metrics.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.2.0, Build Date: 2023-02-06)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.3.0, Build Date: 2023-02-19)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.2.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.3.0</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -173,34 +173,42 @@ curves into a number of metrics.</p>
 <span>         deriv_percap5 <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
 <span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                                        window_width_n <span class="op">=</span> <span class="fl">5</span>, trans_y <span class="op">=</span> <span class="st">"log"</span>,</span>
-<span>                                    x_scale <span class="op">=</span> <span class="fl">3600</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span></code></pre></div>
+<span>                                    x_scale <span class="op">=</span> <span class="fl">3600</span><span class="op">)</span>,</span>
+<span>         doub_time <span class="op">=</span> <span class="fu"><a href="../reference/doubling_time.html">doubling_time</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span>
+<span><span class="co"># Drop unneeded columns (optional, but makes things cleaner)</span></span>
+<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
+<span>                            <span class="va">Time</span>, <span class="va">Well</span>, <span class="va">Measurements</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>,</span>
+<span>                            <span class="va">deriv</span>, <span class="va">deriv_percap5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="Analyzing">Analyzing data with summarize<a class="anchor" aria-label="anchor" href="#Analyzing"></a>
+<h2 id="analyzing-data-with-summarize">Analyzing data with summarize<a class="anchor" aria-label="anchor" href="#analyzing-data-with-summarize"></a>
 </h2>
 <p>Ultimately, analyzing growth curves requires summarizing the entire
-time series of data by some metric or metrics. For instance, we may
-calculate metrics like:</p>
+time series of data by some metric or metrics. gcplyr makes it easy to
+calculate a number of metrics of interest:</p>
 <ul>
-<li>the maximum density</li>
-<li>the total area under the curve</li>
-<li>the lag time (approximated as the time from the start until maximum
-per-capita growth rate is achieved)</li>
-<li>the maximum per-capita growth rate</li>
-<li>the density when a diauxic shift occurs</li>
-<li>the time until diauxic shift occurs</li>
-<li>the peak per-capita growth rate after a diauxic shift</li>
-<li>the peak density before a decline from phage predation</li>
-<li>the time when bacteria drop below some density because of phage
-predation</li>
+<li><a href="#init_dens">the initial density</a></li>
+<li><a href="#lag">the lag time</a></li>
+<li><a href="#dens_thresh">the time to reach some density</a></li>
+<li><a href="#percap_thresh">the time to reach some growth rate</a></li>
+<li><a href="#max_percap">the maximum per-capita growth rate
+(i.e. minimum doubling time)</a></li>
+<li><a href="#midpoint">the mid-point time or inflection point</a></li>
+<li><a href="#maxdens">the maximum density (e.g. carrying
+capacity)</a></li>
+<li><a href="#auc">the area under the curve</a></li>
+<li><a href="#diauxie">the density and time when a diauxic shift
+occurs</a></li>
+<li><a href="#diauxic_percap">the maximum per-capita growth rate during
+diauxie</a></li>
+<li><a href="#peak_dens">the peak bacterial density before a decline
+(e.g. from phage predation)</a></li>
+<li><a href="#extin_time">the extinction time (e.g. from phage
+predation)</a></li>
 </ul>
-<p><code>gcplyr</code> contains a number of functions that make it
-easier to carry out these calculations. Additionally,
-<code>gcplyr</code> functions are flexible enough that you can use them
-in designing your own metric calculations. The following sections
-highlight general-use <code>gcplyr</code> functions and provide examples
-to calculate the common metrics above.</p>
+<p>The following sections show how you can use <code>gcplyr</code>
+functions to calculate these metrics.</p>
 <p>But first, we need to familiarize ourselves with one more
 <code>dplyr</code> function: <code>summarize</code>. Why? Because the
 upcoming <code>gcplyr</code> analysis functions <em>must</em> be used
@@ -226,83 +234,400 @@ single row.</p>
 <li>
 <code>group_by</code> our data so that every well is a group</li>
 <li>
-<code>summarize</code> each well with calculations like maximum
-density or area under the curve</li>
+<code>summarize</code> each well into one or several metrics</li>
 </ol>
-<p>Since <code>summarize</code> will drop columns that the data aren’t
-grouped by and that aren’t summarized, we will typically want to list
-all of our design columns for <code>group_by</code>, along with the
-plate name and well. Again, make sure you’re <em>not</em> grouping by
-Time, Absorbance, or anything else that varies <em>within</em> a well,
-since if you do <code>dplyr</code> will group timepoints within a well
-separately.</p>
-<p>In the next section, I provide a simple example of how the
-<code>max</code> function is used with <code>group_by</code> and
-<code>summarize</code> to calculate lag time and the maximum per-capita
-growth rate. If you want to learn more, <code>dplyr</code> has extensive
-documentation and examples of its own online. Feel free to explore them
-as desired, but this primer and the coming example should be sufficient
-to use the remaining <code>gcplyr</code> functions.</p>
-</div>
-<div class="section level2">
-<h2 id="summarizing-with-simple-base-functions-maximum-density-and-growth-rate">Summarizing with simple base functions: maximum density and growth
-rate<a class="anchor" aria-label="anchor" href="#summarizing-with-simple-base-functions-maximum-density-and-growth-rate"></a>
-</h2>
-<p>One of the most common steps is calculating global maxima (or minima)
-of data. For instance, with bacterial growth, maximum density or growth
-rate are some of the most commonly measured traits. Here, we’ll show how
-to find them using the built-in <code>max</code> function.</p>
-<p>First, we need to group our data. As before, <code>group_by</code>
-simply requires the <code>data.frame</code> to be grouped, and the names
-of the columns we want to group by.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First, drop unneeded columns (optional)</span></span>
-<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>                            <span class="va">Time</span>, <span class="va">Well</span>, <span class="va">Measurements</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>,</span>
-<span>                            <span class="va">deriv</span>, <span class="va">deriv_percap5</span><span class="op">)</span></span>
-<span><span class="co"># Then, carry out grouping</span></span>
-<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span></span></code></pre></div>
-<p>Then, we run <code>summarize</code>. Just like for
-<code>mutate</code>, we specify:</p>
+<p>As before, to use <code>group_by</code> we simply pass the
+<code>data.frame</code> to be grouped, and the names of the columns we
+want to group by. Since <code>summarize</code> will drop columns that
+the data aren’t grouped by and that aren’t summarized, we will typically
+want to list all of our design columns for <code>group_by</code>, along
+with the plate name and well. Again, make sure you’re <em>not</em>
+grouping by Time, Measurements, or anything else that varies
+<em>within</em> a well, since if you do <code>dplyr</code> will group
+timepoints within a well separately.</p>
+<p>Then, we run <code>summarize</code>. <code>summarize</code> works
+much like <code>mutate</code> did, where we specify:</p>
 <ol style="list-style-type: decimal">
 <li>the name of the variable we want results saved to</li>
 <li>the function that calculates the summarized results</li>
 </ol>
-<p>In this case, the function should return just a single value for each
-group. For instance, in the code below we’ve calculated the maximum of
-the <code>Measurements</code> column, and saved it in a column named
-<code>max_dens</code> (note that we need to specify
-<code>na.rm = TRUE</code> to tell <code>max</code> to ignore all
-<code>NA</code> values). We’ve saved the output from
-<code>summarize</code> to a new <code>data.frame</code>:
-<code>ex_dat_mrg_sum</code>, short for
-example_data_merged_summarized.</p>
+<p>Just like <code>mutate</code>, if we want additional summary metrics,
+we simply add them to the summarize. However, unlike
+<code>mutate</code>, <code>summarize</code> functions return just a
+single value for each group.</p>
+<p>As you’ll see throughout the rest of this article, we’ll be using
+<code>group_by</code> and <code>summarize</code> to calculate our
+metrics of interest. If you want to learn more, <code>dplyr</code> has
+extensive documentation and examples of its own online, but this primer
+and the coming example should be sufficient to analyze data with
+<code>gcplyr</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="plotting-summarized-metrics">Plotting summarized metrics<a class="anchor" aria-label="anchor" href="#plotting-summarized-metrics"></a>
+</h2>
+<p>Once you’ve calculated your summarized metrics, you should plot them
+on the original data to make sure everything matches what you expect. We
+can plot summarized values right on top of our original data:</p>
+<ul>
+<li>density or rate metrics can be plotted as a horizontal line with
+<code>geom_hline</code>
+</li>
+<li>time metrics can be plotted as a vertical line with
+<code>geom_vline</code>
+</li>
+<li>pairs of metrics that correspond to both density/rate and time can
+be plotted as a point with <code>geom_point</code>
+</li>
+</ul>
+<p>You’ll see examples of these plots throughout this article.</p>
+</div>
+<div class="section level2">
+<h2 id="init_dens">Initial density<a class="anchor" aria-label="anchor" href="#init_dens"></a>
+</h2>
+<p>If you want to identify the initial density of your bacteria, it will
+often be sufficient to use <code>R</code>’s built-in <code>min</code>
+function. When using <code>min</code>, note that we need to specify
+<code>na.rm = TRUE</code> to tell <code>min</code> to ignore all
+<code>NA</code> values.</p>
+<p>We can also save the time when this minimum occurs using the
+<code>which.min</code> function. <code>which.min</code> returns the
+<em>index</em> of the minimum value, so then we can get the
+<code>Time</code> value at that index and save it to a column titled
+<code>min_time</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            min_dens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>            min_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.min</a></span><span class="op">(</span><span class="va">Measurements</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  min_dens min_time</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7       0.001    <span style="text-decoration: underline;">35</span>100</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      0.001    <span style="text-decoration: underline;">39</span>600</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      0.001    <span style="text-decoration: underline;">21</span>600</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">min_time</span>, y <span class="op">=</span> <span class="va">min_dens</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p>In some cases (e.g. growing with phages), bacteria may drop to a
+lower density than they started later in the growth curve. In this case,
+we want the first <em>local</em> minima of the Measurements data, rather
+than the global minima:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>                            max_dens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            min_dens <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_minima</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, return <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span>,</span>
+<span>            min_time <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_minima</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, return <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  min_dens min_time</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       0.002        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      0.002        0</span></span></code></pre></div>
+<p>Note that you can tune the sensitivity of <code>first_minima</code>
+to different heights and widths of peaks and valleys using the
+<code>window_width</code>, <code>window_width_n</code>, and
+<code>window_height</code> arguments, although the defaults work much of
+the time.</p>
+</div>
+<div class="section level2">
+<h2 id="lag">Lag time<a class="anchor" aria-label="anchor" href="#lag"></a>
+</h2>
+<p>Bacteria often have a period of time before they reach their maximum
+growth rate. If you would like to quantify this lag time, you can use
+the <code>lag_time</code> function. <code>lag_time</code> needs the x
+and y values, as well as the (per-capita) derivative. It will find the
+maximum derivative, then project the tangent line with that slope back
+until it crosses the starting density.</p>
+<p>Below, I calculate lag time and visualize this tangent-line approach.
+To visualize the approach, I also calculate the <code>max_percap</code>,
+<code>max_percap_time</code>, <code>max_percap_dens</code>, and
+<code>min_dens</code>, but you don’t have to do that.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            lag_time <span class="op">=</span> <span class="fu"><a href="../reference/lag_time.html">lag_time</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, </span>
+<span>                                deriv <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">/</span><span class="fl">3600</span><span class="op">)</span>,</span>
+<span>            max_percap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">deriv_percap5</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">/</span><span class="fl">3600</span>,</span>
+<span>            max_percap_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv_percap5</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>            max_percap_dens <span class="op">=</span> <span class="va">Measurements</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv_percap5</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>            min_dens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  lag_time max_percap max_pe…¹ max_p…² min_d…³</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1       <span style="text-decoration: underline;">7</span>850.   0.000<span style="text-decoration: underline;">287</span>    <span style="text-decoration: underline;">15</span>300   0.017   0.002</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7       <span style="text-decoration: underline;">5</span>437.   0.000<span style="text-decoration: underline;">287</span>    <span style="text-decoration: underline;">15</span>300   0.017   0.001</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       <span style="text-decoration: underline;">6</span>393.   0.000<span style="text-decoration: underline;">442</span>    <span style="text-decoration: underline;">12</span>600   0.031   0.002</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      <span style="text-decoration: underline;">4</span>823.   0.000<span style="text-decoration: underline;">442</span>    <span style="text-decoration: underline;">12</span>600   0.031   0.001</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       <span style="text-decoration: underline;">5</span>995.   0.000<span style="text-decoration: underline;">457</span>    <span style="text-decoration: underline;">12</span>600   0.041   0.002</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      <span style="text-decoration: underline;">4</span>479.   0.000<span style="text-decoration: underline;">457</span>    <span style="text-decoration: underline;">12</span>600   0.041   0.001</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable names ¹​max_percap_time, ²​max_percap_dens,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   ³​min_dens</span></span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Measurements</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>              color <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>              <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="va">max_percap</span>,</span>
+<span>                  intercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">max_percap_dens</span><span class="op">)</span> <span class="op">-</span> <span class="va">max_percap</span><span class="op">*</span><span class="va">max_percap_time</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">lag_time</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">min_dens</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p>Notice how some of the minimum density values aren’t actually the
+<em>initial</em> density? We can fix that by overriding the default
+minimum density calculation with <code>first_minima</code> via the
+<code>y0</code> argument of <code>lag_time</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            min_dens <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_minima</a></span><span class="op">(</span><span class="va">Measurements</span>, return <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span>,</span>
+<span>            lag_time <span class="op">=</span> <span class="fu"><a href="../reference/lag_time.html">lag_time</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, </span>
+<span>                                deriv <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">/</span><span class="fl">3600</span>,</span>
+<span>                                y0 <span class="op">=</span> <span class="va">min_dens</span><span class="op">)</span>,</span>
+<span>            max_percap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">deriv_percap5</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">/</span><span class="fl">3600</span>,</span>
+<span>            max_percap_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv_percap5</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>            max_percap_dens <span class="op">=</span> <span class="va">Measurements</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv_percap5</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  min_dens lag_time max_percap max_p…¹ max_p…²</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1       0.002    <span style="text-decoration: underline;">7</span>850.   0.000<span style="text-decoration: underline;">287</span>   <span style="text-decoration: underline;">15</span>300   0.017</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7       0.002    <span style="text-decoration: underline;">7</span>850.   0.000<span style="text-decoration: underline;">287</span>   <span style="text-decoration: underline;">15</span>300   0.017</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       0.002    <span style="text-decoration: underline;">6</span>393.   0.000<span style="text-decoration: underline;">442</span>   <span style="text-decoration: underline;">12</span>600   0.031</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      0.002    <span style="text-decoration: underline;">6</span>393.   0.000<span style="text-decoration: underline;">442</span>   <span style="text-decoration: underline;">12</span>600   0.031</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       0.002    <span style="text-decoration: underline;">5</span>995.   0.000<span style="text-decoration: underline;">457</span>   <span style="text-decoration: underline;">12</span>600   0.041</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      0.002    <span style="text-decoration: underline;">5</span>995.   0.000<span style="text-decoration: underline;">457</span>   <span style="text-decoration: underline;">12</span>600   0.041</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable names ¹​max_percap_time, ²​max_percap_dens</span></span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Measurements</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>              color <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>              <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="va">max_percap</span>,</span>
+<span>                  intercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">max_percap_dens</span><span class="op">)</span> <span class="op">-</span> <span class="va">max_percap</span><span class="op">*</span><span class="va">max_percap_time</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">lag_time</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">min_dens</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="dens_thresh">Time to reach threshold density<a class="anchor" aria-label="anchor" href="#dens_thresh"></a>
+</h2>
+<p>If you want to quantify how long it takes bacteria to reach some
+threshold density, you can use the <code>first_above</code> function. In
+this example, we’ll use a Measurements value of 0.1 as our
+threshold.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            above_01 <span class="op">=</span> <span class="fu"><a href="../reference/ThresholdFunctions.html">first_above</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, </span>
+<span>                                   threshold <span class="op">=</span> <span class="fl">0.1</span>, return <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
 <span><span class="co">#&gt; override using the `.groups` argument.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;   Bacteria_strain Phage       Well  max_dens</span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  above_01</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1       1.18 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7       0.499</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       1.21 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      0.962</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       1.21 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      1.03</span></span></code></pre></div>
-<p>If you want additional characteristics, you simply add them to the
-summarize. For instance, if we want the time when the maximum density
-occurs, you just add that as a second argument. In this case, we use the
-<code>which.max</code> function, which returns the index of the maximum
-value, to get the index of the <code>Time</code> when the maximum
-occurs, and save it to a column titled <code>max_time</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>                            max_dens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>                            max_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">Measurements</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1      <span style="text-decoration: underline;">21</span>913.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7      <span style="text-decoration: underline;">21</span>913.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4      <span style="text-decoration: underline;">15</span>300 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10     <span style="text-decoration: underline;">15</span>300 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5      <span style="text-decoration: underline;">14</span>543.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11     <span style="text-decoration: underline;">14</span>543.</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">above_01</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="percap_thresh">Time to reach threshold growth rate<a class="anchor" aria-label="anchor" href="#percap_thresh"></a>
+</h2>
+<p>If you want to quantify how long it takes bacteria to reach some
+threshold per-capita growth rate, you can use the
+<code>first_above</code> function. In this example, we’ll use a
+per-capita derivative of 1 as our threshold.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            percap_above_1 <span class="op">=</span> <span class="fu"><a href="../reference/ThresholdFunctions.html">first_above</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">deriv_percap5</span>, x <span class="op">=</span> <span class="va">Time</span>, </span>
+<span>                                   threshold <span class="op">=</span> <span class="fl">1</span>, return <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  percap_above_1</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1            <span style="text-decoration: underline;">14</span>235.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7            <span style="text-decoration: underline;">14</span>235.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4             <span style="text-decoration: underline;">8</span>220.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10            <span style="text-decoration: underline;">8</span>220.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5             <span style="text-decoration: underline;">7</span>598.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11            <span style="text-decoration: underline;">7</span>598.</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">percap_above_1</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 2 rows containing missing values (`geom_vline()`).</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="max_percap">Maximum growth rate and minimum doubling time<a class="anchor" aria-label="anchor" href="#max_percap"></a>
+</h2>
+<p>If you want to calculate the bacterial maximum growth rate (i.e. the
+minimum doubling time), it’s sufficient to use <code>R</code>’s built-in
+<code>max</code> function on the per-capita derivatives we calculated in
+<code><a href="../articles/process.html">vignette("process")</a></code>. When using <code>max</code>, note that
+we need to specify <code>na.rm = TRUE</code> to tell <code>max</code> to
+ignore all <code>NA</code> values.</p>
+<p>We can also save the time when this maximum occurs using the
+<code>which.max</code> function. <code>which.max</code> returns the
+<em>index</em> of the maximum value, so then we can get the
+<code>Time</code> value at that index and save it to a column titled
+<code>max_percap_time</code>.</p>
+<p>If you would like the equivalent minimum doubling time, we recommend
+you simply calculate the maximum growth rate as above and then convert
+that into the equivalent minimum doubling time using the
+<code>doubling_time</code> function.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            max_percap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">deriv_percap5</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>            max_percap_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv_percap5</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>            doub_time <span class="op">=</span> <span class="fu"><a href="../reference/doubling_time.html">doubling_time</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">max_percap</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  max_percap max_percap_time doub_time</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1          1.03           <span style="text-decoration: underline;">15</span>300     0.670</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7          1.03           <span style="text-decoration: underline;">15</span>300     0.670</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4          1.59           <span style="text-decoration: underline;">12</span>600     0.436</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10         1.59           <span style="text-decoration: underline;">12</span>600     0.436</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5          1.65           <span style="text-decoration: underline;">12</span>600     0.421</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11         1.65           <span style="text-decoration: underline;">12</span>600     0.421</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">max_percap_time</span>, y <span class="op">=</span> <span class="va">max_percap</span><span class="op">)</span>,</span>
+<span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span>ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="midpoint">Mid-point time or inflection point<a class="anchor" aria-label="anchor" href="#midpoint"></a>
+</h2>
+<p>If you want to find the mid-point or inflection point of bacterial
+growth, there are two different approaches:</p>
+<ol style="list-style-type: decimal">
+<li>Mid-point: find the point when the density first reaches half the
+maximum density.</li>
+<li>Inflection point: find the point when the derivative is at a
+maximum.</li>
+</ol>
+<p>In growth curve analysis approaches using fitting of a symmetric
+function (e.g. when other <code>R</code> packages fit a logistic
+function to data), these two points will be equivalent. However, since
+<code>gcplyr</code> does model-free analyses, we do not assume symmetry,
+and so the points may be very similar or very different.</p>
+<p>For the mid-point, we use the <code>first_above</code> function, with
+the threshold equal to the maximum bacterial density divided by 2. For
+the infection point, we find the time when the <code>deriv</code> was at
+a maximum.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            mid_point <span class="op">=</span> <span class="fu"><a href="../reference/ThresholdFunctions.html">first_above</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">Time</span>, return <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>                                    threshold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>            infl_point <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  mid_point infl_point</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1       <span style="text-decoration: underline;">32</span>952.      <span style="text-decoration: underline;">29</span>700</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7       <span style="text-decoration: underline;">26</span>243.      <span style="text-decoration: underline;">29</span>700</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       <span style="text-decoration: underline;">21</span>798       <span style="text-decoration: underline;">19</span>800</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      <span style="text-decoration: underline;">20</span>418.      <span style="text-decoration: underline;">19</span>800</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       <span style="text-decoration: underline;">20</span>564.      <span style="text-decoration: underline;">18</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      <span style="text-decoration: underline;">60</span>195       <span style="text-decoration: underline;">18</span>000</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">mid_point</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">infl_point</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="maxdens">Maximum density<a class="anchor" aria-label="anchor" href="#maxdens"></a>
+</h2>
+<p>The maximum bacterial density can be a measure of bacterial carrying
+capacity in a given media or as a measure of bacterial growth
+yield/efficiency. If you want to quantify the maximum bacterial density,
+we can use <code>max</code> to get the global maxima of
+<code>Measurements</code>. See <a href="#peak_dens">Peak bacterial
+density</a> for identifying local maxima of <code>Measurements</code>
+(e.g. if you wanted the first peak in Well E11 shown below).</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            max_dens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">Measurements</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>            max_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">Measurements</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
 <span><span class="co">#&gt; override using the `.groups` argument.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
@@ -315,63 +640,29 @@ occurs, and save it to a column titled <code>max_time</code>:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4       1.21     <span style="text-decoration: underline;">85</span>500</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10      0.962    <span style="text-decoration: underline;">30</span>600</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5       1.21     <span style="text-decoration: underline;">70</span>200</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      1.03     <span style="text-decoration: underline;">86</span>400</span></span></code></pre></div>
-<p>And we can quite easily plot such summarized values as a horizontal
-line or vertical line on top of our original growth curves data with the
-<code>geom_hline</code> or <code>geom_vline</code> functions:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">max_dens</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">max_time</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
-<p>Alternatively, we could plot these summary points as a point:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11      1.03     <span style="text-decoration: underline;">86</span>400</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">max_time</span>, y <span class="op">=</span> <span class="va">max_dens</span><span class="op">)</span>,</span>
 <span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<p>We can also use the same process to find the maximum of the
-per-capita growth rates that we previously calculated:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>                            max_percap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">deriv_percap5</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>                            max_percap_time <span class="op">=</span> <span class="va">Time</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">deriv_percap5</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
-<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">max_percap_time</span>, y <span class="op">=</span> <span class="va">max_percap</span><span class="op">)</span>,</span>
-<span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="analyze_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 </div>
 <div class="section level2">
-<h2 id="summarizing-with-simple-gcplyr-functions-area-under-the-curve">Summarizing with simple gcplyr functions: area under the curve<a class="anchor" aria-label="anchor" href="#summarizing-with-simple-gcplyr-functions-area-under-the-curve"></a>
+<h2 id="auc">Area under the curve<a class="anchor" aria-label="anchor" href="#auc"></a>
 </h2>
-<p>One common metric of growth curves is the total area under the curve.
-<code>gcplyr</code> has an <code>auc</code> function to easily calculate
-this area. Just like <code>min</code> and <code>max</code>, it needs to
-be used inside <code>summarize</code> on a <code>data.frame</code> that
-has been grouped.</p>
-<p>To use <code>auc</code>, simply specify the x and y data whose
-area-under-the-curve you want to calculate. Here, we calculate the
-area-under-the-curve of the <code>Measurements</code> column and save it
-to a column titled <code>auc</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p>The area under the curve is a common metric of total bacterial
+growth, for instance in the presence of antagonists like antibiotics or
+phages. If you want to calculate the area under the curve, you can use
+the <code>gcplyr</code> function <code>auc</code>. Simply specify Time
+as the x and Measurements as the y data whose area-under-the-curve you
+want to calculate.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>            auc <span class="op">=</span> <span class="fu"><a href="../reference/auc.html">auc</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
 <span><span class="co">#&gt; override using the `.groups` argument.</span></span>
@@ -388,220 +679,51 @@ to a column titled <code>auc</code>.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11   <span style="text-decoration: underline;">27</span>966.</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="finding-local-extrema-peak-density-maximum-growth-rate-lag-time-and-diauxic-shifts">Finding local extrema: peak density, maximum growth rate, lag time,
-and diauxic shifts<a class="anchor" aria-label="anchor" href="#finding-local-extrema-peak-density-maximum-growth-rate-lag-time-and-diauxic-shifts"></a>
+<h2 id="diauxie">Diauxic shifts<a class="anchor" aria-label="anchor" href="#diauxie"></a>
 </h2>
-<p>We’ve previously shown how you can use <code>max</code> and
-<code>min</code> to find the global maxima and minima in data. However,
-what about <em>local</em> maxima or minima? That is, peaks and valleys
-that are obvious to the eye but aren’t the highest or smallest values in
-the entire time series. In this section, we’ll show how you can use the
-<code>gcplyr</code> functions <code>first_maxima</code> and
-<code>find_local_extrema</code> to find points that are local maxima or
-minima in your data.</p>
-<div class="section level3">
-<h3 id="finding-the-first-peak-peak-density-maximum-growth-rate-and-lag-time">Finding the first peak: peak density, maximum growth rate, and lag
-time<a class="anchor" aria-label="anchor" href="#finding-the-first-peak-peak-density-maximum-growth-rate-and-lag-time"></a>
-</h3>
-<p>One particular special case we’re often interested in is the first
-peak in some set of data. For instance, when bacteria are grown with
-phages, the density they reach before they start declining due to phage
-predation is a measure of their susceptibility to the phage.
-Alternatively, in the previous section we found the global maximum
-per-capita growth rate, but what if some of these maxima happened after
-near-extinction and recovery and we wanted to only find the peak growth
-rate before near-extinction?</p>
-<div class="section level4">
-<h4 id="peak-density">Peak density<a class="anchor" aria-label="anchor" href="#peak-density"></a>
-</h4>
-<p>Let’s start with the former example: finding the peak of density.</p>
-<p>To identify the first peak, we can use the <code>gcplyr</code>
-function <code>first_maxima</code>. <code>first_maxima</code> simply
-requires the <code>y</code> data you want to identify the peak in. In
-this case, that’s <code>Measurements</code>. We also need to specify
-whether we want the function to <code>return</code> the
-<code>index</code> of the first peak, the <code>x</code> value of the
-peak, or the <code>y</code> value of the peak. We’ll get the
-<code>x</code> and <code>y</code> values, saving them in columns
-<code>first_maxima_x</code> and <code>first_maxima_y</code>,
-respectively. As usual, <code>first_maxima</code> needs to be used
-inside of a <code>summarize</code> command on data that has already been
-grouped.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>            first_maxima_x <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_maxima</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, return <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>,</span>
-<span>            first_maxima_y <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_maxima</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, return <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
-<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;   Bacteria_strain Phage       Well  first_maxima_x first_maxima_y</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1             <span style="text-decoration: underline;">86</span>400          1.18 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7             <span style="text-decoration: underline;">31</span>500          0.499</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4             <span style="text-decoration: underline;">71</span>100          1.21 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10            <span style="text-decoration: underline;">30</span>600          0.962</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5             <span style="text-decoration: underline;">70</span>200          1.21 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11            <span style="text-decoration: underline;">18</span>900          0.439</span></span></code></pre></div>
-<p>Let’s plot these points on the wells to confirm they are what we
-expect:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<p>Bacteria frequently exhibit a second, slower, burst of growth after
+their first period of rapid growth. This is common in growth curves and
+is called <em>diauxic growth</em>.</p>
+<p>If we plot the data from some of our example data wells with no phage
+added, we’ll see this pattern repeatedly:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nophage_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"A4"</span>, <span class="st">"E2"</span>, <span class="st">"F1"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">nophage_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">first_maxima_x</span>, y <span class="op">=</span> <span class="va">first_maxima_y</span><span class="op">)</span>, </span>
-<span>             color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<p>That worked great! In some cases, you might find that
-<code>first_maxima</code> is not sensitive enough, or is too sensitive,
-for your data. In those cases, you can adjust the tuning parameters to
-make <code>first_maxima</code> more or less sensitive to small peaks and
-valleys. For <code>first_maxima</code>, the tuning parameters are
-<code>window_width</code>, <code>window_width_n</code>, and
-<code>window_height</code>:</p>
-<ul>
-<li>
-<code>window_width</code> determines the width of the window used to
-search for peaks and valleys, in units of <code>x</code>
-</li>
-<li>
-<code>window_width_n</code> determines the width of the window, in
-units of number of data points</li>
-<li>
-<code>window_height</code> determines the shortest peak or
-shallowest valley the window will cross, in units of <code>y</code>
-</li>
-</ul>
-</div>
-<div class="section level4">
-<h4 id="maximum-growth-rate-and-lag-time">Maximum growth rate and lag time<a class="anchor" aria-label="anchor" href="#maximum-growth-rate-and-lag-time"></a>
-</h4>
-<p>Now let’s look at the other example: using <code>first_maxima</code>
-to find the first peak in per-capita growth rate. Finding this point
-tells us both what the maximum growth rate is, and how long it took the
-cells to reach that rate (a measure of lag time).</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>            max_growth_rate <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_maxima</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span>, </span>
-<span>                                         return <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span>,</span>
-<span>            lag_time <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_maxima</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span>, </span>
-<span>                                  return <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
-<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;   Bacteria_strain Phage       Well  max_growth_rate lag_time</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1               1.03    <span style="text-decoration: underline;">15</span>300</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7               1.03    <span style="text-decoration: underline;">15</span>300</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4               1.59    <span style="text-decoration: underline;">12</span>600</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10              1.59    <span style="text-decoration: underline;">12</span>600</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5               1.65    <span style="text-decoration: underline;">12</span>600</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11              1.65    <span style="text-decoration: underline;">12</span>600</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lag_time</span>, y <span class="op">=</span> <span class="va">max_growth_rate</span><span class="op">)</span>,</span>
-<span>             color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
-<p>But what if you want to find an extrema that’s <em>not</em> the first
-peak? In the next section, we’ll learn how to use
-<code>find_local_extrema</code> to identify all kinds of local
-extrema.</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="finding-any-kind-of-local-extrema-diauxic-shifts">Finding any kind of local extrema: diauxic shifts<a class="anchor" aria-label="anchor" href="#finding-any-kind-of-local-extrema-diauxic-shifts"></a>
-</h3>
-<p>We’ve seen how <code>first_maxima</code> can be used to identify the
-first peak in data. But what about other kinds of local extrema? The
-first minimum? The <em>second</em> peak?</p>
-<p>In order to identify these kinds of extrema, we can use the
-more-general function <code>find_local_extrema</code>. In fact,
-<code>first_maxima</code> is really just a special case of
-<code>find_local_extrema</code>. Just like <code>first_maxima</code>,
-<code>find_local_extrema</code> only requires a vector of y data in
-which to find the local extrema, and can return the <code>index</code>,
-<code>x</code> value, or <code>y</code> value of the extrema it
-finds.</p>
-<p>Unlike <code>first_maxima</code>, <code>find_local_extrema</code>
-returns a vector containing <em>all</em> of the local extrema found
-under the given settings. Users can alter which kinds of local extrema
-are reported using the arguments <code>return_maxima</code>,
-<code>return_minima</code>, and <code>return_endpoints</code>. However,
-<code>find_local_extrema</code> will always return a vector of all the
-extrema found, so users must use brackets to select which one they want
-<code>summarize</code> to save.</p>
-<p>Let’s dig into an example: identifying diauxic shifts. To refresh
-your memory on what we saw in the derivatives article, here’s a plot of
-the derivative of some of the wells over time.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="analyze_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
-<p>In fact, if we look at some more of the wells with no phage added,
-we’ll see a similar pattern repeatedly.</p>
+<p>We can identify the time when bacteria switch from their first period
+of rapid growth to their second period by finding a minima in the
+derivative values. Specifically, we want to identify the second minima
+(the first minima will occur at the beginning of the growth curve, when
+bacteria are just starting to grow). Let’s look at some of the
+derivative values to see this.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"A4"</span>, <span class="st">"E2"</span>, <span class="st">"F1"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">nophage_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
 <p><img src="analyze_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
-<p>This second, slower, burst of growth after the first wave of growth
-is common in bacterial growth curves and is called <em>diauxic
-growth</em>.</p>
-<p>How could we identify the time when the bacteria switch from their
-first burst of growth to their second? We can find the second minima in
-the <code>deriv</code> values (where the first minima is going to be at
-the start of the growth curve). To do so, we specify to
-<code>find_local_extrema</code> that we want <code>return = "x"</code>
-and we don’t want maxima returned:</p>
+<p>We can use the <code>gcplyr</code> function
+<code>find_local_extrema</code> to find that minima. Specify
+<code>deriv</code> as the y data and <code>Time</code> as the x data,
+and that we want <code>find_local_extrema</code> to <code>return</code>
+the <code>x</code> values associated with local minima. It will return a
+vector of those <code>x</code> values, and we’re going to save just the
+second one.</p>
+<p>At the same time, we’re also going to save the density where the
+diauxic shift occurs. First, we’ll use <code>find_local_extrema</code>
+again, but this time to save the <em>index</em> where the diauxic shift
+occurs to a column titled <code>diaxuie_idx</code>. Then, we can get the
+<code>Measurements</code> value at that index. (Note that it wouldn’t
+work to just specify <code>return = "y"</code>, because the
+<code>y</code> values in this case are the <code>deriv</code>
+values).</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>    diauxie_time <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">find_local_extrema</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span>, return <span class="op">=</span> <span class="st">"x"</span>,</span>
-<span>                                   return_maxima <span class="op">=</span> <span class="cn">FALSE</span>, return_minima <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                                   window_width_n <span class="op">=</span> <span class="fl">39</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
-<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
-<span></span>
-<span><span class="co"># Plot data with vertical line at detected diauxie</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">diauxie_time</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
-<p>Now that we’ve found the point where the bacteria switch, let’s
-identify the density where the diauxic shift occurs. First, we’ll save
-the <em>index</em> where the diauxic shift occurs to a column titled
-<code>diaxuie_idx</code>. Then, we can get the <code>Measurements</code>
-value at that index. (Note that it wouldn’t work to just specify
-<code>return = "y"</code>, because the <code>y</code> values in this
-case are the <code>deriv</code> values).</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    <span class="va">ex_dat_mrg</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>    diauxie_time <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">find_local_extrema</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span>, return <span class="op">=</span> <span class="st">"x"</span>,</span>
 <span>                                   return_maxima <span class="op">=</span> <span class="cn">FALSE</span>, return_minima <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                   window_width_n <span class="op">=</span> <span class="fl">39</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span>
@@ -611,35 +733,50 @@ case are the <code>deriv</code> values).</p>
 <span>    diauxie_dens <span class="op">=</span> <span class="va">Measurements</span><span class="op">[</span><span class="va">diauxie_idx</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
 <span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  diauxie_time diauxie_idx diauxie_dens</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1           <span style="text-decoration: underline;">57</span>600          65        1.01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7           <span style="text-decoration: underline;">32</span>400          37        0.379</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4           <span style="text-decoration: underline;">35</span>100          40        0.999</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10          <span style="text-decoration: underline;">33</span>300          38        0.682</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5           <span style="text-decoration: underline;">34</span>200          39        1.01 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11          <span style="text-decoration: underline;">19</span>800          23        0.346</span></span>
 <span></span>
 <span><span class="co"># Plot data with a point at the moment of diauxic shift</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">nophage_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">nophage_wells</span><span class="op">)</span>, </span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">diauxie_time</span>, y <span class="op">=</span> <span class="va">diauxie_dens</span><span class="op">)</span>,</span>
 <span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
-<p>Something that was hard to see on the density plot has now been
-easily quantified and can be visualized exactly where the shift
-occurs.</p>
+<p><img src="analyze_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p>If needed, you can tune the sensitivity of
+<code>find_local_extrema</code> to different heights and widths of peaks
+and valleys using the <code>window_width</code>,
+<code>window_width_n</code>, and <code>window_height</code>
+arguments.</p>
 </div>
-<div class="section level3">
-<h3 id="combining-subsets-and-local-extrema-diauxic-growth-rate">Combining subsets and local extrema: diauxic growth rate<a class="anchor" aria-label="anchor" href="#combining-subsets-and-local-extrema-diauxic-growth-rate"></a>
-</h3>
-<p>In the previous section we identified when the bacteria shifted into
-their second burst of growth. Can we find out what the peak per-capita
-growth rate was during that second burst? Yes, we just have to put
-together some of the things we’ve learned already. In particular, we’re
-going to combine our use of <code>find_local_extrema</code>,
-<code>max</code>, and subsets to find the
-<code>max(deriv_percap_hr)</code> during the times after the diauxic
-shift:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="section level2">
+<h2 id="diauxic_percap">Growth rate during diauxie<a class="anchor" aria-label="anchor" href="#diauxic_percap"></a>
+</h2>
+<p>In the previous section we identified when bacteria shifted into
+their second period of rapid growth (‘diauxic growth’). If you want to
+find out what the peak per-capita growth rate was during that second
+burst, we’ll have to use <code>max</code> on the subset of data after
+the diauxic shift identified by <code>find_local_extrema</code></p>
+<p>Just as we did in the previous section, we’ll use
+<code>find_local_extrema</code> to save the time when the diauxic shift
+occurs. Then, we’ll find the maximum of the per-capita derivative after
+that shift occurs. Finally, we’ll find the time when that post-diauxie
+maximum growth rate occurs.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    <span class="va">ex_dat_mrg</span>,</span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>    diauxie_time <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">find_local_extrema</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span>, return <span class="op">=</span> <span class="st">"x"</span>,</span>
 <span>                                   return_maxima <span class="op">=</span> <span class="cn">FALSE</span>, return_minima <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                   window_width_n <span class="op">=</span> <span class="fl">39</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span>
@@ -650,63 +787,97 @@ shift:</p>
 <span>    <span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
 <span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  diauxie_time diauxie_percap diauxie_percap…¹</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1           <span style="text-decoration: underline;">57</span>600         0.025<span style="text-decoration: underline;">7</span>            <span style="text-decoration: underline;">72</span>000</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7           <span style="text-decoration: underline;">32</span>400         0.832             <span style="text-decoration: underline;">70</span>200</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4           <span style="text-decoration: underline;">35</span>100         0.039<span style="text-decoration: underline;">8</span>            <span style="text-decoration: underline;">47</span>700</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10          <span style="text-decoration: underline;">33</span>300         1.24              <span style="text-decoration: underline;">63</span>900</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5           <span style="text-decoration: underline;">34</span>200         0.043<span style="text-decoration: underline;">8</span>            <span style="text-decoration: underline;">44</span>100</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11          <span style="text-decoration: underline;">19</span>800         1.43              <span style="text-decoration: underline;">45</span>900</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable name ¹​diauxie_percap_time</span></span></span>
 <span></span>
 <span><span class="co"># Plot data with a point at the moment of peak diauxic growth rate</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">nophage_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">nophage_wells</span><span class="op">)</span>, </span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">diauxie_percap_time</span>, y <span class="op">=</span> <span class="va">diauxie_percap</span><span class="op">)</span>,</span>
 <span>             size <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
-</div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
 <div class="section level2">
-<h2 id="finding-threshold-crossings-extinction-time-and-time-to-density">Finding threshold-crossings: extinction time and time to
-density<a class="anchor" aria-label="anchor" href="#finding-threshold-crossings-extinction-time-and-time-to-density"></a>
+<h2 id="peak_dens">Peak bacterial density<a class="anchor" aria-label="anchor" href="#peak_dens"></a>
 </h2>
-<p>We’ve previously shown how you can find local and global extrema in
-data, but what if you just want to find when the data passes some
-threshold value? In this section, we’ll show how you can use the
-<code>gcplyr</code> functions <code>first_below</code> and
-<code>find_threshold_crosses</code> to find the points when your data
-crosses user-defined thresholds.</p>
-<div class="section level3">
-<h3 id="finding-the-first-point-below-a-threshold-extinction-time">Finding the first point below a threshold: extinction time<a class="anchor" aria-label="anchor" href="#finding-the-first-point-below-a-threshold-extinction-time"></a>
-</h3>
-<p>One common case of threshold-crossing we might be interested in is
-the first point that our data falls below some threshold density. For
-instance, when bacteria are grown with phages, the amount of time it
-takes before the bacterial population falls below some threshold can be
-a proxy metric for how sensitive the bacteria are to that phage.</p>
-<p>Let’s take a look at the absorbance values in some example wells with
-both bacteria and phages:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A7"</span>, <span class="st">"B10"</span>, <span class="st">"F10"</span>, <span class="st">"H8"</span><span class="op">)</span></span>
+<p><a href="#maxdens">We previously found the global maximum in
+bacterial density</a> using the simple <code>max</code> and
+<code>which.max</code> functions. The first <em>local</em> maxima can
+also be of interest. This is especially true when bacteria are grown
+with phages, where their first peak density can act as a proxy measure
+for their susceptibility to the phage. If you’re interested in finding
+the first local maxima in bacterial density, you can use the
+<code>gcplyr</code> function <code>first_maxima</code>.</p>
+<p><code>first_maxima</code> simply requires the <code>y</code> data you
+want to identify the peak in. Specify <code>Measurements</code> as the y
+data and <code>Time</code> as the x data, and that we want
+<code>first_peak</code> to <code>return</code> the <code>x</code> and
+<code>y</code> values associated with the peak. We’ll save those in
+columns <code>first_maxima_x</code> and <code>first_maxima_y</code>,
+respectively.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>            first_maxima_x <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_maxima</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
+<span>                                          return <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>,</span>
+<span>            first_maxima_y <span class="op">=</span> <span class="fu"><a href="../reference/ExtremaFunctions.html">first_maxima</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
+<span>                                          return <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
+<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage       Well  first_maxima_x first_maxima_y</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1             <span style="text-decoration: underline;">86</span>400          1.18 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7             <span style="text-decoration: underline;">31</span>500          0.499</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4             <span style="text-decoration: underline;">71</span>100          1.21 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10            <span style="text-decoration: underline;">30</span>600          0.962</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5             <span style="text-decoration: underline;">70</span>200          1.21 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11            <span style="text-decoration: underline;">18</span>900          0.439</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
-<p>Ok great. Now let’s suppose that I think that an absorbance of 0.15
-is a good threshold for extinction in my experiment. How could we use
-<code>first_below</code> to calculate the time when that first occurs
-across all our different wells? Well, primarily,
-<code>first_below</code> simply needs our <code>x</code> and
-<code>y</code> values, the <code>threshold</code> we want to use, as
-well as whether we want it to <code>return</code> the <code>index</code>
-of the first point below the threshold, or the <code>x</code> value of
-that point (since we care about the time it happened here, we’ll do the
-latter). Additionally, we’ll specify that we don’t care if the
-startpoint is below the threshold: we only care when the data goes from
-above to below it.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>, </span>
+<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">first_maxima_x</span>, y <span class="op">=</span> <span class="va">first_maxima_y</span><span class="op">)</span>, </span>
+<span>             color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<p>Note that you can tune the sensitivity of <code>first_maxima</code>
+to different heights and widths of peaks and valleys using the
+<code>window_width</code>, <code>window_width_n</code>, and
+<code>window_height</code> arguments, although the defaults work much of
+the time.</p>
+</div>
+<div class="section level2">
+<h2 id="extin_time">Extinction time<a class="anchor" aria-label="anchor" href="#extin_time"></a>
+</h2>
+<p>The time when bacterial density falls below some threshold can also
+be of interest. This is especially true when bacteria are grown with
+phages, where this ‘extinction time’ can act as a proxy measure for
+their susceptibility to the phage. If you’re interested in finding the
+extinction time, you can use the <code>gcplyr</code> function
+<code>first_below</code>. In this example, we’ll use a Measurements
+value of 0.15 as our threshold.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    <span class="va">ex_dat_mrg</span>,</span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>    extin_time <span class="op">=</span> <span class="fu"><a href="../reference/ThresholdFunctions.html">first_below</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, threshold <span class="op">=</span> <span class="fl">0.15</span>,</span>
 <span>                             return <span class="op">=</span> <span class="st">"x"</span>, return_endpoints <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
@@ -723,89 +894,14 @@ above to below it.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5           <span style="color: #BB0000;">NA</span> </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11       <span style="text-decoration: underline;">20</span>319.</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span><span class="va">phage_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A7"</span>, <span class="st">"B10"</span>, <span class="st">"F10"</span>, <span class="st">"H8"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">phage_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">phage_wells</span><span class="op">)</span>,</span>
 <span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">extin_time</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
-<p>All the phage-added wells have a time when the bacteria drop below
-that threshold, and the plot clearly shows that it’s right where we’d
-expect it.</p>
-</div>
-<div class="section level3">
-<h3 id="finding-any-kind-of-threshold-crossing-time-to-density">Finding any kind of threshold-crossing: time to density<a class="anchor" aria-label="anchor" href="#finding-any-kind-of-threshold-crossing-time-to-density"></a>
-</h3>
-<p>We’ve seen how <code>first_below</code> can be used to identify the
-first point some data crosses below a threshold. But what about other
-kinds of threshold-crossing events? The first point it passes above a
-threshold? The first point it’s ever below a threshold, including at the
-start?</p>
-<p>In order to identify these kinds of extrema, we can use the
-more-general function <code>find_threshold_crosses</code>. In fact,
-<code>first_below</code> is really just a special case of
-<code>find_threshold_crosses</code>. Just like <code>first_below</code>,
-<code>find_threshold_crosses</code> only requires a
-<code>threshold</code> and a vector of <code>y</code> data in which to
-find the threshold crosses, and can return the <code>index</code> or
-<code>x</code> value of the crossing events it finds.</p>
-<p>However, unlike <code>first_below</code>,
-<code>find_threshold_crosses</code> returns a vector containing
-<em>all</em> of the threshold crossings found under the given settings.
-Users can alter which kinds of threshold crossings are reported using
-the arguments <code>return_rising</code>, <code>return_falling</code>,
-and <code>return_endpoints</code>. However,
-<code>find_threshold_crosses</code> will always return a vector of all
-the extrema found, so users must use brackets to select which one they
-want <code>summarize</code> to save.</p>
-<p>Let’s dig into an example: identifying the first time the bacteria
-reach some density, including if they start at that density</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span>
-<span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span></span>
-<span>    <span class="va">ex_dat_mrg</span>,</span>
-<span>    time_to_01 <span class="op">=</span> <span class="fu"><a href="../reference/ThresholdFunctions.html">find_threshold_crosses</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
-<span>                                        threshold <span class="op">=</span> <span class="fl">0.1</span>, return <span class="op">=</span> <span class="st">"x"</span>, </span>
-<span>                                        return_endpoints <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                                        return_falling <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>    time_to_05 <span class="op">=</span> <span class="fu"><a href="../reference/ThresholdFunctions.html">find_threshold_crosses</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
-<span>                                        threshold <span class="op">=</span> <span class="fl">0.5</span>, return <span class="op">=</span> <span class="st">"x"</span>, </span>
-<span>                                        return_endpoints <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                                        return_falling <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has grouped output by 'Bacteria_strain', 'Phage'. You can</span></span>
-<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;   Bacteria_strain Phage       Well  time_to_01 time_to_05</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage    A1        <span style="text-decoration: underline;">21</span>913.     <span style="text-decoration: underline;">31</span>194.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7        <span style="text-decoration: underline;">21</span>913.        <span style="color: #BB0000;">NA</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4        <span style="text-decoration: underline;">15</span>300      <span style="text-decoration: underline;">20</span>624.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10       <span style="text-decoration: underline;">15</span>300      <span style="text-decoration: underline;">20</span>624.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5        <span style="text-decoration: underline;">14</span>543.     <span style="text-decoration: underline;">19</span>490 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11       <span style="text-decoration: underline;">14</span>543.     <span style="text-decoration: underline;">59</span>955</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">time_to_01</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">time_to_05</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 rows containing missing values (`geom_vline()`).</span></span></code></pre></div>
-<p><img src="analyze_files/figure-html/unnamed-chunk-21-1.png" width="700">
-As we can see, <code>find_threshold_crosses</code> has returned the
-times when the bacteria reached those densities. We can see that some
-bacteria (e.g. those in Well F10) never reached 0.5, so they have an
-<code>NA</code> value for <code>time_to_05</code>. By comparing the
-times it took each strain to reach an absorbance of 0.1, we could learn
-something about how soon the bacteria started growing and how quickly
-they grew.</p>
-</div>
+<p><img src="analyze_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="whats-next">What’s next?<a class="anchor" aria-label="anchor" href="#whats-next"></a>

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,11 +127,11 @@ derivatives.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.2.0, Build Date: 2023-02-06)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.3.0, Build Date: 2023-02-19)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.2.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.3.0</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -172,60 +172,62 @@ derivatives.</p>
 </h2>
 <p>With your data and design information pre-processed, <strong>your
 dataset is now organized in a way that’s easy to export and
-analyze</strong>. It is also at this point that the next steps for what
-you can do diversify into many options.</p>
+analyze</strong>.</p>
 <p>Broadly speaking, there are two main approaches to analyzing growth
 curves data:</p>
 <ol style="list-style-type: decimal">
-<li>directly quantify attributes of the growth dynamics</li>
+<li>directly quantify attributes of the growth dynamics - <strong>gcplyr
+facilitates this</strong>
+</li>
 <li>fit the growth dynamics with a mathematical model, then extract
-parameters from the fitted model</li>
+parameters from the fitted model - check out the <strong>Other growth
+curve analysis packages</strong> section in vignette(“conclusion”) if
+you’re interesting in exploring this approach</li>
 </ol>
-<p>The remaining functions of <code>gcplyr</code> can facilitate
-analyses following the first approach: directly quantifying attributes
-of the observed dynamics. If you’re interested in exploring
-model-fitting approaches, which can provide enormous analytical power,
-check out the <strong>Other growth curve analysis packages</strong>
-section in vignette(“conclusion”). At this point, since the data is now
-well-organized, advanced users may also decide they want to write their
-own custom analyses (in lieu of, or alongside, <code>gcplyr</code>-based
-and/or fitting-based analyses).</p>
-<p>So, how do we directly quantify attributes of growth curves? First,
-we may need to calculate derivatives of our data. The density and
-derivative values will be what we analyze to identify features of our
-growth curves. <code>gcplyr</code> has a number of functions that
-facilitate these steps.</p>
-<p>However, unlike the import, transformation, and merging steps we’ve
-done so far, different projects may require different analyses, and not
-all users will have the same analysis steps. The <a href="#CalculatingDerivatives">Calculating Derivatives</a> section of
-this article, and the <a href="vignette(%22analyze%22)">Analyzing
-Data</a> and <a href="vignette(%22noise%22)">Dealing with Noise</a>
-vignettes, therefore, are written to highlight the functions available
-and provide examples of common analyses that you may want to run, rather
-than prescribing a set of analysis steps that everyone must do.</p>
-<p>Before we dig into processing and analyzing our data, we first need
-to familiarize ourselves with the <code>dplyr</code> package and its
+<p>At this point, since the data is now well-organized, advanced users
+may also decide they want to write their own custom analyses (in lieu
+of, or alongside, <code>gcplyr</code>-based and/or fitting-based
+analyses).</p>
+<p>So, how do we directly quantify attributes of growth curves?
+Generally, we find features of the density data and its derivatives.
+Different projects may desire different analyses, so this article and
+the <a href="vignette(%22analyze%22)">Analyzing Data</a> and <a href="vignette(%22noise%22)">Dealing with Noise</a> articles are written
+to highlight common analyses, rather than prescribing what everyone
+should do.</p>
+<p>Below I list common metrics that require derivatives to be
+calculated. If you intend to calculate any of those metrics, or just
+want to calculate or plot the derivatives, continue reading. Otherwise,
+feel free to skip right to the <a href="vignette(%22analyze%22)">Analyzing Data</a> article.</p>
+<p><strong>Metrics requiring derivatives:</strong></p>
+<ul>
+<li>the lag time</li>
+<li>the time to reach some growth rate</li>
+<li>the maximum per-capita growth rate (i.e. minimum doubling time)</li>
+<li>the inflection point</li>
+<li>the density and time when a diauxic shift occurs</li>
+<li>the maximum per-capita growth rate during diauxie</li>
+</ul>
+<p>Before we dig into calculating derivatives, we first need to
+familiarize ourselves with the <code>dplyr</code> package and its
 functions <code>group_by</code> and <code>mutate</code>. Why? Because
 the upcoming <code>gcplyr</code> processing functions are <em>best</em>
 used <strong>within</strong> <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate</a></code>. <strong>If
-you’re already familiar with <code>dplyr</code>, feel free to skip this
-primer.</strong> If you’re not familiar yet, don’t worry! This section
-provides a primer that will teach you all you need to know on using
-<code>group_by</code> and <code>mutate</code> with <code>gcplyr</code>
-functions.</p>
+you’re already familiar with <code>dplyr</code>, feel free to skip
+straight to <a href="#CalculatingDerivatives">Calculating
+Derivatives</a>.</strong> If you’re not familiar yet, the primer will
+teach you all you need to know to use <code>gcplyr</code>.</p>
 <div class="section level3">
 <h3 id="a-brief-primer-on-dplyr">A brief primer on dplyr<a class="anchor" aria-label="anchor" href="#a-brief-primer-on-dplyr"></a>
 </h3>
 <p>The <code>R</code> package <code>dplyr</code> provides a “grammar of
 data manipulation” that is useful for a broad array of data analysis
 tasks (in fact, <code>dplyr</code> is the direct inspiration for the
-name of this package!) For our purposes right now, we’re going to focus
-on two particular functions: <code>group_by</code> and
-<code>mutate</code>.</p>
+name of <code>gcplyr</code>!) For our purposes, we’re going to focus on
+two functions: <code>group_by</code> and <code>mutate</code>.</p>
 <p>The <code>mutate</code> function in <code>dplyr</code> allows users
 to easily create new columns in their <code>data.frame</code>’s. For us,
-we’re going to use <code>mutate</code> to create columns with our data
-and the derivatives we calculate. However, we want to make sure that
+we’re going to use <code>mutate</code> to create columns with the
+derivatives we calculate. However, we want to make sure that
 derivative-calculating is done on <em>each</em> unique well
 independently. In order to do that, we’re first going to use the
 <code>group_by</code> function, which allows users to group the rows of
@@ -237,10 +239,9 @@ will then treat independently.</p>
 <code>group_by</code> our data so that every unique well is a
 group</li>
 <li>
-<code>mutate</code> to create new columns with our data and
-calculated derivatives</li>
+<code>mutate</code> to create new columns with our calculated
+derivatives</li>
 </ol>
-<p>Let’s walk through a simple example</p>
 <p>For <code>group_by</code>, we need to specify the
 <code>data.frame</code> to be grouped, and then we want to list all the
 columns needed to identify each unique well in our dataset. Typically,
@@ -248,89 +249,32 @@ this includes all of our design columns along with the plate name and
 well name. Make sure you’re <em>not</em> grouping by Time, Absorbance,
 or anything else that varies <em>within</em> a well, since if you do
 <code>dplyr</code> will group timepoints within a well separately.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;    Time Well  Measurements Bacteria_strain Phage   </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     0 A1           0.002 Strain 1        No Phage</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     0 B1           0.002 Strain 7        No Phage</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     0 C1           0.002 Strain 13       No Phage</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     0 D1           0.002 Strain 19       No Phage</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     0 E1           0.002 Strain 25       No Phage</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     0 F1           0.002 Strain 31       No Phage</span></span></code></pre></div>
-<p>Notice that this hasn’t changed anything about our
-<code>data.frame</code>, but <code>R</code> now knows what the groups
-are. Now any calculations will be carried out on each unique well
-independently.</p>
 <p>To use <code>mutate</code>, we simply have to specify:</p>
 <ol style="list-style-type: decimal">
 <li>the name of the variable we want results saved to</li>
 <li>the function that calculates the new column</li>
 </ol>
-<p>Note that the function has to return a vector that is as long as the
-number of data points in the group.</p>
-<p>For a simple example, in the code below we’ve simply added one to the
-<code>Measurements</code> values and saved it in a column named
-<code>Measurements_plus1</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>         Measurements_plus1 <span class="op">=</span> <span class="va">Measurements</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;    Time Well  Measurements Bacteria_strain Phage    Measurements_plus1</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     0 A1           0.002 Strain 1        No Phage               1.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     0 B1           0.002 Strain 7        No Phage               1.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     0 C1           0.002 Strain 13       No Phage               1.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     0 D1           0.002 Strain 19       No Phage               1.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     0 E1           0.002 Strain 25       No Phage               1.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     0 F1           0.002 Strain 31       No Phage               1.00</span></span></code></pre></div>
 <p>If you want additional columns, you simply add them to the
-<code>mutate</code>. For instance, if we also want a column with the
-<code>Measurements</code> plus two, we just add that as a second
-argument:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>         Measurements_plus1 <span class="op">=</span> <span class="va">Measurements</span><span class="op">+</span><span class="fl">1</span>,</span>
-<span>         Measurements_plus2 <span class="op">=</span> <span class="va">Measurements</span><span class="op">+</span><span class="fl">2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain, Phage [6]</span></span></span>
-<span><span class="co">#&gt;    Time Well  Measurements Bacteria_strain Phage    Measurements_plus1 Measure…¹</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     0 A1           0.002 Strain 1        No Phage               1.00      2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     0 B1           0.002 Strain 7        No Phage               1.00      2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     0 C1           0.002 Strain 13       No Phage               1.00      2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     0 D1           0.002 Strain 19       No Phage               1.00      2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     0 E1           0.002 Strain 25       No Phage               1.00      2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     0 F1           0.002 Strain 31       No Phage               1.00      2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable name ¹​Measurements_plus2</span></span></span></code></pre></div>
-<p>This is a rather simple example, but in the next sections I show how
-we can use <code>mutate</code> with <code>calc_deriv</code> to create
-new columns containing derivatives. If you want to learn more,
-<code>dplyr</code> has extensive documentation and examples of its own
-online. Feel free to explore them as desired, but this primer should be
-sufficient to use the <code>gcplyr</code> processing functions, which
-(as a reminder) are best used <em>within</em> <code>mutate</code>.</p>
+<code>mutate</code>.</p>
+<p>As you’ll see throughout the rest of this article, we’ll be using
+<code>group_by</code> and <code>mutate</code> to calculate derivatives.
+If you want to learn more, <code>dplyr</code> has extensive
+documentation and examples of its own online, but this primer and the
+coming examples should be sufficient to calculate derivatives with
+<code>gcplyr</code>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="CalculatingDerivatives">Processing data: calculating derivatives<a class="anchor" aria-label="anchor" href="#CalculatingDerivatives"></a>
 </h2>
-<p>In many cases, identifying features of a growth curve requires
-looking not only at the absorbance data over time, but the slope of the
-absorbance data over time. <code>gcplyr</code> includes a
-<code>calc_deriv</code> function that can be used to calculate the
-empirical derivative (slope) of absorbance data over time.</p>
+<p>There are two derivatives we are primarily interested in
+calculating:</p>
+<ul>
+<li>the plain derivative - the slope of the original density data</li>
+<li>the per-capita derivative - the growth rate of the cells</li>
+</ul>
+<p><code>gcplyr</code> includes a <code>calc_deriv</code> to calculate
+both of these.</p>
 <div class="section level3">
 <h3 id="a-simple-derivative">A simple derivative<a class="anchor" aria-label="anchor" href="#a-simple-derivative"></a>
 </h3>
@@ -338,53 +282,38 @@ empirical derivative (slope) of absorbance data over time.</p>
 using <code>calc_deriv</code>, we simply have to provide the x and y
 values. Note that this is <strong>not</strong> the growth rate of the
 cells, but rather is a measure of how quickly the whole population was
-growing at each time point. This is useful for identifying events like
-population declines, or multiple rounds of growth.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
+growing at each time point.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
 <span>                     deriv <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To visualize these results, let’s look at a few wells that are
 representative of the overall diversity of dynamics in our example data.
 (In your own code, you should visualize all your data).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Now let's plot the derivative</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sample_wells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A1"</span>, <span class="st">"F1"</span>, <span class="st">"F10"</span>, <span class="st">"E11"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Now let's plot the derivative</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
-<p>The first thing you might notice is that some of these lines aren’t
-as smooth as you might expect. Why is that? This noise in the
-derivatives is actually being created by the limited resolution of the
-plate reader. Since plate readers can commonly only read to a resolution
-of 0.001, this means that values jump by at least 0.001 at each step,
-even if the true difference should be smaller.</p>
-<p>That aside, from the plots above we can clearly see when the upward
-slope of the total population was the steepest, and also when the
-populations have declined in wells with phages. In Well E11 we can even
-see when the bacteria grow again later after phage-driven declines. But
-these derivatives also make something more apparent that might not have
-been obvious visually in the raw density data: if we look in Well A1 we
-can see that there is a second peak of growth. It’s not as steep (the
-derivative is not as high), but it’s there. Such a pattern is common in
-bacterial growth curves and is called <em>diauxic growth</em>.</p>
+<p><img src="process_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p>You might notice that these lines aren’t super smooth. Why? The plate
+reader data has a limited resolution, only to the nearest 0.001, causing
+the derivative to “jump” when the reading increases.</p>
 </div>
 <div class="section level3">
 <h3 id="per-capita-derivative">Per-capita derivative<a class="anchor" aria-label="anchor" href="#per-capita-derivative"></a>
 </h3>
-<p>If we want to calculate the growth rate of the cells, we need to use
-<code>calc_deriv</code> to return the <strong>per-capita</strong>
-derivative. Just as before, provide the x and y values, but now set
-<code>percapita = TRUE</code>. Note that in this case, you are required
-to specify a blank value, i.e. the value of your
-<code>Measurements</code> that corresponds to a population density of 0.
-If your data have already been normalized, simply add
-<code>blank = 0</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
+<p>To calculate the per-capita derivative, we simply modify our use of
+<code>calc_deriv</code> with the argument <code>percapita = TRUE</code>.
+Note that in this case, you are required to specify a blank value,
+i.e. the value of your <code>Measurements</code> that corresponds to a
+population density of 0. If your data have already been normalized,
+simply add <code>blank = 0</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
 <span>                     deriv_percap <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -394,43 +323,27 @@ If your data have already been normalized, simply add
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
-<p>Hmm, what’s going on here? Well, when bacterial densities are very
-close to 0, the per-capita growth rate can be very noisy. Luckily,
-<code>calc_deriv</code> includes a method that can reduce some of the
-effects of this noise. Instead of calculating the derivative of each
-point relative to the next, we can use a moving window of more than two
-points and fit a linear regression to this data. This can help reduce
-the effect of low densities.</p>
-<p>To use the fitting functionality of <code>calc_deriv</code>, we need
-to specify either the <code>window_width</code> parameter, or the
-<code>window_width_n</code> parameter. <code>window_width</code>
-specifies how wide the window used to include points for the fitting is
-in units of <code>x</code>, while <code>window_width_n</code> specifies
-it in number of data points. Here, we’ll demonstrate it’s use by fitting
-regressions that include five data points.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>                     deriv_percap5 <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
-<span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>                                        window_width_n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Now let's plot the derivative</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sample_wells</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
-<p>Great! That reduced the effects of low densities greatly! When doing
-fitting to calculate the per-capita growth rate, we can alternatively do
-that fitting with log-transformed y-values. Because exponential growth
-is linear when y-values are log-transformed, this typically gives us a
-better estimate of the per-capita growth rate, although it can fail when
-y-values are at or below 0. Check out the documentation for
-<code>calc_deriv</code> for more details.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
+<p><img src="process_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p>These derivatives are very jumpy. Why? The same limited resolution of
+the plate reader has an amplified effect on the per-capita derivative
+when densities are very close to 0. Luckily, <code>calc_deriv</code> can
+calculate derives by fitting a linear regression to multiple points,
+reducing this jumpiness in the derivative.</p>
+<p>To use this fitting functionality of <code>calc_deriv</code>, specify
+either the <code>window_width</code> or <code>window_width_n</code>
+parameter. <code>window_width</code> specifies how wide the window used
+to include points for the fitting is in units of <code>x</code>, while
+<code>window_width_n</code> specifies it in number of data points. Here,
+we’ll demonstrate with five data points.</p>
+<p>For best practice, I recommend doing this fitting on log-transformed
+<code>y</code> values, since exponentially growing density values are
+linear when log-transformed. You can achieve this simply by setting
+<code>trans_y = 'log'</code>. With log-transformation, note that
+<code>calc_deriv</code> will return <code>NA</code> for any data points
+where the reading is equal to or below your <code>blank</code>
+value.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
 <span>                     deriv_percap5 <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
 <span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                                        window_width_n <span class="op">=</span> <span class="fl">5</span>, trans_y <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span><span class="op">)</span></span>
@@ -441,24 +354,47 @@ y-values are at or below 0. Check out the documentation for
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<p>Great! Taking a look at our per-capita growth rates, we can see that
-all the bacteria had a lag period of no growth at the beginning before
-starting to grow and having an early peak in their growth rates.</p>
+<p><img src="process_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p>Great! The jumpiness has been reduced immensely.</p>
+</div>
+<div class="section level3">
+<h3 id="converting-per-capita-growth-rates-into-doubling-times">Converting per-capita growth rates into doubling times<a class="anchor" aria-label="anchor" href="#converting-per-capita-growth-rates-into-doubling-times"></a>
+</h3>
+<p>If you’d rather express your per-capita growth rates as a doubling
+time, simply use the <code>doubling_time</code> function to convert your
+per-capita growth rates into equivalent doubling times.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
+<span>                     deriv_percap5 <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
+<span>                                        percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                                        window_width_n <span class="op">=</span> <span class="fl">5</span>, trans_y <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span>,</span>
+<span>                     doub_time <span class="op">=</span> <span class="fu"><a href="../reference/doubling_time.html">doubling_time</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">deriv_percap5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 9</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain, Phage [4]</span></span></span>
+<span><span class="co">#&gt;    Time Well  Measurements Bacteria_strain Phage   deriv deriv…¹ deriv…² doub_…³</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     0 A1           0.002 Strain 1        No Pha…     0       0      <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     0 F1           0.002 Strain 31       No Pha…     0       0      <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     0 F10          0.002 Strain 34       Phage …     0       0      <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     0 E11          0.002 Strain 29       Phage …     0       0      <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>   900 A1           0.002 Strain 1        No Pha…     0       0      <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>   900 F1           0.002 Strain 31       No Pha…     0       0      <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable names ¹​deriv_percap, ²​deriv_percap5, ³​doub_time</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="changing-the-derivative-units">Changing the derivative units<a class="anchor" aria-label="anchor" href="#changing-the-derivative-units"></a>
 </h3>
-<p>To convert your x-axis (time) units in your derivative calculations
-to a different unit, use the <code>x_scale</code> argument. Simply
-specify the ratio of your x units to the desired units. For instance, in
-our example data <code>x</code> is the number of <em>seconds</em> since
-the growth curve began. What if we wanted growth rate in
-<em>per-hour</em>? There are 3600 seconds in an hour, so we set
-<code>x_scale = 3600</code></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>To change the units of your derivatives, use the <code>x_scale</code>
+argument. <code>x_scale</code> should be set to the ratio of your
+<code>x</code> units to the units you want. For instance, in our example
+data <code>x</code> is the number of <em>seconds</em> since the growth
+curve began. If we want growth rate in <em>per-hour</em>, we set
+<code>x_scale = 3600</code>, since there are 3600 seconds in an
+hour.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
 <span>         deriv_percap_hr <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
 <span>                                      percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>                                      window_width_n <span class="op">=</span> <span class="fl">5</span>, trans_y <span class="op">=</span> <span class="st">"log"</span>,</span>
@@ -470,7 +406,7 @@ the growth curve began. What if we wanted growth rate in
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="process_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="process_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Now we can see the bacterial growth rate in more-understandable
 units: peak growth rates are often around 1-2 divisions/hour.</p>
 </div>

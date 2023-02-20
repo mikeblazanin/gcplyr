@@ -1,12 +1,16 @@
-# gcplyr 1.2.0.9000
+# gcplyr 1.3.0
 
-* lag_time
-* doubling_time
-* analyze vignette rework
-* other vignette conciseness
-* various documentation improvements
-* warnings for ungrouped data in smooth_data and calc_deriv
-* better warnings in make_design
+* New function lag_time to calculate lag time
+
+* New function doubling_time to convert per-capita growth rate into equivalent doubling time
+
+* smooth_data and calc_deriv now pass a warning when they are used outside of dplyr::mutate or on ungrouped data
+
+* make_design has better warning messages for common mistakes
+
+* Major edits to most of the vignettes
+
+* Various documentation improvements
 
 # gcplyr 1.2.0
 

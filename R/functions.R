@@ -2909,11 +2909,11 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'            In such cases, \code{subset_by} can still be specified as a vector
 #'            as long as \code{nrow(data)}
 #' 
-#' @return If return_fitobject == FALSE:
+#' @return If \code{return_fitobject == FALSE:}
 #' 
 #'         A vector, the same length as \code{y}, with the now-smoothed y values
 #'         
-#'         If return_fitobject == TRUE:
+#'         If \code{return_fitobject == TRUE:}
 #'         
 #'         A list the same length as unique(subset_by) where each element is
 #'         an object of the same class as returned by the smoothing method
@@ -2923,10 +2923,21 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'         containing the smoothed values of the response variable, and a 
 #'         second element named 'residuals' containing the residuals of the
 #'         fitted values and the input values
+#'         
+#'         **Note: as of v1.3.0 the above is true, but will be altered soon**
+#'         to instead maintain the class of the object returned by the
+#'         smoothing method. After the change, not all methods will return
+#'         an object with 'fitted' as the first element and 'residuals'
+#'         as the second element.
 #' 
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
+  if(return_fitobject == TRUE) { #Warning added in v1.3.0.9000
+    warning("the behavior of return_fitobject = TRUE will change in upcoming version,
+see Value in ?smooth_data for more details")
+  }
+  
   if("method" %in% names(list(...)) &
      list(...)["method"] %in% c("moving-average","moving-median","loess","gam")){
     stop("'method' is deprecated, use 'sm_method' instead. 'method' is now

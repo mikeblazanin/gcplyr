@@ -73,6 +73,8 @@ reference:
   - first_below
   - first_above
   - auc
+  - doubling_time
+  - lag_time
 - title: Utility functions
   desc: "Various functions providing simple utilities"
   contents:

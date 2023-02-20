@@ -9,6 +9,13 @@ You can also embed plots in R chunks. In that case, don't forget to commit and p
 # gcplyr
 
 <!-- badges: start -->
+
+[![packageversion](https://img.shields.io/badge/Github-1.3.0-blue.svg?style=flat&logo=github)](commits/master)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
+[![License:
+MIT](https://img.shields.io/badge/license-MIT-red.svg)](https://cran.r-project.org/web/licenses/MIT)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/gcplyr?color=yellow)](https://cran.r-project.org/package=gcplyr)
 <!-- badges: end -->
 
 ## What this package can do

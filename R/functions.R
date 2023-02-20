@@ -4067,7 +4067,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     if(is.null(x) | is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
     x1 <- x[which.max(deriv)]}
   
-  if(var(c(length(y0), length(y1), length(slope), length(x1))) != 0) {
+  if(stats::var(c(length(y0), length(y1), length(slope), length(x1))) != 0) {
     warning("Only using the first value")
     y0 <- y0[1]; y1 <- y1[1]; slope <- slope[1]; x1 <- x1[1]
   }

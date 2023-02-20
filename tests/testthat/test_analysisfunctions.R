@@ -30,8 +30,12 @@ test_that("lag_time returns correctly", {
   x <- seq(from = 0, to = 200, by = 3)
   y <- baranyi_func(r = .1, k = 1, v = 1, q0 = .01, m = .1, d0 = 0.001, 
                     t_vals = x)
-  deriv <- gcplyr::calc_deriv(y = y, x = x, percapita = TRUE, 
-                              blank = 0, trans_y = "log", window_width_n = 5)
+  deriv <- 
+    mutate(group_by(data.frame(x = x, y = y, grp = rep("A", length(x))), grp),
+           deriv = 
+             gcplyr::calc_deriv(y = y, x = x, percapita = TRUE, 
+                                blank = 0, trans_y = "log", window_width_n = 5))
+  deriv <- deriv$deriv
   y0 <- min(y, na.rm = TRUE)
   y1 <- y[which.max(deriv)]
   x1 <- x[which.max(deriv)]

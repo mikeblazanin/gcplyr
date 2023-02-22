@@ -90,24 +90,27 @@ cowplot::plot_grid(
 dev.off()
 
 # Summarize ----
-dat_sum <- summarize(group_by(dat, Well, Bacteria_strain, Phage),
-                     diauxie_time = first_minima(y = deriv, x = Time,
-                                                 window_width = 5*3600,
-                                                 return_endpoints = FALSE,
-                                                 return = "x"),
-                     first_maxima_x = first_maxima(y = Measurements, x = Time,
-                                                 window_width = 5*3600,
-                                                 return = "x"),
-                     first_maxima_y = first_maxima(y = Measurements, x = Time,
-                                                 window_width = 5*3600,
-                                                 return = "y"),
-                     max_percap = max(deriv_percap, na.rm = TRUE)/3600,
-                     init_dens = first_minima(Measurements, return = "y"),
-                     lag_time = lag_time(x = Time, y = Measurements,
-                                         deriv = deriv_percap/3600, y0 = init_dens),
-                     max_percap_time = Time[which.max(deriv_percap)],
-                     max_percap_dens = Measurements[which.max(deriv_percap)],
-                     max_dens = max(Measurements, na.rm = TRUE))
+dat_sum <- 
+  summarize(group_by(dat, Well, Bacteria_strain, Phage),
+            diauxie_time = first_minima(y = deriv, x = Time,
+                                        window_width = 5*3600,
+                                        return_endpoints = FALSE,
+                                        return = "x"),
+            first_maxima_x = first_maxima(y = Measurements, x = Time,
+                                          window_width = 5*3600,
+                                          return = "x"),
+            first_maxima_y = first_maxima(y = Measurements, x = Time,
+                                          window_width = 5*3600,
+                                          return = "y"),
+            max_percap = max(deriv_percap, na.rm = TRUE)/3600,
+            init_dens = first_minima(Measurements, return = "y"),
+            lag_time = lag_time(x = Time, y = Measurements,
+                                deriv = deriv_percap/3600, y0 = init_dens),
+            max_percap_time = Time[which.max(deriv_percap)],
+            max_percap_dens = Measurements[which.max(deriv_percap)],
+            max_dens = max(Measurements, na.rm = TRUE),
+            extin_time = first_below(Measurements, x = Time, threshold = 0.1,
+                                     return_endpoints = FALSE, return = "x"))
 
 # max percap, lag, max dens ----
 png("./manuscript/maxgrowth_lag_maxdens.png", width = 4, height = 4,
@@ -159,7 +162,7 @@ cowplot::plot_grid(
   p1, p2)
 dev.off()
 
-# first maxima ----
+# first maxima & extinction ----
 png("./manuscript/first_maxima.png", width = 4, height = 4,
     units = "in", res = 150)
 ggplot(filter(dat, Phage == "Phage Added"), 
@@ -168,6 +171,8 @@ ggplot(filter(dat, Phage == "Phage Added"),
   geom_point(data = filter(dat_sum, Phage == "Phage Added"),
              aes(x = first_maxima_x/3600, y = first_maxima_y), 
              pch = 4, size = 2, color = "red", stroke = 2, alpha = 0.5) +
+  geom_vline(data = filter(dat_sum, Phage == "Phage Added"),
+             aes(xintercept = extin_time/3600), lty = 2) +
   #facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "OD600") +
   theme_bw()

@@ -1,3 +1,5 @@
+# Setup ----
+
 library(gcplyr)
 library(ggplot2)
 library(dplyr)
@@ -46,6 +48,7 @@ dat <- mutate(group_by(dat, Well, Bacteria_strain, Phage),
               deriv3 = calc_deriv(y = Measurements, x= Time,
                                   window_width_n = 3))
 
+#Dens & derivs ----
 ggplot(dat, aes(x = Time, y = Measurements, color = Phage)) +
   geom_point()
 
@@ -86,6 +89,7 @@ cowplot::plot_grid(
   p1, p2, p3)
 dev.off()
 
+# Summarize ----
 dat_sum <- summarize(group_by(dat, Well, Bacteria_strain, Phage),
                      diauxie_time = first_minima(y = deriv, x = Time,
                                                  window_width = 5*3600,
@@ -96,9 +100,37 @@ dat_sum <- summarize(group_by(dat, Well, Bacteria_strain, Phage),
                                                  return = "x"),
                      first_maxima_y = first_maxima(y = Measurements, x = Time,
                                                  window_width = 5*3600,
-                                                 return = "y"))
+                                                 return = "y"),
+                     max_percap = max(deriv_percap, na.rm = TRUE)/3600,
+                     init_dens = first_minima(Measurements, return = "y"),
+                     lag_time = lag_time(x = Time, y = Measurements,
+                                         deriv = deriv_percap/3600, y0 = init_dens),
+                     max_percap_time = Time[which.max(deriv_percap)],
+                     max_percap_dens = Measurements[which.max(deriv_percap)],
+                     max_dens = max(Measurements, na.rm = TRUE))
 
+# max percap, lag, max dens ----
+png("./manuscript/maxgrowth_lag_maxdens.png", width = 4, height = 4,
+    units = "in", res = 150)
+ggplot(data = filter(dat, Phage == "No Phage"),
+       aes(x = Time/3600, y = log(Measurements))) +
+  geom_point() +
+  geom_abline(data = filter(dat_sum, Phage == "No Phage"),
+              color = "red",
+              aes(slope = max_percap*3600,
+                  intercept = log(max_percap_dens) - 
+                    max_percap*3600*max_percap_time/3600)) +
+  geom_vline(data = filter(dat_sum, Phage == "No Phage"),
+             aes(xintercept = lag_time/3600), lty = 2) +
+  geom_hline(data = filter(dat_sum, Phage == "No Phage"),
+             aes(yintercept = log(init_dens))) +
+  geom_hline(data = filter(dat_sum, Phage == "No Phage"),
+             aes(yintercept = log(max_dens)), lty = 2) +
+  theme_bw() +
+  labs(x = "Time (hr)", y = "log(OD600)")
+dev.off()
 
+#Diauxie ----
 p1 <- ggplot(filter(dat, Phage == "No Phage"), 
              aes(x = Time/3600, y = Measurements)) +
   geom_point(size = 0.75) +
@@ -127,6 +159,7 @@ cowplot::plot_grid(
   p1, p2)
 dev.off()
 
+# first maxima ----
 png("./manuscript/first_maxima.png", width = 4, height = 4,
     units = "in", res = 150)
 ggplot(filter(dat, Phage == "Phage Added"), 
@@ -140,6 +173,7 @@ ggplot(filter(dat, Phage == "Phage Added"),
   theme_bw()
 dev.off()
 
+# fitting during deriv ----
 #Define segments
 halflength <- 900*6
 dat <- mutate(group_by(dat, Well, Bacteria_strain, Phage),
@@ -160,7 +194,7 @@ ggplot(filter(dat, Phage == "No Phage", Time %% 1800 == 0),
   theme_bw()
 dev.off()
 
-#Noisy data
+#Noisy data ----
 datnoisy <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
 datnoisy <- merge_dfs(datnoisy, example_design)
 datnoisy$Well <- 

@@ -1653,7 +1653,6 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #' Note that either \code{nrows} or \code{block_row_names} must be provided
 #' and that either \code{ncols} or \code{block_col_names} must be provided
 #' 
-#' 
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
@@ -1712,7 +1711,8 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                 If it's a string, will be split by \code{pattern_split}.
 #'                 Pattern will be used as the indices of the values vector.
 #'               
-#'                 0's refer to NA
+#'                 0's refer to NA. The pattern will be recycled as necessary
+#'                 to fill all the wells of the rows and columns specified.
 #'               
 #'              5. a Boolean for whether this pattern should be filled byrow
 #'

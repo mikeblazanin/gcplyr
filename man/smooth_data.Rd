@@ -41,11 +41,11 @@ by fitting function should be returned. If FALSE,
 just fitted values are returned.}
 }
 \value{
-If return_fitobject == FALSE:
+If \code{return_fitobject == FALSE:}
 
         A vector, the same length as \code{y}, with the now-smoothed y values
         
-        If return_fitobject == TRUE:
+        If \code{return_fitobject == TRUE:}
         
         A list the same length as unique(subset_by) where each element is
         an object of the same class as returned by the smoothing method
@@ -55,6 +55,12 @@ If return_fitobject == FALSE:
         containing the smoothed values of the response variable, and a 
         second element named 'residuals' containing the residuals of the
         fitted values and the input values
+        
+        **Note: as of v1.3.0 the above is true, but will be altered soon**
+        to instead maintain the class of the object returned by the
+        smoothing method. After the change, not all methods will return
+        an object with 'fitted' as the first element and 'residuals'
+        as the second element.
 }
 \description{
 This function calls other functions to smooth growth curve data

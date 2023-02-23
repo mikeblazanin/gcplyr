@@ -163,7 +163,7 @@ cowplot::plot_grid(
 dev.off()
 
 # first maxima & extinction ----
-png("./manuscript/first_maxima.png", width = 4, height = 4,
+png("./manuscript/first_maxima.png", width = 4, height = 3.5,
     units = "in", res = 150)
 ggplot(filter(dat, Phage == "Phage Added"), 
              aes(x = Time/3600, y = Measurements)) +

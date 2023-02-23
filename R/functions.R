@@ -1899,15 +1899,17 @@ make_design <- function(nrows = NULL, ncols = NULL,
 
 #' Make design pattern
 #' 
-#' A helper function for use with make_tidydesign
+#' A helper function for use with \code{make_design}
 #' 
 #' @details 
 #' Example:
-#' my_example <- make_tidydesign(nrows = 8, ncols = 12,
-#'       design_element_name = make_designpattern(values = c("L", "G", "C"),
-#'                                                 rows = 2:7, cols = 2:11,
-#'                                                 pattern = "11223300",
-#'                                                 byrow = TRUE))
+#' make_design(nrows = 8, ncols = 12,
+#'             design_element_name = make_designpattern(
+#'                  values = c("A", "B", "C"),
+#'                  rows = 2:7, 
+#'                  cols = 2:11,
+#'                  pattern = "112301",
+#'                  byrow = TRUE))
 #' 
 #' @param values Vector of values to use
 #' @param rows Vector of rows where pattern applies
@@ -1917,6 +1919,8 @@ make_design <- function(nrows = NULL, ncols = NULL,
 #' @param byrow Boolean for whether pattern should be created by row
 #' 
 #' @return \code{list(values, rows, cols, pattern, byrow)}
+#' 
+#' @seealso make_design
 #' 
 #' @export
 make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {

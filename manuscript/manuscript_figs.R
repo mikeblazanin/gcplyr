@@ -178,18 +178,37 @@ ggplot(filter(dat, Phage == "Phage Added"),
   theme_bw()
 dev.off()
 
+#Noisy data ----
+datnoisy <- trans_wide_to_tidy(example_widedata_noiseless, id_cols = "Time")
+datnoisy <- merge_dfs(datnoisy, example_design)
+datnoisy$Well <- 
+  factor(datnoisy$Well,
+         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+#Pick strain 33 to work with for our example wells
+datnoisy <- dplyr::filter(datnoisy, Bacteria_strain == "Strain 33")
+
+#Add noise ----
+set.seed(1)
+datnoisy$Measurements <-
+  round(datnoisy$Measurements +
+          0.02*c(arima.sim(model = list(order = c(0, 0, 0)),
+                           n = length(datnoisy$Measurements))),
+        3)
+
 # fitting during deriv ----
 #Define segments
-halflength <- 900*6
-dat <- mutate(group_by(dat, Well, Bacteria_strain, Phage),
-              xstart = Time - halflength,
-              xend = Time + halflength,
-              ystart = Measurements - halflength*deriv3,
-              yend = Measurements + halflength*deriv3)
+halflength <- 900*4
+datnoisy <- mutate(group_by(datnoisy, Well, Bacteria_strain, Phage),
+                   deriv3 = calc_deriv(y = Measurements, x= Time,
+                                       window_width_n = 9),     
+                   xstart = Time - halflength,
+                   xend = Time + halflength,
+                   ystart = Measurements - halflength*deriv3,
+                   yend = Measurements + halflength*deriv3)
 
 png("./manuscript/deriv_fitting.png", width = 4, height = 4,
     units = "in", res = 150)
-ggplot(filter(dat, Phage == "No Phage", Time %% 1800 == 0), 
+ggplot(filter(datnoisy, Phage == "No Phage"), 
        aes(x = Time/3600, y = Measurements)) +
   geom_point() +
   geom_segment(aes(x = xstart/3600, xend = xend/3600, y = ystart, yend = yend),
@@ -199,15 +218,15 @@ ggplot(filter(dat, Phage == "No Phage", Time %% 1800 == 0),
   theme_bw()
 dev.off()
 
-#Noisy data ----
-datnoisy <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
+#Add more noise ----
+datnoisy <- trans_wide_to_tidy(example_widedata_noiseless, id_cols = "Time")
 datnoisy <- merge_dfs(datnoisy, example_design)
 datnoisy$Well <- 
   factor(datnoisy$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
 #Pick strain 33 to work with for our example wells
 datnoisy <- dplyr::filter(datnoisy, Bacteria_strain == "Strain 33")
-#Add more noise
+
 set.seed(1)
 datnoisy$Measurements <-
   round(datnoisy$Measurements +
@@ -230,6 +249,7 @@ ggplot(datnoisy, aes(x = Time, y = Measurements, color = Phage)) +
   facet_wrap(~Bacteria_strain)
 dev.off()
 
+# smoothing ----
 datnoisy <- 
   mutate(group_by(datnoisy, Well, Bacteria_strain, Phage),
          sm_med5 = smooth_data(y = Measurements, x = Time, 

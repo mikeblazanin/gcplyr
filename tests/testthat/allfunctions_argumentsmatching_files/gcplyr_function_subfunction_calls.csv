@@ -2,6 +2,7 @@
 auc,NA
 block_tidydesign,NA
 calc_deriv,NA
+doubling_time,NA
 find_local_extrema,NA
 find_threshold_crosses,NA
 first_above,gcplyr::find_threshold_crosses
@@ -17,6 +18,7 @@ import_blockdesigns,gcplyr::trans_wide_to_tidy
 import_blockdesigns,gcplyr::separate_tidy
 import_blockmeasures,gcplyr::uninterleave
 import_blockmeasures,gcplyr::read_blocks
+lag_time,NA
 make_design,NA
 make_designpattern,NA
 make_tidydesign,NA

@@ -230,7 +230,7 @@ sep_finder <- function(blocks, nested_metadata = NULL) {
 #' 
 #' This function works like is.numeric but also checks if x can be coerced to 
 #' numeric without warnings. If is.numeric or can be coerced to numeric, 
-#' returns TRUE. Otherwise, returns
+#' returns TRUE. Otherwise, returns FALSE
 #' 
 #' @param x Vector to check
 #' @return TRUE if \code{x} is numeric or can be converted to numeric without
@@ -252,6 +252,19 @@ canbe.numeric <- function(x) {
   } else {
       return(FALSE)
   }
+}
+
+#' A function that coerces to numeric or returns an error if not possible
+#' 
+#' @param x Value or vector to force to numeric
+#' @param varname Name of the variable to use for error message if needed
+#' @return as.numeric(x) if canbe.numeric(x) == TRUE
+#' 
+#' @noRd
+make.numeric <- function(x, varname) {
+  if(is.null(x) | is.numeric(x)) {return(x)
+  } else if(canbe.numeric(x)) {return(as.numeric(x))
+  } else {stop(paste(varname, "cannot be coerced to numeric"))}
 }
 
 #' A function that removes na's values from a vector or pair of vectors
@@ -488,7 +501,36 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
                simplify = FALSE))
 }
 
-
+#' A function that checks if the parent function is being called within
+#' mutate with grouped data or with subset_by specified
+#' 
+#' @param func_name Name of the function to check for
+#' @param inherit_name Name of the attribute to check for
+#' @param name_for_error Name of the function to add to error messages
+#' @param subset_by Subset by function
+#' @return Nothing, but prints warnings
+#' 
+#' @noRd
+check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
+                          name_for_error, subset_by) {
+  parents <- ls(envir = parent.frame(n = 2))
+  if(all(parents == "~")) {
+    ss <- sys.status()
+    funcs <- sapply(ss$sys.calls, function(x) deparse(as.list(x)[[1]]))
+    wf <- which(funcs == func_name)
+    if(length(wf) > 0) {
+      data <- eval(substitute(.data), ss$sys.frames[[max(wf)]])
+      if(is.null(subset_by) & !inherits(data, "grouped_df")) {
+        warning(paste(name_for_error,
+                      "called on an ungrouped data.frame and subset_by = NULL"))
+      }
+    }
+  }
+  if(is.null(subset_by) && (any(parents != "~") || length(wf) == 0)) {
+    warning(paste(name_for_error,
+                  "called outside of dplyr::mutate and subset_by = NULL"))
+  }
+}
 
 # Read functions ----
 
@@ -615,11 +657,16 @@ infer_names <- function(df,
 #'                  provided filenames. When extension is not "csv", "xls", or
 #'                  "xlsx" will use \code{utils::read.table}
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
-#'                 the measures data are in \code{files},
-#'                 can be a vector or list the same length as \code{files}, or
-#'                 a single value that applies to all \code{files}.
-#'                 If not provided data is presumed to begin on the first
-#'                 row and column of the files.
+#'                 the measures data are located in \code{files}.
+#'                 
+#'                 Can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}. Values
+#'                 can be numeric or a string that will be automatically
+#'                 converted to numeric by \code{from_excel}.
+#'                 
+#'                 If not provided, data is presumed to begin on the first
+#'                 row and column of the file(s) and end on the last row and
+#'                 column of the file(s).
 #' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
 #'                 is located on. Defaults to the first sheet if not specified
 #' @param metadata (optional) non-spectrophotometric data that should be 
@@ -954,11 +1001,17 @@ read_blocks <- function(files, extension = NULL,
 #'                  If none provided, \code{read_wides} will infer file 
 #'                  extension from provided filenames. When extension is not 
 #'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
-#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
-#'                  the data is located. If none provided assumes the entire
-#'                  file is data.
-#'                  Can be specified as a numeric or using base-26 Excel letter
-#'                  notation
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
+#'                 the data are located in \code{files}.
+#'                 
+#'                 Can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}. Values
+#'                 can be numeric or a string that will be automatically
+#'                 converted to numeric by \code{from_excel}.
+#'                 
+#'                 If not provided, data is presumed to begin on the first
+#'                 row and column of the file(s) and end on the last row and
+#'                 column of the file(s).
 #' @param header Boolean for whether there is a header to the data. If FALSE
 #'               columns are simple numbered. If TRUE is the row above
 #'               \code{startrow} (if startrow is specified) or the first row
@@ -1226,12 +1279,17 @@ read_wides <- function(files, extension = NULL,
 #'                  If none provided, \code{read_tidys} will infer file 
 #'                  extension from provided filenames. When extension is not 
 #'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
-#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where
-#'                  the data is located. If none provided assumes the entire
-#'                  file is data.
-#'                  
-#'                  Can be specified as a numeric or using base-26 Excel letter
-#'                  notation
+#' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
+#'                 the data are located in \code{files}.
+#'                 
+#'                 Can be a vector or list the same length as \code{files}, or
+#'                 a single value that applies to all \code{files}. Values
+#'                 can be numeric or a string that will be automatically
+#'                 converted to numeric by \code{from_excel}.
+#'                 
+#'                 If not provided, data is presumed to begin on the first
+#'                 row and column of the file(s) and end on the last row and
+#'                 column of the file(s).
 #' @param sheet The sheet of the input files where data is located (if input
 #'              files are .xls or .xlsx). If not specified defaults to the first
 #' @param run_names Names to give the tidy files read in. By default uses the
@@ -1425,7 +1483,8 @@ read_tidys <- function(files, extension = NULL,
 #'                      rowname and column name
 #' @param ... Other arguments to pass to \code{read_blocks}, \code{uninterleave},
 #'            or \code{widen_blocks}
-#' @details     Common arguments that you may want to provide include:
+#' @details     Common arguments that you may want to provide via \code{...}
+#'              include:
 #' 
 #'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
 #'              \code{sheet} - specifying the location of design information 
@@ -1501,7 +1560,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              
 #'              See Details for more information
 #'              
-#' @details     Common arguments that you may want to provide include:
+#' @details     Common arguments that you may want to provide via \code{...}
+#'              include:
 #' 
 #'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
 #'              \code{sheet} - specifying the location of design information 
@@ -1637,7 +1697,8 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
 #' @param pattern_split character to split pattern elements provided in
 #'                      \code{...} by, if they're not already a vector
-#' @param ... Each \code{...} argument must be a list with five elements:
+#' @param ... Each \code{...} argument must be named, and must be a list with 
+#'            five elements:
 #' 
 #'              1. a vector of the values
 #'              
@@ -1735,6 +1796,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   }
   
   dot_args <- list(...)
+  if(any(is.null(names(dot_args)))) {stop("Each ... arguments must have a name")}
   
   #Make empty output list
   output <- rep(list(list(
@@ -2847,11 +2909,11 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'            In such cases, \code{subset_by} can still be specified as a vector
 #'            as long as \code{nrow(data)}
 #' 
-#' @return If return_fitobject == FALSE:
+#' @return If \code{return_fitobject == FALSE:}
 #' 
 #'         A vector, the same length as \code{y}, with the now-smoothed y values
 #'         
-#'         If return_fitobject == TRUE:
+#'         If \code{return_fitobject == TRUE:}
 #'         
 #'         A list the same length as unique(subset_by) where each element is
 #'         an object of the same class as returned by the smoothing method
@@ -2861,10 +2923,21 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
 #'         containing the smoothed values of the response variable, and a 
 #'         second element named 'residuals' containing the residuals of the
 #'         fitted values and the input values
+#'         
+#'         **Note: as of v1.3.0 the above is true, but will be altered soon**
+#'         to instead maintain the class of the object returned by the
+#'         smoothing method. After the change, not all methods will return
+#'         an object with 'fitted' as the first element and 'residuals'
+#'         as the second element.
 #' 
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
+  if(return_fitobject == TRUE) { #Warning added in v1.3.0.9000
+    warning("the behavior of return_fitobject = TRUE will change in upcoming version,
+see Value in ?smooth_data for more details")
+  }
+  
   if("method" %in% names(list(...)) &
      list(...)["method"] %in% c("moving-average","moving-median","loess","gam")){
     stop("'method' is deprecated, use 'sm_method' instead. 'method' is now
@@ -2873,6 +2946,23 @@ reserved for passing 'method' arg via ... to loess or gam")
 
   if(!sm_method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("sm_method must be one of: moving-average, moving-median, gam, or loess")
+  }
+
+  check_grouped(name_for_error = "smooth_data", subset_by = subset_by)
+  
+  if(FALSE) { #to-be updated when stackoverflow thread is updated
+    if(all(ls(envir = parent.frame()) == "~")) { #being called within mutate
+      data <- eval(quote(.), parent.frame())
+      if(is.null(subset_by) &
+         !inherits(data, "grouped_df")) {
+        warning("smooth_data called on an ungrouped data.frame and subset_by = NULL")}
+      if(!is.null(subset_by) &
+         inherits(data, "grouped_df")) {
+        warning("smooth_data called with both subset_by and grouping")}
+    } else { #being called outside of mutate
+      if(is.null(subset_by)) {
+        warning("smooth_data called outside of dplyr::mutate and subset_by = NULL")}
+    }
   }
   
   #Parse x and y, and/or ... args, into formula and data
@@ -3028,13 +3118,7 @@ moving_average <- function(formula, data, window_width_n = NULL,
   }
   
   #Check y for being the correct format
-  if(!is.numeric(data[, response_var]) ) {
-    if(!canbe.numeric(data[, response_var])) {
-      stop(paste(response_var, "cannot be coerced to numeric"))
-    } else { #it can be coerced
-      data[, response_var] <- as.numeric(data[, response_var])
-    }
-  }
+  data[, response_var] <- make.numeric(data[, response_var], response_var)
   
   #remove nas
   narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
@@ -3106,13 +3190,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
   }
   
   #Check y for being the correct format
-  if(!is.numeric(data[, response_var]) ) {
-    if(!canbe.numeric(data[, response_var])) {
-      stop(paste(response_var, "cannot be coerced to numeric"))
-    } else { #it can be coerced
-      data[, response_var] <- as.numeric(data[, response_var])
-    }
-  }
+  data[, response_var] <- make.numeric(data[, response_var], response_var)
   
   #remove nas
   narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
@@ -3254,18 +3332,14 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   if(is.null(y)) {stop("y must be provided")}
   if(length(x_scale) > 1) {stop("x_scale must be a single value")}
   
-  if(!is.numeric(x_scale)) {
-    if(!canbe.numeric(x_scale)) {stop("x_scale must be numeric")
-    } else {x_scale <- as.numeric(x_scale)}
-  }
+  x_scale <- make.numeric(x_scale, "x_scale")
   if(is.na(x_scale)) {stop("x_scale cannot be NA")}
   
-  if (!is.null(x)) {
-    if(!canbe.numeric(x)) {stop("x is not numeric")
-    } else {x <- as.numeric(x)}
-  }
-  if(!is.numeric(y)) {y <- as.numeric(y)}
+  x <- make.numeric(x, "x")
+  y <- make.numeric(y, "y")
   
+  check_grouped(name_for_error = "calc_deriv", subset_by = subset_by)
+
   #Set up subset_by
   if(is.null(subset_by)) {subset_by <- rep("A", length(y))}
   
@@ -3345,6 +3419,34 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     ans[indices] <- sub_ans
   }
   return(ans)
+}
+
+
+
+#' Calculate doubling time equivalent of per-capita growth rate
+#' 
+#' Provided a vector of per-capita growth rates, this function returns 
+#' the vector of equivalent doubling times
+#' 
+#' @param y       Vector of per-capita derivative data to calculate the 
+#'                equivalent doubling time of
+#' @param x_scale Numeric to scale per-capita derivative values by
+#'                
+#'                Set x_scale to the ratio of the the units of 
+#'                y to the desired units. E.g. if y is in per-second, but the 
+#'                desired doubling time is in minutes, \code{x_scale = 60} 
+#'                (since there are 60 seconds in 1 minute).
+#' 
+#' @return A vector of values for the doubling time equivalent to the
+#'         per-capita growth rate supplied for \code{y}
+#' 
+#' @export   
+doubling_time <- function(y, x_scale = 1) {
+  #Check inputs
+  y <- make.numeric(y, "y")
+  x_scale <- make.numeric(x_scale, "x_scale")
+
+  return(log(2)/(x_scale * y))
 }
 
 # Analyze ----
@@ -3488,13 +3590,9 @@ find_local_extrema <- function(y, x = NULL,
   if(is.null(x) & return == "x") {stop('return = "x" but x is not provided')}
   
   #Numeric checks/coercion
-  if(!canbe.numeric(y)) {stop("y must be numeric")
-  } else {y <- as.numeric(y)}
+  y <- make.numeric(y, "y")
   if(is.null(x)) {x <- 1:length(y)
-  } else {
-    if(!canbe.numeric(x)) {stop("x must be numeric")
-    } else {x <- as.numeric(x)}
-  }
+  } else {x <- make.numeric(x)}
   
   #Take subset
   if(!is.null(subset)) {
@@ -3709,12 +3807,8 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   if(return == "x" & is.null(x)) {stop("return = 'x' but x is not provided")}
   
   #Numeric checks/coercion
-  if(!canbe.numeric(y)) {stop("y must be numeric")
-  } else {y <- as.numeric(y)}
-  if(!is.null(x)) {
-    if(!canbe.numeric(x)) {stop("x must be numeric")
-    } else {x <- as.numeric(x)}
-  }
+  y <- make.numeric(y, "y")
+  x <- make.numeric(x, "x")
   
   #Take subset
   if(!is.null(subset)) {
@@ -3792,38 +3886,36 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
 
 #' @rdname ThresholdFunctions
 #' @export  
-first_below <- function(y, x = NULL, threshold, 
-                        return = "index", return_endpoints = TRUE,
-                        subset = NULL, na.rm = TRUE, ...) {
+first_below <- function(y, x = NULL, threshold, return = "index",
+                        return_endpoints = TRUE, ...) {
   if(any(c("return_rising", "return_falling") %in% names(list(...)))) {
     stop("return_rising and return_falling cannot be changed in first_below,
 please use find_threshold_crosses for more flexibility")
   }
   return(find_threshold_crosses(y = y, x = x,
                                 threshold = threshold,
-                                return = return, subset = subset,
+                                return = return, 
                                 return_endpoints = return_endpoints,
                                 return_rising = FALSE,
                                 return_falling = TRUE,
-                                na.rm = na.rm, ...)[1])
+                                ...)[1])
 }
 
 #' @rdname ThresholdFunctions
 #' @export 
-first_above <- function(y, x = NULL, threshold, 
-                        return = "index", return_endpoints = TRUE,
-                        subset = NULL, na.rm = TRUE, ...) {
+first_above <- function(y, x = NULL, threshold, return = "index",
+                        return_endpoints = TRUE, ...) {
   if(any(c("return_rising", "return_falling") %in% names(list(...)))) {
     stop("return_rising and return_falling cannot be changed in first_below,
 please use find_threshold_crosses for more flexibility")
   }
   return(find_threshold_crosses(y = y, x = x,
                                 threshold = threshold,
-                                return = return, subset = subset,
+                                return = return,
                                 return_endpoints = return_endpoints,
                                 return_rising = TRUE,
                                 return_falling = FALSE,
-                                na.rm = na.rm, ...)[1])
+                                ...)[1])
 }
 
 #' calculate area under the curve
@@ -3842,7 +3934,7 @@ please use find_threshold_crosses for more flexibility")
 #' 
 #' @details 
 #' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
 #'
 #' @return A scalar for the total area under the curve
 #'             
@@ -3858,18 +3950,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     stop(paste("y is not a vector, it is class:", class(y)))
   }
   
-  if(!is.numeric(x)) {
-    if(!canbe.numeric(x)) {stop("x cannot be coerced to numeric")
-    } else {
-      x <- as.numeric(x)
-    }
-  }
-  if(!is.numeric(y)) {
-    if(!canbe.numeric(y)) {stop("y cannot be coerced to numeric")
-    } else {
-      y <- as.numeric(y)
-    }
-  }
+  x <- make.numeric(x)
+  y <- make.numeric(y)
 
   to_keep <- which(!(is.na(x) | is.na(y)))
   x <- x[to_keep]
@@ -3919,6 +4001,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
     x <- x[(x >= xlim[1]) & (x <= xlim[2])]
   }
   
+  if(any(y < 0)) {warning("some y values are below 0")}
+  
   #Calculate auc
   # area = 0.5 * (y1 + y2) * (x2 - x1)
   return(sum(0.5 * 
@@ -3927,18 +4011,15 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 }
 
 
-#' calculate lag time
+#' Calculate lag time
 #' 
-#' This function takes a vector of \code{x} and \code{y} values
-#' and returns a scalar for the area under the curve, calculated using 
-#' the trapezoid rule
-#'  
-#' @param rate Numeric value or vector of per-capita growth rate (slope)
-#'             to use when calculating lag time
-#' @param y0 Numeric value or vector of y value (density) to find the 
-#'           intersection of the growth rate line
-#' @param x1 x value (time) when rate was achieved
-#' @param y1 y value (density) when rate was achieved 
+#' Lag time is calculated by projecting a tangent line at the point
+#' of maximum (per-capita) derivative backwards to find the time when it
+#' intersects with the starting y-value
+#' 
+#' @param x Vector of x values (typically time)
+#' @param y Vector of y values (typically density)
+#' @param deriv Vector of derivative values (typically per-capita derivative)
 #' @param trans_y  One of \code{c("linear", "log")} specifying the
 #'                 transformation of y-values.
 #' 
@@ -3946,33 +4027,68 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
 #'                 lag time assuming a transition to exponential growth
 #'                 
 #'                 \code{'linear'} is available for alternate uses
-#' 
+#' @param na.rm a logical indicating whether missing values should be removed
+#' @param slope Slope to project from x1,y1 to y0 (typically per-capita growth
+#'              rate). If not provided, will be calculated as \code{max(deriv)}
+#' @param x1 x value (typically time) to project slope from. If not provided,
+#'           will be calculated as \code{x[which.max(deriv)]}.
+#' @param y1 y value (typically density) to project slope from. If not provided,
+#'           will be calculated as \code{y[which.max(deriv)]}.
+#' @param y0 y value (typically density) to find intersection of slope from
+#'             x1, y1 with. If not provided, will be calculated as \code{min(y)}
 #' @details 
+#' For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
+#' (using the per-capita derivative and \code{trans_y = 'log'}).
+#' 
+#' Advanced users may wish to use alternate values for the slope, origination
+#' point, or initial y-value. In that case, values can be supplied to
+#' \code{slope}, \code{x1}, \code{y1}, and/or \code{y0}, which will override
+#' the default calculations. If and only if all of \code{slope}, \code{x1}, 
+#' \code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on
+#' their inputs and will return a vector of lag time values.
+#' 
 #' This function is designed to be compatible for use within
-#'  dplyr::group_by and dplyr::summarize
+#'  \code{dplyr::group_by} and \code{dplyr::summarize}
 #'
-#' @return A scalar or vector of the lag time(s)
+#' @return Typically a scalar of the lag time in units of x. See Details for
+#' cases when value will be a vector.
 #'             
 #' @export
-lag_time <- function(rate, y0, x1, y1, trans_y = "log") {
-  if(!canbe.numeric(rate)) {stop("rate must be numeric")}
-  if(!canbe.numeric(x1)) {stop("x1 must be numeric")}
-  if(!canbe.numeric(y1)) {stop("y1 must be numeric")}
-  if(!canbe.numeric(y0)) {stop("y0 must be numeric")}
-  rate <- as.numeric(rate)
-  y0 <- as.numeric(y0)
-  x1 <- as.numeric(x1)
-  y1 <- as.numeric(y1)
-  if(length(unique(sapply(list(rate, y0, x1, y1), length))) != 1) {
-    stop("rate, y0, x1, y1 must all be the same length")}
+lag_time <- function(x = NULL, y = NULL, deriv = NULL, 
+                     trans_y = "log", na.rm = TRUE,
+                     slope = NULL, x1 = NULL, y1 = NULL, y0 = NULL) {
+  x <- make.numeric(x, "x")
+  y <- make.numeric(y, "y")
+  deriv <- make.numeric(deriv, "deriv")
+  slope <- make.numeric(slope, "slope")
+  y0 <- make.numeric(y0, "y0")
+  y1 <- make.numeric(y1, "y1")
+  x1 <- make.numeric(x1, "x1")
+  
+  if(is.null(slope)) {
+    if(is.null(deriv)) {stop("deriv or slope must be provided")}
+    slope <- max(deriv, na.rm = na.rm)}
+  if(is.null(y0)) {
+    if(is.null(y)) {stop("y or y0 must be provided")}
+    y0 <- min(y, na.rm = na.rm)}
+  if(is.null(y1)) {
+    if(is.null(deriv) | is.null(y)) {stop("y1, or deriv and y, must be provided")}
+    y1 <- y[which.max(deriv)]}
+  if(is.null(x1)) {
+    if(is.null(x) | is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
+    x1 <- x[which.max(deriv)]}
+  
+  if(stats::var(c(length(y0), length(y1), length(slope), length(x1))) != 0) {
+    warning("Only using the first value")
+    y0 <- y0[1]; y1 <- y1[1]; slope <- slope[1]; x1 <- x1[1]
+  }
   
   if(!trans_y %in% c("linear", "log")) {
     stop("trans_y must be one of c('linear', 'log')")}
   if(trans_y == "log") {y0 <- log(y0); y1 <- log(y1)}
   
-  return((y0-y1)/rate + x1)
+  return((y0-y1)/slope + x1)
 }
-
 
 # Legacy Code ----
 

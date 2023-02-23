@@ -30,13 +30,17 @@ test_that("lag_time returns correctly", {
   x <- seq(from = 0, to = 200, by = 3)
   y <- baranyi_func(r = .1, k = 1, v = 1, q0 = .01, m = .1, d0 = 0.001, 
                     t_vals = x)
-  deriv <- gcplyr::calc_deriv(y = y, x = x, percapita = TRUE, 
-                              blank = 0, trans_y = "log", window_width_n = 5)
+  deriv <- 
+    mutate(group_by(data.frame(x = x, y = y, grp = rep("A", length(x))), grp),
+           deriv = 
+             gcplyr::calc_deriv(y = y, x = x, percapita = TRUE, 
+                                blank = 0, trans_y = "log", window_width_n = 5))
+  deriv <- deriv$deriv
   y0 <- min(y, na.rm = TRUE)
   y1 <- y[which.max(deriv)]
   x1 <- x[which.max(deriv)]
   m <- max(deriv, na.rm = TRUE)
-  lag <- lag_time(rate = m, y0 = y0, x1 = x1, y1 = y1)
+  lag <- lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1)
   expect_equal(log(y1) - m*x1 + m*lag, log(y0))
   if(F) {
     plot(x, log(y))
@@ -47,6 +51,21 @@ test_that("lag_time returns correctly", {
     plot(x, deriv)
     abline(h = m)
   }
+})
+
+test_that("doubling_time returns correctly", {
+  yvals <- log(2)/c(5, 10, 20, 30, 60) #minutes
+  
+  expect_equal(doubling_time(y = yvals),
+               c(5, 10, 20, 30, 60))
+  
+  yvals <- log(2)/(60*c(5, 10, 20, 30, 60)) #seconds
+  expect_equal(doubling_time(y = yvals, x_scale = 60),
+               c(5, 10, 20, 30, 60))
+  
+  yvals <- c(log(2)/c(-5, 10, NA, 30), 0)
+  expect_equal(doubling_time(y = yvals),
+               c(-5, 10, NA, 30, Inf))
 })
 
 test_that("first_maxima matches find_local_extrema results", {

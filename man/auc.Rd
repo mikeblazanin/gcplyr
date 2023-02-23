@@ -28,5 +28,5 @@ the trapezoid rule
 }
 \details{
 This function is designed to be compatible for use within
- dplyr::group_by and dplyr::summarize
+ \code{dplyr::group_by} and \code{dplyr::summarize}
 }

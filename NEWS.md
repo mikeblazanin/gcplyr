@@ -1,6 +1,20 @@
-# gcplyr 1.2.0.9000
+# gcplyr 1.3.0.9000
 
-abcde
+Stuff here
+
+# gcplyr 1.3.0
+
+* New function lag_time to calculate lag time
+
+* New function doubling_time to convert per-capita growth rate into equivalent doubling time
+
+* smooth_data and calc_deriv now pass a warning when they are used outside of dplyr::mutate or on ungrouped data
+
+* make_design has better warning messages for common mistakes
+
+* Major edits to most of the vignettes
+
+* Various documentation improvements
 
 # gcplyr 1.2.0
 

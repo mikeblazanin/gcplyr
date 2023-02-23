@@ -25,8 +25,6 @@ first_below(
   threshold,
   return = "index",
   return_endpoints = TRUE,
-  subset = NULL,
-  na.rm = TRUE,
   ...
 )
 
@@ -36,8 +34,6 @@ first_above(
   threshold,
   return = "index",
   return_endpoints = TRUE,
-  subset = NULL,
-  na.rm = TRUE,
   ...
 )
 }

@@ -207,6 +207,22 @@ datnoisy$Well <-
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
 #Pick strain 33 to work with for our example wells
 datnoisy <- dplyr::filter(datnoisy, Bacteria_strain == "Strain 33")
+#Add more noise
+set.seed(1)
+datnoisy$Measurements <-
+  round(datnoisy$Measurements +
+          0.01*c(arima.sim(model = list(order = c(0, 0, 0)),
+                           n = length(datnoisy$Measurements))) +
+          sample(x = c(0, 1), length(datnoisy$Measurements), 
+                 replace = TRUE, prob = c(0.8, 0.2)) *
+          rexp(n = length(datnoisy$Measurements), rate = 20) +
+          sample(x = c(0, 1), length(datnoisy$Measurements), 
+                 replace = TRUE, prob = c(0.85, 0.15)) *
+          rexp(n = length(datnoisy$Measurements), rate = 10) +
+          sample(x = c(0, 1), length(datnoisy$Measurements), 
+                 replace = TRUE, prob = c(0.9, 0.1)) *
+          rexp(n = length(datnoisy$Measurements), rate = 5),
+        3)
 
 png("test.png", width = 10, height = 10, units = "in", res = 300)
 ggplot(datnoisy, aes(x = Time, y = Measurements, color = Phage)) +
@@ -231,28 +247,28 @@ datnoisy <-
 p1 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
        aes(x = Time/3600, y = Measurements)) +
   geom_point() +
-  geom_line(aes(y = sm_med5), color = "red", lwd = 1.1, alpha = 0.8) +
+  geom_line(aes(y = sm_med5), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
-  labs(x = "Time (hr)", y = "OD600", title = "Moving average (n = 5)")
+  labs(x = "Time (hr)", y = "OD600", title = "Moving median (n = 5)")
 
 p2 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
        aes(x = Time/3600, y = Measurements)) +
   geom_point() +
-  geom_line(aes(y = sm_avg5), color = "red", lwd = 1.1, alpha = 0.8) +
+  geom_line(aes(y = sm_avg5), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
-  labs(x = "Time (hr)", y = "OD600", title = "Moving median (n = 5)")
+  labs(x = "Time (hr)", y = "OD600", title = "Moving average (n = 5)")
 
 p3 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
        aes(x = Time/3600, y = Measurements)) +
   geom_point() +
-  geom_line(aes(y = sm_loess), color = "red", lwd = 1.1, alpha = 0.8) +
+  geom_line(aes(y = sm_loess), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "loess (span = 0.2)")
 
 p4 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
        aes(x = Time/3600, y = Measurements)) +
   geom_point() +
-  geom_line(aes(y = sm_gam), color = "red", lwd = 1.1, alpha = 0.8) +
+  geom_line(aes(y = sm_gam), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "GAM (k = 20)")
 

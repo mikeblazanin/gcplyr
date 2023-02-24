@@ -154,13 +154,13 @@ ggplot(dat, aes(x = Time, y = deriv, color = Phage)) +
 ggplot(dat, aes(x = Time, y = deriv_percap, color = Phage)) +
   geom_line()
 
-p1 <- ggplot(dat, aes(x = Time/3600, y = Measurements)) +
+p1 <- ggplot(dat, aes(x = Time, y = Measurements)) +
   geom_point(size = 0.75) +
   facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "OD600") +
   theme_bw()
 
-p2 <- ggplot(dat, aes(x = Time/3600, y = deriv)) +
+p2 <- ggplot(dat, aes(x = Time, y = deriv)) +
   geom_line() +
   facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "Derivative (OD600/hr)") +
@@ -169,7 +169,7 @@ p2 <- ggplot(dat, aes(x = Time/3600, y = deriv)) +
   theme(strip.background = element_blank(),
         strip.text = element_blank())
 
-p3 <- ggplot(dat, aes(x = Time/3600, y = deriv_percap)) +
+p3 <- ggplot(dat, aes(x = Time, y = deriv_percap)) +
   geom_line()  +
   facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "Per-capita\nDerivative (/hr)") +
@@ -207,19 +207,19 @@ dev.off()
 
 #Diauxie ----
 p1 <- ggplot(filter(dat, Phage == "No Phage"), 
-             aes(x = Time/3600, y = Measurements)) +
+             aes(x = Time, y = Measurements)) +
   geom_point(size = 0.75) +
   geom_vline(data = filter(dat_sum, Phage == "No Phage"),
-             aes(xintercept = diauxie_time/3600), lty = 2) +
+             aes(xintercept = diauxie_time), lty = 2) +
   facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "OD600") +
   theme_bw()
 
 p2 <- ggplot(filter(dat, Phage == "No Phage"), 
-             aes(x = Time/3600, y = deriv)) +
+             aes(x = Time, y = deriv)) +
   geom_line() +
   geom_vline(data = filter(dat_sum, Phage == "No Phage"),
-             aes(xintercept = diauxie_time/3600), lty = 2) +
+             aes(xintercept = diauxie_time), lty = 2) +
   facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "Derivative (OD600/hr)") +
   coord_cartesian(ylim = c(-0.1, NA)) +
@@ -238,13 +238,13 @@ dev.off()
 png("./manuscript/first_maxima.png", width = 4, height = 3.5,
     units = "in", res = 150)
 ggplot(filter(dat, Phage == "Phage Added"), 
-             aes(x = Time/3600, y = Measurements)) +
+             aes(x = Time, y = Measurements)) +
   geom_point(size = 0.75) +
   geom_point(data = filter(dat_sum, Phage == "Phage Added"),
-             aes(x = first_maxima_x/3600, y = first_maxima_y), 
+             aes(x = first_maxima_x, y = first_maxima_y), 
              pch = 4, size = 2, color = "red", stroke = 2, alpha = 0.5) +
   geom_vline(data = filter(dat_sum, Phage == "Phage Added"),
-             aes(xintercept = extin_time/3600), lty = 2) +
+             aes(xintercept = extin_time), lty = 2) +
   #facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "OD600") +
   theme_bw()
@@ -320,28 +320,28 @@ datnoisy <-
                               sm_method = "gam", k = 20))
 
 p1 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
-       aes(x = Time/3600, y = Measurements)) +
+       aes(x = Time, y = Measurements)) +
   geom_point() +
   geom_line(aes(y = sm_med5), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "Moving median (n = 5)")
 
 p2 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
-       aes(x = Time/3600, y = Measurements)) +
+       aes(x = Time, y = Measurements)) +
   geom_point() +
   geom_line(aes(y = sm_avg5), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "Moving average (n = 5)")
 
 p3 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
-       aes(x = Time/3600, y = Measurements)) +
+       aes(x = Time, y = Measurements)) +
   geom_point() +
   geom_line(aes(y = sm_loess), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "loess (span = 0.2)")
 
 p4 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
-       aes(x = Time/3600, y = Measurements)) +
+       aes(x = Time, y = Measurements)) +
   geom_point() +
   geom_line(aes(y = sm_gam), color = "red", lwd = .8, alpha = 0.8) +
   theme_bw() +

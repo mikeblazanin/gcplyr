@@ -3,88 +3,14 @@
 library(gcplyr)
 library(ggplot2)
 library(dplyr)
-library(deSolve)
 
-# Create sim data for diauxie ----
-
-# Simulate bacteria & phage growth ----
-#Define function that returns derivative for simulating pop densities
-derivs <- function(t, y, parms) {
-  #dS/dt = u_S * S * a(t) * (1 - ((S+R)/k)^v) - a_S * S * P
-  
-  #S2 is the diauxic-shifted S population growing on the implicit 2nd resource
-  # which increases from transitions from S and growth on 2nd res
-  #dS2/dt = S * x * ((S+R)/k)^v2 
-  #         + u_S2 * S2 * (1 - ((S2 + R2)/k2)) 
-  #         - a_S * S2 * P
-  
-  #dR/dt = u_R * R * a(t) * (1 - ((S+R)/k)^v)
-  
-  #R2 is the diauxic-shifted R population growing on the implicit 2nd resource
-  # which increases from transitions from R and growth on 2nd res
-  #dR2/dt = R * x * ((S+R)/k)^v2 
-  #         + u_R2 * R2 * (1 - ((S2 + R2)/k2))
-  
-  #dP/dt = b * a_S * S * P
-  
-  #Note: a(t) = q0/(q0 + e^(-m*t))
-  
-  #parms: u_S, u_R, k, a_S, b, q0, m, v, u_S2, u_R2, k2, x, v2
-  #y: S, R, P, S2, R2
-  
-  dY <- c(S = 0, R = 0, P = 0, S2 = 0, R2 = 0)
-  
-  #For relationship between q0 and a at t0 see:
-  # qvals <- seq(from = 0.1, to = 10, by = 0.1)
-  # plot(x = qvals, y = qvals/(qvals + 1))
-  a <- parms["q0"]/(parms["q0"] + exp(-parms["m"] * t))
-  
-  #For relationship between (N/k)^v and v see:
-  # vvals <- c(0.1, 0.5, 1, 2, 10)
-  # nkvals <- seq(from = 0, to = 1, by = 0.1)
-  # for(v in vvals) {
-  #   print(plot(x = nkvals, y = nkvals**v, main = paste("v =", v)))}
-  
-  dY["S"] <- 
-    a * parms["u_S"] * y["S"] * (1-((y["S"] + y["R"])/parms["k"])**parms["v"]) -
-    parms["a_S"] * y["S"] * y["P"] -
-    y["S"] * parms["x"] * ((y["S"] + y["R"])/parms["k"])**parms["v2"]
-  
-  dY["R"] <- 
-    a * parms["u_R"] * y["R"] * (1-((y["S"] + y["R"])/parms["k"])**parms["v"]) -
-    y["R"] * parms["x"] * ((y["S"] + y["R"])/parms["k"])**parms["v2"]
-  
-  dY["P"] <- parms["b"] * parms["a_S"] * y["P"] * (y["S"] + y["S2"])
-  
-  dY["S2"] <- 
-    y["S"] * parms["x"] * ((y["S"] + y["R"])/parms["k"])**parms["v2"] +
-    parms["u_S2"] * y["S2"] * (1 - ((y["S2"] + y["R2"])/parms["k2"])) -
-    parms["a_S"] * y["S2"] * y["P"]
-  
-  dY["R2"] <- 
-    y["R"] * parms["x"] * ((y["S"] + y["R"])/parms["k"])**parms["v2"] +
-    parms["u_R2"] * y["R2"] * (1 - ((y["S2"] + y["R2"])/parms["k2"]))
-  
-  return(list(dY))
-}
-
-params <- c(u_S = 0.04, u_R = 0.02, k = 0.7*10**9, a_S = 2*10**-11, b = 20,
-            q0 = 0.1, m = 0.01, v = .5,
-            u_S2 = 0.016, u_R2 = 0.008, k2 = 0.15*10**9, x = 0.0005, v2 = 50)
-
-Y_init <- c(S = 10**8, R = 1, P = 0, S2 = 0, R2 = 0)
-times <- seq(from = 0, to = 24*60, by = 15)
-
-out <- as.data.frame(ode(y = Y_init, times = times, func = derivs, parms = params))
-colnames(out)[1] <- "Time"
-out$B <- out$S + out$R + out$S2 + out$R2
-dat_sim <- trans_wide_to_tidy(out, id_cols = "Time", names_to = "Pop")
-dat_sim <- select(filter(dat_sim, Pop == "B"), !Pop)
-dat_sim <- 
-  mutate(dat_sim, 
-         Measurements = round(ifelse(Measurements < 0, 0, Measurements)/10**9, 3),
-         Time = Time/60,
-         type = "Simulated", Well = "Z1", init_moi = "0")
+#This code was run to filter down all the Blazanin et al Travisano:
+# growth curve data into just the example data for this paper
+# temp <- read.csv("./manuscript/Isolate_growth_curves.csv")
+# temp <- dplyr::filter(temp, Date == "2019-09-10", Proj == "125",
+#                       Pop == "Anc", Rep_Well == "1", Media %in% c("50", "25-50"))
+# write.csv(temp, "./manuscript/Isolate_growth_curves.csv",
+#           row.names = FALSE)
 
 # Load experimental data ----
 dat <-
@@ -95,7 +21,7 @@ dat <-
 dat <- trans_wide_to_tidy(dat, id_cols = c("file", "Time", "T 600"))
 dat <- mutate(dat,
               Time = lubridate::time_length(lubridate::hms(Time), unit = "hour"),
-              type = "Experimental")
+              type = "nondiaux")
 
 design_diftconcs <- 
   make_design(
@@ -143,7 +69,19 @@ ggplot(data = dat, aes(x = Time, y = Measurements)) +
 dat <- dplyr::filter(dat, Well %in% c("C2", "C7"))
 dat <- select(dat, Time, Well, Measurements, init_moi, type)
 
-dat <- merge_dfs(dat, dat_sim)
+# Load diauxie experimental data ----
+dat_diaux <- read.csv("./manuscript/Isolate_growth_curves.csv")
+dat_diaux$Well <- "Z1"
+dat_diaux$init_moi <- "0"
+dat_diaux$type <- "diauxic"
+dat_diaux <- mutate(dat_diaux, Time = Time_s/3600)
+#Subtract blank
+dat_diaux$Measurements <- 
+  dat_diaux$OD600 - lm(OD600 ~ cfu_ml, dat_diaux)$coefficients[1]
+dat_diaux <- select(dat_diaux, Time, Well, Measurements, init_moi, type)
+
+# Merge & analyze ----
+dat <- dplyr::full_join(dat, dat_diaux)
 
 dat <- mutate(group_by(dat, Well, init_moi),
               Phage = ifelse(init_moi == 0, "No Phage", "Phage Added"),
@@ -167,7 +105,8 @@ dat_sum <-
                                           window_width = 5,
                                           return = "y"),
             max_percap = max(deriv_percap, na.rm = TRUE),
-            init_dens = first_minima(Measurements, return = "y"),
+            init_dens = first_minima(Measurements, return = "y",
+                                     window_width_n = 5),
             lag_time = lag_time(x = Time, y = Measurements,
                                 deriv = deriv_percap, y0 = init_dens),
             max_percap_time = Time[which.max(deriv_percap)],
@@ -189,14 +128,14 @@ ggplot(dat, aes(x = Time, y = deriv, color = Well)) +
 ggplot(dat, aes(x = Time, y = deriv_percap, color = Well)) +
   geom_line()
 
-p1 <- ggplot(filter(dat, Phage == "No Phage", type == "Experimental"), 
+p1 <- ggplot(filter(dat, Phage == "No Phage", type == "nondiaux"), 
              aes(x = Time, y = Measurements)) +
   geom_point(size = 0.75) +
   labs(x = "Time (hr)", y = "OD600") +
   scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw()
 
-p2 <- ggplot(filter(dat, Phage == "No Phage", type == "Experimental"),
+p2 <- ggplot(filter(dat, Phage == "No Phage", type == "nondiaux"),
              aes(x = Time, y = deriv)) +
   geom_line() +
   labs(x = "Time (hr)", y = "Derivative (OD600/hr)") +
@@ -205,7 +144,7 @@ p2 <- ggplot(filter(dat, Phage == "No Phage", type == "Experimental"),
   theme(strip.background = element_blank(),
         strip.text = element_blank())
 
-p3 <- ggplot(filter(dat, Phage == "No Phage", type == "Experimental"),
+p3 <- ggplot(filter(dat, Phage == "No Phage", type == "nondiaux"),
              aes(x = Time, y = deriv_percap)) +
   geom_line()  +
   labs(x = "Time (hr)", y = "Per-capita\nDerivative (/hr)") +
@@ -225,8 +164,8 @@ dev.off()
 # max percap, lag, max dens, diauxie ----
 
 # max percap, lag, max dens
-temp_sum <- filter(dat_sum, Phage == "No Phage", type == "Experimental")
-temp_dat <- filter(dat, Phage == "No Phage", type == "Experimental")
+temp_sum <- filter(dat_sum, Phage == "No Phage", type == "nondiaux")
+temp_dat <- filter(dat, Phage == "No Phage", type == "nondiaux")
 p1 <- ggplot(data = temp_dat,
        aes(x = Time, y = log(Measurements))) +
   geom_point() +
@@ -250,8 +189,8 @@ p1 <- ggplot(data = temp_dat,
 
 
 #Diauxie
-temp_sum <- filter(dat_sum, Phage == "No Phage", type == "Simulated")
-temp_dat <- filter(dat, Phage == "No Phage", type == "Simulated")
+temp_sum <- filter(dat_sum, Phage == "No Phage", type == "diauxic")
+temp_dat <- filter(dat, Phage == "No Phage", type == "diauxic")
 p2 <- ggplot(temp_dat, 
              aes(x = Time, y = Measurements)) +
   geom_point(size = 0.75) +
@@ -280,8 +219,8 @@ cowplot::plot_grid(
 dev.off()
 
 # first maxima & extinction ----
-temp_dat <- filter(dat, Phage == "Phage Added", type == "Experimental")
-temp_sum <- filter(dat_sum, Phage == "Phage Added", type == "Experimental")
+temp_dat <- filter(dat, Phage == "Phage Added", type == "nondiaux")
+temp_sum <- filter(dat_sum, Phage == "Phage Added", type == "nondiaux")
 
 png("./manuscript/first_maxima.png", width = 4, height = 3.5,
     units = "in", res = 150)
@@ -300,7 +239,7 @@ ggplot(temp_dat,
 dev.off()
 
 # Create noisy data ----
-datnoisy <- filter(dat, type == "Experimental", Phage == "No Phage")
+datnoisy <- filter(dat, type == "nondiaux", Phage == "No Phage")
 set.seed(2)
 datnoisy$Measurements <-
   round(datnoisy$Measurements +

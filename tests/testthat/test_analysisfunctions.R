@@ -81,6 +81,17 @@ test_that("first_maxima matches find_local_extrema results", {
     first_maxima(x = 21:40, y = (20 - abs(12 - 1:20)), return = "x"), 32)
 })
 
+test_that("first_maxima and first_minima work", {
+  expect_no_error(lapply(sapply(5:100, FUN = function(x) {return(1:x)}),
+         FUN = function(x) {first_maxima(y = x)}))
+  expect_no_warning(lapply(sapply(5:100, FUN = function(x) {return(1:x)}),
+                         FUN = function(x) {first_maxima(y = x)}))
+  expect_no_error(lapply(sapply(5:100, FUN = function(x) {return(1:x)}),
+                         FUN = function(x) {first_minima(y = x)}))
+  expect_no_warning(lapply(sapply(5:100, FUN = function(x) {return(1:x)}),
+                           FUN = function(x) {first_minima(y = x)}))
+})
+
 test_that("find_local_extrema works correctly", {
   #data in order
   dat <- data.frame(x = 1:20, y = (20 - abs(12 - 1:20)) + 5*(1:20 == 2))

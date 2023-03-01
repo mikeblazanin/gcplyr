@@ -3681,7 +3681,7 @@ first_maxima <- function(y, x = NULL,
                        return = "index", return_endpoints = TRUE, 
                        ...) {
   if(is.null(window_width) & is.null(window_width_n) & is.null(window_height)) {
-    window_width_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
+    window_width_n <- round(0.2*length(y)) - (1 - round(0.2*length(y))%%2)
   }
   
   if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
@@ -3708,7 +3708,7 @@ first_minima <- function(y, x = NULL,
                          return = "index", return_endpoints = TRUE, 
                          ...) {
   if(is.null(window_width) & is.null(window_width_n) & is.null(window_height)) {
-    window_width_n <- round(0.2*length(y)) - (1 - floor(0.2*length(y))%%2)
+    window_width_n <- round(0.2*length(y)) - (1 - round(0.2*length(y))%%2)
   }
   
   if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {

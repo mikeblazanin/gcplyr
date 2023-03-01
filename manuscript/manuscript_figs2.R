@@ -293,6 +293,7 @@ ggplot(temp_dat,
              pch = 4, size = 2, color = "red", stroke = 2, alpha = 0.5) +
   geom_vline(data = temp_sum,
              aes(xintercept = extin_time), lty = 2) +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   #facet_grid(~Phage) +
   labs(x = "Time (hr)", y = "OD600") +
   theme_bw()
@@ -341,6 +342,7 @@ p1 <- ggplot(data = filter(datnoisy, Phage == "No Phage"),
              aes(x = Time, y = Measurements)) +
   geom_point(size = 0.8) +
   geom_line(aes(y = sm_med5), color = "red", lwd = .8, alpha = 0.8) +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "Moving median")
 
@@ -348,6 +350,7 @@ p2 <- ggplot(data = filter(datnoisy, Phage == "No Phage"),
              aes(x = Time, y = Measurements)) +
   geom_point(size = 0.8) +
   geom_line(aes(y = sm_avg5), color = "red", lwd = .8, alpha = 0.8) +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "Moving average")
 
@@ -355,6 +358,7 @@ p3 <- ggplot(data = filter(datnoisy, Phage == "No Phage"),
              aes(x = Time, y = Measurements)) +
   geom_point(size = 0.8) +
   geom_line(aes(y = sm_loess), color = "red", lwd = .8, alpha = 0.8) +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "LOESS")
 
@@ -362,6 +366,7 @@ p4 <- ggplot(data = filter(datnoisy, Phage == "No Phage"),
              aes(x = Time, y = Measurements)) +
   geom_point(size = 0.8) +
   geom_line(aes(y = sm_gam), color = "red", lwd = .8, alpha = 0.8) +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "OD600", title = "GAM")
 
@@ -369,24 +374,28 @@ p4 <- ggplot(data = filter(datnoisy, Phage == "No Phage"),
 p5 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
              aes(x = Time, y = deriv)) +
   geom_line() +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "Derivative\n(OD600/hr)", title = "n = 2")
 
 p6 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
              aes(x = Time, y = deriv5)) +
   geom_line() +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "Derivative\n(OD600/hr)", title = "n = 5")
 
 p7 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
              aes(x = Time, y = deriv9)) +
   geom_line() +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "Derivative\n(OD600/hr)", title = "n = 9")
 
 p8 <- ggplot(data = filter(datnoisy, Phage == "No Phage"), 
              aes(x = Time, y = deriv13)) +
   geom_line() +
+  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   theme_bw() +
   labs(x = "Time (hr)", y = "Derivative\n(OD600/hr)", title = "n = 13")
 

@@ -318,7 +318,7 @@ If you want to find the mid-point or inflection point of bacterial growth, there
 
 In growth curve analysis approaches using fitting of a symmetric function (e.g. when other `R` packages fit a logistic function to data), these two points will be equivalent. However, since `gcplyr` does model-free analyses, we do not assume symmetry, and so the points may be very similar or very different.
 
-For the mid-point, we use the `first_above` function, with the threshold equal to the maximum bacterial density divided by 2. For the infection point, we find the time when the `deriv` was at a maximum.
+For the mid-point, we use the `first_above` function, with the threshold equal to the maximum bacterial density divided by 2. For the inflection point, we find the time when the `deriv` was at a maximum.
 
 ```{r}
 ex_dat_mrg_sum <- 

@@ -394,7 +394,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
 
 We can use the `gcplyr` function `find_local_extrema` to find that minima. Specify `deriv` as the y data and `Time` as the x data, and that we want `find_local_extrema` to `return` the `x` values associated with local minima. It will return a vector of those `x` values, and we're going to save just the second one.
 
-At the same time, we're also going to save the density where the diauxic shift occurs. First, we'll use `find_local_extrema` again, but this time to save the *index* where the diauxic shift occurs to a column titled `diaxuie_idx`. Then, we can get the `Measurements` value at that index. (Note that it wouldn't work to just specify `return = "y"`, because the `y` values in this case are the `deriv` values).
+At the same time, we're also going to save the density where the diauxic shift occurs. First, we'll use `find_local_extrema` again, but this time to save the *index* where the diauxic shift occurs to a column titled `diauxie_idx`. Then, we can get the `Measurements` value at that index. (Note that it wouldn't work to just specify `return = "y"`, because the `y` values in this case are the `deriv` values).
 
 ```{r}
 ex_dat_mrg_sum <-

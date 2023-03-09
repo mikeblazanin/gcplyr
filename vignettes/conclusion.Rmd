@@ -165,7 +165,7 @@ ggplot(data = filter(sim_dat_sum, Well != "averaged"),
              lty = 2)
 ```
 
-Here we can see that the maximum growth rate of the "average well" (red line) is not the same as the true average maximum growth rate of all the wells (dashed line). While this bias might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be higher than the true average growth rate. Moreover, this bias extends to many other statistics as well.
+Here we can see that the maximum growth rate of the "average well" (red line) is not the same as the true average maximum growth rate of all the wells (dashed line). While this bias might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be lower than the true average growth rate. Moreover, this bias extends to many other statistics as well.
 
 Thus, I recommend against averaging wells together before summarizing, since it often introduces bias and eliminates our ability to visualize variation between replicates.
 

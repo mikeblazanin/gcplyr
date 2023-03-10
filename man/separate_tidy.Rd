@@ -4,7 +4,7 @@
 \alias{separate_tidy}
 \title{Separate a column into multiple columns}
 \usage{
-separate_tidy(data, col, into = NULL, sep = "_", ...)
+separate_tidy(data, col, into = NULL, sep = "_", coerce_NA = TRUE, ...)
 }
 \arguments{
 \item{data}{A data frame}
@@ -26,6 +26,9 @@ column names from the column name of \code{col}}
            string; negative values start at -1 at the far-right of the
            string. The length of \code{sep} should be one less than 
            \code{into}}
+
+\item{coerce_NA}{Boolean dictating if "NA" strings will be coerced into 
+\code{NA} values after separating.}
 
 \item{...}{Other arguments passed to \code{tidyr::separate}}
 }

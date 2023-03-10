@@ -2823,12 +2823,16 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #'            string; negative values start at -1 at the far-right of the
 #'            string. The length of \code{sep} should be one less than 
 #'            \code{into}
+#' @param coerce_NA  Boolean dictating if "NA" strings will be coerced into 
+#'                   \code{NA} values after separating.
 #' @param ... Other arguments passed to \code{tidyr::separate}
 #' 
 #' @return A data frame containing new columns in the place of \code{col}
 #' 
 #' @export
-separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
+separate_tidy <- function(data, col, into = NULL, sep = "_",
+                          coerce_NA = TRUE, ...) {
+  browser()
   if(is.null(into)) {
     if(col %in% colnames(data)) {
       into <- strsplit(col, split = sep)[[1]]
@@ -2839,8 +2843,13 @@ separate_tidy <- function(data, col, into = NULL, sep = "_", ...) {
     }
   }
   
-  return(
-    tidyr::separate(data = data, col = col, into = into, sep = sep, ...))
+  temp <- tidyr::separate(data = data, col = col, into = into, sep = sep, ...)
+  if(coerce_NA == TRUE) {
+    for (idx in which(colnames(temp) %in% into)) {
+      temp[temp[, idx] == "NA", idx] <- NA
+    }
+  }
+  return(temp)
 }
 
 

@@ -1306,6 +1306,10 @@ make_design <- function(nrows = NULL, ncols = NULL,
              alphanumeric values")
       }
       pattern_list <- match(pattern_list, lookup_table)
+      if(min(pattern_list) > 9) {
+        warning("Your pattern doesn't use any of your first 9 values,
+do you need to set `lookup_tbl_start` differently?")
+      }
     }
     
     if (((length(dot_args[[i]][[2]])*length(dot_args[[i]][[3]])) %% 

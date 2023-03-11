@@ -532,6 +532,35 @@ check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
   }
 }
 
+
+#' A function that runs tryCatch but returns the messages in a list
+#' 
+#' @param expr The expression to run
+#' @return Returns list with $value $warning $error
+#'         
+#'         If successful, $warning and $error will be \code{NULL}
+#'         
+#'         If warning, $error will be \code{NULL} ($value will be present)
+#'         
+#'         If error, $warning and $value will be \code{NULL}
+#'         
+#' @details 
+#' I didn't write this, see: https://stackoverflow.com/a/24569739/14805829
+#' 
+#' @noRd
+myTryCatch <- function(expr) {
+  warn <- err <- NULL
+  value <- withCallingHandlers(
+    tryCatch(expr, error=function(e) {
+      err <<- e
+      NULL
+    }), warning=function(w) {
+      warn <<- w
+      invokeRestart("muffleWarning")
+    })
+  list(value=value, warning=warn, error=err)
+}
+
 # Read functions ----
 
 #' An internal function that handles name inference logic for other functions
@@ -3325,6 +3354,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        x_scale = 1, blank = NULL, subset_by = NULL, 
                        window_width = NULL, window_width_n = NULL, 
                        trans_y = "linear", na.rm = TRUE) {
+  browser()
   #Check inputs
   if(!is.null(window_width_n) && window_width_n %% 2 == 0) {
     stop("window_width_n must be an odd number")}
@@ -3339,7 +3369,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   if(!trans_y %in% c("linear", "log")) {
     stop("trans_y must be one of c('linear', 'log')")}
   
-  if(trans_y == "log" && (return == "difference" | percapita == FALSE)) {
+  if(trans_y == "log" && (return == "difference" || percapita == FALSE)) {
     stop("when trans_y = 'log', return must be 'derivative' and percapita must be 'TRUE'")}
   
   if(is.null(y)) {stop("y must be provided")}
@@ -3370,8 +3400,25 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   for (i in 1:length(unique(subset_by))) {
     indices <- which(subset_by == unique(subset_by)[i])
     
+    sub_y <- y[indices]
+    sub_x <- x[indices]
+    
+    if(trans_y == "log") {
+      caught_log <- myTryCatch(log(sub_y))
+      if(!is.null(caught_log$warning)) {
+        warning(paste("during log-transformation,", caught_log$warning))
+        caught_log$value[is.nan(caught_log$value)] <- NA}
+      if(!is.null(caught_log$error)) {
+        stop(paste("during log-transformation,", caught_log$error))}
+      sub_y <- caught_log$value
+      if(any(is.infinite(sub_y))) {
+        warning("infinite values created during log-transformation, treating as NA's")
+        sub_y[is.infinite(sub_y)] <- NA
+      }
+    }
+    
     #remove nas
-    narm_temp <- rm_nas(x = x[indices], y = y[indices], 
+    narm_temp <- rm_nas(x = sub_x, y = sub_y, 
                         na.rm = na.rm, stopifNA = FALSE)
     
     #Reorder as needed
@@ -3396,7 +3443,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       }
     } else {
       sub_ans <- rep(NA, length(sub_x))
-      if(trans_y == "log") {sub_y <- log(sub_y)}
+
       windows <- get_windows(x = sub_x, y = sub_y, edge_NA = TRUE,
                              window_width_n = window_width_n, 
                              window_width = window_width)

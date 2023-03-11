@@ -2299,7 +2299,6 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #' @export
 separate_tidy <- function(data, col, into = NULL, sep = "_",
                           coerce_NA = TRUE, ...) {
-  browser()
   if(is.null(into)) {
     if(col %in% colnames(data)) {
       into <- strsplit(col, split = sep)[[1]]
@@ -2792,7 +2791,6 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        x_scale = 1, blank = NULL, subset_by = NULL, 
                        window_width = NULL, window_width_n = NULL, 
                        trans_y = "linear", na.rm = TRUE) {
-  browser()
   #Check inputs
   if(!is.null(window_width_n) && window_width_n %% 2 == 0) {
     stop("window_width_n must be an odd number")}

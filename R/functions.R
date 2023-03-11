@@ -1372,16 +1372,6 @@ do you need to set `lookup_tbl_start` differently?")
 #' 
 #' A helper function for use with \code{make_design}
 #' 
-#' @details 
-#' Example:
-#' make_design(nrows = 8, ncols = 12,
-#'             design_element_name = make_designpattern(
-#'                  values = c("A", "B", "C"),
-#'                  rows = 2:7, 
-#'                  cols = 2:11,
-#'                  pattern = "112301",
-#'                  byrow = TRUE))
-#' 
 #' @param values Vector of values to use
 #' @param rows Vector of rows where pattern applies
 #' @param cols Vector of cols where pattern applies
@@ -1391,7 +1381,16 @@ do you need to set `lookup_tbl_start` differently?")
 #' 
 #' @return \code{list(values, rows, cols, pattern, byrow)}
 #' 
-#' @seealso make_design
+#' @examples
+#' make_design(nrows = 8, ncols = 12,
+#'             design_element_name = make_designpattern(
+#'                  values = c("A", "B", "C"),
+#'                  rows = 2:7, 
+#'                  cols = 2:11,
+#'                  pattern = "112301",
+#'                  byrow = TRUE))
+#' 
+#' @seealso [gcplyr::make_design()]
 #' 
 #' @export
 make_designpattern <- function(values, rows, cols, 

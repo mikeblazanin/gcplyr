@@ -2,9 +2,18 @@
 % Please edit documentation in R/functions.R
 \name{make_designpattern}
 \alias{make_designpattern}
+\alias{mdp}
 \title{Make design pattern}
 \usage{
-make_designpattern(values, rows, cols, pattern, byrow = TRUE)
+make_designpattern(
+  values,
+  rows,
+  cols,
+  pattern = 1:length(values),
+  byrow = TRUE
+)
+
+mdp(values, rows, cols, pattern = 1:length(values), byrow = TRUE)
 }
 \arguments{
 \item{values}{Vector of values to use}
@@ -24,8 +33,7 @@ in \code{values}}
 \description{
 A helper function for use with \code{make_design}
 }
-\details{
-Example:
+\examples{
 make_design(nrows = 8, ncols = 12,
             design_element_name = make_designpattern(
                  values = c("A", "B", "C"),
@@ -33,7 +41,8 @@ make_design(nrows = 8, ncols = 12,
                  cols = 2:11,
                  pattern = "112301",
                  byrow = TRUE))
+
 }
 \seealso{
-make_design
+[gcplyr::make_design()]
 }

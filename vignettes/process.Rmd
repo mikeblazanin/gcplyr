@@ -224,7 +224,7 @@ ex_dat_mrg <-
 
 # Now let's plot the derivative in units of Abs/hour
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv_percap_hr)) +
+       aes(x = Time/3600, y = deriv_percap_hr)) +
   geom_line() +
   facet_wrap(~Well, scales = "free")
 ```

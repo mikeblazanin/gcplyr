@@ -122,12 +122,15 @@ to_excel <- function(x) {
 from_excel <- function(x) {
   #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
   out <- rep(NA, length(x))
-  x_splt <- strsplit(x, "")
+  already_nums <- sapply(x, canbe.numeric)
+  out[which(already_nums)] <- as.numeric(x[which(already_nums)])
+  not_nums <- which(!already_nums)
+  x_splt <- strsplit(x[not_nums], "")
   for (i in 1:length(x_splt)) {
     #Get indices of letters
     temp <- match(x_splt[[i]], LETTERS)
     #Multiply indices by powers of 26
-    out[i] <- sum(temp*26**((length(temp)-1):0))
+    out[not_nums[i]] <- sum(temp*26**((length(temp)-1):0))
   }
   if(any(is.na(out))) {
     stop(paste("Failed to convert from Excel-format:",

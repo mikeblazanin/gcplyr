@@ -1284,7 +1284,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
     if(!is.vector(dot_args[[i]][[4]]) & !is.character(dot_args[[i]][[4]])) {
       stop("pattern is not a string nor a vector")
     }
-    if (length(dot_args[[i]][[4]]) > 1) {
+    if (length(dot_args[[i]][[4]]) > 1 || is.numeric(dot_args[[i]][[4]])) {
       pattern_list <- dot_args[[i]][[4]]
     } else if(length(dot_args[[i]][[4]]) == 1) {
       pattern_list <- strsplit(dot_args[[i]][[4]], split = pattern_split)[[1]]

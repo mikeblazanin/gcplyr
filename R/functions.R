@@ -1394,11 +1394,16 @@ do you need to set `lookup_tbl_start` differently?")
 #' @seealso make_design
 #' 
 #' @export
-make_designpattern <- function(values, rows, cols, pattern, byrow = TRUE) {
+make_designpattern <- function(values, rows, cols, 
+                               pattern = 1:length(values), byrow = TRUE) {
   stopifnot(is.vector(values), is.vector(rows), is.vector(cols),
             (is.character(pattern) | is.vector(pattern)), is.logical(byrow))
   return(list(values, rows, cols, pattern, byrow))
 }
+
+#' @rdname make_designpattern
+#' @export
+mdp <- make_designpattern
 
 #' Fill output data.frame with \code{data} and \code{metadata}
 #'

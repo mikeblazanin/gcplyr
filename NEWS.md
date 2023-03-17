@@ -1,6 +1,24 @@
-# gcplyr 1.3.0.9000
+# gcplyr 1.4.0
 
-Stuff here
+* There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (likely 1.5.0), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that 'fitted' is always the first element and 'residuals' is always the second element
+
+* mdp() is a new function, it is simply a shorthand alias for make_designpattern()
+
+* Column numbers and row numbers in read_* and import_* functions can now be specified using a mix of base-10 numbers and base-26 Excel-style letters
+
+* separate_tidy now coerces strings of "NA" into NA values by default
+
+* Bug fix in make_design where NA values were being returned as "NA" (a string) instead of NA (missing value indicator) when output_format = 'tidy' and there were multiple design columns
+
+* Bug fix for make_design where pattern could not be just "1"
+
+* Bug fix where an error arose in calc_deriv when trans_y = 'log' was used with y values at or below 0. calc_deriv now handles the resulting NA/NaN values and raises a warning
+
+* Bug fixes in first_maxima and first_minima
+
+* Added warning when using make_design and it's likely that setting a custom lookup_tbl_start was forgotten
+
+* Improved documentation for make_designpattern
 
 # gcplyr 1.3.0
 

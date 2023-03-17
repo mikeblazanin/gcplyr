@@ -7,7 +7,8 @@
 from_excel(x)
 }
 \arguments{
-\item{x}{A vector of numbers in Excel-style base-26 letter format}
+\item{x}{A vector of column names in Excel-style base-26 letter format
+(any values that are already in base-10 will be returned as-is)}
 }
 \value{
 A vector of numbers in base-10

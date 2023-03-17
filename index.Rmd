@@ -21,7 +21,15 @@ knitr::opts_chunk$set(
 
 # gcplyr
 
+```{r, echo = FALSE}
+version <- as.vector(read.dcf('DESCRIPTION')[, 'Version'])
+version <- gsub('-', '.', version)
+```
 <!-- badges: start -->
+[![packageversion](https://img.shields.io/badge/Github-`r version`-blue.svg?style=flat&logo=github)](commits/master)
+[![CRAN status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
+[![License: MIT](https://img.shields.io/badge/license-MIT-red.svg)](https://cran.r-project.org/web/licenses/MIT)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/gcplyr?color=yellow)](https://cran.r-project.org/package=gcplyr)
 <!-- badges: end -->
 
 ## What this package can do

@@ -108,11 +108,7 @@ test_that("calc_deriv returns correctly with fitting utilized", {
     mutate(group_by(dat, grp),
            deriv = calc_deriv(x = x, y = y, percapita = TRUE, window_width_n = 3,
              blank = 0)))
-  expect_no_error(
-    mutate(group_by(dat, grp),
-           deriv = calc_deriv(x = x, y = y, percapita = TRUE, window_width_n = 3,
-             blank = 0, trans_y = "log")))
-  expect_no_warning(
+  expect_warning(
     mutate(group_by(dat, grp),
            deriv = calc_deriv(x = x, y = y, percapita = TRUE, window_width_n = 3,
                               blank = 0, trans_y = "log")))

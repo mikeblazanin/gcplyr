@@ -87,7 +87,8 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)}
                 If it's a string, will be split by \code{pattern_split}.
                 Pattern will be used as the indices of the values vector.
               
-                0's refer to NA
+                0's refer to NA. The pattern will be recycled as necessary
+                to fill all the wells of the rows and columns specified.
               
              5. a Boolean for whether this pattern should be filled byrow}
 }

@@ -168,8 +168,7 @@ Then, for each different design component, `make_design` needs five different pi
 my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, 
-  Bacteria = list(c("Str1", "Str2", "Str3", 
-                    "Str4", "Str5", "Str6"),
+  Bacteria = list(c("Str1", "Str2", "Str3", "Str4", "Str5", "Str6"),
                   2:7,
                   2:11,
                   "123456",

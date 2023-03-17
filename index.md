@@ -2,15 +2,14 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!--
 You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots in R chunks. In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+&#10;You can also embed plots in R chunks. In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
 -->
 
 # gcplyr
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.3.0-blue.svg?style=flat&logo=github)](commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.4.0-blue.svg?style=flat&logo=github)](commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:

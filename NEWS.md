@@ -1,3 +1,7 @@
+# gcplyr 1.4.0.9000
+
+stuff here
+
 # gcplyr 1.4.0
 
 * There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (likely 1.5.0), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that 'fitted' is always the first element and 'residuals' is always the second element

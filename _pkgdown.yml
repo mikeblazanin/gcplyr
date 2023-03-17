@@ -47,6 +47,7 @@ reference:
   contents:
   - make_design
   - make_designpattern
+  - mdp
   - write_blocks
 - title: Manipulating data in R
   desc: "Functions that transform, manipulate, or reshape data"

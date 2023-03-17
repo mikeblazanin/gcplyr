@@ -114,7 +114,8 @@ to_excel <- function(x) {
 
 #' A function that converts base-26 Excel-style letters to numbers
 #' 
-#' @param x A vector of numbers in Excel-style base-26 letter format
+#' @param x A vector of column names in Excel-style base-26 letter format
+#'          (any values that are already in base-10 will be returned as-is)
 #' 
 #' @return A vector of numbers in base-10
 #' 
@@ -122,7 +123,7 @@ to_excel <- function(x) {
 from_excel <- function(x) {
   #Based on: https://stackoverflow.com/questions/48983939/convert-a-number-to-excel-s-base-26
   out <- rep(NA, length(x))
-  already_nums <- sapply(x, canbe.numeric)
+  already_nums <- sapply(x, canbe.numeric, infinite_num = FALSE, nan_num = FALSE)
   out[which(already_nums)] <- as.numeric(x[which(already_nums)])
   not_nums <- which(!already_nums)
   x_splt <- strsplit(x[not_nums], "")
@@ -236,17 +237,23 @@ sep_finder <- function(blocks, nested_metadata = NULL) {
 #' returns TRUE. Otherwise, returns FALSE
 #' 
 #' @param x Vector to check
+#' @param infinite_num Should infinite values (or values that are coerced
+#'                     to be infinite by as.numeric) be considered as numeric?
+#' @param nan_num Should NaN values (or values that are coerced
+#'                     to be infinite by as.numeric) be considered as numeric?
 #' @return TRUE if \code{x} is numeric or can be converted to numeric without
 #'         warnings. Otherwise, FALSE
 #' 
 #' @noRd
-canbe.numeric <- function(x) {
+canbe.numeric <- function(x, infinite_num = TRUE, nan_num = TRUE) {
   if(is.numeric(x) | 
      tryCatch(
        {
          as.numeric(x)
          #This only gets executed if the line above doesn't warn or error
-         TRUE 
+         if(!infinite_num && is.infinite(as.numeric(x))) {FALSE
+         } else if (!nan_num && is.nan(as.numeric(x))) {FALSE
+         } else {TRUE}
        }, 
        warning = function(w) {FALSE},
        error = function(e) {stop(e)}

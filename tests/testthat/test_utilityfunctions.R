@@ -45,6 +45,13 @@ test_that("canbe_numeric works as expected", {
   expect_equal(canbe.numeric(c(5, "6", "hello")), FALSE)
   
   expect_error(canbe.numeric(list("a" = 5, "x" = c(6, 7))))
+  
+  expect_equal(canbe.numeric("INF"), TRUE)
+  expect_equal(canbe.numeric("NAN"), TRUE)
+  expect_equal(canbe.numeric("INF", infinite_num = FALSE), FALSE)
+  expect_equal(canbe.numeric("NAN", infinite_num = FALSE), TRUE)
+  expect_equal(canbe.numeric("INF", nan_num = FALSE), TRUE)
+  expect_equal(canbe.numeric("NAN", nan_num = FALSE), FALSE)
 })
 
 

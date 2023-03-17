@@ -22,6 +22,7 @@ lag_time,NA
 make_design,NA
 make_designpattern,NA
 make_tidydesign,NA
+mdp,NA
 merge_dfs,dplyr::full_join
 moving_average,NA
 moving_median,NA

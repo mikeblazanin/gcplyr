@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,19 @@
       <small>Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.0" id="gcplyr-140">gcplyr 1.4.0<a class="anchor" aria-label="anchor" href="#gcplyr-140"></a></h2>
+<ul><li><p>There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (likely 1.5.0), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that ‘fitted’ is always the first element and ‘residuals’ is always the second element</p></li>
+<li><p>mdp() is a new function, it is simply a shorthand alias for make_designpattern()</p></li>
+<li><p>Column numbers and row numbers in read_* and import_* functions can now be specified using a mix of base-10 numbers and base-26 Excel-style letters</p></li>
+<li><p>separate_tidy now coerces strings of “NA” into NA values by default</p></li>
+<li><p>Bug fix in make_design where NA values were being returned as “NA” (a string) instead of NA (missing value indicator) when output_format = ‘tidy’ and there were multiple design columns</p></li>
+<li><p>Bug fix for make_design where pattern could not be just “1”</p></li>
+<li><p>Bug fix where an error arose in calc_deriv when trans_y = ‘log’ was used with y values at or below 0. calc_deriv now handles the resulting NA/NaN values and raises a warning</p></li>
+<li><p>Bug fixes in first_maxima and first_minima</p></li>
+<li><p>Added warning when using make_design and it’s likely that setting a custom lookup_tbl_start was forgotten</p></li>
+<li><p>Improved documentation for make_designpattern</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0" id="gcplyr-130">gcplyr 1.3.0<a class="anchor" aria-label="anchor" href="#gcplyr-130"></a></h2>
 <ul><li><p>New function lag_time to calculate lag time</p></li>

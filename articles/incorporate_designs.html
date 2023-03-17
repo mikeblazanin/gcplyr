@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,11 +125,11 @@ experimental design.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.3.0, Build Date: 2023-02-19)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.4.0, Build Date: 2023-03-17)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. 'gcplyr: manipulate and analyze growth</span></span>
-<span><span class="co">#&gt; ##   curve data.' R package version 1.3.0</span></span>
+<span><span class="co">#&gt; ##   curve data.' R package version 1.4.0</span></span>
 <span><span class="co">#&gt; ##</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -420,8 +420,7 @@ to TRUE)</li>
 <code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
 <span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
 <span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, </span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, </span>
-<span>                    <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
+<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
 <span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
 <span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
 <span>                  <span class="st">"123456"</span>,</span>
@@ -783,25 +782,25 @@ tidy-shaped</strong>, so we just need to change the
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_design_tdy</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Well Bacteria Media</span></span>
-<span><span class="co">#&gt; 1    A1       NA    NA</span></span>
-<span><span class="co">#&gt; 2    A2       NA    NA</span></span>
-<span><span class="co">#&gt; 3    A3       NA    NA</span></span>
-<span><span class="co">#&gt; 4    A4       NA    NA</span></span>
-<span><span class="co">#&gt; 5    A5       NA    NA</span></span>
-<span><span class="co">#&gt; 6    A6       NA    NA</span></span>
-<span><span class="co">#&gt; 7    A7       NA    NA</span></span>
-<span><span class="co">#&gt; 8    A8       NA    NA</span></span>
-<span><span class="co">#&gt; 9    A9       NA    NA</span></span>
-<span><span class="co">#&gt; 10  A10       NA    NA</span></span>
-<span><span class="co">#&gt; 11  A11       NA    NA</span></span>
-<span><span class="co">#&gt; 12  A12       NA    NA</span></span>
-<span><span class="co">#&gt; 13   B1       NA    NA</span></span>
+<span><span class="co">#&gt; 1    A1     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2    A2     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3    A3     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4    A4     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5    A5     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6    A6     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7    A7     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 8    A8     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 9    A9     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 10  A10     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 11  A11     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 12  A12     &lt;NA&gt;  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 13   B1     &lt;NA&gt;  &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; 14   B2     Str1  Med1</span></span>
 <span><span class="co">#&gt; 15   B3     Str1  Med2</span></span>
 <span><span class="co">#&gt; 16   B4     Str1  Med3</span></span>
 <span><span class="co">#&gt; 17   B5     Str1  Med4</span></span>
 <span><span class="co">#&gt; 18   B6     Str1  Med5</span></span>
-<span><span class="co">#&gt; 19   B7     Str1    NA</span></span>
+<span><span class="co">#&gt; 19   B7     Str1  &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; 20   B8     Str1  Med7</span></span></code></pre></div>
 </div>
 <div class="section level3">

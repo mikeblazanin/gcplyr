@@ -12,7 +12,7 @@ for later merging with read data"><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -162,7 +162,8 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)</p></dd>
                 values should be filled into the rows and columns specified.</p>                
 <p>If it's a string, will be split by <code>pattern_split</code>.
                 Pattern will be used as the indices of the values vector.</p>              
-<p>0's refer to NA</p>              
+<p>0's refer to NA. The pattern will be recycled as necessary
+                to fill all the wells of the rows and columns specified.</p>              
 <p>5. a Boolean for whether this pattern should be filled byrow</p></dd>
 
 </dl></div>

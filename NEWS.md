@@ -1,6 +1,6 @@
-# gcplyr 1.4.0.9000
+# gcplyr 1.4.1
 
-stuff here
+* bug fix for calc_deriv when all or nearly all values become NA after log-transformation
 
 # gcplyr 1.4.0
 

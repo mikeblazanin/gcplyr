@@ -2865,6 +2865,11 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     narm_temp <- rm_nas(x = sub_x, y = sub_y, 
                         na.rm = na.rm, stopifNA = FALSE)
     
+    if(length(narm_temp[["y"]]) <= 1) {
+      ans[indices] <- NA
+      next
+    }
+    
     #Reorder as needed
     order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
     

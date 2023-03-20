@@ -47,6 +47,29 @@ test_that("calc_deriv returns correctly with no fitting utilized", {
     mutate(group_by(dat, grp),
            deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))$deriv,
                expected = c(3, 5, (25-9)/2, NA, 11, (64-36)/2, NA, 17, 19, NA)/dat$y)
+  
+  #data all NAs, deriv
+  dat <- data.frame(x = 1:10, y = rep(NA, 10), grp = rep("A", 10))
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y))$deriv,
+               expected = rep(NA, 10))
+  #data all NAs, percap
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, 
+                                         percapita = TRUE, blank = 0))$deriv,
+               expected = rep(NA, 10))
+  
+  #data almost all NAs, deriv
+  dat <- data.frame(x = 1:10, y = c(NA, NA, NA, NA, 5, rep(NA, 5)), 
+                    grp = rep("A", 10))
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y))$deriv,
+               expected = rep(NA, 10))
+  #data almost all NAs, percap
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, 
+                                         percapita = TRUE, blank = 0))$deriv,
+               expected = rep(NA, 10))
 })
 
 test_that("calc_deriv returns correctly with fitting utilized", {
@@ -112,6 +135,29 @@ test_that("calc_deriv returns correctly with fitting utilized", {
     mutate(group_by(dat, grp),
            deriv = calc_deriv(x = x, y = y, percapita = TRUE, window_width_n = 3,
                               blank = 0, trans_y = "log")))
+  
+  #data all NAs, deriv
+  dat <- data.frame(x = 1:10, y = rep(NA, 10), grp = rep("A", 10))
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, window_width_n = 3))$deriv,
+               expected = rep(NA, 10))
+  #data all NAs, percap
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, window_width_n = 3,
+                                         percapita = TRUE, blank = 0))$deriv,
+               expected = rep(NA, 10))
+  
+  #data almost all NAs, deriv
+  dat <- data.frame(x = 1:10, y = c(NA, NA, NA, NA, 5, rep(NA, 5)), 
+                    grp = rep("A", 10))
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, window_width_n = 3))$deriv,
+               expected = rep(NA, 10))
+  #data almost all NAs, percap
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, window_width_n = 3,
+                                         percapita = TRUE, blank = 0))$deriv,
+               expected = rep(NA, 10))
 })
 
 test_that("calc_deriv checks for grouping", {

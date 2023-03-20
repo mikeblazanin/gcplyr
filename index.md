@@ -9,7 +9,7 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.4.0-blue.svg?style=flat&logo=github)](commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.4.1-blue.svg?style=flat&logo=github)](commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:
@@ -42,13 +42,6 @@ mikeblazanin \[at\] gmail \[dot\] com**
 
 ## Installation
 
-You can install the version most-recently released on CRAN by running
-the following line in R:
-
-``` r
-install.packages("gcplyr")
-```
-
 You can install the most recently-released version from
 [GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
 following lines in R:
@@ -56,6 +49,13 @@ following lines in R:
 ``` r
 install.packages("devtools")
 devtools::install_github("mikeblazanin/gcplyr")
+```
+
+You can install the version most-recently released on CRAN by running
+the following line in R:
+
+``` r
+install.packages("gcplyr")
 ```
 
 ## Getting Started
@@ -79,4 +79,4 @@ finish, starting with the introduction:
 Please cite software as:
 
 Blazanin, Michael. 2023. ‘gcplyr: manipulate and analyze growth curve
-data.’ R package version 1.4.0
+data.’ R package version 1.4.1

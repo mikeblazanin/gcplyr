@@ -47,17 +47,17 @@ version <- gsub('-', '.', version)
 
 ## Installation
 
-You can install the version most-recently released on CRAN by running the following line in R:
-
-``` r
-install.packages("gcplyr")
-```
-
 You can install the most recently-released version from [GitHub](https://github.com/mikeblazanin/gcplyr/) by running the following lines in R:
 
 ``` r
 install.packages("devtools")
 devtools::install_github("mikeblazanin/gcplyr")
+```
+
+You can install the version most-recently released on CRAN by running the following line in R:
+
+``` r
+install.packages("gcplyr")
 ```
 
 ## Getting Started

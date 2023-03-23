@@ -2847,6 +2847,9 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     sub_y <- y[indices]
     sub_x <- x[indices]
     
+    #Blank subtraction
+    if(!is.null(blank)) {sub_y <- sub_y - blank[i]}
+    
     if(trans_y == "log") {
       caught_log <- myTryCatch(log(sub_y))
       if(!is.null(caught_log$warning)) {
@@ -2865,10 +2868,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     narm_temp <- rm_nas(x = sub_x, y = sub_y, 
                         na.rm = na.rm, stopifNA = FALSE)
     
-    if(length(narm_temp[["y"]]) <= 1) {
-      ans[indices] <- NA
-      next
-    }
+    if(length(narm_temp[["y"]]) <= 1) {ans[indices] <- NA; next}
     
     #Reorder as needed
     order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
@@ -2877,19 +2877,21 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     sub_y <- order_temp[["y"]]
     sub_x <- order_temp[["x"]]
     
-    #Blank subtraction
-    if(!is.null(blank)) {sub_y <- sub_y - blank[i]}
-    
     if(is.null(window_width) & is.null(window_width_n)) {
       #Calculate differences
       sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
-      #Percapita (if specified)
-      if(percapita) {sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
+      
       #Derivative & rescale (if specified)
       if(return == "derivative") {
         sub_ans <- sub_ans/
           ((sub_x[2:length(sub_x)]-sub_x[1:(length(sub_x)-1)])/x_scale)
       }
+      
+      #Percapita
+      # (if trans_y = 'linear', need to divide by y to make percap
+      #  if trans_y = 'log', must be deriv and deriv is already percap)
+      if(percapita && trans_y == 'linear') {
+        sub_ans <- sub_ans/sub_y[1:(length(sub_y)-1)]}
     } else {
       sub_ans <- rep(NA, length(sub_x))
 
@@ -2900,17 +2902,16 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
         if(any(is.na(sub_y[windows[[j]]]) | is.infinite(sub_y[windows[[j]]]))) {
           sub_ans[j] <- NA
         } else {
+          #get slope
+          # (if trans_y = 'linear', slope is derivative
+          #  if trans_y = 'log', slope is already percap deriv)
           temp <- stats::lm(myy ~ myx, 
                             data = data.frame(myy = sub_y[windows[[j]]],
                                               myx = sub_x[windows[[j]]]))
-          if(trans_y == "linear") {
-            sub_ans[j] <- temp$coefficients["myx"]*x_scale
-            if(percapita) {
-              sub_ans[j] <- 
-                sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
-            }
-          } else {
-            sub_ans[j] <- temp$coefficients["myx"]*x_scale
+          sub_ans[j] <- temp$coefficients["myx"]*x_scale
+          if(percapita == TRUE && trans_y == 'linear') {
+            sub_ans[j] <- 
+              sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
           }
         }
       }

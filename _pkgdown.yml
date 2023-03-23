@@ -82,6 +82,7 @@ reference:
   - uninterleave
   - to_excel
   - from_excel
+  - solve_linear
 - title: Example data
   desc: "Example wide-shaped data.frames of growth curves data"
   contents:

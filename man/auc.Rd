@@ -2,9 +2,9 @@
 % Please edit documentation in R/functions.R
 \name{auc}
 \alias{auc}
-\title{calculate area under the curve}
+\title{Calculate area under the curve}
 \usage{
-auc(x, y, xlim = NULL, na.rm = TRUE)
+auc(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE)
 }
 \arguments{
 \item{x}{Numeric vector of x values}
@@ -16,7 +16,15 @@ area under the curve should be calculated (where NA can be
 provided for the area to be calculated from the start or to
 the end of the data)}
 
+\item{blank}{Value to be subtracted from \code{y} values before calculating
+area under the curve}
+
 \item{na.rm}{a logical indicating whether missing values should be removed}
+
+\item{neg.rm}{a logical indicating whether \code{y} values below zero should 
+be treated as zeros. If \code{FALSE}, area under the curve
+for negative \code{y} values will be calculated normally,
+effectively subtracting from the returned value.}
 }
 \value{
 A scalar for the total area under the curve

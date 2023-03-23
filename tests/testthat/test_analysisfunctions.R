@@ -6,6 +6,11 @@ test_that("auc returns correctly with no xlim", {
   expect_equal(auc(x = c(1:5, NA, 6:10), y = c((1:5)**2, NA, (6:10)**2)), 669/2)
   expect_equal(auc(x = c(1:3, NA, 4:10), y = c((1:7)**2, NA, (8:10)**2)), 375)
   expect_equal(auc(x = c(1:10), y = c(1:5, 5:1)), 29)
+  #Data is all NA's
+  expect_equal(auc(x = 1:10, y = rep(NA, 10)), NA)
+  #Data is mostly NA's
+  expect_equal(auc(x = 1:10, y = c(7, rep(NA, 9))), NA)
+  expect_equal(auc(x = 1:10, y = c(1, 2, rep(NA, 8))), 1.5)
 })
 
 test_that("auc returns correctly with xlim", {

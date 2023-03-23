@@ -561,25 +561,27 @@ myTryCatch <- function(expr) {
 #' and then returns information not provided (either the slope, an x point
 #' on the line, or a y point on the line)
 #' 
-#' @params x1,y1 A point on the line
-#' @params x2,y2 An additional point on the line
-#' @params x3,y3 An additional point on the line
+#' @param x1,y1 A point on the line
+#' @param x2,y2 An additional point on the line
+#' @param x3,y3 An additional point on the line
 #' @param m The slope of the line
 #' 
-#' @details Note that there is no requirement that x1 < x2 < x3: the points
-#'          can be in any order along the line
+#' @details Note that there is no requirement that 
+#'          \code{x1} < \code{x2} < \code{x3}: the points can be in any order 
+#'          along the line
 #' 
 #' @return A named vector with the missing information from the line:
 #' 
-#'         If m and x2 are provided, y2 will be returned
+#'         If \code{m} and \code{x2} are provided, \code{y2} will be returned
 #'         
-#'         If m and y2 are provided, x2 will be returned
+#'         If \code{m} and \code{y2} are provided, \code{x2} will be returned
 #'         
-#'         If x2 and y2 are provided, but neither x3 nor y3 are provided,
-#'         m will be returned
+#'         If \code{x2} and \code{y2} are provided, but neither \code{x3} nor 
+#'         \code{y3} are provided, \code{m} will be returned
 #'         
-#'         If x2 and y2 are provided and one of x3 or y3 are provided, the other
-#'         (y3 or x3) will be returned
+#'         If \code{x2} and \code{y2} are provided and one of \code{x3} or 
+#'         \code{y3} are provided, the other (\code{y3} or \code{x3}) will be 
+#'         returned
 #' 
 #' @export
 solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,

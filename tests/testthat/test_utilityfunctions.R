@@ -106,3 +106,14 @@ test_that("get_windows returns correctly", {
     list(NA, c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5),
          c(6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), NA))
 })
+
+test_that("solve_linear returns correctly", {
+  expect_equal(solve_linear(x1 = 0, y1 = 0, x2 = 5, y2 = 5), setNames(1, "m"))
+  expect_equal(solve_linear(x1 = 0, y1 = 0, x2 = 5, m = 1), setNames(5, "y2"))
+  expect_equal(solve_linear(x1 = 0, y1 = 0, y2 = 5, m = 2), setNames(2.5, "x2"))
+  expect_equal(solve_linear(x1 = 0, y1 = 0, x2 = 10, y2 = 5, x3 = 15), 
+               setNames(7.5, "y3"))
+  expect_equal(solve_linear(x1 = 0, y1 = 0, x2 = 10, y2 = 5, y3 = 7.5), 
+               setNames(15, "x3"))
+})
+  

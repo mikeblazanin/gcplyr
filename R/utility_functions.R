@@ -550,3 +550,48 @@ myTryCatch <- function(expr) {
     })
   list(value=value, warning=warn, error=err)
 }
+
+#' Return missing information about a line
+#' 
+#' Takes a set of inputs that is sufficient information to infer a line
+#' and then returns information not provided (either the slope, an x point
+#' on the line, or a y point on the line)
+#' 
+#' @params x1,y1 A point on the line
+#' @params x2,y2 An additional point on the line
+#' @params x3,y3 An additional point on the line
+#' @param m The slope of the line
+#' 
+#' @return A named vector with the missing information from the line:
+#' 
+#'         If m and x2 are provided, y2 will be returned
+#'         
+#'         If m and y2 are provided, x2 will be returned
+#'         
+#'         If x2 and y2 are provided, but neither x3 nor y3 are provided,
+#'         m will be returned
+#'         
+#'         If x2 and y2 are provided and one of x3 or y3 are provided, the other
+#'         (y3 or x3) will be returned
+#' 
+#' @export
+solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
+                         m = NULL) {
+  #provide x1 and y1
+  #to get y2, provide x2 and m
+  #to get x2, provide y2 and m
+  #to get m, provide x2 and y2
+  #to get x3, provide x1, y1, x2, y2, y3
+  #to get y3, provide x1, y1, x2, y2, x3
+  if(!is.null(x2) & !is.null(m)) {return(setNames(m * (x2-x1) + y1, "y2"))} #return y2
+  if(!is.null(y2) & !is.null(m)) {return(setNames(x1 + (y2-y1)/m, "x2"))} #return x2
+  if(!is.null(x2) & !is.null(y2)) {
+    m <- (y2-y1)/(x2-x1)
+    if(!is.null(x3)) {return(setNames(m * (x3-x1) + y1, "y3")) #provide y3
+    } else if (!is.null(y3)) {return(setNames(x1 + (y3-y1)/m, "x3")) #provide x3
+    } else {return(setNames(m, "m"))} #return m
+  }
+  stop("solve_linear does not have enough information")
+}
+
+

@@ -566,6 +566,9 @@ myTryCatch <- function(expr) {
 #' @params x3,y3 An additional point on the line
 #' @param m The slope of the line
 #' 
+#' @details Note that there is no requirement that x1 < x2 < x3: the points
+#'          can be in any order along the line
+#' 
 #' @return A named vector with the missing information from the line:
 #' 
 #'         If m and x2 are provided, y2 will be returned

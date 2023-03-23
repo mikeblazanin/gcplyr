@@ -295,18 +295,22 @@ make.numeric <- function(x, varname) {
 rm_nas <- function(..., na.rm, stopifNA = FALSE) {
   out <- list(..., "nas_indices_removed" = NULL)
   
-  if(!all_same(unlist(lapply(list(...), length)))) {
-    stop(paste(names(list(...)), "are not all the same length"))}
+  lengths <- unlist(lapply(list(...), length))
+  if(!all_same(lengths[lengths != 0])) {
+    stop(paste(paste(names(list(...)), collapse = ","), 
+               "are not all the same length"))}
   
   if(na.rm == TRUE) {
     out[["nas_indices_removed"]] <- 
       unique(unlist(lapply(X = list(...), FUN = function(x) which(is.na(x)))))
-    out[["nas_indices_removed"]] <- 
-      out[["nas_indices_removed"]][order(out[["nas_indices_removed"]])]
-    out[names(out) != "nas_indices_removed"] <-
-      lapply(X = out[names(out) != "nas_indices_removed"],
-             FUN = function(x, idx_rem) x[-idx_rem],
-             idx_rem = out[["nas_indices_removed"]])
+    if(length(out[["nas_indices_removed"]]) > 0) {
+      out[["nas_indices_removed"]] <- 
+        out[["nas_indices_removed"]][order(out[["nas_indices_removed"]])]
+      out[names(out) != "nas_indices_removed"] <-
+        lapply(X = out[names(out) != "nas_indices_removed"],
+               FUN = function(x, idx_rem) x[-idx_rem],
+               idx_rem = out[["nas_indices_removed"]])
+    } else {out["nas_indices_removed"] <- list(NULL)}
   } else { #don't remove NA's
     if(stopifNA == TRUE && any(unlist(lapply(list(...), is.na)))) {
       stop("Some values are NA but na.rm = FALSE")

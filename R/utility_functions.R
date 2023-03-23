@@ -277,58 +277,38 @@ make.numeric <- function(x, varname) {
   } else {stop(paste(varname, "cannot be coerced to numeric"))}
 }
 
-#' A function that removes na's values from a vector or pair of vectors
+#' A function that removes na's values from a set of vectors
 #' 
-#' Any values of x and y will be removed for indices where x or y are NA
+#' Vectors will have all indices removed where any of the vectors
+#' are NA at that index
 #' 
-#' @param x,y Vectors to remove NA's from. At least one must be non-NULL
+#' @param ... Vectors to remove NA's from.
 #' @param na.rm Boolean, should NA's be removed
 #' @param stopifNA Boolean, should an error be passed if na.rm = FALSE
 #'                 and there are NA's in x or y?
-#' @return A list containing: x with NA's removed
-#' 
-#'                            y with NA's removed
+#' @return A list containing: each input ... vector with NA's removed
 #'                          
 #'                            vector of indices where NA's were removed
 #'                            (NULL when none were removed)
 #' 
 #' @noRd
-rm_nas <- function(x = NULL, y = NULL, na.rm, stopifNA = FALSE) {
-  if(is.null(x) & is.null(y)) {}
-  
-  out <- list("x" = x, "y" = y, "nas_indices_removed" = NULL)
-  
+rm_nas <- function(..., na.rm, stopifNA = FALSE) {
+  out <- list(..., "nas_indices_removed" = NULL)
   if(na.rm == TRUE) {
-    if(is.null(x) & is.null(y)) {
-      stop("both x and y are NULL for NA's removal")
-    } else if (is.null(x) & !is.null(y)) {
-      #Remove from only y
-      if(any(is.na(y))) {
-        out[["nas_indices_removed"]] <- which(is.na(y))
-        out[["y"]] <- y[-out[["nas_indices_removed"]]]
-      }
-    } else if (!is.null(x) & is.null(y)) {
-      #Remove from only x
-      if(any(is.na(x))) {
-        out[["nas_indices_removed"]] <- which(is.na(x))
-        out[["x"]] <- x[-out[["nas_indices_removed"]]]
-      }
-    } else if (!is.null(x) & !is.null(y)) {
-      #Remove from both x and y
-      if (length(x) != length(y)) {
-        stop("x and y for NA removal are not the same length")
-      }
-      if(any(is.na(x), is.na(y))) {
-        out[["nas_indices_removed"]] <- which(is.na(x) | is.na(y))
-        out[["x"]] <- x[-out[["nas_indices_removed"]]]
-        out[["y"]] <- y[-out[["nas_indices_removed"]]]
-      }
-    }
+    out[["nas_indices_removed"]] <- 
+      unique(unlist(lapply(X = list(...), FUN = function(x) which(is.na(x)))))
+    out[["nas_indices_removed"]] <- 
+      out[["nas_indices_removed"]][order(out[["nas_indices_removed"]])]
+    out[names(out) != "nas_indices_removed"] <-
+      lapply(X = out[names(out) != "nas_indices_removed"],
+             FUN = function(x, idx_rem) x[-idx_rem],
+             idx_rem = out[["nas_indices_removed"]])
   } else { #don't remove NA's
-    if(stopifNA == TRUE & (any(is.na(x)) | !is.null(y) & any(is.na(y)))) {
+    if(stopifNA == TRUE && any(unlist(lapply(list(...), is.na)))) {
       stop("Some values are NA but na.rm = FALSE")
     }
   }
+
   return(out)
 }
 

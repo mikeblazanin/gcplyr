@@ -3428,7 +3428,7 @@ please use find_threshold_crosses for more flexibility")
                                 ...)[1])
 }
 
-#' calculate area under the curve
+#' Calculate area under the curve
 #' 
 #' This function takes a vector of \code{x} and \code{y} values
 #' and returns a scalar for the area under the curve, calculated using 
@@ -3440,7 +3440,13 @@ please use find_threshold_crosses for more flexibility")
 #'             area under the curve should be calculated (where NA can be
 #'             provided for the area to be calculated from the start or to
 #'             the end of the data)
+#' @param blank Value to be subtracted from \code{y} values before calculating
+#'              area under the curve
 #' @param na.rm a logical indicating whether missing values should be removed
+#' @param neg.rm a logical indicating whether \code{y} values below zero should 
+#'               be treated as zeros. If \code{FALSE}, area under the curve
+#'               for negative \code{y} values will be calculated normally,
+#'               effectively subtracting from the returned value.
 #' 
 #' @details 
 #' This function is designed to be compatible for use within
@@ -3449,7 +3455,7 @@ please use find_threshold_crosses for more flexibility")
 #' @return A scalar for the total area under the curve
 #'             
 #' @export
-auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
+auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
   if(!is.vector(x)) {stop(paste("x is not a vector, it is class:", class(x)))}
   if(!is.vector(y)) {stop(paste("y is not a vector, it is class:", class(y)))}
   
@@ -3466,6 +3472,8 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   
   x <- dat[["x"]]
   y <- dat[["y"]]
+  
+  y <- y - blank
 
   #Check if xlim has been specified
   if(!is.null(xlim)) {
@@ -3514,6 +3522,7 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
   }
   
   if(any(y < 0)) {warning("some y values are below 0")}
+  if(neg.rm == TRUE) {y[y < 0] <- 0}
   
   #Calculate auc
   # area = 0.5 * (y1 + y2) * (x2 - x1)
@@ -3577,6 +3586,11 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   y1 <- make.numeric(y1, "y1")
   x1 <- make.numeric(x1, "x1")
   
+  narm_temp <- rm_nas(x = x, y = y, deriv = deriv)
+  x <- narm_temp[["x"]]
+  y <- narm_temp[["y"]]
+  deriv <- narm_temp[["deriv"]]
+  
   if(is.null(slope)) {
     if(is.null(deriv)) {stop("deriv or slope must be provided")}
     slope <- max(deriv, na.rm = na.rm)}
@@ -3599,7 +3613,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     stop("trans_y must be one of c('linear', 'log')")}
   if(trans_y == "log") {y0 <- log(y0); y1 <- log(y1)}
   
-  return((y0-y1)/slope + x1)
+  return(solve_linear(x1 = x1, y1 = y1, m = slope, y2 = y0))
 }
 
 # Legacy Code ----

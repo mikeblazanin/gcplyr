@@ -3450,25 +3450,23 @@ please use find_threshold_crosses for more flexibility")
 #'             
 #' @export
 auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
-  if(!na.rm & any(c(is.na(x), is.na(y)))) {
-    stop("na.rm = FALSE but x or y contain NA's")
-  }
-  if(!is.vector(x)) {
-    stop(paste("x is not a vector, it is class:", class(x)))
-  }
-  if(!is.vector(y)) {
-    stop(paste("y is not a vector, it is class:", class(y)))
-  }
+  if(!is.vector(x)) {stop(paste("x is not a vector, it is class:", class(x)))}
+  if(!is.vector(y)) {stop(paste("y is not a vector, it is class:", class(y)))}
   
   x <- make.numeric(x)
   y <- make.numeric(y)
-
-  to_keep <- which(!(is.na(x) | is.na(y)))
-  x <- x[to_keep]
-  y <- y[to_keep]
-  stopifnot(order(x) == 1:length(x),
-            length(x) > 1, length(y) > 1)
   
+  #remove nas
+  dat <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
+  
+  if(length(dat$y) <= 1) {return(NA)}
+  
+  #reorder
+  dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
+  
+  x <- dat[["x"]]
+  y <- dat[["y"]]
+
   #Check if xlim has been specified
   if(!is.null(xlim)) {
     stopifnot(is.vector(xlim), length(xlim) == 2, any(!is.na(xlim)))
@@ -3479,15 +3477,17 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
       xlim[1] <- x[1]
     } else { #add lower xlim to the x vector and the interpolated y to y vector
       if (!(xlim[1] %in% x)) {
-        xndx <- max(which(xlim[1] > x))
-        slp <- (y[xndx] - y[xndx+1])/(x[xndx] - x[xndx+1])
         x <- c(x, xlim[1])
-        #interpolated_y = m * interpolation_x + b
-        #   m = (y_1 - y_2)/(x_1 - x_2)
-        #   b = y_1 - x_1 * m
-        y <- c(y, xlim[1]*slp + y[xndx] - x[xndx]*slp)
-        y <- y[order(x)]
-        x <- x[order(x)]
+        xndx <- max(which(x < xlim[1]))
+        y <- c(y, solve_linear(x1 = x[xndx], y1 = y[xndx],
+                               x2 = x[xndx+1], y2 = y[xndx+1],
+                               x3 = xlim[1]))
+                               
+        #reorder
+        dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
+        
+        x <- dat[["x"]]
+        y <- dat[["y"]]
       }
     }
        
@@ -3496,15 +3496,17 @@ auc <- function(x, y, xlim = NULL, na.rm = TRUE) {
       xlim[2] <- x[length(x)]
     } else { #add upper xlim to the x vector and the interpolated y to y vector
       if (!(xlim[2] %in% x)) {
-        xndx <- max(which(xlim[2] > x))
-        slp <- (y[xndx] - y[xndx+1])/(x[xndx] - x[xndx+1])
         x <- c(x, xlim[2])
-        #interpolated_y = m * interpolation_x + b
-        #   m = (y_1 - y_2)/(x_1 - x_2)
-        #   b = y_1 - x_1 * m
-        y <- c(y, xlim[2]*slp + y[xndx] - x[xndx]*slp)
-        y <- y[order(x)]
-        x <- x[order(x)]
+        xndx <- max(which(x < xlim[2]))
+        y <- c(y, solve_linear(x1 = x[xndx], y1 = y[xndx],
+                               x2 = x[xndx+1], y2 = y[xndx+1],
+                               x3 = xlim[2]))
+        
+        #reorder
+        dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
+        
+        x <- dat[["x"]]
+        y <- dat[["y"]]
       }
     }
     y <- y[(x >= xlim[1]) & (x <= xlim[2])]

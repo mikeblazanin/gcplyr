@@ -294,6 +294,10 @@ make.numeric <- function(x, varname) {
 #' @noRd
 rm_nas <- function(..., na.rm, stopifNA = FALSE) {
   out <- list(..., "nas_indices_removed" = NULL)
+  
+  if(var(unlist(lapply(list(...), length))) != 0) {
+    stop(paste(names(list(...)), "are not all the same length"))}
+  
   if(na.rm == TRUE) {
     out[["nas_indices_removed"]] <- 
       unique(unlist(lapply(X = list(...), FUN = function(x) which(is.na(x)))))

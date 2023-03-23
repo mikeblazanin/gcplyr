@@ -17,7 +17,12 @@ test_that("calc_deriv on regular data, no fitting", {
     expected = c(seq(from = 3, to = 19, by = 2)/dat$y[1:9], NA))
   
   #percapita = TRUE, trans_y = 'log'
-  
+  dat <- data.frame(x = 1:10, y = exp(1:10), grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp), 
+           percap = calc_deriv(x = x, y = y, percapita = TRUE,
+                                    trans_y = 'log', blank = 0))$percap,
+    c(rep(1, 9), NA))
 })
 
 test_that("calc_deriv on regular data, fitting", {
@@ -32,9 +37,9 @@ test_that("calc_deriv on regular data, fitting", {
   
   #percapita = TRUE, trans_y = 'linear'
   #(which as time resolution approaches infinity approaches the same value)
-  dat <- data.frame(x = seq(from = 0, to = 1, by = 0.001), 
-                    y = exp(seq(from = 0, to = 1, by = 0.001)),
-                    grp = rep("A",length(seq(from = 0, to = 1, by = 0.001))))
+  dat <- data.frame(x = seq(from = 0, to = .1, by = 0.001), 
+                    y = exp(seq(from = 0, to = .1, by = 0.001)),
+                    grp = rep("A",length(seq(from = 0, to = .1, by = 0.001))))
   expect_equal(tolerance = 0.00001,
                mutate(group_by(dat, grp),
                       deriv = calc_deriv(x = x, y = y, percapita = TRUE, 
@@ -63,23 +68,32 @@ test_that("calc_deriv with x_scale", {
     expected = c(seq(from = 3, to = 19, by = 2), NA)*10)
   
   #with no fitting, percap, linear
-  
-  #with no fitting, percap, log
-  
-  #with fitting
-  dat <- data.frame(x = seq(from = 0, to = 9, by = 1), 
-                    y = exp(seq(from = 0, to = 9, by = 1)),
-                    grp = rep("A", 10))
   expect_equal(
     mutate(group_by(dat, grp),
-           deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0,
-                              window_width_n = 3, trans_y = "log", x_scale = 10))$deriv,
-    expected = c(NA, rep(10, length(dat$x)-2), NA))
+           deriv = calc_deriv(x = x, y = y, percapita = TRUE, 
+                              blank = 0, x_scale = 7))$deriv,
+    expected = 7*c(seq(from = 3, to = 19, by = 2)/dat$y[1:9], NA))
+  
+  #with no fitting, percap, log
+  dat <- data.frame(x = 1:10, y = exp(1:10), grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp), 
+           percap = calc_deriv(x = x, y = y, percapita = TRUE,
+                               trans_y = 'log', blank = 0, x_scale = 3))$percap,
+    c(rep(3, 9), NA))
+  
+  #with fitting
+  dat <- data.frame(x = c(1:10), y = c(1:10)**2, grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp),
+           deriv = calc_deriv(x = x, y = y, window_width_n = 5,
+                              x_scale = 9))$deriv,
+    expected = 9*c(NA, NA, seq(from = 6, to = 16, by = 2), NA, NA))
   
   #with fitting, percap, linear
-  dat <- data.frame(x = seq(from = 0, to = 1, by = 0.001), 
-                    y = exp(seq(from = 0, to = 1, by = 0.001)),
-                    grp = rep("A",length(seq(from = 0, to = 1, by = 0.001))))
+  dat <- data.frame(x = seq(from = 0, to = .1, by = 0.001), 
+                    y = exp(seq(from = 0, to = .1, by = 0.001)),
+                    grp = rep("A",length(seq(from = 0, to = .1, by = 0.001))))
   expect_equal(tolerance = 0.00001,
                mutate(group_by(dat, grp),
                       deriv = calc_deriv(x = x, y = y, percapita = TRUE, x_scale = 10,
@@ -87,12 +101,69 @@ test_that("calc_deriv with x_scale", {
                expected = c(NA, rep(10, length(dat$x)-2), NA))
   
   #with fitting, percap, log
-  
+  dat <- data.frame(x = seq(from = 0, to = 9, by = 1), 
+                    y = exp(seq(from = 0, to = 9, by = 1)),
+                    grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp),
+           deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0,
+                              window_width_n = 3, trans_y = "log",
+                              x_scale = 6))$deriv,
+    expected = 6*c(NA, rep(1, length(dat$x)-2), NA))
 })
 
 test_that("calc_deriv with non-zero blank", {
   library(dplyr)
   
+  #with no fitting
+  dat <- data.frame(x = 1:10, y = 7+(1:10)**2, grp = rep("A", 10))
+  expect_equal(mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, blank = 7))$deriv,
+               c(seq(from = 3, to = 19, by = 2), NA))
+  
+  #with no fitting, percap, linear
+  expect_equal(
+    mutate(group_by(dat, grp),
+           deriv = calc_deriv(x = x, y = y, percapita = TRUE,  blank = 7))$deriv,
+    expected = c(seq(from = 3, to = 19, by = 2)/(dat$y[1:9]-7), NA))
+  
+  #with no fitting, percap, log
+  dat <- data.frame(x = 1:10, y = 4+exp(1:10), grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp), 
+           percap = calc_deriv(x = x, y = y, percapita = TRUE,
+                               trans_y = 'log', blank = 4))$percap,
+    c(rep(1, 9), NA))
+  
+  #with fitting
+  dat <- data.frame(x = c(1:10), y = 3+c(1:10)**2, grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp),
+           deriv = calc_deriv(x = x, y = y, window_width_n = 5,
+                              blank = 3))$deriv,
+    expected = c(NA, NA, seq(from = 6, to = 16, by = 2), NA, NA))
+  
+  #with fitting, percap, linear
+  dat <- data.frame(x = seq(from = 0, to = .1, by = 0.001), 
+                    y = 2+exp(seq(from = 0, to = .1, by = 0.001)),
+                    grp = rep("A",length(seq(from = 0, to = .1, by = 0.001))))
+  expect_equal(tolerance = 0.00001,
+               mutate(group_by(dat, grp),
+                      deriv = calc_deriv(x = x, y = y, percapita = TRUE, 
+                                         x_scale = 10,
+                                         blank = 2, window_width_n = 3))$deriv,
+               expected = c(NA, rep(10, length(dat$x)-2), NA))
+  
+  #with fitting, percap, log
+  dat <- data.frame(x = seq(from = 0, to = 9, by = 1), 
+                    y = 5+exp(seq(from = 0, to = 9, by = 1)),
+                    grp = rep("A", 10))
+  expect_equal(
+    mutate(group_by(dat, grp),
+           deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 5,
+                              window_width_n = 3, trans_y = "log",
+                              x_scale = 6))$deriv,
+    expected = 6*c(NA, rep(1, length(dat$x)-2), NA))
 })
 
 test_that("calc_deriv on 'weird' data, no fitting", {
@@ -147,7 +218,6 @@ test_that("calc_deriv on 'weird' data, no fitting", {
                       deriv = calc_deriv(x = x, y = y, 
                                          percapita = TRUE, blank = 0))$deriv,
                expected = rep(NA, 10))
-
 })
 
 test_that("calc_deriv on 'weird' data, fitting", {
@@ -201,7 +271,6 @@ test_that("calc_deriv on 'weird' data, fitting", {
                       deriv = calc_deriv(x = x, y = y, window_width_n = 3,
                                          percapita = TRUE, blank = 0))$deriv,
                expected = rep(NA, 10))
-  
 })
 
 test_that("calc_deriv checks for grouping", {

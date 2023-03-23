@@ -603,4 +603,12 @@ solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
   stop("solve_linear does not have enough information")
 }
 
-
+#' A function that checks if all values in a vector are identical
+#' 
+#' @param x Vector to check
+#' @return TRUE if all values are the same, FALSE otherwise
+#' 
+#' @noRd
+all_same <- function(x) {
+  if(length(unique(x)) == 1) {return(TRUE)
+  } else {return(FALSE)}

@@ -437,14 +437,14 @@ read_blocks <- function(files, extension = NULL,
   }
   
   ##Error checking for output dataframe dimensions
-  if (length(outputs) > 1 &
-      stats::var(sapply(outputs, simplify = TRUE, 
-                 FUN = function(x) {dim(x$data)[1]})) != 0) {
+  if (length(outputs) > 1 &&
+      !all_same(sapply(outputs, simplify = TRUE, 
+                 FUN = function(x) {dim(x$data)[1]}))) {
     warning("Not all blockmeasures have the same number of rows of data\n")
   }
-  if (length(outputs) > 1 &
-      stats::var(sapply(outputs, simplify = TRUE,
-                 FUN = function(x) {dim(x$data)[2]})) != 0) {
+  if (length(outputs) > 1 &&
+      !all_same(sapply(outputs, simplify = TRUE,
+                 FUN = function(x) {dim(x$data)[2]}))) {
     warning("Not all blockmeasures have the same number of columns of data\n")
   }
   
@@ -1797,21 +1797,21 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "",
   #Check that all blocks have same dimensions
   if (length(blocks) > 1) {
     if (nested_metadata) { #there is nested metadata
-      if (stats::var(sapply(blocks, simplify = TRUE, 
-                            FUN = function(x) {dim(x[[1]])[1]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE, 
+                            FUN = function(x) {dim(x[[1]])[1]}))) {
         stop("Not all blocks have the same number of rows of data")
       }
-      if (stats::var(sapply(blocks, simplify = TRUE,
-                            FUN = function(x) {dim(x[[1]])[2]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE,
+                            FUN = function(x) {dim(x[[1]])[2]}))) {
         stop("Not all blocks have the same number of columns of data")
       }
     } else { #there is not nested metadata
-      if (stats::var(sapply(blocks, simplify = TRUE, 
-                            FUN = function(x) {dim(x)[1]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE, 
+                            FUN = function(x) {dim(x)[1]}))) {
         stop("Not all blocks have the same number of rows of data")
       }
-      if (stats::var(sapply(blocks, simplify = TRUE,
-                            FUN = function(x) {dim(x)[2]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE,
+                            FUN = function(x) {dim(x)[2]}))) {
         stop("Not all blocks have the same number of columns of data")
       }
     }
@@ -2215,21 +2215,21 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
   #Check that all blocks have same dimensions
   if (length(blocks) > 1) {
     if (nested_metadata) { #there is nested metadata
-      if (stats::var(sapply(blocks, simplify = TRUE, 
-                            FUN = function(x) {dim(x[[1]])[1]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE, 
+                            FUN = function(x) {dim(x[[1]])[1]}))) {
         stop("Not all blocks have the same number of rows of data")
       }
-      if (stats::var(sapply(blocks, simplify = TRUE,
-                            FUN = function(x) {dim(x[[1]])[2]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE,
+                            FUN = function(x) {dim(x[[1]])[2]}))) {
         stop("Not all blocks have the same number of columns of data")
       }
     } else { #there is not nested metadata
-      if (stats::var(sapply(blocks, simplify = TRUE, 
-                            FUN = function(x) {dim(x)[1]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE, 
+                            FUN = function(x) {dim(x)[1]}))) {
         stop("Not all blocks have the same number of rows of data")
       }
-      if (stats::var(sapply(blocks, simplify = TRUE,
-                            FUN = function(x) {dim(x)[2]})) != 0) {
+      if (!all_same(sapply(blocks, simplify = TRUE,
+                            FUN = function(x) {dim(x)[2]}))) {
         stop("Not all blocks have the same number of columns of data")
       }
     }
@@ -3588,7 +3588,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     if(is.null(x) | is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
     x1 <- x[which.max(deriv)]}
   
-  if(stats::var(c(length(y0), length(y1), length(slope), length(x1))) != 0) {
+  if(!all_same(c(length(y0), length(y1), length(slope), length(x1)))) {
     warning("Only using the first value")
     y0 <- y0[1]; y1 <- y1[1]; slope <- slope[1]; x1 <- x1[1]
   }

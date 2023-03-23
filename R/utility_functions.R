@@ -295,7 +295,7 @@ make.numeric <- function(x, varname) {
 rm_nas <- function(..., na.rm, stopifNA = FALSE) {
   out <- list(..., "nas_indices_removed" = NULL)
   
-  if(var(unlist(lapply(list(...), length))) != 0) {
+  if(!all_same(unlist(lapply(list(...), length)))) {
     stop(paste(names(list(...)), "are not all the same length"))}
   
   if(na.rm == TRUE) {
@@ -612,3 +612,4 @@ solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
 all_same <- function(x) {
   if(length(unique(x)) == 1) {return(TRUE)
   } else {return(FALSE)}
+}

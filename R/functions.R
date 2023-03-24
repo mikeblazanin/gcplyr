@@ -3381,9 +3381,9 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
     } else {x2 <- NULL}
     
     if(length(out_idx) > 0) {
-      x2 <- solve_linear(x1 = x[(out_idx-1)], y1 = y[(out_idx-1)],
+      x2 <- c(x2, solve_linear(x1 = x[(out_idx-1)], y1 = y[(out_idx-1)],
                           x2 = x[out_idx], y2 = y[out_idx],
-                          y3 = threshold, named = FALSE)
+                          y3 = threshold, named = FALSE))
     }
     return(x2)
   }

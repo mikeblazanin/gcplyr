@@ -569,6 +569,9 @@ myTryCatch <- function(expr) {
 #' @param x2,y2 An additional point on the line
 #' @param x3,y3 An additional point on the line
 #' @param m The slope of the line
+#' @param named Boolean indicating whether the returned value(s)
+#'              should be named according to what they are (m, x2, y2,
+#'              x3, or y3)
 #' 
 #' @details Note that there is no requirement that 
 #'          \code{x1} < \code{x2} < \code{x3}: the points can be in any order 
@@ -589,22 +592,37 @@ myTryCatch <- function(expr) {
 #' 
 #' @export
 solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
-                         m = NULL) {
+                         m = NULL, named = TRUE) {
   #provide x1 and y1
   #to get y2, provide x2 and m
   #to get x2, provide y2 and m
   #to get m, provide x2 and y2
   #to get x3, provide x1, y1, x2, y2, y3
   #to get y3, provide x1, y1, x2, y2, x3
-  if(!is.null(x2) & !is.null(m)) {return(setNames(m * (x2-x1) + y1, "y2"))} #return y2
-  if(!is.null(y2) & !is.null(m)) {return(setNames(x1 + (y2-y1)/m, "x2"))} #return x2
+  out <- NULL
+  if(!is.null(x2) & !is.null(m)) { #return y2
+    out <- m * (x2-x1) + y1
+    if(named == TRUE) {names(out) <- "y2"}
+  }
+  if(!is.null(y2) & !is.null(m)) { #return x2
+    out <- x1 + (y2-y1)/m
+    if(named == TRUE) {names(out) <- "x2"}
+  }
   if(!is.null(x2) & !is.null(y2)) {
     m <- (y2-y1)/(x2-x1)
-    if(!is.null(x3)) {return(setNames(m * (x3-x1) + y1, "y3")) #provide y3
-    } else if (!is.null(y3)) {return(setNames(x1 + (y3-y1)/m, "x3")) #provide x3
-    } else {return(setNames(m, "m"))} #return m
+    if(!is.null(x3)) { #return y3
+      out <- m * (x3-x1) + y1
+      if(named == TRUE) {names(out) <- "y3"}
+    } else if (!is.null(y3)) { #return x3
+      out <- x1 + (y3-y1)/m
+      if(named == TRUE) {names(out) <- "x3"}
+    } else { #return m
+      out <- m
+      if(named == TRUE) {names(out) <- "m"}
+    }
   }
-  stop("solve_linear does not have enough information")
+  if(is.null(out)) {stop("solve_linear does not have enough information")
+  } else {return(out)}
 }
 
 #' A function that checks if all values in a vector are identical

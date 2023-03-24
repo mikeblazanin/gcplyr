@@ -3484,7 +3484,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
         xndx <- max(which(x < xlim[1]))
         y <- c(y, solve_linear(x1 = x[xndx], y1 = y[xndx],
                                x2 = x[xndx+1], y2 = y[xndx+1],
-                               x3 = xlim[1]))
+                               x3 = xlim[1], named = FALSE))
                                
         #reorder
         dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
@@ -3503,7 +3503,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
         xndx <- max(which(x < xlim[2]))
         y <- c(y, solve_linear(x1 = x[xndx], y1 = y[xndx],
                                x2 = x[xndx+1], y2 = y[xndx+1],
-                               x3 = xlim[2]))
+                               x3 = xlim[2], named = FALSE))
         
         #reorder
         dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
@@ -3581,7 +3581,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   y1 <- make.numeric(y1, "y1")
   x1 <- make.numeric(x1, "x1")
   
-  narm_temp <- rm_nas(x = x, y = y, deriv = deriv)
+  narm_temp <- rm_nas(x = x, y = y, deriv = deriv, na.rm = na.rm)
   x <- narm_temp[["x"]]
   y <- narm_temp[["y"]]
   deriv <- narm_temp[["deriv"]]
@@ -3608,7 +3608,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     stop("trans_y must be one of c('linear', 'log')")}
   if(trans_y == "log") {y0 <- log(y0); y1 <- log(y1)}
   
-  return(solve_linear(x1 = x1, y1 = y1, m = slope, y2 = y0))
+  return(solve_linear(x1 = x1, y1 = y1, m = slope, y2 = y0, named = FALSE))
 }
 
 # Legacy Code ----

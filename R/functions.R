@@ -3581,32 +3581,52 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   y1 <- make.numeric(y1, "y1")
   x1 <- make.numeric(x1, "x1")
   
+  if(trans_y == "log") {
+    if(!is.null(y)) {
+      caught_log <- myTryCatch(log(y))
+      if(!is.null(caught_log$warning)) {
+        warning(paste("during log-transformation,", caught_log$warning))
+        caught_log$value[is.nan(caught_log$value)] <- NA}
+      if(!is.null(caught_log$error)) {
+        stop(paste("during log-transformation,", caught_log$error))}
+      y <- caught_log$value
+      if(any(is.infinite(y))) {
+        warning("infinite values created during log-transformation, treating as NA's")
+        y[is.infinite(y)] <- NA
+      }
+    }
+    if(!is.null(y0)) {y0 <- log(y0)}
+    if(!is.null(y1)) {y1 <- log(y1)}
+  }
+  
   narm_temp <- rm_nas(x = x, y = y, deriv = deriv, na.rm = na.rm)
   x <- narm_temp[["x"]]
   y <- narm_temp[["y"]]
   deriv <- narm_temp[["deriv"]]
+  #(cases where ~all values are removed handled with return(NA) code below)
   
   if(is.null(slope)) {
     if(is.null(deriv)) {stop("deriv or slope must be provided")}
+    if(length(deriv) < 1) {return(NA)}
     slope <- max(deriv, na.rm = na.rm)}
+  if(length(y) < 2 && (is.null(y0) || is.null(y1))) {return(NA)}
   if(is.null(y0)) {
     if(is.null(y)) {stop("y or y0 must be provided")}
+    if(length(y) < 1) {return(NA)}
     y0 <- min(y, na.rm = na.rm)}
   if(is.null(y1)) {
-    if(is.null(deriv) | is.null(y)) {stop("y1, or deriv and y, must be provided")}
-    y1 <- y[which.max(deriv)]}
+    if(is.null(deriv) || is.null(y)) {stop("y1, or deriv and y, must be provided")}
+    if(length(y) < 1 || length(deriv) < 1) {return(NA)}
+    y1 <- y[which(deriv == max(deriv, na.rm = na.rm))]}
   if(is.null(x1)) {
-    if(is.null(x) | is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
-    x1 <- x[which.max(deriv)]}
-  
+    if(is.null(x) || is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
+    if(length(x) < 1 || length(deriv) < 1) {return(NA)}
+    x1 <- x[which(deriv == max(deriv, na.rm = na.rm))]}
+
   if(!all_same(c(length(y0), length(y1), length(slope), length(x1)))) {
     warning("Only using the first value")
     y0 <- y0[1]; y1 <- y1[1]; slope <- slope[1]; x1 <- x1[1]
   }
-  
-  if(!trans_y %in% c("linear", "log")) {
-    stop("trans_y must be one of c('linear', 'log')")}
-  if(trans_y == "log") {y0 <- log(y0); y1 <- log(y1)}
   
   return(solve_linear(x1 = x1, y1 = y1, m = slope, y2 = y0, named = FALSE))
 }

@@ -4,7 +4,16 @@
 \alias{solve_linear}
 \title{Return missing information about a line}
 \usage{
-solve_linear(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL, m = NULL)
+solve_linear(
+  x1,
+  y1,
+  x2 = NULL,
+  y2 = NULL,
+  x3 = NULL,
+  y3 = NULL,
+  m = NULL,
+  named = TRUE
+)
 }
 \arguments{
 \item{x1, y1}{A point on the line}
@@ -14,6 +23,10 @@ solve_linear(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL, m = NULL)
 \item{x3, y3}{An additional point on the line}
 
 \item{m}{The slope of the line}
+
+\item{named}{Boolean indicating whether the returned value(s)
+should be named according to what they are (m, x2, y2,
+x3, or y3)}
 }
 \value{
 A named vector with the missing information from the line:

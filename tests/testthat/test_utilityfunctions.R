@@ -119,5 +119,8 @@ test_that("solve_linear returns correctly", {
                setNames(7.5, "y3"))
   expect_equal(solve_linear(x1 = 0, y1 = 0, x2 = 10, y2 = 5, y3 = 7.5), 
                setNames(15, "x3"))
+  expect_equal(solve_linear(x1 = c(0, 0), y1 = c(0, 0), x2 = c(5, 5),
+                            y2 = c(5, 10)),
+               stats::setNames(c(1, 2), c("m", "m")))
 })
   

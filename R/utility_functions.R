@@ -575,7 +575,12 @@ myTryCatch <- function(expr) {
 #' 
 #' @details Note that there is no requirement that 
 #'          \code{x1} < \code{x2} < \code{x3}: the points can be in any order 
-#'          along the line
+#'          along the line.
+#'          
+#'          \code{solve_linear} works with vectors of all inputs to solve
+#'          multiple lines at once, where the \code{i}th element of each 
+#'          argument corresponds to the \code{i}th output. Note that all
+#'          lines must be missing the same information.
 #' 
 #' @return A named vector with the missing information from the line:
 #' 
@@ -593,6 +598,10 @@ myTryCatch <- function(expr) {
 #' @export
 solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
                          m = NULL, named = TRUE) {
+  lengths <- lapply(list(x1, y1, x2, y2, x3, y3, m), length)
+  if(!all_same(lengths[lengths != 0])) {
+    stop("all inputs must be the same length")}
+  
   #provide x1 and y1
   #to get y2, provide x2 and m
   #to get x2, provide y2 and m
@@ -602,23 +611,23 @@ solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
   out <- NULL
   if(!is.null(x2) & !is.null(m)) { #return y2
     out <- m * (x2-x1) + y1
-    if(named == TRUE) {names(out) <- "y2"}
+    if(named == TRUE) {names(out) <- rep("y2", length(out))}
   }
   if(!is.null(y2) & !is.null(m)) { #return x2
     out <- x1 + (y2-y1)/m
-    if(named == TRUE) {names(out) <- "x2"}
+    if(named == TRUE) {names(out) <- rep("x2", length(out))}
   }
   if(!is.null(x2) & !is.null(y2)) {
     m <- (y2-y1)/(x2-x1)
     if(!is.null(x3)) { #return y3
       out <- m * (x3-x1) + y1
-      if(named == TRUE) {names(out) <- "y3"}
+      if(named == TRUE) {names(out) <- rep("y3", length(out))}
     } else if (!is.null(y3)) { #return x3
       out <- x1 + (y3-y1)/m
-      if(named == TRUE) {names(out) <- "x3"}
+      if(named == TRUE) {names(out) <- rep("x3", length(out))}
     } else { #return m
       out <- m
-      if(named == TRUE) {names(out) <- "m"}
+      if(named == TRUE) {names(out) <- rep("m", length(out))}
     }
   }
   if(is.null(out)) {stop("solve_linear does not have enough information")

@@ -3487,7 +3487,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
                                x3 = xlim[1], named = FALSE))
                                
         #reorder
-        dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
+        dat <- reorder_xy(x = x, y = y)
         
         x <- dat[["x"]]
         y <- dat[["y"]]
@@ -3506,7 +3506,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
                                x3 = xlim[2], named = FALSE))
         
         #reorder
-        dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
+        dat <- reorder_xy(x = x, y = y)
         
         x <- dat[["x"]]
         y <- dat[["y"]]
@@ -3581,8 +3581,13 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   y1 <- make.numeric(y1, "y1")
   x1 <- make.numeric(x1, "x1")
   
+  narm_temp <- rm_nas(x = x, y = y, deriv = deriv, na.rm = na.rm)
+  x <- narm_temp[["x"]]
+  y <- narm_temp[["y"]]
+  deriv <- narm_temp[["deriv"]]
+  
   if(trans_y == "log") {
-    if(!is.null(y)) {
+    if(!is.null(y) && length(y) > 0) {
       caught_log <- myTryCatch(log(y))
       if(!is.null(caught_log$warning)) {
         warning(paste("during log-transformation,", caught_log$warning))
@@ -3624,7 +3629,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     x1 <- x[which(deriv == max(deriv, na.rm = na.rm))]}
 
   if(!all_same(c(length(y0), length(y1), length(slope), length(x1)))) {
-    warning("Only using the first value")
+    warning("Only returning the first lag time value")
     y0 <- y0[1]; y1 <- y1[1]; slope <- slope[1]; x1 <- x1[1]
   }
   

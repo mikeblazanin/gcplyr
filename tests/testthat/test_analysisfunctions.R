@@ -18,12 +18,14 @@ test_that("auc returns correctly with xlim", {
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(1, 9)), 244)
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(4, 10)), 313)
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(3.5, 7.5)), 127)
+  expect_equal(auc(x = 1:10, y = seq(2, 20, 2), xlim = c(3.5, 7.5)), 4*(7+15)/2)
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(2, NA)), 332)
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, 7)), 115)
   expect_error(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, NA)))
 })
 
 test_that("lag_time returns correctly", {
+  library(dplyr)
   baranyi_func <- function(r, k, v, q0, m, d0, t_vals) {
     #Copied from Ram et al 2019
     if (anyNA(c(r, k, v, q0, m, d0, t_vals))) {return(NA)}
@@ -32,15 +34,13 @@ test_that("lag_time returns correctly", {
     d <- k/(1-(1-((k/d0)**v))*exp(-r*v*a))**(1/v)
     return(d)
   }
-  x <- seq(from = 0, to = 200, by = 3)
-  y <- baranyi_func(r = .1, k = 1, v = 1, q0 = .01, m = .1, d0 = 0.001, 
-                    t_vals = x)
-  deriv <- 
-    mutate(group_by(data.frame(x = x, y = y, grp = rep("A", length(x))), grp),
-           deriv = 
-             gcplyr::calc_deriv(y = y, x = x, percapita = TRUE, 
+  dat <- data.frame(x = seq(from = 0, to = 200, by = 3),
+                    y = baranyi_func(r = .1, k = 1, v = 1, q0 = .01, m = .1, 
+                                     d0 = 0.001, t_vals = x))
+  dat$grp <- "A"
+  dat <- mutate(group_by(dat, grp),
+                deriv = calc_deriv(y = y, x = x, percapita = TRUE, 
                                 blank = 0, trans_y = "log", window_width_n = 5))
-  deriv <- deriv$deriv
   y0 <- min(y, na.rm = TRUE)
   y1 <- y[which.max(deriv)]
   x1 <- x[which.max(deriv)]
@@ -56,6 +56,51 @@ test_that("lag_time returns correctly", {
     plot(x, deriv)
     abline(h = m)
   }
+  
+  #Data has lots of NA's
+  dat <- data.frame(x = 1:100, y = (-10):89, grp = rep("A", 100))
+  dat <- mutate(group_by(dat, grp), 
+                deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
+  expect_warning(expect_warning(
+    lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+    "NaNs produced"),
+    "infinite values")
+  expect_equal(lag, 12)
+  
+  #Data is nearly all NAs
+  dat <- data.frame(x = 1:10, y = c(1, rep(NA, 8), 100), grp = rep("A", 10))
+  dat <- mutate(group_by(dat, grp), 
+                deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+               NA)
+  dat <- data.frame(x = 1:10, y = c(1, rep(NA, 7), 81, 100), grp = rep("A", 10))
+  dat <- mutate(group_by(dat, grp), 
+                deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+               1)
+  
+  #Data is all NAs
+  dat <- data.frame(x = 1:10, y = rep(NA, 10), deriv = 1:10)
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+               NA)
+  
+  #All y values are 0
+  dat <- data.frame(x = 1:10, y = rep(0, 10), deriv = 1:10)
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+                 "infinite values created")
+  expect_equal(lag, NA)
+  
+  #All deriv are 0
+  dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(0, 10))
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+                 "Only returning the first lag")
+  expect_equal(lag, NaN)
+  
+  #All deriv are the same (so matches the first one with warning)
+  dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(5, 10))
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+                 "Only returning the first")
+  expect_equal(lag, 1)
 })
 
 test_that("doubling_time returns correctly", {

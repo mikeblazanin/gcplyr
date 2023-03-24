@@ -3381,14 +3381,9 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
     } else {x2 <- NULL}
     
     if(length(out_idx) > 0) {
-      #Use linear interpolation to determine exact x values of crossing events
-      x1 <- x[(out_idx-1)]
-      x3 <- x[out_idx]
-      y1 <- y[(out_idx-1)]
-      y3 <- y[out_idx]
-      y2 <- threshold
-      
-      x2 <- c(x2, (y2-y1)*(x3-x1)/(y3-y1) + x1)
+      x2 <- solve_linear(x1 = x[(out_idx-1)], y1 = y[(out_idx-1)],
+                          x2 = x[out_idx], y2 = y[out_idx],
+                          y3 = threshold, named = FALSE)
     }
     return(x2)
   }

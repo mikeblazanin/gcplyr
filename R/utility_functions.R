@@ -580,7 +580,8 @@ myTryCatch <- function(expr) {
 #'          \code{solve_linear} works with vectors of all inputs to solve
 #'          multiple lines at once, where the \code{i}th element of each 
 #'          argument corresponds to the \code{i}th output. Note that all
-#'          lines must be missing the same information.
+#'          lines must be missing the same information. Input vectors
+#'          will be recycled as necessary.
 #' 
 #' @return A named vector with the missing information from the line:
 #' 
@@ -598,9 +599,11 @@ myTryCatch <- function(expr) {
 #' @export
 solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
                          m = NULL, named = TRUE) {
-  lengths <- lapply(list(x1, y1, x2, y2, x3, y3, m), length)
-  if(!all_same(lengths[lengths != 0])) {
-    stop("all inputs must be the same length")}
+  #Check input dimensions
+  lengths <- unlist(lapply(list(x1, y1, x2, y2, x3, y3, m), length))
+  lengths <- lengths[lengths != 0]
+  if(!all(max(lengths) %% lengths == 0)) {
+    stop("all inputs must be the same length or recyclable to the same length")}
   
   #provide x1 and y1
   #to get y2, provide x2 and m
@@ -641,6 +644,6 @@ solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
 #' 
 #' @noRd
 all_same <- function(x) {
-  if(length(unique(x)) == 1) {return(TRUE)
+  if(length(x) == 0 || length(unique(x)) == 1) {return(TRUE)
   } else {return(FALSE)}
 }

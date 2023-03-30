@@ -38,7 +38,7 @@ tidyr::pivot_longer. Each can be provided as vectors
 the same length as \code{widemeasures}
 Note that if neither data_cols nor id_cols}
 
-\item{values_to_numeric}{Boolean indicating whether values will be coerced
+\item{values_to_numeric}{logical indicating whether values will be coerced
 to numeric. See below for when this may be
 overridden by arguments passed in \code{...}}
 

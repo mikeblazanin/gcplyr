@@ -81,20 +81,20 @@ shallow maxima/minima.}
 will return the index, x value, or y value associated with the
 identified extremas}
 
-\item{return_maxima, return_minima}{Boolean for which classes of local extrema
+\item{return_maxima, return_minima}{logical for which classes of local extrema
 to return}
 
 \item{return_endpoints}{Should the first and last values in \code{y}
 be included if they are in the returned 
 vector of extrema?}
 
-\item{subset}{A vector of Boolean values indicating which x and y values
+\item{subset}{A vector of logical values indicating which x and y values
 should be included (TRUE) or excluded (FALSE).
 
 If \code{return = "index"}, index will be for the whole 
 vector and not the subset of the vector}
 
-\item{na.rm}{Boolean whether NA's should be removed before analyzing}
+\item{na.rm}{logical whether NA's should be removed before analyzing}
 
 \item{width_limit}{Deprecated, use \code{window_width} instead}
 

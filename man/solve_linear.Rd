@@ -24,7 +24,7 @@ solve_linear(
 
 \item{m}{The slope of the line}
 
-\item{named}{Boolean indicating whether the returned value(s)
+\item{named}{logical indicating whether the returned value(s)
 should be named according to what they are (m, x2, y2,
 x3, or y3)}
 }

@@ -25,7 +25,7 @@ to \code{dplyr::full_join}}
 \item{drop}{Should only \code{complete_cases} of the resulting
 data.frame be returned?}
 
-\item{collapse}{A Boolean indicating whether x or y is a list containing
+\item{collapse}{A logical indicating whether x or y is a list containing
 data frames that should be merged together before
 being merged with the other}
 

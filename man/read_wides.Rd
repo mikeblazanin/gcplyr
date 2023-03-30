@@ -43,7 +43,7 @@ If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
 column of the file(s).}
 
-\item{header}{Boolean for whether there is a header to the data. If FALSE
+\item{header}{logical for whether there is a header to the data. If FALSE
 columns are simple numbered. If TRUE is the row above
 \code{startrow} (if startrow is specified) or the first row
 of the input files (if startrow is not specified)}

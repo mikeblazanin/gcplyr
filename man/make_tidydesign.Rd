@@ -67,7 +67,7 @@ come first}
               This pattern will be split using pattern_split, which
               defaults to every character
               
-             5. a Boolean for whether this pattern should be filled byrow}
+             5. a logical for whether this pattern should be filled byrow}
 }
 \value{
 a tidy-shaped \code{data.frame} containing all the design elements

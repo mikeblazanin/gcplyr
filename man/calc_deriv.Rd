@@ -87,7 +87,7 @@ included in each window will meet both the
                 at or below 0 will become undefined and results will be 
                 more sensitive to incorrect values of \code{blank}.}
 
-\item{na.rm}{Boolean whether NA's should be removed before analyzing}
+\item{na.rm}{logical whether NA's should be removed before analyzing}
 }
 \value{
 A vector of values for the plain (if \code{percapita = FALSE})

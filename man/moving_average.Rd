@@ -23,7 +23,7 @@ and numeric predictor (time).}
 
 \item{window_width}{Width of the moving average window (in units of \code{x})}
 
-\item{na.rm}{Boolean whether NA's should be removed before analyzing}
+\item{na.rm}{logical whether NA's should be removed before analyzing}
 }
 \value{
 Vector of smoothed data, with NA's appended at both ends

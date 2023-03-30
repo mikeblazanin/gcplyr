@@ -36,7 +36,7 @@ independently of the others.
 This provides an internally-implemented approach similar
 to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
-\item{return_fitobject}{Boolean indicating whether entire object returned
+\item{return_fitobject}{logical indicating whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.}
 }

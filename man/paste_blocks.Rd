@@ -12,7 +12,7 @@ data.frames}
 
 \item{sep}{String to use as separator for output pasted values}
 
-\item{nested_metadata}{A Boolean indicating the existence of nested metadata
+\item{nested_metadata}{A logical indicating the existence of nested metadata
 in the \code{blockmeasures} list, e.g. as is typically
 output by \code{read_blocks}. If NULL, will attempt to
 infer existence of nested metadata}

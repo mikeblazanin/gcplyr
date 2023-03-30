@@ -27,7 +27,7 @@ column names from the column name of \code{col}}
            string. The length of \code{sep} should be one less than 
            \code{into}}
 
-\item{coerce_NA}{Boolean dictating if "NA" strings will be coerced into 
+\item{coerce_NA}{logical dictating if "NA" strings will be coerced into 
 \code{NA} values after separating.}
 
 \item{...}{Other arguments passed to \code{tidyr::separate}}

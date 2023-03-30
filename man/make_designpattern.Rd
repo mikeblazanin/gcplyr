@@ -25,7 +25,7 @@ mdp(values, rows, cols, pattern = 1:length(values), byrow = TRUE)
 \item{pattern}{Numeric pattern itself, where numbers refer to entries
 in \code{values}}
 
-\item{byrow}{Boolean for whether pattern should be created by row}
+\item{byrow}{logical for whether pattern should be created by row}
 }
 \value{
 \code{list(values, rows, cols, pattern, byrow)}

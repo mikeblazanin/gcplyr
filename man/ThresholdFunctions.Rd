@@ -57,24 +57,24 @@ points immediately before and after the threshold-crossing
 to return the exact \code{x} value when the threshold crossing
 occurred}
 
-\item{return_rising}{Boolean for whether crossing events where \code{y}
+\item{return_rising}{logical for whether crossing events where \code{y}
 rises above \code{threshold} should be returned}
 
-\item{return_falling}{Boolean for whether crossing events where \code{y}
+\item{return_falling}{logical for whether crossing events where \code{y}
 falls below \code{threshold} should be returned}
 
-\item{return_endpoints}{Boolean for whether startpoint should be returned
+\item{return_endpoints}{logical for whether startpoint should be returned
 when the startpoint is above \code{threshold} and
 \code{return_rising = TRUE}, or when the startpoint is
 below \code{threshold} and \code{return_falling = TRUE}}
 
-\item{subset}{A vector of Boolean values indicating which x and y values
+\item{subset}{A vector of logical values indicating which x and y values
 should be included (TRUE) or excluded (FALSE).
 
 If \code{return = "index"}, index will be for the whole 
 vector and not the subset of the vector}
 
-\item{na.rm}{Boolean whether NA's should be removed before analyzing.
+\item{na.rm}{logical whether NA's should be removed before analyzing.
 If \code{return = 'index'}, indices will refer to the original
 \code{y} vector *including* \code{NA} values}
 

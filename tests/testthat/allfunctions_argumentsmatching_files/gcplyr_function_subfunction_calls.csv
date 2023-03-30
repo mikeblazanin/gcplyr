@@ -45,6 +45,7 @@ smooth_data,mgcv::gam
 smooth_data,gcplyr::moving_average
 smooth_data,gcplyr::moving_median
 smooth_data,mgcv::s
+solve_linear,NA
 to_excel,NA
 trans_block_to_wide,NA
 trans_wide_to_tidy,tidyr::pivot_longer

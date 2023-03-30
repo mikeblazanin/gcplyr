@@ -657,8 +657,8 @@ all_same <- function(x) {
 #'          for which the internal coercion to double works whose min or max
 #'          is searched for.
 #' @param empty_NA Boolean, indicating if an empty value should be returned
-#'                 as \code{NA} (the default) or as \code(integer(0)) (the
-#'                 same as \code{which.min} and \code{which.max}).           
+#'                 as \code{NA} (the default) or as \code{integer(0}) (the
+#'                 same as \code{which.min} and \code{which.max}).
 #' @details 
 #' These functions are wrappers for \code{which.min} and \code{which.max},
 #' with the additional argument \code{empty_NA}.

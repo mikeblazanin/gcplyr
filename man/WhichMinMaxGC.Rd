@@ -16,7 +16,7 @@ for which the internal coercion to double works whose min or max
 is searched for.}
 
 \item{empty_NA}{Boolean, indicating if an empty value should be returned
-as \code{NA} (the default) or as \code(integer(0)) (the
+as \code{NA} (the default) or as \code{integer(0}) (the
 same as \code{which.min} and \code{which.max}).}
 }
 \value{

@@ -188,7 +188,7 @@ infer_block_metadata <- function(blocks) {
 #' accidentally implying separations in the data that shouldn't be there
 #' 
 #' @param blocks The list of blocks
-#' @param nested_metadata A Boolean for if there is nested metadata in
+#' @param nested_metadata A logical for if there is nested metadata in
 #'                        \code{blocks}. Will attempt to infer if left NULL
 #' 
 #' @return vector of characters not found in the blocks that can be used
@@ -283,8 +283,8 @@ make.numeric <- function(x, varname) {
 #' are NA at that index
 #' 
 #' @param ... Vectors to remove NA's from.
-#' @param na.rm Boolean, should NA's be removed
-#' @param stopifNA Boolean, should an error be passed if na.rm = FALSE
+#' @param na.rm logical, should NA's be removed
+#' @param stopifNA logical, should an error be passed if na.rm = FALSE
 #'                 and there are NA's in x or y?
 #' @return A list containing: each input ... vector with NA's removed
 #'                          
@@ -400,7 +400,7 @@ reorder_xy <- function(x = NULL, y) {
 #' @param window_width Width of the window (in units of \code{x}).
 #' @param window_width_n Width of the window (in number of \code{y} values).
 #' @param window_height The maximum change in \code{y} within each window.
-#' @param edge_NA Boolean for whether windows that pass the edge of the data
+#' @param edge_NA logical for whether windows that pass the edge of the data
 #'                should be returned as NA or simply truncated at the edge
 #'                of the data.
 #'                
@@ -411,7 +411,7 @@ reorder_xy <- function(x = NULL, y) {
 #'                In contrast, extrema-finding typically want edge_NA = FALSE
 #'                so that searching simply stops at the edge of the data
 #' @param force_height_multi_n 
-#'                Boolean for whether windows limits set by \code{window_height}
+#'                logical for whether windows limits set by \code{window_height}
 #'                should always have at least 3 data points in them (or 2 
 #'                data points for windows located at the edge of the domain)
 #'                         
@@ -569,7 +569,7 @@ myTryCatch <- function(expr) {
 #' @param x2,y2 An additional point on the line
 #' @param x3,y3 An additional point on the line
 #' @param m The slope of the line
-#' @param named Boolean indicating whether the returned value(s)
+#' @param named logical indicating whether the returned value(s)
 #'              should be named according to what they are (m, x2, y2,
 #'              x3, or y3)
 #' 
@@ -656,7 +656,7 @@ all_same <- function(x) {
 #' @param x numeric (logical, integer, or double) vector or an \code{R} object
 #'          for which the internal coercion to double works whose min or max
 #'          is searched for.
-#' @param empty_NA Boolean, indicating if an empty value should be returned
+#' @param empty_NA logical, indicating if an empty value should be returned
 #'                 as \code{NA} (the default) or as \code{integer(0}) (the
 #'                 same as \code{which.min} and \code{which.max}).
 #' @details 

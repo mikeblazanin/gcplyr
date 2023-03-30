@@ -479,7 +479,7 @@ read_blocks <- function(files, extension = NULL,
 #'                 If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
-#' @param header Boolean for whether there is a header to the data. If FALSE
+#' @param header logical for whether there is a header to the data. If FALSE
 #'               columns are simple numbered. If TRUE is the row above
 #'               \code{startrow} (if startrow is specified) or the first row
 #'               of the input files (if startrow is not specified)
@@ -1181,7 +1181,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #'                 0's refer to NA. The pattern will be recycled as necessary
 #'                 to fill all the wells of the rows and columns specified.
 #'               
-#'              5. a Boolean for whether this pattern should be filled byrow
+#'              5. a logical for whether this pattern should be filled byrow
 #'
 #' @return Depends on \code{output_format}:
 #' 
@@ -1377,7 +1377,7 @@ do you need to set `lookup_tbl_start` differently?")
 #' @param cols Vector of cols where pattern applies
 #' @param pattern Numeric pattern itself, where numbers refer to entries
 #'                in \code{values}
-#' @param byrow Boolean for whether pattern should be created by row
+#' @param byrow logical for whether pattern should be created by row
 #' 
 #' @return \code{list(values, rows, cols, pattern, byrow)}
 #' 
@@ -1772,7 +1772,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
 #' @param wellnames_sep String to use as separator for well names between 
 #'                      rowname and column name (ordered according to
 #'                      \code{colnames_first}
-#' @param nested_metadata A Boolean indicating the existence of nested metadata
+#' @param nested_metadata A logical indicating the existence of nested metadata
 #'                        in the \code{blockmeasures} list, e.g. as is typically
 #'                        output by \code{read_blocks}. If NULL, will attempt to
 #'                        infer existence of nested metadata
@@ -1989,7 +1989,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #'                           tidyr::pivot_longer. Each can be provided as vectors
 #'                           the same length as \code{widemeasures}
 #'                           Note that if neither data_cols nor id_cols
-#' @param values_to_numeric Boolean indicating whether values will be coerced
+#' @param values_to_numeric logical indicating whether values will be coerced
 #'                          to numeric. See below for when this may be
 #'                          overridden by arguments passed in \code{...}
 #' @param ... Other functions to be passed to \code{tidyr::pivot_longer}
@@ -2103,7 +2103,7 @@ trans_tidy_to_wide <- function() {
 #'           to \code{dplyr::full_join}
 #' @param drop Should only \code{complete_cases} of the resulting
 #'             data.frame be returned?
-#' @param collapse A Boolean indicating whether x or y is a list containing
+#' @param collapse A logical indicating whether x or y is a list containing
 #'                 data frames that should be merged together before
 #'                 being merged with the other
 #' @param names_to Column name for where \code{names(x)} or \code{names(y)} 
@@ -2183,7 +2183,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #' @param blocks Blocks, either a single data.frame or a list of
 #'                      data.frames
 #' @param sep String to use as separator for output pasted values
-#' @param nested_metadata A Boolean indicating the existence of nested metadata
+#' @param nested_metadata A logical indicating the existence of nested metadata
 #'                        in the \code{blockmeasures} list, e.g. as is typically
 #'                        output by \code{read_blocks}. If NULL, will attempt to
 #'                        infer existence of nested metadata
@@ -2298,7 +2298,7 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #'            string; negative values start at -1 at the far-right of the
 #'            string. The length of \code{sep} should be one less than 
 #'            \code{into}
-#' @param coerce_NA  Boolean dictating if "NA" strings will be coerced into 
+#' @param coerce_NA  logical dictating if "NA" strings will be coerced into 
 #'                   \code{NA} values after separating.
 #' @param ... Other arguments passed to \code{tidyr::separate}
 #' 
@@ -2350,7 +2350,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'                  
 #'                  This provides an internally-implemented approach similar
 #'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
-#' @param return_fitobject Boolean indicating whether entire object returned
+#' @param return_fitobject logical indicating whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
 #'
@@ -2570,7 +2570,7 @@ reserved for passing 'method' arg via ... to loess or gam")
 #' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving average window (in units of \code{x})
-#' @param na.rm Boolean whether NA's should be removed before analyzing
+#' @param na.rm logical whether NA's should be removed before analyzing
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
@@ -2642,7 +2642,7 @@ moving_average <- function(formula, data, window_width_n = NULL,
 #' @param window_width_n Number of data points wide the moving median window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving median window (in units of \code{x})|
-#' @param na.rm Boolean whether NA's should be removed before analyzing
+#' @param na.rm logical whether NA's should be removed before analyzing
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
@@ -2771,7 +2771,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #'                 log-transformations must be used with care, since y-values 
 #'                 at or below 0 will become undefined and results will be 
 #'                 more sensitive to incorrect values of \code{blank}.
-#' @param na.rm Boolean whether NA's should be removed before analyzing
+#' @param na.rm logical whether NA's should be removed before analyzing
 #' 
 #' @details For per-capita derivatives, \code{trans_y = 'linear'} and
 #'          \code{trans_y = 'log'} approach the same value as time resolution
@@ -2993,17 +2993,17 @@ doubling_time <- function(y, x_scale = 1) {
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
 #'               identified extremas
-#' @param return_maxima,return_minima Boolean for which classes of local extrema
+#' @param return_maxima,return_minima logical for which classes of local extrema
 #'                                    to return
 #' @param return_endpoints Should the first and last values in \code{y}
 #'                         be included if they are in the returned 
 #'                         vector of extrema?
-#' @param subset A vector of Boolean values indicating which x and y values
+#' @param subset A vector of logical values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
 #'               If \code{return = "index"}, index will be for the whole 
 #'               vector and not the subset of the vector
-#' @param na.rm Boolean whether NA's should be removed before analyzing
+#' @param na.rm logical whether NA's should be removed before analyzing
 #' @param width_limit Deprecated, use \code{window_width} instead
 #' @param width_limit_n Deprecated, use \code{window_width_n} instead
 #' @param height_limit Deprecated, use \code{window_height} instead
@@ -3253,20 +3253,20 @@ use find_local_extrema for more flexibility")
 #'               points immediately before and after the threshold-crossing
 #'               to return the exact \code{x} value when the threshold crossing
 #'               occurred
-#' @param subset A vector of Boolean values indicating which x and y values
+#' @param subset A vector of logical values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
 #'               If \code{return = "index"}, index will be for the whole 
 #'               vector and not the subset of the vector
-#' @param return_rising Boolean for whether crossing events where \code{y}
+#' @param return_rising logical for whether crossing events where \code{y}
 #'                      rises above \code{threshold} should be returned
-#' @param return_falling Boolean for whether crossing events where \code{y}
+#' @param return_falling logical for whether crossing events where \code{y}
 #'                      falls below \code{threshold} should be returned
-#' @param return_endpoints Boolean for whether startpoint should be returned
+#' @param return_endpoints logical for whether startpoint should be returned
 #'                      when the startpoint is above \code{threshold} and
 #'                      \code{return_rising = TRUE}, or when the startpoint is
 #'                      below \code{threshold} and \code{return_falling = TRUE}
-#' @param na.rm Boolean whether NA's should be removed before analyzing.
+#' @param na.rm logical whether NA's should be removed before analyzing.
 #'              If \code{return = 'index'}, indices will refer to the original
 #'              \code{y} vector *including* \code{NA} values
 #' @param ... (for \code{first_above} and \code{first_below}) other arguments 
@@ -3516,8 +3516,10 @@ auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
     x <- x[(x >= xlim[1]) & (x <= xlim[2])]
   }
   
-  if(any(y < 0)) {warning("some y values are below 0")}
-  if(neg.rm == TRUE) {y[y < 0] <- 0}
+  if(any(y < 0)) {
+    if(neg.rm == TRUE) {y[y < 0] <- 0
+    } else {warning("some y values are below 0")}
+  }
   
   #Calculate auc
   # area = 0.5 * (y1 + y2) * (x2 - x1)
@@ -3613,20 +3615,28 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   if(is.null(slope)) {
     if(is.null(deriv)) {stop("deriv or slope must be provided")}
     if(length(deriv) < 1) {return(NA)}
-    slope <- max(deriv, na.rm = na.rm)}
+    slope <- max(deriv, na.rm = na.rm)
+  }
   if(length(y) < 2 && (is.null(y0) || is.null(y1))) {return(NA)}
   if(is.null(y0)) {
     if(is.null(y)) {stop("y or y0 must be provided")}
     if(length(y) < 1) {return(NA)}
-    y0 <- min(y, na.rm = na.rm)}
-  if(is.null(y1)) {
-    if(is.null(deriv) || is.null(y)) {stop("y1, or deriv and y, must be provided")}
-    if(length(y) < 1 || length(deriv) < 1) {return(NA)}
-    y1 <- y[which(deriv == max(deriv, na.rm = na.rm))]}
-  if(is.null(x1)) {
-    if(is.null(x) || is.null(deriv)) {stop("x1, or deriv and x, must be provided")}
-    if(length(x) < 1 || length(deriv) < 1) {return(NA)}
-    x1 <- x[which(deriv == max(deriv, na.rm = na.rm))]}
+    y0 <- min(y, na.rm = na.rm)
+  }
+  if(xor(is.null(x1), is.null(y1))) {
+    stop("both x1 and y1, or neither, must be specified")
+  } else if(is.null(y1)) {
+    if(is.null(deriv)) {
+      if(is.null(y)) {stop("y1, or deriv and y, must be provided")}
+      if(is.null(x)) {stop("x1, or deriv and x, must be provided")}
+    }
+    if(length(deriv) < 1 || length(y) < 1 || length(x) < 1) {return(NA)}
+    idxs <- which(deriv == max(deriv, na.rm = na.rm))
+    if(length(idxs) > 1) {
+      warning("multiple timepoints have the maximum derivative, using the first")}
+    y1 <- y[idxs[1]]
+    x1 <- x[idxs[1]]
+  }
 
   if(!all_same(c(length(y0), length(y1), length(slope), length(x1)))) {
     warning("Only returning the first lag time value")
@@ -3778,7 +3788,7 @@ first_peak <- function(y, x = NULL,
 #'               This pattern will be split using pattern_split, which
 #'               defaults to every character
 #'               
-#'              5. a Boolean for whether this pattern should be filled byrow
+#'              5. a logical for whether this pattern should be filled byrow
 #'              
 #' @return a tidy-shaped \code{data.frame} containing all the design elements
 #' 

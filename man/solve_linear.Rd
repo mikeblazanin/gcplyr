@@ -50,5 +50,11 @@ on the line, or a y point on the line)
 \details{
 Note that there is no requirement that 
          \code{x1} < \code{x2} < \code{x3}: the points can be in any order 
-         along the line
+         along the line.
+         
+         \code{solve_linear} works with vectors of all inputs to solve
+         multiple lines at once, where the \code{i}th element of each 
+         argument corresponds to the \code{i}th output. Note that all
+         lines must be missing the same information. Input vectors
+         will be recycled as necessary.
 }

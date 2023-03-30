@@ -647,3 +647,46 @@ all_same <- function(x) {
   if(length(x) == 0 || length(unique(x)) == 1) {return(TRUE)
   } else {return(FALSE)}
 }
+
+#' Where is the Min() or Max() or first TRUE or FALSE?
+#' 
+#' Determines the location, i.e. index, of the (first) minimum or maximum of
+#' a numeric (or logical) vector.
+#' 
+#' @param x numeric (logical, integer, or double) vector or an \code{R} object
+#'          for which the internal coercion to double works whose min or max
+#'          is searched for.
+#' @param empty_NA Boolean, indicating if an empty value should be returned
+#'                 as \code{NA} (the default) or as \code(integer(0)) (the
+#'                 same as \code{which.min} and \code{which.max}).           
+#' @details 
+#' These functions are wrappers for \code{which.min} and \code{which.max},
+#' with the additional argument \code{empty_NA}.
+#'  
+#' @return 
+#'    If \code{empty_NA = FALSE}, identical to \code{which.min} or 
+#'    \code{which.max}
+#'    
+#'    If \code{empty_NA = TRUE}, identical to \code{which.min} or 
+#'    \code{which.max} except that, in cases where \code{which.min} or 
+#'    \code{which.max} would return \code{integer(0)}, \code{which.min.gc} and
+#'    \code{which.max.gc} return \code{NA}
+#'          
+#' @name WhichMinMaxGC
+NULL
+
+#' @rdname WhichMinMaxGC
+#' @export 
+which.min.gc <- function(x, empty_NA = TRUE) {
+  out <- which.min(x)
+  if(empty_NA && length(out) == 0) {out <- NA}
+  return(out)
+}
+
+#' @rdname WhichMinMaxGC
+#' @export 
+which.max.gc <- function(x, empty_NA = TRUE) {
+ out <- which.max(x)
+ if(empty_NA && length(out) == 0) {out <- NA}
+ return(out)
+}

@@ -50,4 +50,6 @@ to_excel,NA
 trans_block_to_wide,NA
 trans_wide_to_tidy,tidyr::pivot_longer
 uninterleave,NA
+which.min.gc,
+which.max.gc,
 write_blocks,utils::write.table

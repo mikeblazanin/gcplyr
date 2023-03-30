@@ -690,3 +690,59 @@ which.max.gc <- function(x, empty_NA = TRUE) {
  if(empty_NA && length(out) == 0) {out <- NA}
  return(out)
 }
+
+#' Maxima and Minima
+#' 
+#' Returns the maxima and minima of the input values.
+#' 
+#' @param ... numeric or character arguments
+#' @param na.rm a logical indicating whether missing values should be removed.
+#' @param allmissing_NA a logical indicating whether \code{NA} should be
+#'                      returned when there are no non-missing arguments
+#'                      passed to \code{min} or \code{max} (often because
+#'                      \code{na.rm = TRUE} but all values are \code{NA})
+#' 
+#' @details 
+#' These functions are wrappers for \code{min} and \code{max},
+#' with the additional argument \code{allmissing_NA}.
+#'  
+#' @return 
+#'    If \code{allmissing_NA = FALSE}, identical to \code{min} or 
+#'    \code{max}.
+#'    
+#'    If \code{allmissing_NA = TRUE}, identical to \code{min} or 
+#'    \code{max} except that, in cases where \code{min} or 
+#'    \code{max} would return an infinite value and raise a warning because
+#'    there are no non-missing arguments, \code{min.gc} and
+#'    \code{max.gc} return \code{NA}
+#'          
+#' @name MinMaxGC
+NULL
+
+#' @rdname MinMaxGC
+#' @export 
+max.gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
+  caught_log <- myTryCatch(max(..., na.rm = na.rm))
+  if(!is.null(caught_log$error)) {stop(caught_log$error)}
+  if(!is.null(caught_log$warning)) {
+    if(grepl("no non-missing arguments", caught_log$warning)) {
+      if(allmissing_NA == TRUE) {return(NA)
+      } else {warning(caught_log$warning)}
+    }
+  }
+  return(caught_log$value)
+}
+
+#' @rdname MinMaxGC
+#' @export 
+min.gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
+  caught_log <- myTryCatch(min(..., na.rm = na.rm))
+  if(!is.null(caught_log$error)) {stop(caught_log$error)}
+  if(!is.null(caught_log$warning)) {
+    if(grepl("no non-missing arguments", caught_log$warning)) {
+      if(allmissing_NA == TRUE) {return(NA)
+      } else {warning(caught_log$warning)}
+    }
+  }
+  return(caught_log$value)
+}

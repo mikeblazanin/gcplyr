@@ -107,6 +107,9 @@ data_wide <- read_wides(files = "widedata.csv")
 data_tidy <- 
   trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
 
+# Convert our time into hours
+data_tidy$Time <- data_tidy$Time/3600
+
 # Import our designs
 #  (saved in the files Bacteria_strain.csv and Phage.csv)
 designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"))
@@ -126,7 +129,7 @@ ggplot(data = data_merged,
 data_merged <- mutate(
   group_by(data_merged, Well),
   percap_deriv = calc_deriv(y = Measurements, x = Time, percapita = TRUE, 
-                            blank = 0, window_width_n = 5, x_scale = 3600))
+                            blank = 0, window_width_n = 5))
 
 # Calculate two common metrics of bacterial growth:
 #  the maximum growth rate, saving it to a column named max_percap

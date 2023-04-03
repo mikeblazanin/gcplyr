@@ -1,3 +1,7 @@
+# gcplyr 1.5.0.9000
+
+stuff here
+
 # gcplyr 1.5.0
 
 * Several fixes to bugs where calc_deriv had been returning incorrect values when trans_y = 'log' and either blank was specified or fitting was not used (i.e. window_width and window_width_n were both NULL)

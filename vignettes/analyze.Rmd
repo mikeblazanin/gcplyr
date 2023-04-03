@@ -100,18 +100,32 @@ ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% c("A1", "A7", "B4", "B10",
 
 # Analyzing data with summarize
 
-Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. gcplyr makes it easy to calculate a number of metrics of interest:
+Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. gcplyr makes it easy to calculate a number of metrics of interest, which I've grouped below into categories:
+
+### Growth
 
 * [the initial density](#init_dens)
 * [the lag time](#lag)
 * [the time to reach some density](#dens_thresh)
 * [the time to reach some growth rate](#percap_thresh)
 * [the maximum per-capita growth rate (i.e. minimum doubling time)](#max_percap)
+
+### Saturation
+
 * [the mid-point time or inflection point](#midpoint)
 * [the maximum density (e.g. carrying capacity)](#maxdens)
+
+### Total growth
+
 * [the area under the curve](#auc)
+
+### Diauxic growth
+
 * [the density and time when a diauxic shift occurs](#diauxie)
 * [the maximum per-capita growth rate during diauxie](#diauxic_percap)
+
+### Growth with antagonists (e.g. phages)
+
 * [the peak bacterial density before a decline (e.g. from phage predation)](#peak_dens)
 * [the extinction time (e.g. from phage predation)](#extin_time)
 
@@ -151,14 +165,14 @@ You'll see examples of these plots throughout this article.
 
 # Initial density {#init_dens}
 
-If you want to identify the initial density of your bacteria, it will often be sufficient to use `R`'s built-in `min` function. When using `min`, note that we need to specify `na.rm = TRUE` to tell `min` to ignore all `NA` values.
+If you want to identify the initial density of your bacteria, it will often be sufficient to use `min_gc` (this works just like `R`'s built-in `min`, but with better default settings for growth curve analyses with `summarize`). 
 
-We can also save the time when this minimum occurs using the `which_min_gc` function (this function is the same as `which.min`, except that it returns `NA` in cases where `which.min` returns an empty value). `which_min_gc` returns the *index* of the minimum value, so then we can get the `Time` value at that index and save it to a column titled `min_time`:
+We can also save the time when this minimum occurs using the `which_min_gc` function (this works just like `R`'s built-in `which.min`, but with better default settings for growth curve analyses with `summarize`). `which_min_gc` returns the *index* of the minimum value, so then we can get the `Time` value at that index and save it to a column titled `min_time`:
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            min_dens = min(Measurements, na.rm = TRUE),
+            min_dens = min_gc(Measurements, na.rm = TRUE),
             min_time = Time[which_min_gc(Measurements)])
 head(ex_dat_mrg_sum)
 
@@ -171,7 +185,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
              size = 2, color = "red")
 ```
 
-In some cases (e.g. growing with phages), bacteria may drop to a lower density than they started later in the growth curve. In this case, we want the first *local* minima of the Measurements data, rather than the global minima:
+In some cases (e.g. growing with phages), bacteria may later drop to a lower density than they started in the growth curve. In this case, we want the first *local* minima of the Measurements data, rather than the global minima:
 
 ```{r}
 ex_dat_mrg_sum <- 
@@ -181,7 +195,7 @@ ex_dat_mrg_sum <-
 head(ex_dat_mrg_sum)
 ```
 
-Note that you can tune the sensitivity of `first_minima` to different heights and widths of peaks and valleys using the `window_width`, `window_width_n`, and `window_height` arguments, although the defaults work much of the time.
+Note that you can tune the sensitivity of `first_minima` to different heights and widths of peaks and valleys using the `window_width`, `window_width_n`, and `window_height` arguments. You should check that `first_minima` is working with your data by plotting it, although the default sensitivity works much of the time.
 
 # Lag time {#lag}
 
@@ -194,10 +208,10 @@ ex_dat_mrg_sum <-
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             lag_time = lag_time(y = Measurements, x = Time, 
                                 deriv = deriv_percap5/3600),
-            max_percap = max(deriv_percap5, na.rm = TRUE)/3600,
+            max_percap = max_gc(deriv_percap5)/3600,
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             max_percap_dens = Measurements[which_max_gc(deriv_percap5)],
-            min_dens = min(Measurements, na.rm = TRUE))
+            min_dens = min_gc(Measurements))
 head(ex_dat_mrg_sum)
 
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -224,7 +238,7 @@ ex_dat_mrg_sum <-
             lag_time = lag_time(y = Measurements, x = Time, 
                                 deriv = deriv_percap5/3600,
                                 y0 = min_dens),
-            max_percap = max(deriv_percap5, na.rm = TRUE)/3600,
+            max_percap = max_gc(deriv_percap5)/3600,
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             max_percap_dens = Measurements[which_max_gc(deriv_percap5)])
 head(ex_dat_mrg_sum)
@@ -285,16 +299,16 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Maximum growth rate and minimum doubling time {#max_percap}
 
-If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it's sufficient to use `R`'s built-in `max` function on the per-capita derivatives we calculated in `vignette("process")`. When using `max`, note that we need to specify `na.rm = TRUE` to tell `max` to ignore all `NA` values.
+If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`). 
 
-We can also save the time when this maximum occurs using the `which_max_gc` function (this function is the same as `which.max`, except that it returns `NA` in cases where `which.max` returns an empty value). `which_max_gc` returns the *index* of the maximum value, so then we can get the `Time` value at that index and save it to a column titled `max_percap_time`.
+We can also save the time when this maximum occurs using the `which_max_gc` function (`which_max_gc` works just like `R`'s built-in `which.max`, but with better default settings for growth curve analyses with `summarize`). `which_max_gc` returns the *index* of the maximum value, so then we can get the `Time` value at that index and save it to a column titled `max_percap_time`.
 
-If you would like the equivalent minimum doubling time, we recommend you simply calculate the maximum growth rate as above and then convert that into the equivalent minimum doubling time using the `doubling_time` function.
+If you would like the equivalent minimum doubling time, you can simply calculate the maximum growth rate as above and then convert that into the equivalent minimum doubling time using the `doubling_time` function.
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            max_percap = max(deriv_percap5, na.rm = TRUE),
+            max_percap = max_gc(deriv_percap5, na.rm = TRUE),
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             doub_time = doubling_time(y = max_percap))
 head(ex_dat_mrg_sum)
@@ -318,13 +332,13 @@ If you want to find the mid-point or inflection point of bacterial growth, there
 
 In growth curve analysis approaches using fitting of a symmetric function (e.g. when other `R` packages fit a logistic function to data), these two points will be equivalent. However, since `gcplyr` does model-free analyses, we do not assume symmetry, and so the points may be very similar or very different.
 
-For the mid-point, we use the `first_above` function, with the threshold equal to the maximum bacterial density divided by 2. For the inflection point, we find the time when the `deriv` was at a maximum (`which_max_gc` is the same as `which.max`, except that it returns `NA` in cases where `which.max` returns an empty value).
+For the mid-point, we use the `first_above` function, with the threshold equal to the maximum bacterial density divided by 2. For the inflection point, we find the time when the `deriv` was at a maximum using `which_max_gc` (`which_max_gc` works just like `R`'s built-in `which.max`, but with better default settings for growth curve analyses with `summarize`).
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             mid_point = first_above(y = Measurements, x = Time, return = "x",
-                                    threshold = max(Measurements, na.rm = TRUE)/2),
+                                    threshold = max_gc(Measurements)/2),
             infl_point = Time[which_max_gc(deriv)])
 head(ex_dat_mrg_sum)
 
@@ -340,12 +354,12 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Maximum density {#maxdens}
 
-The maximum bacterial density can be a measure of bacterial carrying capacity in a given media or as a measure of bacterial growth yield/efficiency. If you want to quantify the maximum bacterial density, we can use `max` to get the global maxima of `Measurements`. See [Peak bacterial density] for identifying local maxima of `Measurements` (e.g. if you wanted the first peak in Well E11 shown below). Note that we use `which_max_gc`, which is the same as `which.max` except that it returns `NA` in cases where `which.max` returns an empty value.
+The maximum bacterial density can be a measure of bacterial carrying capacity in a given media or as a measure of bacterial growth yield/efficiency. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc` and `which_max_gc` work just like `R`'s built-in `max` and `which.max`, but with better default settings for growth curve analyses with `summarize`). See [Peak bacterial density] for identifying *local* maxima of `Measurements` (e.g. if you wanted the first peak in Well E11 shown below).
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            max_dens = max(Measurements, na.rm = TRUE),
+            max_dens = max_gc(Measurements, na.rm = TRUE),
             max_time = Time[which_max_gc(Measurements)])
 head(ex_dat_mrg_sum)
 
@@ -424,7 +438,7 @@ If needed, you can tune the sensitivity of `find_local_extrema` to different hei
 
 In the previous section we identified when bacteria shifted into their second period of rapid growth ('diauxic growth'). If you want to find out what the peak per-capita growth rate was during that second burst, we'll have to use `max` on the subset of data after the diauxic shift identified by `find_local_extrema`
 
-Just as we did in the previous section, we'll use `find_local_extrema` to save the time when the diauxic shift occurs. Then, we'll find the maximum of the per-capita derivative after that shift occurs. Finally, we'll find the time when that post-diauxie maximum growth rate occurs using `which_max_gc` (this function is the same as `which.max`, except that it returns `NA` in cases where `which.max` returns an empty value).
+Just as we did in the previous section, we'll use `find_local_extrema` to save the time when the diauxic shift occurs. Then, we'll find the maximum of the per-capita derivative after that shift occurs. Finally, we'll find the time when that post-diauxie maximum growth rate occurs. Note that we're using `max_gc` and `which_max_gc`, which work just like `R`'s built-in `max` and `which.max`, but with better default settings for growth curve analyses with `summarize`.
 
 ```{r}
 ex_dat_mrg_sum <-
@@ -433,7 +447,7 @@ ex_dat_mrg_sum <-
     diauxie_time = find_local_extrema(x = Time, y = deriv, return = "x",
                                    return_maxima = FALSE, return_minima = TRUE,
                                    window_width_n = 39)[2],
-    diauxie_percap = max(deriv_percap5[Time >= diauxie_time], na.rm = TRUE),
+    diauxie_percap = max_gc(deriv_percap5[Time >= diauxie_time]),
     diauxie_percap_time = 
       Time[Time >= diauxie_time][
         which_max_gc(deriv_percap5[Time >= diauxie_time])]
@@ -452,7 +466,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
 
 # Peak bacterial density {#peak_dens}
 
-[We previously found the global maximum in bacterial density](#maxdens) using the simple `max` and `which_max_gc` functions. The first *local* maxima can also be of interest. This is especially true when bacteria are grown with phages, where their first peak density can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the first local maxima in bacterial density, you can use the `gcplyr` function `first_maxima`.
+[We previously found the global maximum in bacterial density](#maxdens) using the simple `max_gc` and `which_max_gc` functions. The first *local* maxima can also be of interest. This is especially true when bacteria are grown with phages, where their first peak density can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the first local maxima in bacterial density, you can use the `gcplyr` function `first_maxima`.
 
 `first_maxima` simply requires the `y` data you want to identify the peak in. Specify `Measurements` as the y data and `Time` as the x data, and that we want `first_peak` to `return` the `x` and `y` values associated with the peak. We'll save those in columns `first_maxima_x` and `first_maxima_y`, respectively.
 

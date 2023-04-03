@@ -1,6 +1,16 @@
-# gcplyr 1.4.1.9000
+# gcplyr 1.5.0
 
-Stuff here
+* Several fixes to bugs where calc_deriv had been returning incorrect values when trans_y = 'log' and either blank was specified or fitting was not used (i.e. window_width and window_width_n were both NULL)
+
+* Bug fixes and better warning messages in lag_time, especially relating to negative and infinite y-values following log-transformation
+
+* New function: solve_linear, which enables easy calculation of the slope between two points, or finding an additional point on a known line
+
+* New functions: which_min_gc, which_max_gc, min_gc, max_gc, and extr_val. These serve as versions of the base functions which.min, which.max, min, max, and [] (respectively) that have better defaults and handling of edge cases (often related to NA values) for growth curve analyses with dplyr::summarize
+
+* The auc function has two new arguments. 'blank' allows setting of a blank value, and 'neg.rm' gives users a choice in how to handle below-zero values
+
+* Various documentation improvements in both the manual and vignettes
 
 # gcplyr 1.4.1
 
@@ -8,7 +18,7 @@ Stuff here
 
 # gcplyr 1.4.0
 
-* There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (likely 1.5.0), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that 'fitted' is always the first element and 'residuals' is always the second element
+* There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (the first version released after Sep 1, 2023), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that 'fitted' is always the first element and 'residuals' is always the second element
 
 * mdp() is a new function, it is simply a shorthand alias for make_designpattern()
 

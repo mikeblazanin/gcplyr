@@ -83,6 +83,11 @@ reference:
   - to_excel
   - from_excel
   - solve_linear
+  - min_gc
+  - max_gc
+  - which_min_gc
+  - which_max_gc
+  - extr_val
 - title: Example data
   desc: "Example wide-shaped data.frames of growth curves data"
   contents:

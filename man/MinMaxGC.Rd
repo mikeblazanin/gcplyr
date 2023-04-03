@@ -2,13 +2,13 @@
 % Please edit documentation in R/utility_functions.R
 \name{MinMaxGC}
 \alias{MinMaxGC}
-\alias{max.gc}
-\alias{min.gc}
+\alias{max_gc}
+\alias{min_gc}
 \title{Maxima and Minima}
 \usage{
-\method{max}{gc}(..., na.rm = TRUE, allmissing_NA = TRUE)
+max_gc(..., na.rm = TRUE, allmissing_NA = TRUE)
 
-\method{min}{gc}(..., na.rm = TRUE, allmissing_NA = TRUE)
+min_gc(..., na.rm = TRUE, allmissing_NA = TRUE)
 }
 \arguments{
 \item{...}{numeric or character arguments}
@@ -27,8 +27,8 @@ If \code{allmissing_NA = FALSE}, identical to \code{min} or
    If \code{allmissing_NA = TRUE}, identical to \code{min} or 
    \code{max} except that, in cases where \code{min} or 
    \code{max} would return an infinite value and raise a warning because
-   there are no non-missing arguments, \code{min.gc} and
-   \code{max.gc} return \code{NA}
+   there are no non-missing arguments, \code{min_gc} and
+   \code{max_gc} return \code{NA}
 }
 \description{
 Returns the maxima and minima of the input values.

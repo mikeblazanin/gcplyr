@@ -2,13 +2,13 @@
 % Please edit documentation in R/utility_functions.R
 \name{WhichMinMaxGC}
 \alias{WhichMinMaxGC}
-\alias{which.min.gc}
-\alias{which.max.gc}
+\alias{which_min_gc}
+\alias{which_max_gc}
 \title{Where is the Min() or Max() or first TRUE or FALSE?}
 \usage{
-which.min.gc(x, empty_NA = TRUE)
+which_min_gc(x, empty_NA = TRUE)
 
-which.max.gc(x, empty_NA = TRUE)
+which_max_gc(x, empty_NA = TRUE)
 }
 \arguments{
 \item{x}{numeric (logical, integer, or double) vector or an \code{R} object
@@ -25,8 +25,8 @@ If \code{empty_NA = FALSE}, identical to \code{which.min} or
    
    If \code{empty_NA = TRUE}, identical to \code{which.min} or 
    \code{which.max} except that, in cases where \code{which.min} or 
-   \code{which.max} would return \code{integer(0)}, \code{which.min.gc} and
-   \code{which.max.gc} return \code{NA}
+   \code{which.max} would return \code{integer(0)}, \code{which_min_gc} and
+   \code{which_max_gc} return \code{NA}
 }
 \description{
 Determines the location, i.e. index, of the (first) minimum or maximum of

@@ -124,16 +124,16 @@ test_that("solve_linear returns correctly", {
                stats::setNames(c(1, 2), c("m", "m")))
 })
   
-test_that("which.min.gc and which.max.gc return correctly", {
-  expect_equal(which.min.gc(c(5, 6, 7)), which.min(c(5, 6, 7)))
-  expect_equal(which.max.gc(c(5, 6, 7)), which.max(c(5, 6, 7)))
-  expect_equal(which.min.gc(c(5, 6, NA)), which.min(c(5, 6, NA)))
-  expect_equal(which.max.gc(c(5, 6, NA)), which.max(c(5, 6, NA)))
-  expect_equal(which.min.gc(c(TRUE, TRUE, FALSE)), which.min(c(TRUE, TRUE, FALSE)))
-  expect_equal(which.max.gc(c(TRUE, TRUE, FALSE)), which.max(c(TRUE, TRUE, FALSE)))
-  expect_equal(which.min.gc(c(NA, NA)), NA)
-  expect_equal(which.max.gc(c(NA, NA)), NA)
-  expect_equal(which.min.gc(c(NA, NA), empty_NA = FALSE), which.min(c(NA, NA)))
-  expect_equal(which.max.gc(c(NA, NA), empty_NA = FALSE), which.max(c(NA, NA)))
+test_that("which_min_gc and which_max_gc return correctly", {
+  expect_equal(which_min_gc(c(5, 6, 7)), which.min(c(5, 6, 7)))
+  expect_equal(which_max_gc(c(5, 6, 7)), which.max(c(5, 6, 7)))
+  expect_equal(which_min_gc(c(5, 6, NA)), which.min(c(5, 6, NA)))
+  expect_equal(which_max_gc(c(5, 6, NA)), which.max(c(5, 6, NA)))
+  expect_equal(which_min_gc(c(TRUE, TRUE, FALSE)), which.min(c(TRUE, TRUE, FALSE)))
+  expect_equal(which_max_gc(c(TRUE, TRUE, FALSE)), which.max(c(TRUE, TRUE, FALSE)))
+  expect_equal(which_min_gc(c(NA, NA)), NA)
+  expect_equal(which_max_gc(c(NA, NA)), NA)
+  expect_equal(which_min_gc(c(NA, NA), empty_NA = FALSE), which.min(c(NA, NA)))
+  expect_equal(which_max_gc(c(NA, NA), empty_NA = FALSE), which.max(c(NA, NA)))
 })
   

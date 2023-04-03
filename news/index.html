@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,12 +61,21 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.0" id="gcplyr-150">gcplyr 1.5.0<a class="anchor" aria-label="anchor" href="#gcplyr-150"></a></h2>
+<ul><li><p>Several fixes to bugs where calc_deriv had been returning incorrect values when trans_y = ‘log’ and either blank was specified or fitting was not used (i.e. window_width and window_width_n were both NULL)</p></li>
+<li><p>Bug fixes and better warning messages in lag_time, especially relating to negative and infinite y-values following log-transformation</p></li>
+<li><p>New function: solve_linear, which enables easy calculation of the slope between two points, or finding an additional point on a known line</p></li>
+<li><p>New functions: which_min_gc, which_max_gc, min_gc, max_gc, and extr_val. These serve as versions of the base functions which.min, which.max, min, max, and [] (respectively) that have better defaults and handling of edge cases (often related to NA values) for growth curve analyses with dplyr::summarize</p></li>
+<li><p>The auc function has two new arguments. ‘blank’ allows setting of a blank value, and ‘neg.rm’ gives users a choice in how to handle below-zero values</p></li>
+<li><p>Various documentation improvements in both the manual and vignettes</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.1" id="gcplyr-141">gcplyr 1.4.1<a class="anchor" aria-label="anchor" href="#gcplyr-141"></a></h2>
 <ul><li>Bug fix for calc_deriv when all or nearly all values become NA after log-transformation</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="gcplyr-140">gcplyr 1.4.0<a class="anchor" aria-label="anchor" href="#gcplyr-140"></a></h2>
-<ul><li><p>There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (likely 1.5.0), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that ‘fitted’ is always the first element and ‘residuals’ is always the second element</p></li>
+<ul><li><p>There are planned changes for smooth_data with return_fitobject = TRUE: in a forthcoming version (the first version released after Sep 1, 2023), return_fitobject = TRUE will return a list of the object created by the underlying method directly. The current behavior modifies the generated object so that ‘fitted’ is always the first element and ‘residuals’ is always the second element</p></li>
 <li><p>mdp() is a new function, it is simply a shorthand alias for make_designpattern()</p></li>
 <li><p>Column numbers and row numbers in read_* and import_* functions can now be specified using a mix of base-10 numbers and base-26 Excel-style letters</p></li>
 <li><p>separate_tidy now coerces strings of “NA” into NA values by default</p></li>

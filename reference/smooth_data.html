@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,7 +111,7 @@ to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="ex
 
 
 <dt>return_fitobject</dt>
-<dd><p>Boolean indicating whether entire object returned
+<dd><p>logical indicating whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.</p></dd>
 
@@ -142,11 +142,11 @@ just fitted values are returned.</p></dd>
         fitted values and the input values</p>
         
 
-<p>**Note: as of v1.3.0 the above is true, but will be altered soon**
-        to instead maintain the class of the object returned by the
-        smoothing method. After the change, not all methods will return
-        an object with 'fitted' as the first element and 'residuals'
-        as the second element.</p>
+<p>**Note: the first version released after Sep 1, 2023 will change **
+        **this behavior** to instead maintain the class of the object 
+        returned by the smoothing method. After the change, not all methods 
+        will return an object with 'fitted' as the first element and 
+        'residuals' as the second element.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

@@ -750,13 +750,13 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 
 #' Extract parts of an object
 #' 
-#' A wrapper for \code{hi} with handling of NA's for use in
+#' A wrapper for \code{[} with handling of NA's for use in
 #' \code{dplyr::summarize()}
 #' 
 #' @param x object from which to extract element(s)
 #' @param i index specifying element to extract.
 #' @param allNA_NA logical indicating whether \code{NA} should be returned
-#'                 when \code{all(is.na(i)) == TRUE}
+#'                 when \code{all(is.na(i)) == TRUE}.
 #' @param na.rm a logical indicating whether missing index values should be 
 #'              removed.
 #'  
@@ -767,7 +767,8 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #'    If \code{all_NA = FALSE} and \code{na.rm = TRUE}, identical to
 #'    \code{x[i[!is.na(i)]]}.
 #'    
-#'    If \code{all_NA = TRUE} and \code{all(is.na(i)) == TRUE}, \code{NA}
+#'    If \code{all_NA = TRUE}, identical to \code{x[i]} unless 
+#'    \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
 #'    
 #' @export
 extr_idx <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {

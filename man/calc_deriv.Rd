@@ -30,7 +30,7 @@ derivative of \code{y} with respect to \code{x}}
 \item{percapita}{When percapita = TRUE, the per-capita difference or
 derivative is returned}
 
-\item{x_scale}{Factor to scale x by in denominator of derivative calculation
+\item{x_scale}{Numeric to scale x by in derivative calculation
 
 Set x_scale to the ratio of the the units of 
 x to the desired units. E.g. if x is in seconds, but the 

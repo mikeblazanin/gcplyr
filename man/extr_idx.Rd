@@ -12,7 +12,7 @@ extr_idx(x, i, allNA_NA = TRUE, na.rm = TRUE)
 \item{i}{index specifying element to extract.}
 
 \item{allNA_NA}{logical indicating whether \code{NA} should be returned
-when \code{all(is.na(i)) == TRUE}}
+when \code{all(is.na(i)) == TRUE}.}
 
 \item{na.rm}{a logical indicating whether missing index values should be 
 removed.}
@@ -24,9 +24,10 @@ If \code{all_NA = FALSE} and \code{na.rm = FALSE}, identical to
    If \code{all_NA = FALSE} and \code{na.rm = TRUE}, identical to
    \code{x[i[!is.na(i)]]}.
    
-   If \code{all_NA = TRUE} and \code{all(is.na(i)) == TRUE}, \code{NA}
+   If \code{all_NA = TRUE}, identical to \code{x[i]} unless 
+   \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
 }
 \description{
-A wrapper for \code{hi} with handling of NA's for use in
+A wrapper for \code{[} with handling of NA's for use in
 \code{dplyr::summarize()}
 }

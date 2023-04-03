@@ -22,8 +22,10 @@ lag_time,NA
 make_design,NA
 make_designpattern,NA
 make_tidydesign,NA
+max_gc,NA
 mdp,NA
 merge_dfs,dplyr::full_join
+min_gc,NA
 moving_average,NA
 moving_median,NA
 paste_blocks,NA
@@ -50,6 +52,6 @@ to_excel,NA
 trans_block_to_wide,NA
 trans_wide_to_tidy,tidyr::pivot_longer
 uninterleave,NA
-which.min.gc,NA
-which.max.gc,NA
+which_min_gc,NA
+which_max_gc,NA
 write_blocks,utils::write.table

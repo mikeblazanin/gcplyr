@@ -99,7 +99,7 @@ ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design)
 ex_dat_mrg$Well <- 
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
-ex_dat_mrg$Time <- ex_dat_mrg$time/3600 #Convert time to hours
+ex_dat_mrg$Time <- ex_dat_mrg$Time/3600 #Convert time to hours
 
 # For computational speed, let's just keep the wells we'll be focusing on
 #  (for your own analyses, you should skip this step and continue using

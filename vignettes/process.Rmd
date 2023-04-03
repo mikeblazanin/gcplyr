@@ -73,7 +73,7 @@ ex_dat_mrg$Well <-
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
 #Convert time to hours
-ex_dat_mrg$Time <- ex_dat_mrg$time/3600
+ex_dat_mrg$Time <- ex_dat_mrg$Time/3600
 ```
 
 

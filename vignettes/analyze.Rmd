@@ -72,7 +72,7 @@ ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
 ex_dat_mrg$Well <- 
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
-ex_dat_mrg$Time <- ex_dat_mrg$time/3600 #Convert time to hours
+ex_dat_mrg$Time <- ex_dat_mrg$Time/3600 #Convert time to hours
 ex_dat_mrg <-
   mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
          deriv = calc_deriv(x = Time, y = Measurements),

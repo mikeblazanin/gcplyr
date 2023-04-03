@@ -22,6 +22,10 @@ knitr::opts_knit$set(root.dir = tempdir())
 # copy-paste the code below into console (Ctrl+Enter does not work):
 #for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::pdf_document(toc = TRUE, toc_depth = 4))}
 
+#To re-build all vignettes where the rmd was changed more recently than the pdf
+# copy-paste the code below into console (Ctrl+Enter does not work):
+#for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {if(file.info(paste0("./vignettes/", fil))$mtime > file.info(paste0("./vignettes/", sub(x = fil, "\\.Rmd", ".pdf")))$mtime) {rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::pdf_document(toc = TRUE, toc_depth = 4))}}
+
 #Note: to knit to pdf, word, and html simultaneously, run in R console:
 #{rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::html_vignette(toc = TRUE, toc_dept = 4)); rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::pdf_document(toc = TRUE, toc_depth = 4)); rmarkdown::render("./vignettes/gcplyr.Rmd", rmarkdown::word_document(toc = TRUE, toc_dept = 4))}
 

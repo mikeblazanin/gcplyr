@@ -2718,7 +2718,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #'               derivative of \code{y} with respect to \code{x}
 #' @param percapita When percapita = TRUE, the per-capita difference or
 #'                  derivative is returned
-#' @param x_scale Factor to scale x by in denominator of derivative calculation
+#' @param x_scale Numeric to scale x by in derivative calculation
 #'                
 #'                Set x_scale to the ratio of the the units of 
 #'                x to the desired units. E.g. if x is in seconds, but the 

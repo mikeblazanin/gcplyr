@@ -108,7 +108,7 @@ data_tidy <-
   trans_wide_to_tidy(wides = data_wide, id_cols = c("file", "Time"))
 
 # Convert our time into hours
-data_tidy$Time <- data_tidy$Time/3600
+data_tidy$Time <- as.numeric(data_tidy$Time)/3600
 
 # Import our designs
 #  (saved in the files Bacteria_strain.csv and Phage.csv)
@@ -119,7 +119,7 @@ data_merged <- merge_dfs(data_tidy, designs)
 
 # Plot the data
 ggplot(data = data_merged,
-       aes(x = as.numeric(Time), y = Measurements, color = Well)) +
+       aes(x = Time, y = Measurements, color = Well)) +
   geom_line(aes(lty = Phage)) + 
   guides(color = "none")
 

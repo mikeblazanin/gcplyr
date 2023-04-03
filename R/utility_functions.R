@@ -669,15 +669,15 @@ all_same <- function(x) {
 #'    
 #'    If \code{empty_NA = TRUE}, identical to \code{which.min} or 
 #'    \code{which.max} except that, in cases where \code{which.min} or 
-#'    \code{which.max} would return \code{integer(0)}, \code{which.min.gc} and
-#'    \code{which.max.gc} return \code{NA}
+#'    \code{which.max} would return \code{integer(0)}, \code{which_min_gc} and
+#'    \code{which_max_gc} return \code{NA}
 #'          
 #' @name WhichMinMaxGC
 NULL
 
 #' @rdname WhichMinMaxGC
 #' @export 
-which.min.gc <- function(x, empty_NA = TRUE) {
+which_min_gc <- function(x, empty_NA = TRUE) {
   out <- which.min(x)
   if(empty_NA && length(out) == 0) {out <- NA}
   return(out)
@@ -685,7 +685,7 @@ which.min.gc <- function(x, empty_NA = TRUE) {
 
 #' @rdname WhichMinMaxGC
 #' @export 
-which.max.gc <- function(x, empty_NA = TRUE) {
+which_max_gc <- function(x, empty_NA = TRUE) {
  out <- which.max(x)
  if(empty_NA && length(out) == 0) {out <- NA}
  return(out)
@@ -713,15 +713,15 @@ which.max.gc <- function(x, empty_NA = TRUE) {
 #'    If \code{allmissing_NA = TRUE}, identical to \code{min} or 
 #'    \code{max} except that, in cases where \code{min} or 
 #'    \code{max} would return an infinite value and raise a warning because
-#'    there are no non-missing arguments, \code{min.gc} and
-#'    \code{max.gc} return \code{NA}
+#'    there are no non-missing arguments, \code{min_gc} and
+#'    \code{max_gc} return \code{NA}
 #'          
 #' @name MinMaxGC
 NULL
 
 #' @rdname MinMaxGC
 #' @export 
-max.gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
+max_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
   caught_log <- myTryCatch(max(..., na.rm = na.rm))
   if(!is.null(caught_log$error)) {stop(caught_log$error)}
   if(!is.null(caught_log$warning)) {
@@ -735,7 +735,7 @@ max.gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 
 #' @rdname MinMaxGC
 #' @export 
-min.gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
+min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
   caught_log <- myTryCatch(min(..., na.rm = na.rm))
   if(!is.null(caught_log$error)) {stop(caught_log$error)}
   if(!is.null(caught_log$warning)) {

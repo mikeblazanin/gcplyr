@@ -771,7 +771,7 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #'    \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
 #'    
 #' @export
-extr_idx <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {
+extr_val <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {
   if(allNA_NA ==  TRUE && all(is.na(i))) {
     return(NA)
   } else {

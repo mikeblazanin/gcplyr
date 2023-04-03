@@ -166,13 +166,13 @@ You'll see examples of these plots throughout this article.
 
 If you want to identify the initial density of your bacteria, it will often be sufficient to use `min_gc` (this works just like `R`'s built-in `min`, but with better default settings for growth curve analyses with `summarize`). 
 
-We can also save the time when this minimum occurs using the `which_min_gc` function. `which_min_gc` returns the *index* of the minimum value, so then we can get the `Time` value at that index and save it to a column titled `min_time`. (`which_min_gc` and `extr_idx` work just like `R`'s built-in `which.min` and `[`, but with better default settings for growth curve analyses with `summarize`)
+We can also save the time when this minimum occurs using the `which_min_gc` function. `which_min_gc` returns the *index* of the minimum value, so then we can get the `Time` value at that index and save it to a column titled `min_time`. (`which_min_gc` and `extr_val` work just like `R`'s built-in `which.min` and `[`, but with better default settings for growth curve analyses with `summarize`)
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             min_dens = min_gc(Measurements, na.rm = TRUE),
-            min_time = extr_idx(Time, which_min_gc(Measurements)))
+            min_time = extr_val(Time, which_min_gc(Measurements)))
 head(ex_dat_mrg_sum)
 
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -299,7 +299,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`). 
 
-We can also save the time when this maximum occurs using the `which_max_gc` function. `which_max_gc` returns the *index* of the maximum value, so then we can get the `Time` value at that index and save it to a column titled `max_percap_time`. (`which_max_gc` and `extr_idx` work just like `R`'s built-in `which.max` and `[`, but with better default settings for growth curve analyses with `summarize`)
+We can also save the time when this maximum occurs using the `which_max_gc` function. `which_max_gc` returns the *index* of the maximum value, so then we can get the `Time` value at that index and save it to a column titled `max_percap_time`. (`which_max_gc` and `extr_val` work just like `R`'s built-in `which.max` and `[`, but with better default settings for growth curve analyses with `summarize`)
 
 If you would like the equivalent minimum doubling time, you can simply calculate the maximum growth rate as above and then convert that into the equivalent minimum doubling time using the `doubling_time` function.
 
@@ -307,7 +307,7 @@ If you would like the equivalent minimum doubling time, you can simply calculate
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             max_percap = max_gc(deriv_percap5, na.rm = TRUE),
-            max_percap_time = extr_idx(Time, which_max_gc(deriv_percap5)),
+            max_percap_time = extr_val(Time, which_max_gc(deriv_percap5)),
             doub_time = doubling_time(y = max_percap))
 head(ex_dat_mrg_sum)
 
@@ -330,14 +330,14 @@ If you want to find the mid-point or inflection point of bacterial growth, there
 
 In growth curve analysis approaches using fitting of a symmetric function (e.g. when other `R` packages fit a logistic function to data), these two points will be equivalent. However, since `gcplyr` does model-free analyses, we do not assume symmetry, and so the points may be very similar or very different.
 
-For the mid-point, we use the `first_above` function, with the threshold equal to the maximum bacterial density divided by 2. For the inflection point, we find the time when the `deriv` was at a maximum using `which_max_gc` (`which_max_gc` and `extr_idx` work just like `R`'s built-in `which.max` and `[`, but with better default settings for growth curve analyses with `summarize`).
+For the mid-point, we use the `first_above` function, with the threshold equal to the maximum bacterial density divided by 2. For the inflection point, we find the time when the `deriv` was at a maximum using `which_max_gc` (`which_max_gc` and `extr_val` work just like `R`'s built-in `which.max` and `[`, but with better default settings for growth curve analyses with `summarize`).
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             mid_point = first_above(y = Measurements, x = Time, return = "x",
                                     threshold = max_gc(Measurements)/2),
-            infl_point = extr_idx(Time, which_max_gc(deriv)))
+            infl_point = extr_val(Time, which_max_gc(deriv)))
 head(ex_dat_mrg_sum)
 
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -352,7 +352,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Maximum density {#maxdens}
 
-The maximum bacterial density can be a measure of bacterial carrying capacity in a given media or as a measure of bacterial growth yield/efficiency. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc`, `which_max_gc`, and `extr_idx` work just like `R`'s built-in `max`, `which.max`, and `[`, but with better default settings for growth curve analyses with `summarize`). 
+The maximum bacterial density can be a measure of bacterial carrying capacity in a given media or as a measure of bacterial growth yield/efficiency. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc`, `which_max_gc`, and `extr_val` work just like `R`'s built-in `max`, `which.max`, and `[`, but with better default settings for growth curve analyses with `summarize`). 
 
 See [Peak bacterial density] for identifying *local* maxima of `Measurements` (e.g. if you wanted the first peak in Well E11 shown below).
 
@@ -360,7 +360,7 @@ See [Peak bacterial density] for identifying *local* maxima of `Measurements` (e
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             max_dens = max_gc(Measurements, na.rm = TRUE),
-            max_time = extr_idx(Time, which_max_gc(Measurements)))
+            max_time = extr_val(Time, which_max_gc(Measurements)))
 head(ex_dat_mrg_sum)
 
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
@@ -408,7 +408,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
 
 We can use the `gcplyr` function `find_local_extrema` to find that minima. Specify `deriv` as the y data and `Time` as the x data, and that we want `find_local_extrema` to `return` the `x` values associated with local minima. It will return a vector of those `x` values, and we're going to save just the second one.
 
-At the same time, we're also going to save the density where the diauxic shift occurs. First, we'll use `find_local_extrema` again, but this time to save the *index* where the diauxic shift occurs to a column titled `diauxie_idx`. Then, we can get the `Measurements` value at that index. (Note that it wouldn't work to just specify `return = "y"`, because the `y` values in this case are the `deriv` values). (`extr_idx` works just like `R`'s built-in `[`, but with better default settings for growth curve analyses with `summarize`).
+At the same time, we're also going to save the density where the diauxic shift occurs. First, we'll use `find_local_extrema` again, but this time to save the *index* where the diauxic shift occurs to a column titled `diauxie_idx`. Then, we can get the `Measurements` value at that index. (Note that it wouldn't work to just specify `return = "y"`, because the `y` values in this case are the `deriv` values). (`extr_val` works just like `R`'s built-in `[`, but with better default settings for growth curve analyses with `summarize`).
 
 ```{r}
 ex_dat_mrg_sum <-
@@ -419,7 +419,7 @@ ex_dat_mrg_sum <-
     diauxie_idx = find_local_extrema(x = Time, y = deriv, return = "index",
                                    return_maxima = FALSE, return_minima = TRUE,
                                    window_width_n = 39)[2],
-    diauxie_dens = extr_idx(Measurements, diauxie_idx))
+    diauxie_dens = extr_val(Measurements, diauxie_idx))
 head(ex_dat_mrg_sum)
 
 # Plot data with a point at the moment of diauxic shift
@@ -450,7 +450,7 @@ ex_dat_mrg_sum <-
                          window_width_n = 39)[2],
     diauxie_percap = max_gc(deriv_percap5[Time >= diauxie_time]),
     diauxie_percap_time = 
-      extr_idx(Time[Time >= diauxie_time],
+      extr_val(Time[Time >= diauxie_time],
                which_max_gc(deriv_percap5[Time >= diauxie_time]))
   )
 head(ex_dat_mrg_sum)

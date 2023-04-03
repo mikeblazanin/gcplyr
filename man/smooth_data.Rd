@@ -56,11 +56,11 @@ If \code{return_fitobject == FALSE:}
         second element named 'residuals' containing the residuals of the
         fitted values and the input values
         
-        **Note: as of v1.3.0 the above is true, but will be altered soon**
-        to instead maintain the class of the object returned by the
-        smoothing method. After the change, not all methods will return
-        an object with 'fitted' as the first element and 'residuals'
-        as the second element.
+        **Note: the first version released after Sep 1, 2023 will change **
+        **this behavior** to instead maintain the class of the object 
+        returned by the smoothing method. After the change, not all methods 
+        will return an object with 'fitted' as the first element and 
+        'residuals' as the second element.
 }
 \description{
 This function calls other functions to smooth growth curve data

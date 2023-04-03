@@ -72,6 +72,8 @@ ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
 ex_dat_mrg$Well <- 
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+#Convert time to hours
+ex_dat_mrg$Time <- ex_dat_mrg$time/3600
 ```
 
 
@@ -209,27 +211,6 @@ ex_dat_mrg <- mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
 head(ex_dat_mrg)
 ```
 
-
-## Changing the derivative units
-
-To change the units of your derivatives, use the `x_scale` argument. `x_scale` should be set to the ratio of your `x` units to the units you want. For instance, in our example data `x` is the number of *seconds* since the growth curve began. If we want growth rate in *per-hour*, we set `x_scale = 3600`, since there are 3600 seconds in an hour.
-
-```{r}
-ex_dat_mrg <- 
-  mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
-         deriv_percap_hr = calc_deriv(x = Time, y = Measurements,
-                                      percapita = TRUE, blank = 0,
-                                      window_width_n = 5, trans_y = "log",
-                                      x_scale = 3600))
-
-# Now let's plot the derivative in units of Abs/hour
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time/3600, y = deriv_percap_hr)) +
-  geom_line() +
-  facet_wrap(~Well, scales = "free")
-```
-
-Now we can see the bacterial growth rate in more-understandable units: peak growth rates are often around 1-2 divisions/hour.
 
 # What's next?
 

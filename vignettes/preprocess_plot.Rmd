@@ -118,7 +118,7 @@ Once `hms` has parsed the text, we'll use `time_length` to convert the output of
 # make sure to add the line:
 #    library(lubridate)
 
-ex_dat_mrg$Time <- time_length(hms(ex_dat_mrg$Time))
+ex_dat_mrg$Time <- time_length(hms(ex_dat_mrg$Time), unit = "hour")
 
 head(ex_dat_mrg)
 ```

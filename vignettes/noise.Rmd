@@ -99,6 +99,7 @@ ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design)
 ex_dat_mrg$Well <- 
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+ex_dat_mrg$Time <- ex_dat_mrg$time/3600 #Convert time to hours
 
 # For computational speed, let's just keep the wells we'll be focusing on
 #  (for your own analyses, you should skip this step and continue using
@@ -126,8 +127,8 @@ This level of noise doesn't seem like it would mess up calculations of maximum d
 ```{r}
 ex_dat_mrg <- 
   mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-         deriv = calc_deriv(x = Time, y = Measurements, x_scale = 3600),
-         deriv_percap = calc_deriv(x = Time, y = Measurements, x_scale = 3600,
+         deriv = calc_deriv(x = Time, y = Measurements),
+         deriv_percap = calc_deriv(x = Time, y = Measurements,
                                    percapita = TRUE, blank = 0))
 
 # Plot derivative
@@ -154,14 +155,14 @@ To use the fitting functionality of `calc_deriv`, we need to specify either the 
 ```{r}
 ex_dat_mrg <- 
   mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-         deriv5 = calc_deriv(x = Time, y = Measurements, x_scale = 3600,
+         deriv5 = calc_deriv(x = Time, y = Measurements,
                             window_width_n = 5),
-         deriv_percap5 = calc_deriv(x = Time, y = Measurements, x_scale = 3600,
+         deriv_percap5 = calc_deriv(x = Time, y = Measurements,
                                    percapita = TRUE, blank = 0,
                                    window_width_n = 5),
-         deriv9 = calc_deriv(x = Time, y = Measurements, x_scale = 3600,
+         deriv9 = calc_deriv(x = Time, y = Measurements,
                             window_width_n = 9),
-         deriv_percap9 = calc_deriv(x = Time, y = Measurements, x_scale = 3600,
+         deriv_percap9 = calc_deriv(x = Time, y = Measurements,
                                    percapita = TRUE, blank = 0,
                                    window_width_n = 9))
 
@@ -406,18 +407,15 @@ Once you've smoothed your data, you can calculate derivatives using the smoothed
 #  in the previous section by combining moving median and moving average smoothing
 ex_dat_mrg <- 
   mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-         deriv_raw = calc_deriv(x = Time, y = Measurements, x_scale = 3600),
+         deriv_raw = calc_deriv(x = Time, y = Measurements),
          deriv_percap_raw = calc_deriv(x = Time, y = Measurements,
-                                       x_scale = 3600, percapita = TRUE,
-                                       blank = 0),
-         deriv = calc_deriv(x = Time, y = smoothed, x_scale = 3600),
-         deriv_percap = calc_deriv(x = Time, y = smoothed, x_scale = 3600,
+                                       percapita = TRUE, blank = 0),
+         deriv = calc_deriv(x = Time, y = smoothed),
+         deriv_percap = calc_deriv(x = Time, y = smoothed,
                                    percapita = TRUE, blank = 0),
-         deriv3 = calc_deriv(x = Time, y = smoothed, x_scale = 3600,
-                            window_width_n = 3),
-         deriv_percap3 = calc_deriv(x = Time, y = smoothed, x_scale = 3600,
-                                   percapita = TRUE, blank = 0,
-                                   window_width_n = 3))
+         deriv3 = calc_deriv(x = Time, y = smoothed, window_width_n = 3),
+         deriv_percap3 = calc_deriv(x = Time, y = smoothed, percapita = TRUE, 
+                                    blank = 0, window_width_n = 3))
 
 # Plot derivative of smoothed data
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),

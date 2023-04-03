@@ -72,14 +72,13 @@ ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
 ex_dat_mrg$Well <- 
   factor(ex_dat_mrg$Well,
          levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
-ex_dat_mrg <- group_by(ex_dat_mrg, Well, Bacteria_strain, Phage)
+ex_dat_mrg$Time <- ex_dat_mrg$time/3600 #Convert time to hours
 ex_dat_mrg <-
-  mutate(ex_dat_mrg,
-         deriv = calc_deriv(x = Time, y = Measurements, x_scale = 3600),
+  mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
+         deriv = calc_deriv(x = Time, y = Measurements),
          deriv_percap5 = calc_deriv(x = Time, y = Measurements, 
                                         percapita = TRUE, blank = 0,
-                                        window_width_n = 5, trans_y = "log",
-                                    x_scale = 3600),
+                                        window_width_n = 5, trans_y = "log"),
          doub_time = doubling_time(y = deriv_percap5))
 sample_wells <- c("A1", "F1", "F10", "E11")
 # Drop unneeded columns (optional, but makes things cleaner)
@@ -207,8 +206,8 @@ Below, I calculate lag time and visualize this tangent-line approach. To visuali
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             lag_time = lag_time(y = Measurements, x = Time, 
-                                deriv = deriv_percap5/3600),
-            max_percap = max_gc(deriv_percap5)/3600,
+                                deriv = deriv_percap5),
+            max_percap = max_gc(deriv_percap5),
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             max_percap_dens = Measurements[which_max_gc(deriv_percap5)],
             min_dens = min_gc(Measurements))
@@ -229,16 +228,16 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 ```
 
-Notice how some of the minimum density values aren't actually the *initial* density? We can fix that by overriding the default minimum density calculation with `first_minima` via the `y0` argument of `lag_time`.
+Notice how in some of the wells the minimum density value isn't the *initial* density? We can fix that by overriding the default minimum density calculation with `first_minima` via the `y0` argument of `lag_time`.
 
 ```{r}
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             min_dens = first_minima(Measurements, return = "y"),
             lag_time = lag_time(y = Measurements, x = Time, 
-                                deriv = deriv_percap5/3600,
+                                deriv = deriv_percap5,
                                 y0 = min_dens),
-            max_percap = max_gc(deriv_percap5)/3600,
+            max_percap = max_gc(deriv_percap5),
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             max_percap_dens = Measurements[which_max_gc(deriv_percap5)])
 head(ex_dat_mrg_sum)

@@ -36,24 +36,25 @@ test_that("lag_time returns correctly", {
   }
   dat <- data.frame(x = seq(from = 0, to = 200, by = 3),
                     y = baranyi_func(r = .1, k = 1, v = 1, q0 = .01, m = .1, 
-                                     d0 = 0.001, t_vals = x))
+                                     d0 = 0.001, 
+                                     t_vals = seq(from = 0, to = 200, by = 3)))
   dat$grp <- "A"
   dat <- mutate(group_by(dat, grp),
                 deriv = calc_deriv(y = y, x = x, percapita = TRUE, 
                                 blank = 0, trans_y = "log", window_width_n = 5))
-  y0 <- min(y, na.rm = TRUE)
-  y1 <- y[which.max(deriv)]
-  x1 <- x[which.max(deriv)]
-  m <- max(deriv, na.rm = TRUE)
+  y0 <- min(dat$y, na.rm = TRUE)
+  y1 <- dat$y[which.max(dat$deriv)]
+  x1 <- dat$x[which.max(dat$deriv)]
+  m <- max(dat$deriv, na.rm = TRUE)
   lag <- lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1)
   expect_equal(log(y1) - m*x1 + m*lag, log(y0))
   if(F) {
-    plot(x, log(y))
+    plot(dat$x, log(dat$y))
     points(x1, log(y1), col = "red")
     abline(a = log(y1) - m*x1, b = m)
     abline(h = log(y0), lty = 2)
     abline(v = lag, lty = 2)
-    plot(x, deriv)
+    plot(dat$x, dat$deriv)
     abline(h = m)
   }
   
@@ -93,13 +94,13 @@ test_that("lag_time returns correctly", {
   #All deriv are 0
   dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(0, 10))
   expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
-                 "Only returning the first lag")
+                 "multiple timepoints have")
   expect_equal(lag, NaN)
   
   #All deriv are the same (so matches the first one with warning)
   dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(5, 10))
   expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
-                 "Only returning the first")
+                 "multiple timepoints have")
   expect_equal(lag, 1)
 })
 

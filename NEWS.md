@@ -1,6 +1,8 @@
-# gcplyr 1.5.0.9000
+# gcplyr 1.5.1
 
-stuff here
+* The "Dealing with noise" vignette was rewritten to be much more concise
+
+* Other minor fixes for CRAN checks
 
 # gcplyr 1.5.0
 

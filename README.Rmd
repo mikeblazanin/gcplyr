@@ -43,7 +43,7 @@ version <- gsub('-', '.', version)
 * `gcplyr` has several methods to deal with noise in density or derivatives data.
 * `gcplyr` can extract parameters like growth rate/doubling time, carrying capacity, diauxic shifts, extinction, and more without fitting an equation for growth to your data.
 
-**Please send all questions, requests, comments, and bugs to mikeblazanin [at] gmail [dot] com**
+**Please send all questions, requests, comments, and bugs to [mikeblazanin@gmail.com](mailto:mikeblazanin@gmail.com)**
 
 ## Installation
 

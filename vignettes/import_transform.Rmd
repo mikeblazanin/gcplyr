@@ -410,6 +410,7 @@ If the data you've read into the`R`environment is wide-shaped (or you've gotten 
 First, you need to provide `trans_wide_to_tidy` with the`R`object created by `read_wides` or by `trans_block_to_wide`. 
 
 Then, you have to specify one of:
+
 * the columns your data (the spectrophotometric measures) are in via `data_cols`
 * what columns your non-data (e.g. time and other information) are in via `id_cols`
 

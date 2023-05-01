@@ -1,13 +1,15 @@
-year <- sub("-.*", "", meta$Date)
 note <- sprintf("version %s", meta$Version)
 
 bibentry(
-  bibtype     = "Manual",
+  bibtype     = "Article",
   header      = "To cite gcplyr in publications use:",
-  title       = "{gcplyr}: manipulate and analyze growth curve data",
+  title       = "gcplyr: an R package for microbial growth curve data analysis",
   author      = as.person("Michael Blazanin"),
-  year        = year,
+  year        = "2023",
+  doi         = "10.1101/2023.04.30.538883"
+  publisher   = "Cold Spring Harbor Laboratory"
+  journal     = "bioRxiv"
   note        = note,
-  url         = "https://github.com/mikeblazanin/gcplyr/",
-  textVersion = paste0("Blazanin, Michael. ", year, ". 'gcplyr: manipulate and analyze growth curve data.' R package ", note)
+  textVersion = "Blazanin, Michael. 2023. gcplyr: an R package for microbial growth curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883."
   )
+

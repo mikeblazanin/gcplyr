@@ -2,16 +2,15 @@
 .onAttach <- function(...) {
   ver <- utils::packageDescription("gcplyr")$Version
   build_date <- utils::packageDescription("gcplyr")$Date
-  year <- sub("-.*", "", utils::packageDescription("gcplyr")$Date)
-  
+
   packageStartupMessage(
     paste(
       "## \n",
       "## gcplyr (Version ", ver, ", Build Date: ", build_date, ")\n",
       "## See http://github.com/mikeblazanin/gcplyr for additional documentation\n",
       "## Please cite software as:\n",
-      "##   Blazanin, Michael. ", year, ". 'gcplyr: manipulate and analyze growth\n",
-      "##   curve data.' R package version ", ver, "\n",
+      "##   Blazanin, Michael. 2023. gcplyr: an R package for microbial growth\n",
+      "##   curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883\n",
       "## \n",
       sep = ""))
 }

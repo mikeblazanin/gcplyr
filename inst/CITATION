@@ -6,9 +6,9 @@ bibentry(
   title       = "gcplyr: an R package for microbial growth curve data analysis",
   author      = as.person("Michael Blazanin"),
   year        = "2023",
-  doi         = "10.1101/2023.04.30.538883"
-  publisher   = "Cold Spring Harbor Laboratory"
-  journal     = "bioRxiv"
+  doi         = "10.1101/2023.04.30.538883",
+  publisher   = "Cold Spring Harbor Laboratory",
+  journal     = "bioRxiv",
   note        = note,
   textVersion = "Blazanin, Michael. 2023. gcplyr: an R package for microbial growth curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883."
   )

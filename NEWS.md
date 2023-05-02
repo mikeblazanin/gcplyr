@@ -1,3 +1,7 @@
+# gcplyr 1.5.2.9000
+
+Stuff here
+
 # gcplyr 1.5.2
 
 * Citation and load message now point to the bioRxiv preprint for the package: Blazanin, Michael. 2023. gcplyr: an R package for microbial growth curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883.

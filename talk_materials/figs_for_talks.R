@@ -1,6 +1,7 @@
 library(gcplyr)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 
 # Load data & merge ----
 ## no-diaux data
@@ -110,48 +111,108 @@ get_super_fit <- function(x, y,
   return(temp)
 }
          
-dat_sum <- summarize(group_by(dat, ex_case),
-                     get_super_fit(x = Time, y = Measurements, prefix = "logis_"))
-
+dat_sum <- summarize(
+  group_by(dat, ex_case),
+  get_super_fit(x = Time, y = Measurements, prefix = "logis_"),
+  get_super_fit(x = Time, y = Measurements, v_fixed = FALSE, prefix = "logisv_"),
+  get_super_fit(x = Time, y = Measurements, v_fixed = FALSE, 
+                q0_fixed = FALSE, m_fixed = FALSE,
+                q0 = 0.5, m = 0.2, prefix = "baranyi_"))
 
 dat <- left_join(dat, dat_sum)
-dat <- mutate(dat,
-              pred_measurements = 
-                super_func(r = logis_r, k = 10**logis_logk, 
-                           d0 = 10**logis_logd0, t_vals = Time))
+dat <- mutate(group_by(dat, ex_case),
+              pred_logis = 
+                super_func(r = logis_r[1], k = 10**logis_logk[1], 
+                           d0 = 10**logis_logd0[1], t_vals = Time),
+              pred_logisv = super_func(r = logisv_r[1], k = 10**logisv_logk[1], 
+                                       d0 = 10**logisv_logd0[1], 
+                                       v = logisv_v[1], t_vals = Time),
+              pred_baranyi = super_func(r = baranyi_r[1], k = 10**baranyi_logk[1], 
+                                        d0 = 10**baranyi_logd0[1], 
+                                        v = baranyi_v[1], 
+                                        q0 = baranyi_q0[1], m = baranyi_m[1],
+                                        t_vals = Time))
+
+dat_lng <- pivot_longer(data = dat,
+                    cols = starts_with("pred_"),
+                    names_to = "pred_func", values_to = "pred_val")
 
 #Plot with fitted curves
-ggplot(dat, aes(x = Time, y = Measurements, color = ex_case)) +
-  geom_point() +
+ggplot(dat_lng, aes(x = Time, y = Measurements, color = ex_case)) +
+  geom_point(alpha = 0.1) +
   scale_y_log10() +
-  geom_line(aes(y = pred_measurements)) +
+  geom_line(aes(y = pred_val, lty = pred_func)) +
   facet_wrap(~ ex_case)
 
-
-
-
-
-png("./talk_materials/example_data1.png", width = 5, height = 4,
-    units = "in", res = 150)
-ggplot(filter(dat, Well == "C2", Time > 2),
-       aes(x = Time-2, y = Measurements)) +
+p1 <- ggplot(filter(dat, ex_case == "nolag"),
+             aes(x = Time, y = Measurements)) +
   geom_point() +
+  scale_y_log10() +
+  guides(lty = "none") +
   theme_bw() +
-  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
   labs(x = "Time (hr)") +
-  theme(axis.title = element_text(size = 20)) +
-  scale_y_log10()
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+
+png("./talk_materials/nolag.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1
 dev.off()
 
-png("./talk_materials/example_data2.png", width = 5, height = 4,
+png("./talk_materials/nolag_logis.png", width = 5, height = 4,
     units = "in", res = 150)
-ggplot(filter(dat, Well == "C2"),
-       aes(x = Time, y = Measurements)) +
-  geom_point() +
-  theme_bw() +
-  scale_x_continuous(breaks = c(0, 6, 12, 18, 24)) +
-  labs(x = "Time (hr)") +
-  theme(axis.title = element_text(size = 20)) +
-  scale_y_log10()
+p1 + geom_line(aes(y = pred_logis), lty = 2, lwd = 2, color = "red")
 dev.off()
+
+png("./talk_materials/nolag_logisv.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1 + geom_line(aes(y = pred_logisv), lty = 2, lwd = 2, color = "red")
+dev.off()
+
+p1 <- ggplot(filter(dat, ex_case == "lag"),
+             aes(x = Time, y = Measurements)) +
+  geom_point() +
+  scale_y_log10() +
+  guides(lty = "none") +
+  theme_bw() +
+  labs(x = "Time (hr)") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+
+png("./talk_materials/lag.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1
+dev.off()
+
+png("./talk_materials/lag_logisv.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1 + geom_line(aes(y = pred_logisv), lty = 2, lwd = 2, color = "red")
+dev.off()
+
+png("./talk_materials/lag_baranyi.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1 + geom_line(aes(y = pred_baranyi), lty = 2, lwd = 2, color = "red")
+dev.off()
+
+
+p1 <- ggplot(filter(dat, ex_case == "diauxie"),
+             aes(x = Time, y = Measurements)) +
+  geom_point() +
+  scale_y_log10() +
+  guides(lty = "none") +
+  theme_bw() +
+  labs(x = "Time (hr)") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+
+png("./talk_materials/diaux.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1
+dev.off()
+
+png("./talk_materials/diaux_baranyi.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1 + geom_line(aes(y = pred_baranyi), lty = 2, lwd = 2, color = "red")
+dev.off()
+
 

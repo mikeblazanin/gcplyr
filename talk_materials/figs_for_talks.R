@@ -2,7 +2,8 @@ library(gcplyr)
 library(ggplot2)
 library(dplyr)
 
-# Load experimental data ----
+# Load data & merge ----
+## no-diaux data
 dat <-
   read_wides(
     files = "./manuscript/2021-10-15_Emma_Growth_Curve.csv",
@@ -10,62 +11,22 @@ dat <-
 
 dat <- trans_wide_to_tidy(dat, id_cols = c("file", "Time", "T 600"))
 dat <- mutate(dat,
-              Time = lubridate::time_length(lubridate::hms(Time), unit = "hour"),
-              type = "nondiaux")
-
-design_diftconcs <- 
-  make_design(
-    nrows = 8, ncols = 12,
-    output_format = "tidy",
-    init_bact = make_designpattern(c(10**5, 5*10**4, 10**4, 0),
-                                   rows = 2:7, cols = 2:4,
-                                   pattern = "444111222333222222",
-                                   byrow = TRUE),
-    init_bact = make_designpattern(c(10**5, 10**4),
-                                   rows = 2:6, cols = 5:7,
-                                   pattern = "111111111222222",
-                                   byrow = TRUE),
-    init_moi = make_designpattern(c(0, 0.1, 0.01),
-                                  rows = 2:7, cols = 2:4,
-                                  pattern = "111111111111222333",
-                                  byrow = TRUE),
-    init_moi = make_designpattern(c(0.1, 0.01, 0.001),
-                                  rows = 2:6, cols = 5:7,
-                                  pattern = "111222333111222",
-                                  byrow = TRUE),
-    #Row 7 cols 5:7 is actually empty but df rows will be dropped anyway
-    bacteria = make_designpattern("PF",
-                                  rows = 2:7, cols = 2:7,
-                                  pattern = "1")
-  )
-
-dat <- merge_dfs(dat, design_diftconcs)
-dat <- dplyr::filter(dat, init_bact != "NA", init_moi != "NA", bacteria != "NA")
-
-#subtract blank
-dat$Measurements <- dat$Measurements - 
-  min(dplyr::filter(dat, init_bact == 0)$Measurements, na.rm = TRUE)
-
-dat <- dplyr::filter(dat, init_bact == 10**5, init_moi %in% c(0, 0.01))
-
+              Time = lubridate::time_length(lubridate::hms(Time), unit = "hour"))
 dat <- dplyr::filter(dat, Well %in% c("C2", "C7"))
-dat <- select(dat, Time, Well, Measurements, init_moi, type)
 
-# Load diauxie experimental data ----
+## diaux data
 dat_diaux <- read.csv("./manuscript/Isolate_growth_curves.csv")
 dat_diaux$Well <- "Z1"
-dat_diaux$init_moi <- "0"
-dat_diaux$type <- "diauxic"
-dat_diaux <- mutate(dat_diaux, Time = Time_s/3600)
-#Subtract blank
-dat_diaux$Measurements <- 
-  dat_diaux$OD600 - lm(OD600 ~ cfu_ml, dat_diaux)$coefficients[1]
-dat_diaux <- select(dat_diaux, Time, Well, Measurements, init_moi, type)
+dat_diaux <- mutate(dat_diaux, 
+                    Time = Time_s/3600,
+                    Measurements = OD600)
 
-# Merge ----
+## merge
 dat <- dplyr::full_join(dat, dat_diaux)
+dat <- select(dat, Time, Well, Measurements)
 
-#Make 4 example datasets (all running from 0 to 18 hours):
+#Make 4 example datasets ----
+# (all running from 0 to 18 hours):
 #1 - C2 but only after 2 hours (so no lag) - 'nolag'
 #2 - C2 entirely (with lag) - 'lag'
 #3 - Z1 but rescaled so y values are ~same as C2 - 'diauxie'
@@ -87,11 +48,84 @@ temp <- mutate(temp, ex_case = "nolag",
                Time = scales::rescale(Time, to = c(0, 18)))
 dat <- rbind(dat, temp)
 
-
-ggplot(dat, aes(x = Time, y = Measurements, color = ex_case)) +
-  geom_point() +
+ggplot(dat, aes(x = Time, y = Measurements)) +
+  geom_point(aes(color = ex_case)) +
   scale_y_log10()
 
+#Functions for fitting
+super_func <- function(r, k, d0, 
+                       v = 1, q0 = Inf, m = Inf, 
+                       t_vals) {
+  #Specify q0 = Inf and m = Inf to have no acclimation
+  if(anyNA(c(r, k, d0, t_vals))) {return(NA)}
+  if(q0 < 0) {q0 <- 0}
+  if(q0 == Inf && m == Inf) {a <- t_vals
+  } else {a <- t_vals + 1/m*log((exp(-m * t_vals) + q0)/(1+q0))}
+  d <- k/(1-(1-((k/d0)**v))*exp(-r*v*a))**(1/v)
+  return(d)
+}
+
+super_fit_err <- function(params, t_vals, dens_vals,
+                          v = NULL, q0 = NULL, m = NULL) {
+  #params = c("r" = , "logk" = , "logd0" = , v = , q0 = , m = )
+  # except that v, q0, and m could be specified outside of params
+  # in which case they're held fixed and not optimized
+  #Use q0 = Inf and m = Inf to have no acclimation
+  if(!is.null(v)) {params["v"] <- v}
+  if(!is.null(q0)) {params["q0"] <- q0}
+  if(!is.null(m)) {params["m"] <- m}
+  if(any(!c("r", "logk", "logd0", "v", "q0", "m") %in% names(params))) {
+    stop("All params must be specified or fixed")}
+  
+  pred_vals <- super_func(t_vals = t_vals,
+                          r = params["r"], k = 10**params["logk"],
+                          d0 = 10**params["logd0"], v = params["v"],
+                          q0 = params["q0"], m = params["m"])
+  err <- sum((log10(pred_vals) - log10(dens_vals))**2)
+  if (is.infinite(err) | is.na(err)) {return(2*10**300)} else {return(err)}
+}
+
+get_super_fit <- function(x, y,
+                          r = 0.2, logk = log10(1), logd0 = log10(0.1),
+                          v = 1, q0 = Inf, m = Inf,
+                          v_fixed = TRUE, q0_fixed = TRUE, m_fixed = TRUE,
+                          prefix = "") {
+  params <- c("r" = r, "logk" = logk, "logd0" = logd0)
+  
+  if(!v_fixed) {params <- c(params, "v" = v); v <- NULL}
+  if(!q0_fixed) {params <- c(params, "q0" = q0); q0 <- NULL}
+  if(!m_fixed) {params <- c(params, "m" = m); m <- NULL}
+  
+  temp <- optim(par = params,
+                fn = super_fit_err,
+                dens_vals = y, t_vals = x,
+                v = v, q0 = q0, m = m)
+  temp <- 
+    as.data.frame(
+      bind_rows(
+        temp$par
+      )
+    )
+  colnames(temp) <- paste0(prefix, colnames(temp))
+  return(temp)
+}
+         
+dat_sum <- summarize(group_by(dat, ex_case),
+                     get_super_fit(x = Time, y = Measurements, prefix = "logis_"))
+
+
+dat <- left_join(dat, dat_sum)
+dat <- mutate(dat,
+              pred_measurements = 
+                super_func(r = logis_r, k = 10**logis_logk, 
+                           d0 = 10**logis_logd0, t_vals = Time))
+
+#Plot with fitted curves
+ggplot(dat, aes(x = Time, y = Measurements, color = ex_case)) +
+  geom_point() +
+  scale_y_log10() +
+  geom_line(aes(y = pred_measurements)) +
+  facet_wrap(~ ex_case)
 
 
 
@@ -121,113 +155,3 @@ ggplot(filter(dat, Well == "C2"),
   scale_y_log10()
 dev.off()
 
-# fitting funcs ----
-logis_func <- function(r, k, d0, t_vals) {
-  if (anyNA(c(r, k, d0, t_vals))) {return(NA)}
-  t_vals_hrs <- t_vals/3600
-  d <- k/(1+(((k-d0)/d0)*exp(-r*(t_vals_hrs))))
-  return(d)
-}
-
-logis_fit_err <- function(params, t_vals, dens_vals) {
-  #params <- c("logk" = ..., "d0" = ..., "r" = ..., "delta" = ...)
-  t_vals_hrs <- t_vals/3600
-  k <- 10**params["logk"]
-  pred_vals <- logis_func(r = params["r"], k = params["k"], d0 = params["d0"],
-                          t_vals = t_vals)
-  pred_vals[pred_vals < 0] <- 0
-  err <- sum((log10(pred_vals) - log10(dens_vals))**2)
-  if (is.infinite(err) | is.na(err)) {return(2*10**300)} else {return(err)}
-}
-
-baranyi_func <- function(r, k, v, d0, t_vals) {
-  #Modified from Ram et al 2019 with a(t) = 1
-  # (equivalent to logistic with a deceleration param)
-  if (anyNA(c(r, k, v, d0, t_vals))) {return(NA)}
-  t_vals_hrs <- t_vals/3600
-  d <- k/((1-(1-((k/d0)**v))*exp(-r*v*t_vals_hrs))**(1/v))
-  return(d)
-}
-
-baranyi_fit_err <- function(params, t_vals, dens_vals) {
-  #params <- c("logk" = ..., "logd0" = ..., "r" = ..., "v" = ...)
-  pred_vals <- baranyi_func(r = params["r"],
-                            k = 10**params["logk"],
-                            v = params["v"],
-                            d0 = 10**params["logd0"],
-                            t_vals = t_vals)
-  pred_vals[pred_vals < 0] <- 0
-  err <- sum((log10(pred_vals) - log10(dens_vals))**2)
-  if (is.infinite(err) | is.na(err)) {return(2*10**300)} else {return(err)}
-}
-
-get_baranyi_fit <- function(x, y) {
-  optim(par = c("logk" = log10(1),
-                "logd0" = log10(init_d0),
-                "r" = init_r,
-                "v" = init_v),
-        fn = baranyi_fit_err,
-        dens_vals = gc_data$cfu_ml[gc_rows],
-        t_vals = gc_data$Time_s[gc_rows],
-        method = "L-BFGS-B",
-        #logk, logd0, r, v
-        lower = c(5, 4, 0, 0),
-        upper = c(11, 10, 10, 50))
-  
-  
-}
-
-# fit ----
-
-#Do fitting
-
-gc_summarize <- summarize(
-
-
-gc_summarized <- cbind(gc_summarized,
-                       data.frame("fit_r" = as.numeric(NA), 
-                                  "fit_k" = as.numeric(NA),
-                                  "fit_v" = as.numeric(NA), 
-                                  "fit_d0" = as.numeric(NA),
-                                  "fit_err" = as.numeric(NA)))
-for (sum_row in 1:nrow(gc_summarized)) {
-  my_well <- gc_summarized$uniq_well[sum_row]
-  
-  start_time <- gc_summarized$threshold_percap_gr_time[sum_row]
-  
-  if(is.na(gc_summarized$diauxie_time[sum_row])) {
-    end_time <- max(gc_data$Time_s[gc_data$uniq_well == my_well])
-  } else {end_time <- gc_summarized$diauxie_time[sum_row]}
-  
-  gc_rows <- which(gc_data$uniq_well == my_well &
-                     gc_data$Time_s <= end_time &
-                     gc_data$Time_s >= start_time)
-  
-  #Set initial values
-  init_d0 <- min(gc_data$cfu_ml[gc_rows])
-  init_K <- max(gc_data$cfu_ml[gc_rows])
-  init_r <- 1
-  init_v <- 1
-  
-  #Fit
-  temp <- optim(par = c("logk" = log10(init_K),
-                        "logd0" = log10(init_d0),
-                        "r" = init_r,
-                        "v" = init_v),
-                fn = baranyi_fit_err,
-                dens_vals = gc_data$cfu_ml[gc_rows],
-                t_vals = gc_data$Time_s[gc_rows],
-                method = "L-BFGS-B",
-                #logk, logd0, r, v
-                lower = c(5, 4, 0, 0),
-                upper = c(11, 10, 10, 50))
-  
-  #Save fit vals
-  gc_summarized[sum_row, 
-                c("fit_r", "fit_k", "fit_v", "fit_d0", "fit_err")] <-
-    data.frame("fit_r" = temp$par["r"], 
-               "fit_k" = 10**temp$par["logk"],
-               "fit_v" = temp$par["v"], 
-               "fit_d0" = 10**temp$par["logd0"],
-               "fit_err" = temp$value)
-}

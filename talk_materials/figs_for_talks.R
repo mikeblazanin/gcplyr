@@ -2,8 +2,9 @@ library(gcplyr)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(cranlogs)
 
-# Load data & merge ----
+# Load example fitting data ----
 ## no-diaux data
 dat <-
   read_wides(
@@ -26,7 +27,7 @@ dat_diaux <- mutate(dat_diaux,
 dat <- dplyr::full_join(dat, dat_diaux)
 dat <- select(dat, Time, Well, Measurements)
 
-#Make 4 example datasets ----
+#Make 4 example datasets for fitting ----
 # (all running from 0 to 18 hours):
 #1 - C2 but only after 2 hours (so no lag) - 'nolag'
 #2 - C2 entirely (with lag) - 'lag'
@@ -42,18 +43,18 @@ dat$Measurements[dat$Well == "Z1"] <-
   scales::rescale(x = dat$Measurements[dat$Well == "Z1"],
           to = c(min(dat$Measurements[dat$Well == "C2"]) + 0.001,
                  max(dat$Measurements[dat$Well == "C2"])))
-dat <- filter(dat, Time <= 18.1)
-temp <- filter(dat, ex_case == "lag", Time > 2)
+dat_cut <- filter(dat, Time <= 18.1)
+temp <- filter(dat_cut, ex_case == "lag", Time > 2)
 temp <- mutate(temp, ex_case = "nolag", 
                Time = Time - 2,
                Time = scales::rescale(Time, to = c(0, 18)))
-dat <- rbind(dat, temp)
+dat_cut <- rbind(dat_cut, temp)
 
-ggplot(dat, aes(x = Time, y = Measurements)) +
+ggplot(dat_cut, aes(x = Time, y = Measurements)) +
   geom_point(aes(color = ex_case)) +
   scale_y_log10()
 
-#Functions for fitting
+#Functions for fitting ----
 super_func <- function(r, k, d0, 
                        v = 1, q0 = Inf, m = Inf, 
                        t_vals) {
@@ -110,17 +111,18 @@ get_super_fit <- function(x, y,
   colnames(temp) <- paste0(prefix, colnames(temp))
   return(temp)
 }
-         
-dat_sum <- summarize(
-  group_by(dat, ex_case),
+
+#Fit and plot ----
+dat_cut_sum <- summarize(
+  group_by(dat_cut, ex_case),
   get_super_fit(x = Time, y = Measurements, prefix = "logis_"),
   get_super_fit(x = Time, y = Measurements, v_fixed = FALSE, prefix = "logisv_"),
   get_super_fit(x = Time, y = Measurements, v_fixed = FALSE, 
                 q0_fixed = FALSE, m_fixed = FALSE,
                 q0 = 0.5, m = 0.2, prefix = "baranyi_"))
 
-dat <- left_join(dat, dat_sum)
-dat <- mutate(group_by(dat, ex_case),
+dat_cut <- left_join(dat_cut, dat_cut_sum)
+dat_cut <- mutate(group_by(dat_cut, ex_case),
               pred_logis = 
                 super_func(r = logis_r[1], k = 10**logis_logk[1], 
                            d0 = 10**logis_logd0[1], t_vals = Time),
@@ -133,18 +135,18 @@ dat <- mutate(group_by(dat, ex_case),
                                         q0 = baranyi_q0[1], m = baranyi_m[1],
                                         t_vals = Time))
 
-dat_lng <- pivot_longer(data = dat,
+dat_cut_lng <- pivot_longer(data = dat_cut,
                     cols = starts_with("pred_"),
                     names_to = "pred_func", values_to = "pred_val")
 
 #Plot with fitted curves
-ggplot(dat_lng, aes(x = Time, y = Measurements, color = ex_case)) +
+ggplot(dat_cut_lng, aes(x = Time, y = Measurements, color = ex_case)) +
   geom_point(alpha = 0.1) +
   scale_y_log10() +
   geom_line(aes(y = pred_val, lty = pred_func)) +
   facet_wrap(~ ex_case)
 
-p1 <- ggplot(filter(dat, ex_case == "nolag"),
+p1 <- ggplot(filter(dat_cut, ex_case == "nolag"),
              aes(x = Time, y = Measurements)) +
   geom_point() +
   scale_y_log10() +
@@ -169,7 +171,7 @@ png("./talk_materials/nolag_logisv.png", width = 5, height = 4,
 p1 + geom_line(aes(y = pred_logisv), lty = 2, lwd = 2, color = "red")
 dev.off()
 
-p1 <- ggplot(filter(dat, ex_case == "lag"),
+p1 <- ggplot(filter(dat_cut, ex_case == "lag"),
              aes(x = Time, y = Measurements)) +
   geom_point() +
   scale_y_log10() +
@@ -195,7 +197,7 @@ p1 + geom_line(aes(y = pred_baranyi), lty = 2, lwd = 2, color = "red")
 dev.off()
 
 
-p1 <- ggplot(filter(dat, ex_case == "diauxie"),
+p1 <- ggplot(filter(dat_cut, ex_case == "diauxie"),
              aes(x = Time, y = Measurements)) +
   geom_point() +
   scale_y_log10() +
@@ -215,4 +217,62 @@ png("./talk_materials/diaux_baranyi.png", width = 5, height = 4,
 p1 + geom_line(aes(y = pred_baranyi), lty = 2, lwd = 2, color = "red")
 dev.off()
 
+# Create noisy data ----
+datnoisy <- filter(dat, Well == "C2")
+set.seed(2)
+datnoisy$Measurements <-
+  round(datnoisy$Measurements +
+          0.015*c(arima.sim(model = list(order = c(0, 0, 0)),
+                            n = length(datnoisy$Measurements))) +
+          sample(x = c(0, 1), length(datnoisy$Measurements), 
+                 replace = TRUE, prob = c(0.8, 0.2)) *
+          rexp(n = length(datnoisy$Measurements), rate = 20)  +
+          sample(x = c(0, 1), length(datnoisy$Measurements), 
+                 replace = TRUE, prob = c(0.85, 0.15)) *
+          rexp(n = length(datnoisy$Measurements), rate = 19),
+        3)
 
+ggplot(data = datnoisy, aes(x = Time, y = Measurements)) +
+  geom_point()
+
+datnoisy <- 
+  mutate(group_by(datnoisy, Well),
+         deriv = calc_deriv(y = Measurements, x = Time),
+         sm_1 = smooth_data(y = Measurements, x = Time, 
+                               sm_method = "moving-median",
+                               window_width_n = 5),
+         sm_2 = smooth_data(y = sm_1, x = Time,
+                                    sm_method = "moving-average",
+                                    window_width_n = 5))
+
+p1 <- ggplot(data = filter(datnoisy), 
+             aes(x = Time, y = Measurements)) +
+  geom_point(size = 2) +
+  theme_bw() +
+  labs(x = "Time (hr)") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+
+png("./talk_materials/noisy.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1
+dev.off()
+
+png("./talk_materials/noisy_smoothed.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1 + geom_line(aes(y = sm_2), color = "red", lwd = 1.3)
+dev.off()
+
+#Downloads data
+cran <- cran_downloads(packages = "gcplyr", from = "2023-02-01")
+cran <- mutate(cran, cumdownloads = cumsum(count))
+png("./talk_materials/cran_downloads.png", width = 5, height = 4,
+    units = "in", res = 150)
+ggplot(data = cran,
+       aes(x = date, y = cumdownloads)) +
+  geom_point() +
+  labs(x = "Date", y = "Cumulative Downloads") +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+dev.off()

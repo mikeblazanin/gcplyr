@@ -4,6 +4,30 @@ library(dplyr)
 library(tidyr)
 library(cranlogs)
 
+#Create simple model-fitting example
+
+set.seed(123)
+lindata <- data.frame(x = rnorm(50, mean = 5, sd = 2))
+lindata$y <- lindata$x * (0.6) + 4.3 + rnorm(nrow(lindata), sd = 1)
+
+p1 <- ggplot(data = lindata, aes(x = x, y = y)) +
+  geom_point(size = 2) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_blank())
+
+png("./talk_materials/example_lindata.png", 
+    width = 5, height = 4, units = "in", res = 300)
+p1
+dev.off()
+
+png("./talk_materials/example_lindata_fitted.png", 
+    width = 5, height = 4, units = "in", res = 300)
+p1 +
+  geom_smooth(method = "lm", se = FALSE, color = "red", lwd = 2, lty = 2)
+dev.off()
+
+
 # Load example fitting data ----
 ## no-diaux data
 dat <-
@@ -184,6 +208,11 @@ p1 <- ggplot(filter(dat_cut, ex_case == "lag"),
 png("./talk_materials/lag.png", width = 5, height = 4,
     units = "in", res = 150)
 p1
+dev.off()
+
+png("./talk_materials/lag_logis.png", width = 5, height = 4,
+    units = "in", res = 150)
+p1 + geom_line(aes(y = pred_logis), lty = 2, lwd = 2, color = "red")
 dev.off()
 
 png("./talk_materials/lag_logisv.png", width = 5, height = 4,

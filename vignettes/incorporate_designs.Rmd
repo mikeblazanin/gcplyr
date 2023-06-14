@@ -410,7 +410,14 @@ Row B     |No Phage | ... | No Phage | Phage Added | ... | Phage Added
 Row G     |No Phage | ... | No Phage | Phage Added | ... |  Phage Added
 Row H     |No Phage | ... | No Phage | Phage Added | ... |  Phage Added
 
-Let's generate our design:
+Let's transform the `example_widedata_noiseless` to tidy-shaped.
+
+```{r}
+example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
+                                       id_cols = "Time")
+```
+
+Now let's generate our design:
 
 ```{r}
 example_design <- make_design(
@@ -438,13 +445,6 @@ example_design <- make_design(
 Here's what the resulting data.frame looks like:
 ```{r}
 head(example_design, 20)
-```
-
-Now let's transform the `example_widedata_noiseless` to tidy-shaped.
-
-```{r}
-example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
-                                       id_cols = "Time")
 ```
 
 And finally, we merge the two using `merge_dfs`, saving the result to `ex_dat_mrg`, short for example_data_merged. `merge_dfs` merges using columns with the same name between the two data.frames.

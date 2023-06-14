@@ -43,10 +43,10 @@ If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
 column of the file(s).}
 
-\item{header}{logical for whether there is a header to the data. If FALSE
-columns are simple numbered. If TRUE is the row above
-\code{startrow} (if startrow is specified) or the first row
-of the input files (if startrow is not specified)}
+\item{header}{logical for whether there is a header in the data. If FALSE
+columns are simply numbered. If TRUE, the first row of the
+data (\code{startrow} if specified) is used 
+as the column names}
 
 \item{sheet}{The sheet of the input files where data is located (if input
 files are .xls or .xlsx). If not specified defaults to the first

@@ -163,7 +163,7 @@ infer_names <- function(df,
 #'                 automatically according to \code{wellnames_numeric}
 #' @param sider    \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 #'                 such values, indicating whether the file(s) contains the
-#'                 row names as its first line. If \code{sider = NA}
+#'                 row names as its first column. If \code{sider = NA}
 #'                 will attempt to infer the presence of row names. If
 #'                 \code{sider = FALSE} or no row names are inferred when 
 #'                 \code{sider = NA}, row names will be generated
@@ -479,10 +479,10 @@ read_blocks <- function(files, extension = NULL,
 #'                 If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
-#' @param header logical for whether there is a header to the data. If FALSE
-#'               columns are simple numbered. If TRUE is the row above
-#'               \code{startrow} (if startrow is specified) or the first row
-#'               of the input files (if startrow is not specified)
+#' @param header logical for whether there is a header in the data. If FALSE
+#'               columns are simply numbered. If TRUE, the first row of the
+#'               data (\code{startrow} if specified) is used 
+#'               as the column names
 #' @param sheet The sheet of the input files where data is located (if input
 #'              files are .xls or .xlsx). If not specified defaults to the first
 #'              sheet

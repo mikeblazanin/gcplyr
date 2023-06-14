@@ -77,7 +77,7 @@ automatically according to \code{wellnames_numeric}}
 
 \item{sider}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 such values, indicating whether the file(s) contains the
-row names as its first line. If \code{sider = NA}
+row names as its first column. If \code{sider = NA}
 will attempt to infer the presence of row names. If
 \code{sider = FALSE} or no row names are inferred when 
 \code{sider = NA}, row names will be generated

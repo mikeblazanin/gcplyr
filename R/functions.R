@@ -2162,7 +2162,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     output <- dplyr::full_join(x = x, y = y,
                                by = by, ...)
     if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
-      warning("\nmerged_df has more rows than x or y, this may indicate
+      warning("\nmerged_df has more rows than x and y, this may indicate
                mis-matched values in the shared column(s) used to merge 
               (e.g. 'Well')\n")
     }

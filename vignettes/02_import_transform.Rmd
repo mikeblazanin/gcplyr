@@ -17,9 +17,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 knitr::opts_knit$set(root.dir = tempdir())
-
-#Note: to knit to pdf, word, and html simultaneously, run in R console:
-#{rmarkdown::render("./vignettes/import_transform.Rmd", rmarkdown::html_vignette(toc = TRUE, toc_dept = 4)); rmarkdown::render("./vignettes/import_transform.Rmd", rmarkdown::pdf_document(toc = TRUE, toc_depth = 4)); rmarkdown::render("./vignettes/import_transform.Rmd", rmarkdown::word_document(toc = TRUE, toc_dept = 4))}
 ```
 
 # Where are we so far?

@@ -24,14 +24,14 @@ knitr::opts_knit$set(root.dir = tempdir())
 
 # Where are we so far?
 
-1. Introduction: `vignette("gcplyr")`
-2. Importing and transforming data: `vignette("import_transform")`
-3. Incorporating design information: `vignette("incorporate_designs")`
-4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
-5. Processing your data: `vignette("process")`
-6. **Analyzing your data:** `vignette("analyze")`
-7. Dealing with noise: `vignette("noise")`
-8. Statistics, merging other data, and other resources: `vignette("conclusion")`
+1. Introduction: `vignette("01_gcplyr")`
+2. Importing and transforming data: `vignette("02_import_transform")`
+3. Incorporating design information: `vignette("03_incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("04_preprocess_plot")`
+5. Processing your data: `vignette("05_process")`
+6. **Analyzing your data:** `vignette("06_analyze")`
+7. Dealing with noise: `vignette("07_noise")`
+8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
 
 So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, and plotted our data. Now we're going to analyze our data by summarizing our growth curves into a number of metrics.
 
@@ -134,7 +134,7 @@ But first, we need to familiarize ourselves with one more `dplyr` function:  `su
 
 # Another brief primer on dplyr: summarize
 
-Here we're going to focus on the `summarize` function from `dplyr`, which *must* be used with the `group_by` function we covered in our first primer: [A brief primer on dplyr](vignette("process")). `summarize` carries out user-specified calculations on *each* group in a grouped `data.frame` independently, producing a new `data.frame` where each group is now just a single row. 
+Here we're going to focus on the `summarize` function from `dplyr`, which *must* be used with the `group_by` function we covered in our first primer: [A brief primer on dplyr](vignette("05_process")). `summarize` carries out user-specified calculations on *each* group in a grouped `data.frame` independently, producing a new `data.frame` where each group is now just a single row. 
 
 For growth curves, this means we will:
 
@@ -297,7 +297,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Maximum growth rate and minimum doubling time {#max_percap}
 
-If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`). 
+If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("05_process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`). 
 
 We can also save the time when this maximum occurs using the `which_max_gc` function. `which_max_gc` returns the *index* of the maximum value, so then we can get the `Time` value at that index and save it to a column titled `max_percap_time`. (`which_max_gc` and `extr_val` work just like `R`'s built-in `which.max` and `[`, but with better default settings for growth curve analyses with `summarize`)
 
@@ -516,11 +516,11 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% phage_wells),
 
 Now that you've analyzed your data, you can read about approaches to deal with noise in your growth curve data, or you can read some concluding notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
-1. Introduction: `vignette("gcplyr")`
-2. Importing and transforming data: `vignette("import_transform")`
-3. Incorporating design information: `vignette("incorporate_designs")`
-4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
-5. Processing your data: `vignette("process")`
-6. Analyzing your data: `vignette("analyze")`
-7. **Dealing with noise:** `vignette("noise")`
-8. **Statistics, merging other data, and other resources:** `vignette("conclusion")`
+1. Introduction: `vignette("01_gcplyr")`
+2. Importing and transforming data: `vignette("02_import_transform")`
+3. Incorporating design information: `vignette("03_incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("04_preprocess_plot")`
+5. Processing your data: `vignette("05_process")`
+6. Analyzing your data: `vignette("06_analyze")`
+7. **Dealing with noise:** `vignette("07_noise")`
+8. **Statistics, merging other data, and other resources:** `vignette("08_conclusion")`

@@ -44,7 +44,7 @@ This document gives an introduction of how to use `gcplyr` for each step of a gr
 
 To get started, you need your growth curve data file saved to your computer (.csv, .xls, or .xlsx).
 
-Users often want to combine their data with some information on the experimental design of their plate(s). You can save this information into a tabular file as well, or you can just keep it handy to enter directly in `R` (see `vignette("incorporate_designs")`).
+Users often want to combine their data with some information on the experimental design of their plate(s). You can save this information into a tabular file as well, or you can just keep it handy to enter directly in `R` (see `vignette("03_incorporate_designs")`).
 
 Let's get started by loading `gcplyr`. We're also going to load a couple other packages we'll need.
 
@@ -157,11 +157,11 @@ ggplot(data = data_sum,
 
 Generally, working with `gcplyr` will follow a number of steps, each of which is likely to be only one or a few lines of code in your final script. We've explained each of these steps in a page linked below. To start, we'll learn how to import our data into `R` and transform it into a convenient format.
 
-1. Introduction: `vignette("gcplyr")`
-2. **Importing and transforming data: `vignette("import_transform")`**
-3. Incorporating design information: `vignette("incorporate_designs")`
-4. Pre-processing and plotting your data: `vignette("preprocess_plot")`
-5. Processing your data: `vignette("process")`
-6. Analyzing your data: `vignette("analyze")`
-7. Dealing with noise: `vignette("noise")`
-8. Statistics, merging other data, and other resources: `vignette("conclusion")`
+1. Introduction: `vignette("01_gcplyr")`
+2. **Importing and transforming data: `vignette("02_import_transform")`**
+3. Incorporating design information: `vignette("03_incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("04_preprocess_plot")`
+5. Processing your data: `vignette("05_process")`
+6. Analyzing your data: `vignette("06_analyze")`
+7. Dealing with noise: `vignette("07_noise")`
+8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`

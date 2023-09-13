@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,19 +134,6 @@ just fitted values are returned.</p></dd>
 <p>A list the same length as unique(subset_by) where each element is
         an object of the same class as returned by the smoothing method
         (typically a named list-like object)</p>
-        
-
-<p>Varies by method, but always with a first element named 'fitted'
-        containing the smoothed values of the response variable, and a 
-        second element named 'residuals' containing the residuals of the
-        fitted values and the input values</p>
-        
-
-<p>**Note: the first version released after Sep 1, 2023 will change **
-        **this behavior** to instead maintain the class of the object 
-        returned by the smoothing method. After the change, not all methods 
-        will return an object with 'fitted' as the first element and 
-        'residuals' as the second element.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

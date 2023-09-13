@@ -1,9 +1,5 @@
 ## Submission
-This is a resubmission, version (1.5.1).
-
-I've fixed the 1 NOTE and 1 WARNING issued from a previous submission.
-
-This submission should also fix the 1 ERROR on the last released version's CRAN
+This is a resubmission, version 1.6.0.
 
 ## R CMD check results
 

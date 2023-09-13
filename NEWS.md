@@ -1,3 +1,7 @@
+# gcplyr 1.6.0.9000
+
+stuff here
+
 # gcplyr 1.6.0
 
 * The behavior of smooth_data when return_fitobject = TRUE has changed. It now returns a list containing the output of each smoothing method directly (previously the returned objects were modified from the output of the smoothing method to always have a first element of 'fitted' values and a second element of 'residuals')

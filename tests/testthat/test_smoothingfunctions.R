@@ -234,9 +234,4 @@ test_that("smooth_data checks for grouping", {
                            sm = smooth_data(window_width_n = 5, x = x, y = y, 
                                             sm_method = 'moving-median')))
 })
-
-test_that("smooth_data change to return_fitobject is correct", {
-  #Delete this test once change has been implemented
-  if(Sys.Date() > as.Date("2023-09-01")) {stop("change return_fitobject behavior")}
-})
   

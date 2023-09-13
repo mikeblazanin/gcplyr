@@ -2405,52 +2405,16 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'         A list the same length as unique(subset_by) where each element is
 #'         an object of the same class as returned by the smoothing method
 #'         (typically a named list-like object)
-#'         
-#'         Varies by method, but always with a first element named 'fitted'
-#'         containing the smoothed values of the response variable, and a 
-#'         second element named 'residuals' containing the residuals of the
-#'         fitted values and the input values
-#'         
-#'         **Note: the first version released after Sep 1, 2023 will change **
-#'         **this behavior** to instead maintain the class of the object 
-#'         returned by the smoothing method. After the change, not all methods 
-#'         will return an object with 'fitted' as the first element and 
-#'         'residuals' as the second element.
 #' 
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
-  if(return_fitobject == TRUE) { #Warning added in v1.3.0.9000
-    warning("the behavior of return_fitobject = TRUE will change in the first 
-version released after Sep 1, 2023. See Value in ?smooth_data for more details")
-  }
   
-  if("method" %in% names(list(...)) &
-     list(...)["method"] %in% c("moving-average","moving-median","loess","gam")){
-    stop("'method' is deprecated, use 'sm_method' instead. 'method' is now
-reserved for passing 'method' arg via ... to loess or gam")
-  }
-
   if(!sm_method %in% c("moving-average", "moving-median", "gam", "loess")) {
     stop("sm_method must be one of: moving-average, moving-median, gam, or loess")
   }
 
   check_grouped(name_for_error = "smooth_data", subset_by = subset_by)
-  
-  if(FALSE) { #to-be updated when stackoverflow thread is updated
-    if(all(ls(envir = parent.frame()) == "~")) { #being called within mutate
-      data <- eval(quote(.), parent.frame())
-      if(is.null(subset_by) &
-         !inherits(data, "grouped_df")) {
-        warning("smooth_data called on an ungrouped data.frame and subset_by = NULL")}
-      if(!is.null(subset_by) &
-         inherits(data, "grouped_df")) {
-        warning("smooth_data called with both subset_by and grouping")}
-    } else { #being called outside of mutate
-      if(is.null(subset_by)) {
-        warning("smooth_data called outside of dplyr::mutate and subset_by = NULL")}
-    }
-  }
   
   #Parse x and y, and/or ... args, into formula and data
   if(!is.null(y)) {
@@ -2533,15 +2497,6 @@ reserved for passing 'method' arg via ... to loess or gam")
     
     #Store results as requested
     if (return_fitobject) {
-      if (sm_method == "gam") {
-        #Rename fitted.values to fitted
-        names(temp)[match("fitted.values", names(temp))] <- "fitted"
-      }
-      #Reorder elements to have 'fitted' be first, then 'residuals'
-      temp <- 
-        temp[c("fitted", "residuals", 
-               names(temp)[which(!names(temp) %in% 
-                                   c("fitted", "residuals"))])]
       fits_list[[i]] <- temp
     } else {
       #Fill in output if needed

@@ -50,17 +50,6 @@ If \code{return_fitobject == FALSE:}
         A list the same length as unique(subset_by) where each element is
         an object of the same class as returned by the smoothing method
         (typically a named list-like object)
-        
-        Varies by method, but always with a first element named 'fitted'
-        containing the smoothed values of the response variable, and a 
-        second element named 'residuals' containing the residuals of the
-        fitted values and the input values
-        
-        **Note: the first version released after Sep 1, 2023 will change **
-        **this behavior** to instead maintain the class of the object 
-        returned by the smoothing method. After the change, not all methods 
-        will return an object with 'fitted' as the first element and 
-        'residuals' as the second element.
 }
 \description{
 This function calls other functions to smooth growth curve data

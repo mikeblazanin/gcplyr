@@ -1,0 +1,55 @@
+---
+title: "Working with multiple plates"
+author: "Mike Blazanin"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+vignette: >
+  %\VignetteIndexEntry{Working with multiple plates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_knit$set(root.dir = tempdir())
+```
+
+# Where are we so far?
+
+1. Introduction: `vignette("01_gcplyr")`
+2. Importing and transforming data: `vignette("02_import_transform")`
+3. Incorporating design information: `vignette("03_incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("04_preprocess_plot")`
+5. Processing your data: `vignette("05_process")`
+6. Analyzing your data: `vignette("06_analyze")`
+7. Dealing with noise: `vignette("07_noise")`
+8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. **Working with multiple plates:** `vignette("09_multiple_plates")`
+
+
+So far, we've covered everything you can do with `gcplyr` with a single plate. In this vignette, we'll be covering how `gcplyr` can also easily handle multiple plates of data at the same time.
+
+If you haven't already, load the necessary packages.
+
+```{r setup}
+library(gcplyr)
+
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, include = FALSE}
+print_df <- function(df, col.names = FALSE) {
+  write.table(format(df, justify = "right"),
+              row.names=FALSE, col.names = col.names, quote = F)
+}
+```
+
+
+
+

@@ -1,3 +1,7 @@
+# gcplyr 1.6.0
+
+* The behavior of smooth_data when return_fitobject = TRUE has changed. It now returns a list containing the output of each smoothing method directly (previously the returned objects were modified from the output of the smoothing method to always have a first element of 'fitted' values and a second element of 'residuals')
+
 # gcplyr 1.5.2
 
 * Citation and load message now point to the bioRxiv preprint for the package: Blazanin, Michael. 2023. gcplyr: an R package for microbial growth curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883.

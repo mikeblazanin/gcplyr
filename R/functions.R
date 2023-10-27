@@ -669,6 +669,9 @@ read_wides <- function(files, extension = NULL,
     if(is.na(endcol[i])) {endcol[i] <- ncol(temp)}
     if(is.na(startcol[i])) {startcol[i] <- 1}
     if (is.na(startrow[i])) {startrow[i] <- 1}
+    if(startrow[i] < 1 || endrow[i] > nrow(temp) ||
+       startcol[i] < 1 || endcol[i] > ncol(temp)) {
+      stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     if (header == TRUE) { #so colnames taken from file
       outputs[[i]] <- temp[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
       colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]

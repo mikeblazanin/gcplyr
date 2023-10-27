@@ -274,7 +274,7 @@ read_blocks <- function(files, extension = NULL,
   sider <- checkdim_inputs(sider, "sider", nblocks, "the number of blocks")
   
   if (!is.null(block_names) & length(block_names) != nblocks) {
-      stop("block_names must be the same length as the number of blocks")
+    stop("block_names must be the same length as the number of blocks")
   }
   
   if(!is.null(metadata) & any(names(metadata) == "")) {
@@ -337,7 +337,7 @@ read_blocks <- function(files, extension = NULL,
                              "metadata" = metadata_vector)), 
                    nblocks)
   }
-
+  
   #Import data
   for (i in 1:nblocks) {
     ##Read file & save in temp
@@ -369,6 +369,10 @@ read_blocks <- function(files, extension = NULL,
       infer_names(temp, startrow = startrow[i], endrow = endrow[i],
                   startcol = startcol[i], endcol = endcol[i],
                   header = header[i], sider = sider[i])
+    
+    if(inferred_rc$startrow < 1 || inferred_rc$endrow > nrow(temp) ||
+       inferred_rc$startcol < 1 || inferred_rc$endcol > ncol(temp)) {
+      stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     
     #Save information to outputs
     outputs[[i]]$data <- temp[inferred_rc$startrow:inferred_rc$endrow,
@@ -420,8 +424,8 @@ read_blocks <- function(files, extension = NULL,
           outputs[[i]]$metadata[j+1] <- 
             temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
         } else { #metadata item is a list (presumably of two vectors)
-                 #the first vector is the rows for each ith block
-                 #the second vector is the columns for each ith block
+          #the first vector is the rows for each ith block
+          #the second vector is the columns for each ith block
           #Convert from Excel-style formatting if needed
           if(!canbe.numeric(metadata[[j]][[1]][i])) {
             metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
@@ -439,12 +443,12 @@ read_blocks <- function(files, extension = NULL,
   ##Error checking for output dataframe dimensions
   if (length(outputs) > 1 &&
       !all_same(sapply(outputs, simplify = TRUE, 
-                 FUN = function(x) {dim(x$data)[1]}))) {
+                       FUN = function(x) {dim(x$data)[1]}))) {
     warning("Not all blockmeasures have the same number of rows of data\n")
   }
   if (length(outputs) > 1 &&
       !all_same(sapply(outputs, simplify = TRUE,
-                 FUN = function(x) {dim(x$data)[2]}))) {
+                       FUN = function(x) {dim(x$data)[2]}))) {
     warning("Not all blockmeasures have the same number of columns of data\n")
   }
   

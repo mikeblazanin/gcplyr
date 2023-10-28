@@ -2329,7 +2329,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
   temp <- tidyr::separate(data = data, col = col, into = into, sep = sep, ...)
   if(coerce_NA == TRUE) {
     for (idx in which(colnames(temp) %in% into)) {
-      temp[temp[, idx] == "NA", idx] <- NA
+      temp[!is.na(temp[, idx]) & temp[, idx] == "NA", idx] <- NA
     }
   }
   return(temp)

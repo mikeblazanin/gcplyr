@@ -173,6 +173,28 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
 }
 
 
+#' A function that gets metadata from a row,col. Gives a warning if out of range
+#' returns NA, otherwise returns the value
+#' 
+#' @param df The dataframe containing metadata at row,col
+#' @param row The row where metadata should be
+#' @param col The column where metadata should be
+#' 
+#' @return The metadata, or \code{NA} with a warning if out of range
+#' 
+#' @noRd
+get_metadata <- function(df, row, col) {
+  #Convert from Excel-formatting if needed
+  if(!canbe.numeric(row)) {row <- from_excel(row)}
+  if(!canbe.numeric(col)) {col <- from_excel(col)}
+  
+  if(row > nrow(df) || col > ncol(df)) {
+    warning(paste("metadata in row", row, "column", col, "is out of range"))
+    return(NA)
+  } else {return(df[row, col])}
+}
+
+
 #' Read blockmeasures
 #' 
 #' A function that reads block measures into the R environment
@@ -458,27 +480,15 @@ read_blocks <- function(files, extension = NULL,
     if (!is.null(metadata)) {
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
-          #Convert from Excel-style formatting if needed
-          if(!canbe.numeric(metadata[[j]][1])) {
-            metadata[[j]][1] <- from_excel(metadata[[j]][1])
-          }
-          if(!canbe.numeric(metadata[[j]][2])) {
-            metadata[[j]][2] <- from_excel(metadata[[j]][2])
-          }
           outputs[[i]]$metadata[j+1] <- 
-            temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+            get_metadata(df = temp, row = metadata[[j]][1],
+                         col = as.numeric(metadata[[j]][2]))
         } else { #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
-          #Convert from Excel-style formatting if needed
-          if(!canbe.numeric(metadata[[j]][[1]][i])) {
-            metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
-          }
-          if(!canbe.numeric(metadata[[j]][[2]][i])) {
-            metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
-          }
-          outputs[[i]]$metadata[j+1] <- temp[as.numeric(metadata[[j]][[1]][i]), 
-                                             as.numeric(metadata[[j]][[2]][i])]
+          outputs[[i]]$metadata[j+1] <- 
+            get_metadata(df = temp, row = as.numeric(metadata[[j]][[1]][i]),
+                         col = as.numeric(metadata[[j]][[2]][i]))
         }
       }
     }
@@ -708,27 +718,15 @@ read_wides <- function(files, extension = NULL,
       names(metadata_vector) <- names(metadata)
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
-          #Convert to numeric if provided Excel-style
-          if(!canbe.numeric(metadata[[j]][1])) {
-            metadata[[j]][1] <- from_excel(metadata[[j]][1])
-          }
-          if(!canbe.numeric(metadata[[j]][2])) {
-            metadata[[j]][2] <- from_excel(metadata[[j]][2])
-          }
           metadata_vector[j] <- 
-            temp[as.numeric(metadata[[j]][1]), as.numeric(metadata[[j]][2])]
+            get_metadata(df = temp, row = as.numeric(metadata[[j]][1]),
+                         col = as.numeric(metadata[[j]][2]))
         } else {  #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
-          #Convert from Excel-style formatting if needed
-          if(!canbe.numeric(metadata[[j]][[1]][i])) {
-            metadata[[j]][[1]][i] <- from_excel(metadata[[j]][[1]][i])
-          }
-          if(!canbe.numeric(metadata[[j]][[2]][i])) {
-            metadata[[j]][[2]][i] <- from_excel(metadata[[j]][[2]][i])
-          }
-          metadata_vector[j] <- temp[as.numeric(metadata[[j]][[1]][i]), 
-                                     as.numeric(metadata[[j]][[2]][i])]
+          metadata_vector[j] <- 
+            get_metadata(df = temp, row = as.numeric(metadata[[j]][[1]][i]),
+                         col = as.numeric(metadata[[j]][[2]][i]))
         }
       }
     } else {metadata_vector <- NULL}

@@ -111,6 +111,68 @@ infer_names <- function(df,
   return(output)
 }
 
+
+#' An internal function that handles reading a file in table format
+#' 
+#' @param file The filename or path
+#' @param extension The extension of the file, one of 'tbl', 'csv', 'xls', 'xlsx'
+#' @param na.strings Strings to be interpreted as \code{NA}
+#' @param sheet What sheet to read (only needed for 'xls' and 'xlsx')
+#' 
+#' @details None of the specified arguments should be a vector, they should
+#'          all be single values
+#' 
+#' @return The \code{data.frame} resulting from reading the file
+#' 
+#' @noRd
+read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
+  if (extension == "tbl") {
+    if("colClasses" %in% names(list(...))) {
+      warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
+    temp <- dots_parser(utils::read.table, file = file,
+                        na.strings = na.strings, colClasses = "character",
+                        ...)
+  } else if (extension[i] == "csv") {
+    #define defaults for csv if user didn't specify them
+    # (this re-creates the behavior of read.csv, but allows that
+    # behavior to be overridden by user if desired)
+    sep <- dots_checker("sep", ",", ...)
+    quote <- dots_checker("quote", "\"", ...)
+    dec <- dots_checker("dec", ".", ...)
+    fill <- dots_checker("fill", TRUE, ...)
+    comment.char <- dots_checker("comment.char", "", ...)
+    
+    if("colClasses" %in% names(list(...))) {
+      warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
+    
+    temp <- dots_parser(utils::read.table, file = file, 
+                        colClasses = "character", header = FALSE,
+                        na.strings = na.strings, sep = sep,
+                        quote = quote, dec = dec, fill = fill,
+                        comment.char = comment.char, ...)
+  } else if (extension == "xls") {
+    if("col_types" %in% names(list(...))) {
+      warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
+    suppressMessages(
+      temp <- 
+        as.data.frame(
+          dots_parser(readxl::read_xls, path = file, 
+                      col_names = FALSE, col_types = "text", 
+                      sheet = sheet, na = na.strings, ...)))
+  } else if (extension[i] == "xlsx") {
+    if("col_types" %in% names(list(...))) {
+      warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
+    suppressMessages(
+      temp <- 
+        as.data.frame(
+          dots_parser(readxl::read_xlsx, path = file, 
+                      col_names = FALSE, col_types = "text", 
+                      sheet = sheet, na = na.strings, ...)))
+  }
+  return(temp)
+}
+
+
 #' Read blockmeasures
 #' 
 #' A function that reads block measures into the R environment
@@ -340,50 +402,8 @@ read_blocks <- function(files, extension = NULL,
   
   #Import data
   for (i in 1:nblocks) {
-    ##Read file & save in temp
-    if (extension[i] == "tbl") {
-      if("colClasses" %in% names(list(...))) {
-        warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
-      temp <- dots_parser(utils::read.table, file = files[i],
-                          na.strings = na.strings, colClasses = "character",
-                          ...)
-    } else if (extension[i] == "csv") {
-      #define defaults for csv if user didn't specify them
-      # (this re-creates the behavior of read.csv, but allows that
-      # behavior to be overridden by user if desired)
-      sep <- dots_checker("sep", ",", ...)
-      quote <- dots_checker("quote", "\"", ...)
-      dec <- dots_checker("dec", ".", ...)
-      fill <- dots_checker("fill", TRUE, ...)
-      comment.char <- dots_checker("comment.char", "", ...)
-      
-      if("colClasses" %in% names(list(...))) {
-        warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
-      
-      temp <- dots_parser(utils::read.table, file = files[i], 
-                          colClasses = "character", header = FALSE,
-                          na.strings = na.strings, sep = sep,
-                          quote = quote, dec = dec, fill = fill,
-                          comment.char = comment.char, ...)
-    } else if (extension[i] == "xls") {
-      if("col_types" %in% names(list(...))) {
-        warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
-      suppressMessages(
-        temp <- 
-          as.data.frame(
-            dots_parser(readxl::read_xls, path = files[i], 
-                        col_names = FALSE, col_types = "text", 
-                        sheet = sheet[i], na = na.strings, ...)))
-    } else if (extension[i] == "xlsx") {
-      if("col_types" %in% names(list(...))) {
-        warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
-      suppressMessages(
-        temp <- 
-          as.data.frame(
-            dots_parser(readxl::read_xlsx, path = files[i], 
-                        col_names = FALSE, col_types = "text", 
-                        sheet = sheet[i], na = na.strings, ...)))
-    }
+    temp <- read_gcfile(file = files[i], extension = extension[i],
+                        na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer rows, cols, rownames, colnames
     inferred_rc <- 
@@ -660,30 +680,8 @@ read_wides <- function(files, extension = NULL,
   
   #Import data
   for (i in 1:nwides) {
-    #Read file & save in temp
-    if (extension[i] == "tbl") {
-      temp <- dots_parser(utils::read.table, file = files[i],
-                          na.strings = na.strings, ...)
-    } else if (extension[i] == "csv") {
-      temp <- 
-        dots_parser(utils::read.csv, file = files[i], 
-                    colClasses = "character", header = FALSE,
-                    na.strings = na.strings, ...)
-    } else if (extension[i] == "xls") {
-      suppressMessages(
-        temp <- 
-          as.data.frame(
-            dots_parser(readxl::read_xls, path = files[i], col_names = FALSE, 
-                        col_types = "text", sheet = sheet[i],
-                        na = na.strings, ...)))
-    } else if (extension[i] == "xlsx") {
-      suppressMessages(
-        temp <- 
-          as.data.frame(
-            dots_parser(readxl::read_xlsx, path = files[i], col_names = FALSE, 
-                        col_types = "text", sheet = sheet[i],
-                        na = na.strings, ...)))
-    }
+    temp <- read_gcfile(file = files[i], extension = extension[i],
+                        na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer colnames/take subsets as needed
     if(is.na(endrow[i])) {endrow[i] <- nrow(temp)}
@@ -892,30 +890,8 @@ read_tidys <- function(files, extension = NULL,
   
   #Import data
   for (i in 1:length(files)) {
-    #Read file & save in temp
-    if (extension[i] == "tbl") {
-      temp <- dots_parser(utils::read.table, file = files[i], 
-                          na.strings = na.strings, ...)
-    } else if (extension[i] == "csv") {
-      temp <- 
-        dots_parser(utils::read.csv, file = files[i], 
-                    colClasses = "character", header = FALSE,
-                    na.strings = na.strings, ...)
-    } else if (extension[i] == "xls") {
-      suppressMessages(
-        temp <- 
-          as.data.frame(
-            dots_parser(readxl::read_xls, path = files[i], col_names = FALSE, 
-                        col_types = "text", sheet = sheet[i],
-                        na = na.strings, ...)))
-    } else if (extension[i] == "xlsx") {
-      suppressMessages(
-        temp <- 
-          as.data.frame(
-            dots_parser(readxl::read_xlsx, path = files[i], col_names = FALSE, 
-                        col_types = "text", sheet = sheet[i],
-                        na = na.strings, ...)))
-    }
+    temp <- read_gcfile(file = files[i], extension = extension[i],
+                        na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer colnames/take subsets as needed
     if(is.na(endrow[i])) {endrow[i] <- nrow(temp)}

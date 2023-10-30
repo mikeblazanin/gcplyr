@@ -160,6 +160,22 @@ dots_parser <- function(FUN, ...) {
   return(do.call(FUN, dots[names(dots) %in% argnames]))
 }
 
+#' A function that checks if an argument was speicified in \code{...}: if it was,
+#' returns the value of that argument as specified in \code{...}, if not, returns
+#' a default value
+#' 
+#' @param argname The name of the argument
+#' @param default The value for the argument if not specified in the \code{...}
+#' @param ... The \code{...} arguments
+#' 
+#' @return The value for argname, either the default or as-specified in \code{...}
+#' 
+#' @noRd
+dots_checker <- function(argname, default, ...) {
+  if(!argname %in% names(list(...))) {return(default)
+  } else {return(list(...)[[argname]])}
+}
+
 #' A function that infers whether blocks have nested metadata
 #' 
 #' @param blocks The list of blocks

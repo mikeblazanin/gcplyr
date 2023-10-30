@@ -132,7 +132,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     temp <- dots_parser(utils::read.table, file = file,
                         na.strings = na.strings, colClasses = "character",
                         ...)
-  } else if (extension[i] == "csv") {
+  } else if (extension == "csv") {
     #define defaults for csv if user didn't specify them
     # (this re-creates the behavior of read.csv, but allows that
     # behavior to be overridden by user if desired)
@@ -159,7 +159,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
           dots_parser(readxl::read_xls, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
-  } else if (extension[i] == "xlsx") {
+  } else if (extension == "xlsx") {
     if("col_types" %in% names(list(...))) {
       warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
     suppressMessages(

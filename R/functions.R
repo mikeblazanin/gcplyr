@@ -1298,6 +1298,9 @@ make_design <- function(nrows = NULL, ncols = NULL,
   
   #Loop through input arguments & fill into output dataframe
   for (i in 1:length(dot_args)) {
+    if(any(dot_args[[i]][[2]] > nrows) || any(dot_args[[i]][[3]] > ncols)) {
+      stop(paste(names(dot_args)[i], "has rows or columns out of range"))}
+    
     if(!is.vector(dot_args[[i]][[4]]) & !is.character(dot_args[[i]][[4]])) {
       stop("pattern is not a string nor a vector")
     }

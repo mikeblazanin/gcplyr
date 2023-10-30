@@ -18,6 +18,22 @@ test_that("make_design issues errors when expected for invalid pattern strings",
                                          5:7,
                                          "1,2,aa")),
     regexp = "Pattern values are multi-character after splitting, but not all pattern values are numeric")
+  
+  expect_error(
+    make_design(nrows = 8, ncols = 12, pattern_split = ",",
+                "design_elem" = list(c("test1", "test2", "test3"),
+                                     7:9,
+                                     5:7,
+                                     "1,2,3")),
+    regexp = "has rows or columns out of range")
+  
+  expect_error(
+    make_design(nrows = 8, ncols = 12, pattern_split = ",",
+                "design_elem" = list(c("test1", "test2", "test3"),
+                                     2:4,
+                                     11:13,
+                                     "1,2,3")),
+    regexp = "has rows or columns out of range")
 })
 
 test_that("make_design works as expected for numerical pattern strings", {

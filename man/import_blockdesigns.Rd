@@ -4,7 +4,13 @@
 \alias{import_blockdesigns}
 \title{Import blockdesigns}
 \usage{
-import_blockdesigns(files, block_names = NULL, sep = NULL, ...)
+import_blockdesigns(
+  files,
+  block_names = NULL,
+  block_name_header = "block_name",
+  sep = NULL,
+  ...
+)
 }
 \arguments{
 \item{files}{Vector of filenames (as strings), each of which is a 
@@ -15,6 +21,9 @@ resulting column names in the output data frame. Should be
 in the same order as \code{files} and/or same order
 as corresponding \code{files} themselves. If \code{NULL},
 file names will be used as column names.}
+
+\item{block_name_header}{The column name for the column containing the
+\code{block_names}}
 
 \item{sep}{If block design files are already pasted,
 sep specifies the string separating design elements

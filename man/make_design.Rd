@@ -9,6 +9,7 @@ make_design(
   ncols = NULL,
   block_row_names = NULL,
   block_col_names = NULL,
+  block_name_header = "block_name",
   output_format = "tidy",
   wellnames_numeric = FALSE,
   wellnames_sep = "",
@@ -24,6 +25,9 @@ make_design(
 
 \item{block_row_names, block_col_names}{Names of the rows, columns
 of the plate blockmeasures data}
+
+\item{block_name_header}{The name of the field containing the
+\code{block_names}}
 
 \item{output_format}{One of c("blocks", "blocks_pasted", "wide", "tidy")
 denoting the format of the resulting data.frame

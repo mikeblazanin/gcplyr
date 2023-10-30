@@ -216,6 +216,8 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
 #' @param block_names (optional) vector of names corresponding to each plate
 #'                 in \code{files}. If not provided, block_names are inferred
 #'                 from the filenames
+#' @param block_name_header The name of the metadata field containing the
+#'                          \code{block_names}
 #' @param header   \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 #'                 such values, indicating whether the file(s) contains the
 #'                 column names as its first line. If \code{header = NA}
@@ -290,6 +292,7 @@ read_blocks <- function(files, extension = NULL,
                         startcol = NULL, endcol = NULL,
                         sheet = NULL, metadata = NULL,
                         block_names = NULL,
+                        block_name_header = "block_name",
                         header = NA, sider = NA,
                         wellnames_numeric = FALSE,
                         na.strings = c("NA", ""), ...) {
@@ -384,11 +387,11 @@ read_blocks <- function(files, extension = NULL,
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = c("block_name" = "NA"))), 
+                             "metadata" = c(block_name_header = "NA"))), 
                    nblocks)
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
-    names(metadata_vector) <- c("block_name", names(metadata))
+    names(metadata_vector) <- c(block_name_header, names(metadata))
     #Okay so the goal here is to have each block measures returned as an item in a big list
     #each item will itself be a named list with 2 things: "data" and "metadata"
     #data is just the dataframe (with colnames & rownames inferred or not)
@@ -444,11 +447,11 @@ read_blocks <- function(files, extension = NULL,
     ##Add metadata
     #Add filenames to metadata
     if (!is.null(block_names)) { #block_names were provided
-      outputs[[i]]$metadata["block_name"] <- block_names[i]
+      outputs[[i]]$metadata[block_name_header] <- block_names[i]
     } else { #block_names were not provided, infer from filename
       #infer the names from filenames, stripping off the extension from end
       # and the dot at the beginning (if any)
-      outputs[[i]]$metadata["block_name"] <- 
+      outputs[[i]]$metadata[block_name_header] <- 
         sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files[i])
     }
     #Add user-specified metadata (if any)
@@ -1021,6 +1024,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              in the same order as \code{files} and/or same order
 #'              as corresponding \code{files} themselves. If \code{NULL},
 #'              file names will be used as column names.
+#' @param block_name_header The column name for the column containing the
+#'                          \code{block_names}
 #' @param sep   If block design files are already pasted,
 #'              sep specifies the string separating design elements
 #'              
@@ -1061,9 +1066,12 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'         from \code{files}
 #' 
 #' @export
-import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
+import_blockdesigns <- function(files, block_names = NULL, 
+                                block_name_header = "block_name", 
+                                sep = NULL, ...) {
   blocks <- dots_parser(read_blocks, 
-                        block_names = block_names, files = files, ...)
+                        block_names = block_names, files = files, 
+                        block_name_header = block_name_header, ...)
   
   if(length(files) > 1) {
     if(is.null(sep)) {
@@ -1098,12 +1106,12 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
   
   #Transform to tidy, dropping the block_name column and using it
   # as the column name for the values column
-  vals_colname <- wides$block_name[1]
+  vals_colname <- wides[1, block_name_header]
     
   tidys <- dots_parser(
     trans_wide_to_tidy, 
-    wides = wides[, -which("block_name" == colnames(wides))], 
-    data_cols = colnames(wides)[colnames(wides) != "block_name"], 
+    wides = wides[, -which(block_name_header == colnames(wides))], 
+    data_cols = colnames(wides)[colnames(wides) != block_name_header], 
     values_to = vals_colname, values_to_numeric = FALSE,
     ...)
   
@@ -1130,6 +1138,8 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
+#' @param block_name_header The name of the field containing the
+#'                          \code{block_names}
 #' @param output_format One of c("blocks", "blocks_pasted", "wide", "tidy")
 #'                      denoting the format of the resulting data.frame
 #'                      
@@ -1226,6 +1236,7 @@ import_blockdesigns <- function(files, block_names = NULL, sep = NULL, ...) {
 #' @export         
 make_design <- function(nrows = NULL, ncols = NULL,
                         block_row_names = NULL, block_col_names = NULL,
+                        block_name_header = "block_name",
                         output_format = "tidy",
                         wellnames_numeric = FALSE, wellnames_sep = "", 
                         wellnames_colname = "Well", colnames_first = FALSE,
@@ -1276,7 +1287,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   output <- rep(list(list(
     "data" = matrix(NA, nrow = nrows, ncol = ncols,
                     dimnames = list(block_row_names, block_col_names)),
-                    "metadata" = c("block_name" = "NA"))),
+                    "metadata" = c(block_name_header = "NA"))),
     length(unique(names(dot_args))))
   
   #Note dot_args structure
@@ -1343,7 +1354,7 @@ do you need to set `lookup_tbl_start` differently?")
              nrow = length(dot_args[[i]][[2]]),
              ncol = length(dot_args[[i]][[3]]),
              byrow = dot_args[[i]][[5]])
-    output[[output_idx]]$metadata["block_name"] <- names(dot_args)[i]
+    output[[output_idx]]$metadata[block_name_header] <- names(dot_args)[i]
   }
   
   if(output_format %in% c("blocks_pasted", "wide", "tidy")) {
@@ -1360,8 +1371,8 @@ do you need to set `lookup_tbl_start` differently?")
         
         output <- 
           trans_wide_to_tidy(
-            output[, -which("block_name" == colnames(output))], 
-            data_cols = colnames(output)[colnames(output) != "block_name"],
+            output[, -which(block_name_header == colnames(output))], 
+            data_cols = colnames(output)[colnames(output) != block_name_header],
             values_to = vals_colname,
             values_to_numeric = FALSE)
         if(length(dot_args) > 1) {
@@ -1512,6 +1523,8 @@ fill_data_metadata <- function(output, input, rs,
 #'                           
 #'                           If 'file', the \code{block_name} metadata will be
 #'                           included as a row in the output file.
+#' @param block_name_header The name of the field containing the
+#'                          \code{block_names}
 #' @param paste_sep When \code{output_format = 'pasted'}, what character
 #'                  will be used to paste together blocks.   
 #' @param filename_sep What character will be used to paste together 
@@ -1524,6 +1537,7 @@ fill_data_metadata <- function(output, input, rs,
 write_blocks <- function(blocks, file, 
                          output_format = "multiple",
                          block_name_location = NULL,
+                         block_name_header = "block_name",
                          paste_sep = "_", filename_sep = "_", 
                          na = "", ...) {
   if(!all(sapply(X = blocks, FUN = length) == 2) |
@@ -1585,16 +1599,16 @@ write_blocks <- function(blocks, file,
     if(block_name_location == "filename") {
       #Put pasted block names in filename
       if(is.null(file)) {
-        file <- paste(blocks[[1]]$metadata["block_name"], ".csv", sep = "")
+        file <- paste(blocks[[1]]$metadata[block_name_header], ".csv", sep = "")
       } else {
         if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
           file <- 
-            paste(file, filename_sep, blocks[[1]]$metadata["block_name"], 
+            paste(file, filename_sep, blocks[[1]]$metadata[block_name_header], 
                   ".csv", sep = "")
         } else {
           file <- 
             sub("\\.csv", x = file,
-                paste(filename_sep, blocks[[1]]$metadata["block_name"], 
+                paste(filename_sep, blocks[[1]]$metadata[block_name_header], 
                       ".csv", sep = ""))
         }
       }
@@ -1620,7 +1634,7 @@ write_blocks <- function(blocks, file,
           fill_data_metadata(
             output = output, input = blocks[[1]], rs = 1,
             metadata_include = 
-              which(names(blocks[[1]]$metadata) != "block_name"))[[1]]
+              which(names(blocks[[1]]$metadata) != block_name_header))[[1]]
         
       } else {#metadata contains only block_names
         
@@ -1679,10 +1693,10 @@ write_blocks <- function(blocks, file,
       for (i in 1:length(blocks)) {
         #Put block names in filename
         if(is.null(file)) {
-          filenm <- paste(blocks[[i]]$metadata["block_name"], ".csv", sep = "")
+          filenm <- paste(blocks[[i]]$metadata[block_name_header], ".csv", sep = "")
         } else {
           filenm <- sub("\\.csv", x = file[i],
-                        paste(filename_sep, blocks[[i]]$metadata["block_name"], 
+                        paste(filename_sep, blocks[[i]]$metadata[block_name_header], 
                               ".csv", sep = ""))
         }
         
@@ -1706,7 +1720,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
             fill_data_metadata(
               output = output, input = blocks[[i]], rs = 1,
               metadata_include = 
-                which(names(blocks[[i]]$metadata) != "block_name"))[[1]]
+                which(names(blocks[[i]]$metadata) != block_name_header))[[1]]
         } else { #metadata contains only block_names
           
           #Calc needed # cols: 1 for rownames, ncol for data

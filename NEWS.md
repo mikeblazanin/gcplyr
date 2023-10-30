@@ -2,6 +2,8 @@
 
 stuff here
 
+Note that read_blocks now returns row.names as a character by default
+
 # gcplyr 1.6.0
 
 * The behavior of smooth_data when return_fitobject = TRUE has changed. It now returns a list containing the output of each smoothing method directly (previously the returned objects were modified from the output of the smoothing method to always have a first element of 'fitted' values and a second element of 'residuals')

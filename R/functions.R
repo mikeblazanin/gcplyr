@@ -342,13 +342,32 @@ read_blocks <- function(files, extension = NULL,
   for (i in 1:nblocks) {
     ##Read file & save in temp
     if (extension[i] == "tbl") {
+      if("colClasses" %in% names(list(...))) {
+        warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
       temp <- dots_parser(utils::read.table, file = files[i],
-                          na.strings = na.strings, ...)
+                          na.strings = na.strings, colClasses = "character",
+                          ...)
     } else if (extension[i] == "csv") {
-      temp <- dots_parser(utils::read.csv, file = files[i], 
+      #define defaults for csv if user didn't specify them
+      # (this re-creates the behavior of read.csv, but allows that
+      # behavior to be overridden by user if desired)
+      sep <- dots_checker("sep", ",", ...)
+      quote <- dots_checker("quote", "\"", ...)
+      dec <- dots_checker("dec", ".", ...)
+      fill <- dots_checker("fill", TRUE, ...)
+      comment.char <- dots_checker("comment.char", "", ...)
+      
+      if("colClasses" %in% names(list(...))) {
+        warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
+      
+      temp <- dots_parser(utils::read.table, file = files[i], 
                           colClasses = "character", header = FALSE,
-                          na.strings = na.strings, ...)
+                          na.strings = na.strings, sep = sep,
+                          quote = quote, dec = dec, fill = fill,
+                          comment.char = comment.char, ...)
     } else if (extension[i] == "xls") {
+      if("col_types" %in% names(list(...))) {
+        warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
       suppressMessages(
         temp <- 
           as.data.frame(
@@ -356,6 +375,8 @@ read_blocks <- function(files, extension = NULL,
                         col_names = FALSE, col_types = "text", 
                         sheet = sheet[i], na = na.strings, ...)))
     } else if (extension[i] == "xlsx") {
+      if("col_types" %in% names(list(...))) {
+        warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
       suppressMessages(
         temp <- 
           as.data.frame(

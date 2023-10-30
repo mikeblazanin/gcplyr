@@ -2122,17 +2122,34 @@ trans_tidy_to_wide <- function() {
 #'                 If a value of \code{NA} then \code{names(x)} or 
 #'                 \code{names(y)} will not be put into a column in the
 #'                 returned data.frame
-#' @param ... Other arguments to pass to \code{dplyr::full_join}
+#' @param join     Type of join used to merge \code{x} and \code{y}. Options
+#'                 are 'full' (default), 'inner', 'left', and 'right'.
+#'                 
+#'                 \itemize{
+#'                  \item A \code{full} join keeps all observations in \code{x} and 
+#'                   \code{y}
+#'                  \item A \code{left} join keeps all observations in \code{x}
+#'                  \item A \code{right} join keeps all observations in \code{y}
+#'                  \item An \code{inner} join only keeps observations found in
+#'                   both \code{x} and \code{y}. Inner joins are not appropriate
+#'                   in most analyses.
+#'                 }
+#'                 
+#'                 See \code{dplyr::`mutate-joins`} for more details
+#' @param ... Other arguments to pass to join function. See 
+#'            \code{dplyr::`mutate-joins`} for options.
 #' 
 #' @return Data.frame containing merged output of \code{x} and
 #'         \code{y}
 #' 
 #' @export
 merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
-                             collapse = FALSE, names_to = NA,
-                             ...) {
+                      collapse = FALSE, names_to = NA,
+                      join = "full", ...) {
   if(!collapse & (inherits(x, "list") | inherits(y, "list"))) {
     stop("if x or y are a list, collapse must be TRUE")}
+  if(!join %in% c("full", "right", "left", "inner")) {
+    stop("join must be one of: c('full', 'right', 'left', 'inner')")}
   
   if(collapse) {
     #First define the worker func that collapses the df's
@@ -2167,15 +2184,24 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     }
   }
   
-  if (!is.null(y)) {
+  if (is.null(y)) {output <- x
+  } else {
     #Join x and y
-    output <- dplyr::full_join(x = x, y = y, by = by, ...)
-    if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
-      warning("\nmerged_df has more rows than x and y, this may indicate
+    if(join == "full") {
+      output <- dplyr::full_join(x = x, y = y, by = by, ...)
+      if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
+        warning("\nmerged_df has more rows than x and than y, this may indicate
                mis-matched values in the shared column(s) used to merge 
               (e.g. 'Well')\n")
+      }
+    } else if (join == "left") {
+      output <- dplyr::left_join(x = x, y = y, by = by, ...)
+    } else if (join == "right") {
+      output <- dplyr::right_join(x = x, y = y, by = by, ...)
+    } else if (join == "inner") {
+      output <- dplyr::inner_join(x = x, y = y, by = by, ...)
     }
-  } else {output <- x}
+  }
   
   if (drop) {
     message(sum(!stats::complete.cases(output)), " rows were dropped as incomplete")

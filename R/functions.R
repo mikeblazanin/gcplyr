@@ -187,6 +187,8 @@ get_metadata <- function(df, row, col) {
   #Convert from Excel-formatting if needed
   if(!canbe.numeric(row)) {row <- from_excel(row)}
   if(!canbe.numeric(col)) {col <- from_excel(col)}
+  row <- as.numeric(row)
+  col <- as.numeric(col)
   
   if(row > nrow(df) || col > ncol(df)) {
     warning(paste("metadata in row", row, "column", col, "is out of range"))
@@ -409,7 +411,7 @@ read_blocks <- function(files, extension = NULL,
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = c(block_name_header = "NA"))), 
+                             "metadata" = setNames("NA", block_name_header))), 
                    nblocks)
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
@@ -482,13 +484,13 @@ read_blocks <- function(files, extension = NULL,
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           outputs[[i]]$metadata[j+1] <- 
             get_metadata(df = temp, row = metadata[[j]][1],
-                         col = as.numeric(metadata[[j]][2]))
+                         col = metadata[[j]][2])
         } else { #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
           outputs[[i]]$metadata[j+1] <- 
-            get_metadata(df = temp, row = as.numeric(metadata[[j]][[1]][i]),
-                         col = as.numeric(metadata[[j]][[2]][i]))
+            get_metadata(df = temp, row = metadata[[j]][[1]][i],
+                         col = metadata[[j]][[2]][i])
         }
       }
     }
@@ -719,14 +721,14 @@ read_wides <- function(files, extension = NULL,
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           metadata_vector[j] <- 
-            get_metadata(df = temp, row = as.numeric(metadata[[j]][1]),
-                         col = as.numeric(metadata[[j]][2]))
+            get_metadata(df = temp, row = metadata[[j]][1],
+                         col = metadata[[j]][2])
         } else {  #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
           metadata_vector[j] <- 
-            get_metadata(df = temp, row = as.numeric(metadata[[j]][[1]][i]),
-                         col = as.numeric(metadata[[j]][[2]][i]))
+            get_metadata(df = temp, row = metadata[[j]][[1]][i],
+                         col = metadata[[j]][[2]][i])
         }
       }
     } else {metadata_vector <- NULL}
@@ -1239,7 +1241,6 @@ make_design <- function(nrows = NULL, ncols = NULL,
                         wellnames_numeric = FALSE, wellnames_sep = "", 
                         wellnames_colname = "Well", colnames_first = FALSE,
                         lookup_tbl_start = 1, pattern_split = "", ...) {
-
   #Do we need to include a plate_name argument?
   #(old comment) the plates have to be identified uniquely
   
@@ -1285,7 +1286,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   output <- rep(list(list(
     "data" = matrix(NA, nrow = nrows, ncol = ncols,
                     dimnames = list(block_row_names, block_col_names)),
-                    "metadata" = c(block_name_header = "NA"))),
+                    "metadata" = setNames("NA", block_name_header))),
     length(unique(names(dot_args))))
   
   #Note dot_args structure

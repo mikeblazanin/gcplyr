@@ -30,15 +30,12 @@ min_gc,NA
 moving_average,NA
 moving_median,NA
 paste_blocks,NA
-read_blocks,utils::read.csv
 read_blocks,readxl::read_xls
 read_blocks,readxl::read_xlsx
 read_blocks,utils::read.table
-read_tidys,utils::read.csv
 read_tidys,readxl::read_xls
 read_tidys,readxl::read_xlsx
 read_tidys,utils::read.table
-read_wides,utils::read.csv
 read_wides,readxl::read_xls
 read_wides,readxl::read_xlsx
 read_wides,utils::read.table

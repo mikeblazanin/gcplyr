@@ -2177,7 +2177,9 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     }
   } else {output <- x}
   
-  if (drop) {output <- output[stats::complete.cases(output), ]}
+  if (drop) {
+    message(sum(!stats::complete.cases(output)), " rows were dropped as incomplete")
+    output <- output[stats::complete.cases(output), ]}
   
   return(output)
 }

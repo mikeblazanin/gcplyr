@@ -2101,16 +2101,16 @@ trans_tidy_to_wide <- function() {
 
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 
-#' This function is essentially a wrapper for \code{dplyr::full_join}
-#' The most typical use of this function is to merge designs 
-#' with measures data, or to use the collapse functionality of this 
-#' function to merge a list of dataframes into a single dataframe.
-#' Merging is done by column-names that match between \code{x} and \code{y}.
+#' This function is essentially a wrapper for a \code{dplyr} mutate join
+#' (by default, a \link[dplyr]{full_join}). The most typical use of this 
+#' function is to merge designs with measures data, or to use the collapse 
+#' functionality to merge a list of dataframes into a single dataframe.
+#' Merging is done by column names that match between \code{x} and \code{y}.
 #'  
 #' @param x First data.frame, or list of data frames, to be joined
 #' @param y Second data.frame, or list of data frames, to be joined
 #' @param by A character vector of variables to join by, passed directly
-#'           to \code{dplyr::full_join}
+#'           to the join function
 #' @param drop Should only \code{complete_cases} of the resulting
 #'             data.frame be returned?
 #' @param collapse A logical indicating whether x or y is a list containing
@@ -2131,13 +2131,16 @@ trans_tidy_to_wide <- function() {
 #'                  \item A \code{left} join keeps all observations in \code{x}
 #'                  \item A \code{right} join keeps all observations in \code{y}
 #'                  \item An \code{inner} join only keeps observations found in
-#'                   both \code{x} and \code{y}. Inner joins are not appropriate
-#'                   in most analyses.
+#'                   both \code{x} and \code{y} (inner joins are not appropriate
+#'                   in most cases because observations are frequently dropped).
 #'                 }
 #'                 
-#'                 See \code{dplyr::`mutate-joins`} for more details
-#' @param ... Other arguments to pass to join function. See 
-#'            \code{dplyr::`mutate-joins`} for options.
+#'                 See \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
+#'                 \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for 
+#'                 more details
+#' @param ... Other arguments to pass to the underlying join function. See 
+#'            \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
+#'            \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for options.
 #' 
 #' @return Data.frame containing merged output of \code{x} and
 #'         \code{y}

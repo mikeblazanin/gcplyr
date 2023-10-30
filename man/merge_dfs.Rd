@@ -11,6 +11,7 @@ merge_dfs(
   drop = FALSE,
   collapse = FALSE,
   names_to = NA,
+  join = "full",
   ...
 )
 }
@@ -20,7 +21,7 @@ merge_dfs(
 \item{y}{Second data.frame, or list of data frames, to be joined}
 
 \item{by}{A character vector of variables to join by, passed directly
-to \code{dplyr::full_join}}
+to the join function}
 
 \item{drop}{Should only \code{complete_cases} of the resulting
 data.frame be returned?}
@@ -36,16 +37,35 @@ If a value of \code{NA} then \code{names(x)} or
 \code{names(y)} will not be put into a column in the
 returned data.frame}
 
-\item{...}{Other arguments to pass to \code{dplyr::full_join}}
+\item{join}{Type of join used to merge \code{x} and \code{y}. Options
+are 'full' (default), 'inner', 'left', and 'right'.
+
+\itemize{
+ \item A \code{full} join keeps all observations in \code{x} and 
+  \code{y}
+ \item A \code{left} join keeps all observations in \code{x}
+ \item A \code{right} join keeps all observations in \code{y}
+ \item An \code{inner} join only keeps observations found in
+  both \code{x} and \code{y} (inner joins are not appropriate
+  in most cases because observations are frequently dropped).
+}
+
+See \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
+\link[dplyr]{right_join}, or \link[dplyr]{inner_join} for 
+more details}
+
+\item{...}{Other arguments to pass to the underlying join function. See 
+\link[dplyr]{full_join}, \link[dplyr]{left_join}, 
+\link[dplyr]{right_join}, or \link[dplyr]{inner_join} for options.}
 }
 \value{
 Data.frame containing merged output of \code{x} and
         \code{y}
 }
 \description{
-This function is essentially a wrapper for \code{dplyr::full_join}
-The most typical use of this function is to merge designs 
-with measures data, or to use the collapse functionality of this 
-function to merge a list of dataframes into a single dataframe.
-Merging is done by column-names that match between \code{x} and \code{y}.
+This function is essentially a wrapper for a \code{dplyr} mutate join
+(by default, a \link[dplyr]{full_join}). The most typical use of this 
+function is to merge designs with measures data, or to use the collapse 
+functionality to merge a list of dataframes into a single dataframe.
+Merging is done by column names that match between \code{x} and \code{y}.
 }

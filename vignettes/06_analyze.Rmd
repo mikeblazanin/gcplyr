@@ -349,7 +349,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Maximum density {#maxdens}
 
-The maximum bacterial density can be a measure of bacterial carrying capacity in a given media or as a measure of bacterial growth yield/efficiency. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc`, `which_max_gc`, and `extr_val` work just like `R`'s built-in `max`, `which.max`, and `[`, but with better default settings for growth curve analyses with `summarize`). 
+The maximum bacterial density can be a measure of bacterial growth yield/efficiency. If your bacteria plateau in density, the maximum density can also be a measure of bacterial carrying capacity. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc`, `which_max_gc`, and `extr_val` work just like `R`'s built-in `max`, `which.max`, and `[`, but with better default settings for growth curve analyses with `summarize`). 
 
 See [Peak bacterial density] for identifying *local* maxima of `Measurements` (e.g. if you wanted the first peak in Well E11 shown below).
 

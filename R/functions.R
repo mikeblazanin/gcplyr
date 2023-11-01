@@ -449,7 +449,7 @@ read_blocks <- function(files, extension = NULL,
     #If temp_colnames or temp_rownames haven't been inferred, number them
     if (is.na(inferred_rc$colnames_row)) {
       if(wellnames_numeric) {
-        temp_colnames <- paste("C", 1:ncol(outputs[[i]]$data), sep = "")
+        temp_colnames <- paste0("C", 1:ncol(outputs[[i]]$data))
       } else {temp_colnames <- 1:ncol(outputs[[i]]$data)}
     } else {
       temp_colnames <- temp[inferred_rc$colnames_row, 
@@ -457,7 +457,7 @@ read_blocks <- function(files, extension = NULL,
     }
     if (is.na(inferred_rc$rownames_col)) {
       if(wellnames_numeric) {
-        temp_rownames <- paste("R", 1:nrow(outputs[[i]]$data), sep = "")
+        temp_rownames <- paste0("R", 1:nrow(outputs[[i]]$data))
       } else {temp_rownames <- to_excel(1:nrow(outputs[[i]]$data))}
     } else {
       temp_rownames <- temp[inferred_rc$startrow:inferred_rc$endrow, 
@@ -711,7 +711,7 @@ read_wides <- function(files, extension = NULL,
       colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
       outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
-      colnames(outputs[[i]]) <- paste("V", 1:ncol(outputs[[i]]), sep = "")
+      colnames(outputs[[i]]) <- paste0("V", 1:ncol(outputs[[i]]))
     }
     
     #Get metadata
@@ -996,7 +996,7 @@ import_blockmeasures <- function(files, num_plates = 1,
                           wellnames_sep = wellnames_sep,nested_metadata = TRUE)
   }
   if (is.null(plate_names)) { #no plate_names provided
-    names(widemeasures) <- paste("plate_", 1:length(widemeasures), sep = "")
+    names(widemeasures) <- paste0("plate_", 1:length(widemeasures))
   } else { #plate_names are provided
     names(widemeasures) <- plate_names
   }
@@ -1264,11 +1264,11 @@ make_design <- function(nrows = NULL, ncols = NULL,
     stop("ncols or block_col_names must be provided")
   }
   if (is.null(block_row_names)) {
-    if (wellnames_numeric) {block_row_names <- paste("R", 1:nrows, sep = "")
+    if (wellnames_numeric) {block_row_names <- paste0("R", 1:nrows)
     } else {block_row_names <- to_excel(1:nrows)}
   }
   if (is.null(block_col_names)) {
-    if (wellnames_numeric) {block_col_names <- paste("C", 1:ncols, sep = "")
+    if (wellnames_numeric) {block_col_names <- paste0("C", 1:ncols)
     } else {block_col_names <- 1:ncols}
   }
   if (is.null(nrows)) {nrows <- length(block_row_names)}
@@ -1605,17 +1605,17 @@ write_blocks <- function(blocks, file,
     if(block_name_location == "filename") {
       #Put pasted block names in filename
       if(is.null(file)) {
-        file <- paste(blocks[[1]]$metadata[block_name_header], ".csv", sep = "")
+        file <- paste0(blocks[[1]]$metadata[block_name_header], ".csv")
       } else {
         if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
           file <- 
-            paste(file, filename_sep, blocks[[1]]$metadata[block_name_header], 
-                  ".csv", sep = "")
+            paste0(file, filename_sep, blocks[[1]]$metadata[block_name_header], 
+                  ".csv")
         } else {
           file <- 
             sub("\\.csv", x = file,
-                paste(filename_sep, blocks[[1]]$metadata[block_name_header], 
-                      ".csv", sep = ""))
+                paste0(filename_sep, blocks[[1]]$metadata[block_name_header], 
+                      ".csv"))
         }
       }
       
@@ -1662,7 +1662,7 @@ write_blocks <- function(blocks, file,
       }
       if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
         warning("appending '.csv' to filename\n")
-        file <- paste(file, ".csv", sep = "")
+        file <- paste0(file, ".csv")
       }
       
       #Calc needed # cols: 2 for metadata, 1 for rownames, ncol for data
@@ -1687,7 +1687,7 @@ write_blocks <- function(blocks, file,
         for (i in 1:length(file)) {
           if(substr(file[i], nchar(file[i])-3, nchar(file[i])) != ".csv") {
             warning("appending '.csv' to filename\n")
-            file[i] <- paste(file[i], ".csv", sep = "")
+            file[i] <- paste0(file[i], ".csv")
           }
         }
         #Replicate file vector as needed
@@ -1699,11 +1699,11 @@ write_blocks <- function(blocks, file,
       for (i in 1:length(blocks)) {
         #Put block names in filename
         if(is.null(file)) {
-          filenm <- paste(blocks[[i]]$metadata[block_name_header], ".csv", sep = "")
+          filenm <- paste0(blocks[[i]]$metadata[block_name_header], ".csv")
         } else {
           filenm <- sub("\\.csv", x = file[i],
-                        paste(filename_sep, blocks[[i]]$metadata[block_name_header], 
-                              ".csv", sep = ""))
+                        paste0(filename_sep, blocks[[i]]$metadata[block_name_header], 
+                              ".csv"))
         }
         
         #Calc needed # rows: 1 ea metadata except block_name (-1), 
@@ -1752,7 +1752,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
         for (i in 1:length(file)) {
           if(substr(file[i], nchar(file[i])-3, nchar(file[i])) != ".csv") {
             warning("appending '.csv' to filename\n")
-            file[i] <- paste(file[i], ".csv", sep = "")
+            file[i] <- paste0(file[i], ".csv")
           }
         }
         #Replicate file vector as needed
@@ -1760,7 +1760,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
           file <- rep_len(file, length.out = length(blocks))
           warning("appending numeric suffix to files in order of 'blocks'\n")
           for (i in 1:length(file)) {
-            file[i] <- gsub("\\.csv", paste(filename_sep, i, ".csv", sep = ""), 
+            file[i] <- gsub("\\.csv", paste0(filename_sep, i, ".csv"), 
                             file[i])
           }
         }
@@ -2614,8 +2614,8 @@ moving_average <- function(formula, data, window_width_n = NULL,
   #Check x for being correct format
   if(!is.numeric(data[, predictor_var])) {
     if (!canbe.numeric(data[, predictor_var])) {
-      warning(paste("data is being sorted by order(", predictor_var,
-                    "), but ", predictor_var, " is not numeric\n", sep = ""))
+      warning(paste0("data is being sorted by order(", predictor_var,
+                    "), but ", predictor_var, " is not numeric\n"))
     } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
   }
   
@@ -2686,8 +2686,8 @@ moving_median <- function(formula, data, window_width_n = NULL,
   #Check x for being correct format
   if(!is.numeric(data[, predictor_var])) {
     if (!canbe.numeric(data[, predictor_var])) {
-      warning(paste("data is being sorted by order(", predictor_var,
-                    "), but ", predictor_var, " is not numeric\n", sep = ""))
+      warning(paste0("data is being sorted by order(", predictor_var,
+                    "), but ", predictor_var, " is not numeric\n"))
     } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
   }
   
@@ -3841,11 +3841,11 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
   }
   if (is.null(block_row_names)) {
     if (wellnames_Excel) {block_row_names <- to_excel(1:nrows)
-    } else {block_row_names <- paste("R", 1:nrows, sep = "")}
+    } else {block_row_names <- paste0("R", 1:nrows)}
   }
   if (is.null(block_col_names)) {
     if (wellnames_Excel) {block_col_names <- 1:ncols
-    } else {block_col_names <- paste("C", 1:ncols, sep = "")}
+    } else {block_col_names <- paste0("C", 1:ncols)}
   }
   if (is.null(nrows)) {nrows <- length(block_row_names)}
   if (is.null(ncols)) {ncols <- length(block_col_names)}

@@ -32,7 +32,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 9. **Working with multiple plates:** `vignette("09_multiple_plates")`
 
 
-So far, we've covered everything you can do with `gcplyr` with a single plate. In this vignette, we'll be covering how `gcplyr` can also easily handle multiple plates of data at the same time.
+So far, we've covered everything you can do with `gcplyr` with a single plate. In this vignette, I'll be briefly covering how `gcplyr` can also easily handle multiple plates of data at the same time. I'll be assuming that you've already read the analogous sections on working with a single plate at a time, so if you haven't, now is a good time to go back and do that!
 
 If you haven't already, load the necessary packages.
 
@@ -50,6 +50,44 @@ print_df <- function(df, col.names = FALSE) {
 }
 ```
 
+# Reading files for multiple block-shaped plates
+
+If you're reading files for multiple block-shaped plates, your approach depends on how the files themselves are arranged:
+* If each plate's worth of block-shaped files is easily separable (e.g. saved in different folders)
+* If the files from separate plates are interleaved such that they are alternating (as is common when multiple plates are read by a plate-reader robot in a single run)
+
+## Separated block-shaped plate files
+In the first case, you will have to read each plate of files as an individual plate following the typical process with `import_blockmeasures`. If you would like to later work with them as a unit, you can save them into a list.
+
+Let's generate some example files to see how this works. When working with real growth curve data, these files would be output by the plate reader.
+
+```{r}
+make_example(vignette = 9, example = 1, dir = "./example_data")
+```
+
+
+
+
+## Interleaved block-shaped plate files
+
+In the second case, where files from different plates are interleaved together, you can read them with `import_blockmeasures` setting the `num_plates` argument to the number of plates.
+
+Let's generate some example files to see how this works. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader.
+
+```{r}
+make_example(vignette = 9, example = 2, dir = ".")
+```
+
+
+# Reading files for multiple wide-shaped plates
+
+
+
+# Transforming multiple plates to tidy-shaped
+
+
+
+# Merging designs with multiple plates
 
 
 

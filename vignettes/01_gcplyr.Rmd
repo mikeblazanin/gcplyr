@@ -69,39 +69,16 @@ Before digging into the details, here's a simple demonstration of what a final `
 **Don't worry about understanding all the details of how the code works right now.** Each of these steps is explained in depth in later articles.
 
 ```{r, include = FALSE}
-# This code just creates a wide-shaped example file
-# Don't worry about how it works - when working with real growth
-# curves data, this file would be created by the plate reader
-write.csv(example_widedata_noiseless, file = "widedata.csv", row.names = FALSE)
+#Generate our example data files
+make_example(vignette = 1, example = 1, dir = "./example_data")
 
-# This code just creates our block designs
-example_design <- make_design(
-  output_format = "blocks",
-  pattern_split = ",", nrows = 8, ncols = 12,
-  "Bacteria_strain" = make_designpattern(
-    values = paste("Strain", 1:48),
-    rows = 1:8, cols = 1:6,
-    pattern = 1:48,
-    byrow = TRUE),
-  "Bacteria_strain" = make_designpattern(
-    values = paste("Strain", 1:48),
-    rows = 1:8, cols = 7:12,
-    pattern = 1:48,
-    byrow = TRUE),
-  "Phage" = make_designpattern(
-    values = c("No Phage"),
-    rows = 1:8, cols = 1:6,
-    pattern = "1"),
-  "Phage" = make_designpattern(
-    values = c("Phage Added"),
-    rows = 1:8, cols = 7:12,
-    pattern = "1"))
-write_blocks(example_design, file = NULL)
+#Generate our example design files
+make_example(vignette = 1, example = 2, dir = "./example_data")
 ```
 
 ```{r}
-# Read in our data
-#  (our plate reader data is saved in "widedata.csv")
+# Read in our data 
+#   (our plate reader data is saved in "widedata.csv")
 data_wide <- read_wides(files = "widedata.csv")
 
 # Transform our data to be tidy-shaped
@@ -143,8 +120,12 @@ data_sum <- summarize(
 # Print some of the max growth rates and auc's
 head(data_sum)
 
-# Plot the results for max growth rate and area under the curve in 
-#  presence vs absence of phage
+# Plot the results for max growth rate and area under the curve
+ggplot(data = data_sum,
+       aes(y = max_percap)) +
+  geom_point()
+
+
 ggplot(data = data_sum,
        aes(x = max_percap, y = auc, color = Phage)) +
   geom_point()

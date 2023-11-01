@@ -13,6 +13,7 @@ write_blocks(
   paste_sep = "_",
   filename_sep = "_",
   na = "",
+  dir = ".",
   ...
 )
 }
@@ -75,6 +76,8 @@ will be used to paste together blocks.}
 filenames when block_name_location = 'filename'.}
 
 \item{na}{The string to use for missing values in the data.}
+
+\item{dir}{The directory that file(s) should be written into}
 
 \item{...}{Other arguments passed to \code{write.table}}
 }

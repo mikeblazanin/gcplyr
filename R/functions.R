@@ -1532,6 +1532,7 @@ fill_data_metadata <- function(output, input, rs,
 #' @param filename_sep What character will be used to paste together 
 #'                     filenames when block_name_location = 'filename'.   
 #' @param na The string to use for missing values in the data.
+#' @param dir The directory that file(s) should be written into
 #' @param ... Other arguments passed to \code{write.table}
 #' @return Nothing, but R objects are written to files
 #' 
@@ -1541,7 +1542,10 @@ write_blocks <- function(blocks, file,
                          block_name_location = NULL,
                          block_name_header = "block_name",
                          paste_sep = "_", filename_sep = "_", 
-                         na = "", ...) {
+                         na = "", dir = ".", ...) {
+  #Make sure dir ends in /
+  if(substr(dir, nchar(dir), nchar(dir)) != "/") {dir <- paste0(dir, "/")}
+  
   if(!all(sapply(X = blocks, FUN = length) == 2) |
      !all(unlist(lapply(X = blocks, FUN = names)) %in% c("data", "metadata"))) {
     stop("blocks is incorrectly formatted")
@@ -1568,7 +1572,7 @@ write_blocks <- function(blocks, file,
     if(is.null(file)) {stop("file is required when output_format = 'single'")}
     if(substr(file, nchar(file)-3, nchar(file)) != ".csv") {
       warning("appending '.csv' to filename\n")
-      file <- paste(file, ".csv", sep = "")
+      file <- paste0(file, ".csv")
     }
     if(block_name_location == "filename") {
       warning("block_name_location can only be 'file' when output_format = 'single'
@@ -1592,7 +1596,7 @@ write_blocks <- function(blocks, file,
       rs <- temp[[2]]
     }
     #Write file
-    utils::write.table(output, file = file, sep = ",", na = na,
+    utils::write.table(output, file = paste0(dir, file), sep = ",", na = na,
                        col.names = FALSE, row.names = FALSE, ...)
   } else if (output_format == "pasted") {
     #going to paste all the blocks together then save a single file
@@ -1673,7 +1677,7 @@ write_blocks <- function(blocks, file,
         fill_data_metadata(output = output, input = blocks[[1]], rs = 1)[[1]]
     }
     #Write file
-    utils::write.table(output, file = file, sep = ",", na = na,
+    utils::write.table(output, file = paste0(dir, file), sep = ",", na = na,
                        col.names = FALSE, row.names = FALSE, ...)
   } else if (output_format == "multiple") {
     #going to save each block as its own file
@@ -1737,7 +1741,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
                                rs = 1, metadata_include = NULL)[[1]]
         }
         #Write file
-        utils::write.table(output, file = filenm, sep = ",", na = na,
+        utils::write.table(output, file = paste0(dir, filenm), sep = ",", na = na,
                            col.names = FALSE, row.names = FALSE, ...)
       }
     } else { #block_name_location == 'file'
@@ -1776,7 +1780,7 @@ Putting block_names in filename and writing remaining metadata into file\n")
           fill_data_metadata(output = output, input = blocks[[i]], rs = 1)[[1]]
         
         #Write file
-        utils::write.table(output, file = file[i], sep = ",", na = "",
+        utils::write.table(output, file = paste0(dir, file[i]), sep = ",", na = "",
                            col.names = FALSE, row.names = FALSE, ...)
       }
     }

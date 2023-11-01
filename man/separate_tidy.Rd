@@ -4,7 +4,15 @@
 \alias{separate_tidy}
 \title{Separate a column into multiple columns}
 \usage{
-separate_tidy(data, col, into = NULL, sep = "_", coerce_NA = TRUE, ...)
+separate_tidy(
+  data,
+  col,
+  into = NULL,
+  sep = "_",
+  coerce_NA = TRUE,
+  na.strings = "NA",
+  ...
+)
 }
 \arguments{
 \item{data}{A data frame}
@@ -27,8 +35,12 @@ column names from the column name of \code{col}}
            string. The length of \code{sep} should be one less than 
            \code{into}}
 
-\item{coerce_NA}{logical dictating if "NA" strings will be coerced into 
-\code{NA} values after separating.}
+\item{coerce_NA}{logical dictating if strings matching any of 
+\code{na.strings} will be coerced into  \code{NA} values 
+after separating.}
+
+\item{na.strings}{A character vector of strings which are to be interpreted
+as \code{NA} values if \code{coerce_NA == TRUE}}
 
 \item{...}{Other arguments passed to \code{tidyr::separate}}
 }

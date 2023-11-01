@@ -17,8 +17,9 @@ A list of lists of R objects
 }
 \description{
 Takes a list that is actually interleaved elements from multiple sources
-and uninterleaves them into the separate sources
-For instance, a list of blockmeasures that actually corresponds to two
-different plates can be split into two lists, each of the blockmeasures
-corresponding to a single plate
+and uninterleaves them into the separate sources. For instance, a list of 
+blockmeasures that actually corresponds to two different plates can be 
+split into two lists, each of the blockmeasures corresponding to a single 
+plate. Uninterleave assumes that the desired sub-groups are perfectly
+interleaved in the input (e.g. items belong to sub-groups 1,2,3,1,2,3,...)
 }

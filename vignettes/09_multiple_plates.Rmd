@@ -195,7 +195,7 @@ tidy_plates[[1]] <- merge_dfs(tidy_plates[[1]], example_design1)
 tidy_plates[[2]] <- merge_dfs(tidy_plates[[2]], example_design2)
 ```
 
-Then afterwards, you can collapse your data together
+Then afterwards, you can collapse your data together:
 
 ```{r}
 data_and_designs <- merge_dfs(tidy_plates, collapse = TRUE)

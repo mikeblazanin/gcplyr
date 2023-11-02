@@ -84,15 +84,7 @@ Growth curve data produced by a plate reader often encodes the timestamp informa
 First we have to create a data frame with time saved as it might be by a plate reader.
 
 ```{r}
-#Don't worry how this code works, it's just creating an example file
-# in the same format that a plate reader would
-ex_dat_mrg$Time <-
-  paste(ex_dat_mrg$Time %/% 3600,
-        formatC((ex_dat_mrg$Time %% 3600) %/% 60, 
-                width = 2, flag = 0),
-        formatC((ex_dat_mrg$Time %% 3600) %% 60,
-                width = 2, flag = 0),
-        sep = ":")
+ex_dat_mrg <- make_example(vignette = 4, example = 1)
 
 head(ex_dat_mrg)
 ```

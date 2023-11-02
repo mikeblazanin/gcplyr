@@ -165,8 +165,38 @@ make_example <- function(vignette, example, dir = ".") {
       message("Files have been written")
       return(paste0(dir, "mydesign2.csv"))
     }
+  
+  } else if (vignette == 4) {
+    # Vignette 4 ----
     
-    
+    if (example == 1) {
+      ## Example 1 ----
+      example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
+                                             id_cols = "Time")
+      example_design <- make_design(
+        pattern_split = ",", nrows = 8, ncols = 12,
+        "Bacteria_strain" = make_designpattern(
+          values = paste("Strain", 1:48),
+          rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+        "Bacteria_strain" = make_designpattern(
+          values = paste("Strain", 1:48),
+          rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE),
+        "Phage" = make_designpattern(
+          values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
+        "Phage" = make_designpattern(
+          values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
+      ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+      
+      ex_dat_mrg$Time <-
+        paste(ex_dat_mrg$Time %/% 3600,
+              formatC((ex_dat_mrg$Time %% 3600) %/% 60, 
+                      width = 2, flag = 0),
+              formatC((ex_dat_mrg$Time %% 3600) %% 60,
+                      width = 2, flag = 0),
+              sep = ":")
+      
+      return(ex_dat_mrg)
+    }
     
   } else if (vignette == 9) {
     # Vignette 9 ----

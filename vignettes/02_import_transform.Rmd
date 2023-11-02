@@ -121,7 +121,7 @@ To import block-shaped data, use the `import_blockmeasures` function. `import_bl
 Here's a simple example. First, we need to create a series of example block-shaped `.csv` files. When working with real growth curve data, these files would be output by the plate reader, but we'll generate them with `make_example`. In this case, `make_example` creates the files and returns a vector with the names of the files, which we'll store in `temp_filenames`.
 
 ```{r}
-temp_filenames <- make_example(vignette = 1, example = 1, dir = ".")
+temp_filenames <- make_example(vignette = 2, example = 1)
 ```
 
 If you've saved all the files to a single folder, you can easily get a vector with all their names using `list.files`. If your folder contains other files, you can specify a regular expression `pattern` to limit it to just those you want to import:
@@ -202,13 +202,13 @@ imported_blockdata <- import_blockmeasures(
 First, let's create an example file (normally this file would be created by the plate reader).
 
 ```{r}
-single_filename <- make_example(vignette = 1, example = 2, dir = ".")
+make_example(vignette = 2, example = 2)
 ```
 
 Let's take a look at what the file looks like:
 
 ```{r}
-print_df(head(read.csv(single_filename, header = FALSE, 
+print_df(head(read.csv("blocks_single.csv", header = FALSE, 
                        colClasses = "character"),
               c(20, 8)))
 ```
@@ -217,7 +217,7 @@ We can see that the first block has some metadata above it, then the block of da
 
 ```{r}
 imported_blockdata <- import_blockmeasures(
-  single_filename,
+  "blocks_single.csv",
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13)
@@ -235,7 +235,7 @@ Going back to the file, we can see that the time of the block is saved in the se
 
 ```{r}
 imported_blockdata <- import_blockmeasures(
-  single_filename,
+  "blocks_single.csv",
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13,
@@ -258,14 +258,14 @@ To import wide-shaped data, use the `read_wides` function. `read_wides` only req
 Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is know the file name(s) to put in you `R` code. In this example, the file name is `widedata.csv`. 
 
 ```{r}
-widedata_filename <- make_example(vignette = 2, example = 3, dir = ".")
+make_example(vignette = 2, example = 3)
 ```
 
 Here's what the start of the file looks like (where the values are absorbance/optical density):
 
 ```{r}
 # Let's take a peek at what this file looks like
-print_df(head(read.csv(widedata_filename, header = FALSE, 
+print_df(head(read.csv("widedata.csv", header = FALSE, 
                        colClasses = "character"), 
               c(10, 10)))
 ```
@@ -275,7 +275,7 @@ This file contains all the reads for a single plate taken across all timepoints.
 If we want to read this file into `R`, we simply provide `read_wides` with the file name, and save the result to some `R` object (here, `imported_widedata`). `read_wides` assumes your data starts on the first row and column, and ends on the last row and column, unless you specify otherwise.
 
 ```{r}
-imported_widedata <- read_wides(files = widedata_filename, startrow = 5)
+imported_widedata <- read_wides(files = "widedata.csv", startrow = 5)
 ```
 
 The resulting `data.frame` looks like this:
@@ -289,7 +289,7 @@ Note that *read_wides automatically saves the filename* the data was imported fr
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns are coded by letter. `read_wides` allows you to specify the column by letter too.
 
 ```{r}
-imported_widedata <- read_wides(files = widedata_filename,
+imported_widedata <- read_wides(files = "widedata.csv",
                                 startrow = 5, startcol = "A")
 ```
 
@@ -302,7 +302,7 @@ The `metadata` argument should be a list of named vectors. Each vector should be
 For example, in our previous example files, the experiment name was located in the 2nd row, 2nd column, and the start date was located in the 3rd row, 2nd column. Here's how we could specify that metadata:
 
 ```{r}
-imported_widedata <- read_wides(files = widedata_filename,
+imported_widedata <- read_wides(files = "widedata.csv",
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, 2),
                                                 "start_date" = c(2, 2)))
@@ -312,7 +312,7 @@ head(imported_widedata, c(6, 8))
 You can also specify the location of metadata with Excel-style lettering.
 
 ```{r}
-imported_widedata <- read_wides(files = widedata_filename,
+imported_widedata <- read_wides(files = "widedata.csv",
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, "B"),
                                                 "start_date" = c(2, "B")))

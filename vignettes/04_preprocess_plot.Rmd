@@ -42,13 +42,6 @@ library(ggplot2)
 library(lubridate)
 ```
 
-```{r, include = FALSE}
-print_df <- function(df, col.names = FALSE) {
-  write.table(format(df, justify = "right"),
-              row.names=FALSE, col.names = col.names, quote = F)
-}
-```
-
 ```{r}
 # This code was previously explained
 # Here we're re-running it so it's available for us to work with

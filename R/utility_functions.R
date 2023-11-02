@@ -17,6 +17,22 @@
 
 # Utility functions ----
 
+#' Nicely print the contents of a data.frame
+#' 
+#' This function uses \code{write.table} to print the input \code{data.frame}
+#' in a nicely-formatted manner that is easy to read
+#' 
+#' @param x The \code{data.frame} to be printed
+#' @param col.names Boolean for whether column names should be printed
+#' @param row.names Boolean for whether row names should be printed
+#' 
+#' @export
+print_df <- function(x, col.names = FALSE, row.names = FALSE) {
+  write.table(format(x, justify = "right"),
+              row.names = row.names, col.names = col.names, quote = F)
+}
+
+
 #' Check dimension of inputs
 #' 
 #' Check if values are a vector of given length, if not coerce to be so

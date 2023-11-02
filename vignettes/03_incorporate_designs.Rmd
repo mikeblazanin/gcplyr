@@ -38,13 +38,6 @@ If you haven't already, load the necessary packages.
 library(gcplyr)
 ```
 
-```{r, include = FALSE}
-print_df <- function(df, col.names = FALSE) {
-  write.table(format(df, justify = "right"),
-              row.names=FALSE, col.names = col.names, quote = F)
-}
-```
-
 # Including design elements
 We often want to combine information about the experimental design with our data. `gcplyr` enables incorporation of design elements in two ways:
 

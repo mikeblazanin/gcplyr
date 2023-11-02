@@ -38,13 +38,6 @@ If you haven't already, load the necessary packages.
 library(gcplyr)
 ```
 
-```{r, include = FALSE}
-print_df <- function(df, col.names = FALSE) {
-  write.table(format(df, justify = "right"),
-              row.names=FALSE, col.names = col.names, quote = F)
-}
-```
-
 # Data layouts
 Growth curve data and designs can be organized in one of three different layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 

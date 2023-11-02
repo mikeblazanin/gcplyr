@@ -52,13 +52,6 @@ library(dplyr)
 library(ggplot2)
 ```
 
-```{r, include = FALSE}
-print_df <- function(df, col.names = FALSE) {
-  write.table(format(df, justify = "right"),
-              row.names=FALSE, col.names = col.names, quote = F)
-}
-```
-
 # A quick demo of `gcplyr`
 Before digging into the details, here's a simple demonstration of what a final `gcplyr` script can look like. This script:
 

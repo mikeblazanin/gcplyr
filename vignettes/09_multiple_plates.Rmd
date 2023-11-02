@@ -43,13 +43,6 @@ library(dplyr)
 library(ggplot2)
 ```
 
-```{r, include = FALSE}
-print_df <- function(df, col.names = FALSE) {
-  write.table(format(df, justify = "right"),
-              row.names=FALSE, col.names = col.names, quote = F)
-}
-```
-
 # Reading files for multiple block-shaped plates
 
 If you're reading files for multiple block-shaped plates, your approach depends on how the files themselves are arranged:
@@ -81,7 +74,16 @@ make_example(vignette = 9, example = 2, dir = ".")
 
 # Reading files for multiple wide-shaped plates
 
+Note that if you have multiple files you'd like to read in, you can do so directly with a single `read_wides` command. In this case, read_wides will return a list containing all the data.frames:
 
+```{r}
+# If we had multiple wide-shaped data files to import
+imported_widedata <- read_wides(files = c("widedata.csv", "widedata2.csv"))
+```
+
+
+## Reading multiple wides from a single file
+`read_wides` can read multiple wide-shaped datasets from a single file. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
 
 # Transforming multiple plates to tidy-shaped
 

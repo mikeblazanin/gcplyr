@@ -1,31 +1,36 @@
 #' Create R objects or files as seen in vignette examples
 #' 
 #' This function makes it easy to generate R objects or files that are
-#' created in the vignette examples.
+#' created in the vignette examples. Note that this function should not
+#' be counted on to produce the same output across different versions of
+#' \code{gcplyr}, as it will be frequently changed to match the examples
+#' in the vignettes.
 #' 
 #' @param vignette Number of the vignette the example object or file is created in
 #' @param example Number of the example the object or file is created in
 #' @param dir The directory files should be saved into. Only required when
 #'            the specified example writes to file(s)
 #' 
-#' @return An R object, or NULL if files have been written
+#' @return An R object, or the names of the files if files have been written
 #' 
 #' @export
 make_example <- function(vignette, example, dir = NULL) {
-  browser()
-  #Make sure dir ends in /
-  if(substr(dir, nchar(dir), nchar(dir)) != "/") {dir <- paste0(dir, "/")}
-  if(!dir.exists(dir)) {dir.create(dir)}
+  if(!is.null(dir)) {
+    #Make sure dir ends in /
+    if(substr(dir, nchar(dir), nchar(dir)) != "/") {dir <- paste0(dir, "/")}
+    if(!dir.exists(dir)) {dir.create(dir)}
+  }
   
   #Vignette 1 ----
   if(vignette == 1) {
     
     ##Example 1 ----
     if(example == 1) {
+      if(is.null(dir)) {stop("dir must be specified for this example")}
       write.csv(example_widedata_noiseless, file = paste0(dir, "widedata.csv"), 
                 row.names = FALSE)
       message("Files have been written")
-      return(invisible(NULL))
+      return(paste0(dir, "widedata.csv"))
     
     ##Example 2 ----  
     } else if (example == 2) {
@@ -51,9 +56,105 @@ make_example <- function(vignette, example, dir = NULL) {
           values = c("Phage Added"),
           rows = 1:8, cols = 7:12,
           pattern = "1"))
+      if(is.null(dir)) {stop("dir must be specified for this example")}
       write_blocks(example_design, file = NULL, dir = dir)
       message("Files have been written")
-      return(invisible(NULL))
+      return(paste0(dir, c("Bacteria_strain.csv", "Phage.csv")))
+    }
+    
+  #Vignette 2 ----
+  } else if (vignette == 2) {
+    
+    ##Example 1 ----
+    if(example == 1) {
+      if(is.null(dir)) {stop("dir must be specified for this example")}
+      temp_filenames <- 
+        paste0(dir, "Plate1-", 
+              paste(example_widedata_noiseless$Time %/% 3600,
+                    formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
+                            width = 2, flag = 0),
+                    formatC((example_widedata_noiseless$Time %% 3600) %% 60,
+                            width = 2, flag = 0),
+                    sep = "_"), ".csv")
+      for (i in 1:length(temp_filenames)) {
+        write.table(
+          cbind(
+            matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
+                   nrow = 12),
+            rbind(rep("", 12),
+                  matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
+                         ncol = 12),
+                  rep("", 12),
+                  matrix(1:12, ncol = 12),
+                  matrix(
+                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
+                    ncol = 12))
+          ), 
+          file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
+          col.names = FALSE)
+      }
+      message("Files have been written")
+      return(temp_filenames)
+    
+    ##Example 2 ----
+    } else if (example == 2) {
+      #Re-run example 1 basically, bc example 2 need to use that
+      if(is.null(dir)) {stop("dir must be specified for this example")}
+      temp_filenames <- 
+        paste0(dir, "Plate1-", 
+               paste(example_widedata_noiseless$Time %/% 3600,
+                     formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
+                             width = 2, flag = 0),
+                     formatC((example_widedata_noiseless$Time %% 3600) %% 60,
+                             width = 2, flag = 0),
+                     sep = "_"), ".csv")
+      for (i in 1:length(temp_filenames)) {
+        write.table(
+          cbind(
+            matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
+                   nrow = 12),
+            rbind(rep("", 12),
+                  matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
+                         ncol = 12),
+                  rep("", 12),
+                  matrix(1:12, ncol = 12),
+                  matrix(
+                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
+                    ncol = 12))
+          ), 
+          file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
+          col.names = FALSE)
+      }
+      # This code just creates an example file with multiple blocks
+      write_blocks(read_blocks(files = temp_filenames,
+                               startrow = 4,
+                               metadata = list("time" = c(2, "C"))),
+                   file = "blocks_single.csv", dir = dir,
+                   output_format = "single",
+                   block_name_location = "file")
+      message("Files have been written")
+      return(paste0(dir, "blocks_single.csv"))
+      
+    ##Example 3 ----
+    } else if (example == 3) {
+      # This code just creates a wide-shaped example file where the data doesn't
+      # start on the first row.
+      temp_example_widedata <- example_widedata_noiseless
+      colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
+                                               sep = "")
+      modified_example_widedata <-
+        rbind(
+          as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata_noiseless))),
+          colnames(example_widedata_noiseless),
+          temp_example_widedata)
+      modified_example_widedata[1:2, 1:2] <- 
+        c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))
+      
+      if(is.null(dir)) {stop("dir must be specified for this example")}
+      write.table(modified_example_widedata, file = paste0(dir, "widedata.csv"), 
+                  row.names = FALSE, col.names = FALSE, sep = ",")
+      message("Files have been written")
+      return(paste0(dir, "widedata.csv"))
     }
     
   #Vignette 9 ----
@@ -62,6 +163,7 @@ make_example <- function(vignette, example, dir = NULL) {
     ##Example 1 ----
     if(example == 1) {
       #block-shaped files for multiple plates easily separable
+      if(is.null(dir)) {stop("dir must be specified for this example")}
       temp_filenames1 <- 
         paste0(dir, "Plate1-", 
               paste(example_widedata_noiseless$Time %/% 3600,
@@ -118,6 +220,7 @@ make_example <- function(vignette, example, dir = NULL) {
     ##Example 2 ----
     } else if (example == 2) {
       #Interleaved block-shaped files
+      if(is.null(dir)) {stop("dir must be specified for this example")}
       times <- c(example_widedata_noiseless$Time, example_widedata_noiseless$Time + 1)
       times <- times[order(times)]
       

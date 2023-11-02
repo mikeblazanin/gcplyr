@@ -118,41 +118,10 @@ To import block-shaped data, use the `import_blockmeasures` function. `import_bl
 
 ## A basic example
 
-Here's a simple example. First, we need to create a series of example block-shaped `.csv` files. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is put the file names in `R` in a vector, here we've stored the file names in `temp_filenames`.
+Here's a simple example. First, we need to create a series of example block-shaped `.csv` files. When working with real growth curve data, these files would be output by the plate reader, but we'll generate them with `make_example`. In this case, `make_example` creates the files and returns a vector with the names of the files, which we'll store in `temp_filenames`.
 
 ```{r}
-# This code just creates a series of block-shaped example files
-# Don't worry about how it works - when working with real growth
-# curves data, all these files would be created by the plate reader
-temp_filenames <- 
-  paste("Plate1-", 
-        paste(example_widedata_noiseless$Time %/% 3600,
-              formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
-                      width = 2, flag = 0),
-              formatC((example_widedata_noiseless$Time %% 3600) %% 60,
-                      width = 2, flag = 0),
-              sep = "_"), ".csv", sep = "")
-for (i in 1:length(temp_filenames)) {
-  temp_filenames[i] <- strsplit(temp_filenames[i], split = "\\\\")[[1]][
-    length(strsplit(temp_filenames[i], split = "\\\\")[[1]])]
-}
-for (i in 1:length(temp_filenames)) {
-  write.table(
-    cbind(
-      matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
-             nrow = 12),
-      rbind(rep("", 12),
-            matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
-                   ncol = 12),
-            rep("", 12),
-            matrix(1:12, ncol = 12),
-            matrix(
-              example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
-              ncol = 12))
-    ), 
-    file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
-    col.names = FALSE)
-}
+temp_filenames <- make_example(vignette = 1, example = 1, dir = ".")
 ```
 
 If you've saved all the files to a single folder, you can easily get a vector with all their names using `list.files`. If your folder contains other files, you can specify a regular expression `pattern` to limit it to just those you want to import:
@@ -230,24 +199,16 @@ imported_blockdata <- import_blockmeasures(
 ## Reading multiple blocks from a single file
 `import_blockmeasures` can also import multiple blocks from a single file, which some plate readers may output. In this case, you simply have to specify a vector of rows and columns that define the location of each block within the file.
 
-First, let's create an example file. **Don't worry about how this code works**, normally this file would be created by the plate reader.
+First, let's create an example file (normally this file would be created by the plate reader).
 
 ```{r}
-# This code just creates an example file with multiple blocks
-# Don't worry about how it works - when working with real growth
-# curves data, this would be created by the plate reader
-write_blocks(read_blocks(files = temp_filenames,
-                         startrow = 4,
-                         metadata = list("time" = c(2, "C"))),
-             file = "blocks_single.csv",
-             output_format = "single",
-             block_name_location = "file")
+single_filename <- make_example(vignette = 1, example = 2, dir = ".")
 ```
 
 Let's take a look at what the file looks like:
 
 ```{r}
-print_df(head(read.csv("blocks_single.csv", header = FALSE, 
+print_df(head(read.csv(single_filename, header = FALSE, 
                        colClasses = "character"),
               c(20, 8)))
 ```
@@ -256,7 +217,7 @@ We can see that the first block has some metadata above it, then the block of da
 
 ```{r}
 imported_blockdata <- import_blockmeasures(
-  "blocks_single.csv",
+  single_filename,
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13)
@@ -274,7 +235,7 @@ Going back to the file, we can see that the time of the block is saved in the se
 
 ```{r}
 imported_blockdata <- import_blockmeasures(
-  "blocks_single.csv",
+  single_filename,
   startrow = seq(from = 3, to = 1155, by = 12),
   endrow = seq(from = 11, to = 1163, by = 12),
   startcol = 1, endcol = 13,
@@ -297,32 +258,14 @@ To import wide-shaped data, use the `read_wides` function. `read_wides` only req
 Here's a simple example. First, we need to create an example wide-shaped .csv file. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader. All you need to do is know the file name(s) to put in you `R` code. In this example, the file name is `widedata.csv`. 
 
 ```{r}
-# This code just creates a wide-shaped example file where the data doesn't
-# start on the first row.
-# Don't worry about how it works - when working with real growth
-# curves data, this file would be created by the plate reader
-temp_example_widedata <- example_widedata_noiseless
-colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
-                                         sep = "")
-modified_example_widedata <-
-  rbind(
-    as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata_noiseless))),
-    colnames(example_widedata_noiseless),
-    temp_example_widedata)
-modified_example_widedata[1:2, 1:2] <- 
-  c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))
-
-write.table(modified_example_widedata, file = "widedata.csv", 
-          row.names = FALSE, col.names = FALSE, sep = ",")
-write.table(modified_example_widedata, file = "widedata2.csv", 
-          row.names = FALSE, col.names = FALSE, sep = ",")
+widedata_filename <- make_example(vignette = 2, example = 3, dir = ".")
 ```
 
 Here's what the start of the file looks like (where the values are absorbance/optical density):
 
 ```{r}
 # Let's take a peek at what this file looks like
-print_df(head(read.csv("widedata.csv", header = FALSE, 
+print_df(head(read.csv(widedata_filename, header = FALSE, 
                        colClasses = "character"), 
               c(10, 10)))
 ```
@@ -332,7 +275,7 @@ This file contains all the reads for a single plate taken across all timepoints.
 If we want to read this file into `R`, we simply provide `read_wides` with the file name, and save the result to some `R` object (here, `imported_widedata`). `read_wides` assumes your data starts on the first row and column, and ends on the last row and column, unless you specify otherwise.
 
 ```{r}
-imported_widedata <- read_wides(files = "widedata.csv", startrow = 5)
+imported_widedata <- read_wides(files = widedata_filename, startrow = 5)
 ```
 
 The resulting `data.frame` looks like this:
@@ -346,15 +289,8 @@ Note that *read_wides automatically saves the filename* the data was imported fr
 If you're looking at your data in Excel or a similar spreadsheet program, you'll notice that the columns are coded by letter. `read_wides` allows you to specify the column by letter too.
 
 ```{r}
-imported_widedata <- read_wides(files = "widedata.csv",
+imported_widedata <- read_wides(files = widedata_filename,
                                 startrow = 5, startcol = "A")
-```
-
-Note that if you have multiple files you'd like to read in, you can do so directly with a single `read_wides` command. In this case, read_wides will return a list containing all the data.frames:
-
-```{r}
-# If we had multiple wide-shaped data files to import
-imported_widedata <- read_wides(files = c("widedata.csv", "widedata2.csv"))
 ```
 
 ## Specifying metadata
@@ -366,7 +302,7 @@ The `metadata` argument should be a list of named vectors. Each vector should be
 For example, in our previous example files, the experiment name was located in the 2nd row, 2nd column, and the start date was located in the 3rd row, 2nd column. Here's how we could specify that metadata:
 
 ```{r}
-imported_widedata <- read_wides(files = "widedata.csv",
+imported_widedata <- read_wides(files = widedata_filename,
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, 2),
                                                 "start_date" = c(2, 2)))
@@ -376,14 +312,11 @@ head(imported_widedata, c(6, 8))
 You can also specify the location of metadata with Excel-style lettering.
 
 ```{r}
-imported_widedata <- read_wides(files = "widedata.csv",
+imported_widedata <- read_wides(files = widedata_filename,
                                 startrow = 5,
                                 metadata = list("experiment_name" = c(1, "B"),
                                                 "start_date" = c(2, "B")))
 ```
-
-## Reading multiple wides from a single file
-`read_wides` can read multiple wide-shaped datasets from a single file. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
 
 ## What to do next
 Now that you've imported your wide-shaped data, you'll need to transform it for later analyses. Continue on to the **[Transforming data]** section.

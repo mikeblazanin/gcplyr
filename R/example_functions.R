@@ -21,19 +21,19 @@ make_example <- function(vignette, example, dir = NULL) {
     if(!dir.exists(dir)) {dir.create(dir)}
   }
   
-  #Vignette 1 ----
-  if(vignette == 1) {
+  if(vignette == 1) { 
+    # Vignette 1 ----
     
-    ##Example 1 ----
-    if(example == 1) {
+    if(example == 1) { 
+      ## Example 1 ----
       if(is.null(dir)) {stop("dir must be specified for this example")}
       write.csv(example_widedata_noiseless, file = paste0(dir, "widedata.csv"), 
                 row.names = FALSE)
       message("Files have been written")
       return(paste0(dir, "widedata.csv"))
     
-    ##Example 2 ----  
-    } else if (example == 2) {
+    } else if (example == 2) { 
+      ## Example 2 ----
       #Simple design written to file
       example_design <- make_design(
         output_format = "blocks",
@@ -62,11 +62,12 @@ make_example <- function(vignette, example, dir = NULL) {
       return(paste0(dir, c("Bacteria_strain.csv", "Phage.csv")))
     }
     
-  #Vignette 2 ----
+  
   } else if (vignette == 2) {
+    # Vignette 2 ----
     
-    ##Example 1 ----
     if(example == 1) {
+      ## Example 1 ----
       if(is.null(dir)) {stop("dir must be specified for this example")}
       temp_filenames <- 
         paste0(dir, "Plate1-", 
@@ -96,8 +97,8 @@ make_example <- function(vignette, example, dir = NULL) {
       message("Files have been written")
       return(temp_filenames)
     
-    ##Example 2 ----
     } else if (example == 2) {
+      ## Example 2 ----
       #Re-run example 1 basically, bc example 2 need to use that
       if(is.null(dir)) {stop("dir must be specified for this example")}
       temp_filenames <- 
@@ -135,8 +136,8 @@ make_example <- function(vignette, example, dir = NULL) {
       message("Files have been written")
       return(paste0(dir, "blocks_single.csv"))
       
-    ##Example 3 ----
     } else if (example == 3) {
+      ## Example 3 ----
       # This code just creates a wide-shaped example file where the data doesn't
       # start on the first row.
       temp_example_widedata <- example_widedata_noiseless
@@ -156,12 +157,40 @@ make_example <- function(vignette, example, dir = NULL) {
       message("Files have been written")
       return(paste0(dir, "widedata.csv"))
     }
+  
     
-  #Vignette 9 ----
-  } else if (vignette == 9) {
+  } else if (vignette == 3) {
+    # Vignette 3 ----
     
-    ##Example 1 ----
     if(example == 1) {
+      ## Example 1 ----
+      if(is.null(dir)) {stop("dir must be specified for this example")}
+      write.csv(
+        file = paste0(dir, "mydesign.csv"),
+        x = matrix(rep(c("Tr1", "Tr2"), each = 48),
+                   nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)))
+      message("Files have been written")
+      return(paste0(dir, "mydesign.csv"))
+      
+    } else if (example == 2) {
+      ## Example 2 ----
+      if(is.null(dir)) {stop("dir must be specified for this example")}
+      write.csv(
+        file = paste0(dir, "mydesign2.csv"),
+        x = matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),
+                   nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
+                   byrow = TRUE))
+      message("Files have been written")
+      return(paste0(dir, "mydesign2.csv"))
+    }
+    
+    
+    
+  } else if (vignette == 9) {
+    # Vignette 9 ----
+    
+    if(example == 1) {
+      ## Example 1 ----
       #block-shaped files for multiple plates easily separable
       if(is.null(dir)) {stop("dir must be specified for this example")}
       temp_filenames1 <- 
@@ -217,8 +246,8 @@ make_example <- function(vignette, example, dir = NULL) {
       message("Files have been written")
       return(invisible(NULL))
       
-    ##Example 2 ----
     } else if (example == 2) {
+      ## Example 2 ----
       #Interleaved block-shaped files
       if(is.null(dir)) {stop("dir must be specified for this example")}
       times <- c(example_widedata_noiseless$Time, example_widedata_noiseless$Time + 1)

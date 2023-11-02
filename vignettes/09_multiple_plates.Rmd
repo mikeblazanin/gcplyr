@@ -43,53 +43,179 @@ library(dplyr)
 library(ggplot2)
 ```
 
+# A brief primer on lists in R
+
+`list`s are a powerful data format in `R`, because they can contain any set of `R` objects. However, this can also make them a little more difficult to navigate than simpler formats like `vector`s or `data.frame`s.
+
+Let's make a simple example to explore how lists can be navigated.
+
+```{r}
+mylist <- list("A", c(5, 6, 7), matrix(1:9, nrow = 3))
+mylist
+```
+
+We've created a list with 3 elements:
+* the first element is a vector with only one entry, "A"
+* the second element is a vector with three entries
+* the third element is a matrix with the numbers 1 through 9
+
+If we want to extract the contents of any of these elements, we simply use double brackets `[[`
+
+```{r}
+mylist[[1]]
+mylist[[2]]
+mylist[[3]]
+```
+
+If we want to modify the contents of any of these elements, we can also use double brackets
+
+```{r}
+mylist[[3]] <- mylist[[3]] + 7
+mylist[[3]]
+```
+
+When working with multiple plates, you'll often be dealing with lists of `data.frame`s, rather than the single `data.frame`s we've been working with before. With multiple plates, if you want to carry out an operation on only one of the plate `data.frame`s, simply use double brackets to select it specifically. If you want to carry out an operation on all of the `data.frame`s, `gcplyr` functions like `trans_wide_to_tidy` and `merge_dfs` will be able to handle the list automatically.
+
+# Importing data for multiple plates
+**If your data is block-shaped:** use `import_blockmeasures` and start in the next section: **[Reading files for multiple block-shaped plates]**
+
+**If your data is wide-shaped:** use `read_wides` and skip down to the **[Reading files for multiple wide-shaped plates]** section
+
+
 # Reading files for multiple block-shaped plates
 
 If you're reading files for multiple block-shaped plates, your approach depends on how the files themselves are arranged:
-* If each plate's worth of block-shaped files is easily separable (e.g. saved in different folders)
-* If the files from separate plates are interleaved such that they are alternating (as is common when multiple plates are read by a plate-reader robot in a single run)
+* Each plate's worth of block-shaped files is easily separable (e.g. saved in different folders)
+* The files from separate plates are interleaved such that they are alternating (as is common when multiple plates are read by a plate-reader robot in a single run)
 
 ## Separated block-shaped plate files
-In the first case, you will have to read each plate of files as an individual plate following the typical process with `import_blockmeasures`. If you would like to later work with them as a unit, you can save them into a list.
+In the first case, you will have to read each plate of files as an individual plate following the typical process with `import_blockmeasures`.
 
 Let's generate some example files to see how this works. When working with real growth curve data, these files would be output by the plate reader.
 
 ```{r}
-make_example(vignette = 9, example = 1, dir = "./example_data")
+filenames_sep <- make_example(vignette = 9, example = 1, dir = "./example_data")
+filenames_sep
 ```
+As we can see, the names for the files have either "Plate1" or "Plate2" in them. We can use that to simply import them separately. If you would like to later work with them as a unit, you can save them into a list.
 
-
+```{r}
+plates <- list(
+  plate1 = import_blockmeasures(
+    list.files(path = "./example_data/", pattern = "Plate1", full.names = TRUE),
+    startrow = 4,
+    metadata = list(Time = c(2, "C"))),
+  plate2 = import_blockmeasures(
+    list.files(path = "./example_data/", pattern = "Plate2", full.names = TRUE),
+    startrow = 4,
+    metadata = list(Time = c(2, "C"))))
+```
 
 
 ## Interleaved block-shaped plate files
 
-In the second case, where files from different plates are interleaved together, you can read them with `import_blockmeasures` setting the `num_plates` argument to the number of plates.
+In the second case, files from different plates are interleaved together. You can read and separate them with `import_blockmeasures`.
 
-Let's generate some example files to see how this works. **Don't worry how this code works**. When working with real growth curve data, these files would be output by the plate reader.
+Let's generate some example files to see how this works. When working with real growth curve data, these files would be output by the plate reader.
 
 ```{r}
-make_example(vignette = 9, example = 2, dir = ".")
+filenames_mixed <- make_example(vignette = 9, example = 2, dir = "./example_data")
+filenames_mixed
 ```
 
+In this scenario, there are two plates: the first plate was read every 15 minutes, and the second plate was read 1 second after each time the first plate was read. To read them and separate them out, we set the `num_plates` argument to the number of plates.
+
+```{r}
+plates <- import_blockmeasures(
+    filenames_mixed,
+    startrow = 4,
+    metadata = list(Time = c(2, "C")),
+    num_plates = 2)
+```
+
+The output is a list, where the first element in the list is a wide-shaped `data.frame` for plate #1, and the second element is a wide-shaped `data.frame` for plate #2.
 
 # Reading files for multiple wide-shaped plates
 
-Note that if you have multiple files you'd like to read in, you can do so directly with a single `read_wides` command. In this case, read_wides will return a list containing all the data.frames:
+You can also read multiple wide-shaped datasets. Whether they're from a single file, or from multiple files, simply input the corresponding information and `read_wides` will return a list containing each wide-shaped `data.frame`
 
 ```{r}
-# If we had multiple wide-shaped data files to import
-imported_widedata <- read_wides(files = c("widedata.csv", "widedata2.csv"))
+make_example(vignette = 9, example = 3)
+
+plates <- read_wides(files = c("widedata.csv", "widedata2.csv"),
+           startrow = 5,
+           metadata = list(Experiment = c(1, "B"),
+                           Start_date = c(2, "B")))
 ```
-
-
-## Reading multiple wides from a single file
-`read_wides` can read multiple wide-shaped datasets from a single file. Refer to the earlier section **[Reading multiple blocks from a single file]**, since the syntax for such operations is the same for `read_wides` as it is for `import_blockmeasures`.
 
 # Transforming multiple plates to tidy-shaped
 
+Once you have your data in a list of wide-shaped `data.frames`, it's easy to transform it to tidy-shaped. Assuming all the plates have the same columns, you can simply put the list into `trans_wide_to_tidy`.
 
+```{r}
+tidy_plates <- 
+  trans_wide_to_tidy(plates,
+                     id_cols = c("file", "Experiment", "Start_date", "Time"))
+```
+
+The output is a list, where each element of the list is a tidy-shaped `data.frame` corresponding to one of the plates.
+
+If you don't have any designs to merge, you can collapse this list into a single `data.frame` with `merge_dfs`:
+
+```{r}
+tidy_plates_collapsed <- merge_dfs(tidy_plates, collapse = TRUE)
+
+print_df(head(tidy_plates_collapsed), col.names = TRUE)
+```
 
 # Merging designs with multiple plates
 
+## Plates with different designs
+If you have different designs for each of your plates, you'll have to merge them with each plate separately using brackets:
 
+```{r}
+example_design1 <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE))
+example_design2 <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 49:96),
+    rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 49:96),
+    rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE))
 
+tidy_plates[[1]] <- merge_dfs(tidy_plates[[1]], example_design1)
+tidy_plates[[2]] <- merge_dfs(tidy_plates[[2]], example_design2)
+```
+
+Then afterwards, you can collapse your data together
+
+```{r}
+data_and_designs <- merge_dfs(tidy_plates, collapse = TRUE)
+print_df(head(data_and_designs))
+```
+
+## Plates with a shared design
+
+If, instead, all your plates have the same design, you can merge the design with all of them at once by collapsing your list of data in the merge step. Don't worry about losing track of your plates, the `file` column that is automatically generated should differentiate the separate plates you read-in.
+
+```{r}
+example_design <- make_design(
+  pattern_split = ",", nrows = 8, ncols = 12,
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+  "Bacteria_strain" = make_designpattern(
+    values = paste("Strain", 1:48),
+    rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE))
+
+data_and_designs <- merge_dfs(tidy_plates, example_design, collapse = TRUE)
+print_df(head(data_and_designs))
+```

@@ -322,7 +322,7 @@ make_example <- function(vignette, example, dir = ".") {
           col.names = FALSE)
       }
       message("Files have been written")
-      return(invisible(NULL))
+      return(c(temp_filenames1, temp_filenames2))
       
     } else if (example == 2) {
       ## Example 2 ----
@@ -355,7 +355,29 @@ make_example <- function(vignette, example, dir = ".") {
           col.names = FALSE)
       }
       message("Files have been written")
-      return(invisible(NULL))
+      return(temp_filenames)
+      
+    } else if (example == 3) {
+      ## Example 3 ----
+      # This code just creates a wide-shaped example file where the data doesn't
+      # start on the first row.
+      temp_example_widedata <- example_widedata_noiseless
+      colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
+                                               sep = "")
+      modified_example_widedata <-
+        rbind(
+          as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata_noiseless))),
+          colnames(example_widedata_noiseless),
+          temp_example_widedata)
+      modified_example_widedata[1:2, 1:2] <- 
+        c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))
+      
+      write.table(modified_example_widedata, file = paste0(dir, "widedata.csv"), 
+                  row.names = FALSE, col.names = FALSE, sep = ",")
+      write.table(modified_example_widedata, file = paste0(dir, "widedata2.csv"), 
+                  row.names = FALSE, col.names = FALSE, sep = ",")
+      message("Files have been written")
+      return(paste0(dir, c("widedata.csv", "widedata2.csv")))
     }
   }
   stop("Your vignette-example combination is not a valid selection")

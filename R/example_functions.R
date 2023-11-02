@@ -94,35 +94,27 @@ make_example <- function(vignette, example, dir = ".") {
     } else if (example == 2) {
       ## Example 2 ----
       #Re-run example 1 basically, bc example 2 need to use that
-      temp_filenames <- 
-        paste0(dir, "Plate1-", 
+      blocknames <- 
+        paste0("Plate1-", 
                paste(example_widedata_noiseless$Time %/% 3600,
                      formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
                              width = 2, flag = 0),
                      formatC((example_widedata_noiseless$Time %% 3600) %% 60,
                              width = 2, flag = 0),
-                     sep = "_"), ".csv")
-      for (i in 1:length(temp_filenames)) {
-        write.table(
-          cbind(
-            matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
-                   nrow = 12),
-            rbind(rep("", 12),
-                  matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
-                         ncol = 12),
-                  rep("", 12),
-                  matrix(1:12, ncol = 12),
-                  matrix(
-                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
-                    ncol = 12))
-          ), 
-          file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
-          col.names = FALSE)
+                     sep = "_"))
+      blocks <- rep(list(list(data = NA, metadata = NA)), length(temp_filenames))
+      for (i in 1:length(blocknames)) {
+        blocks[[i]]$data <- 
+          as.data.frame(matrix(
+            as.vector(mode = "character",
+                      example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)]),
+            ncol = 12, dimnames = list(LETTERS[1:8], as.character(1:12))))
+        blocks[[i]]$metadata <-
+          c(block_name = blocknames[i], 
+            time = as.character(example_widedata_noiseless$Time[i]))
       }
       # This code just creates an example file with multiple blocks
-      write_blocks(read_blocks(files = temp_filenames,
-                               startrow = 4,
-                               metadata = list("time" = c(2, "C"))),
+      write_blocks(blocks,
                    file = "blocks_single.csv", dir = dir,
                    output_format = "single",
                    block_name_location = "file")

@@ -197,6 +197,37 @@ make_example <- function(vignette, example, dir = ".") {
       
       return(ex_dat_mrg)
     }
+  
+  } else if (vignette == 7) {
+    # Vignette 7 ----
+    
+    if(example == 1) {
+      ## Example 1 ----
+      # This is the data we've been working with previously
+      noiseless_data <- 
+        trans_wide_to_tidy(example_widedata_noiseless, id_cols = "Time")
+      # This is the same data but with simulated noise added
+      noisy_data <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
+      # We'll add some identifiers and then merge them together
+      noiseless_data <- mutate(noiseless_data, noise = "No")
+      noisy_data <- mutate(noisy_data, noise = "Yes")
+      ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data)
+      ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design)
+      
+      ex_dat_mrg$Well <- 
+        factor(ex_dat_mrg$Well,
+               levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+      ex_dat_mrg$Time <- ex_dat_mrg$Time/3600 #Convert time to hours
+      
+      # For computational speed, let's just keep the wells we'll be focusing on
+      #  (for your own analyses, you should skip this step and continue using
+      #  all of your data)
+      ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
+      
+      return(ex_dat_mrg)
+    }
+    
+  
     
   } else if (vignette == 9) {
     # Vignette 9 ----

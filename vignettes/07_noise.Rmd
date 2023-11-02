@@ -73,29 +73,10 @@ Broadly speaking, there are three strategies we can use to deal with noise:
 * [Smooth the raw data](#Smoothing)
 * [Exclude low-density data points](#SubsetAnalysis)
 
-Let's start by pulling out some example data. Luckily for us, there is a version of the same example data we've been working with but with simulated noise added to it.
+Let's start by pulling out some example data. The example data here is the same example data we've been working with, along with a version of that data with simulated noise added to it.
 
 ```{r}
-# This is the data we've been working with previously
-noiseless_data <- 
-  trans_wide_to_tidy(example_widedata_noiseless, id_cols = "Time")
-# This is the same data but with simulated noise added
-noisy_data <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
-# We'll add some identifiers and then merge them together
-noiseless_data <- mutate(noiseless_data, noise = "No")
-noisy_data <- mutate(noisy_data, noise = "Yes")
-ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data)
-ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design)
-
-ex_dat_mrg$Well <- 
-  factor(ex_dat_mrg$Well,
-         levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
-ex_dat_mrg$Time <- ex_dat_mrg$Time/3600 #Convert time to hours
-
-# For computational speed, let's just keep the wells we'll be focusing on
-#  (for your own analyses, you should skip this step and continue using
-#  all of your data)
-ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
+ex_dat_mrg <- make_example(vigette = 7, example = 1)
 
 # Plot with a log y-axis
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),

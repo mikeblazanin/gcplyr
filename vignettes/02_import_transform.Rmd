@@ -38,8 +38,10 @@ If you haven't already, load the necessary packages.
 library(gcplyr)
 ```
 
-# Data layouts
-Growth curve data and designs can be organized in one of three different layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
+# Data formats and layouts
+`gcplyr` was built to easily read all the most-common tabular file formats. While this most explicitly includes formats like csv, xls, and xlsx, in fact `gcplyr` functions for `read`ing or `import`ing can work with *any* file format that `R`'s built-in `read.table` function can handle. If you're working with something besides csv, xls, or xlsx, simply specify the arguments you would need for `read.table` to the relevant `gcplyr` function and it should handle the rest.
+
+Aside from file *formats*, growth curve data and designs can be *organized* in one of three different layouts: block-shaped, wide-shaped, and tidy-shaped, described below.
 
 Tidy-shaped data is the best layout for analyses, but most plate readers output block-shaped or wide-shaped data, and most user-created design files will be block-shaped. Thus, `gcplyr` works by reshaping block-shaped and wide-shaped data into tidy-shaped data, then running analyses.
 

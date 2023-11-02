@@ -227,7 +227,43 @@ make_example <- function(vignette, example, dir = ".") {
       return(ex_dat_mrg)
     }
     
-  
+  } else if (vignette == 8) {
+    # Vignette 8 ----
+    
+    if(example == 1) {
+      ## Example 1 ----
+      # Define the function that calculates density according to Baranyi-Roberts eq
+      baranyi_gr <- function(r, k, q0, m, init_dens, times) {
+        # Note: these eqs are the integral of the dN/dt eq in the text above
+        # Acclimation function
+        a <- times + 1/m*log((exp(-m*times)+q0)/(1+q0))
+        # Density function
+        return(k/(1-(1-(k/init_dens))*exp(-r*a)))
+      }
+      
+      # Set up our wide-shaped data frame
+      times <- seq(from = 0, to = 24*60, by = 15)
+      sim_dat <- as.data.frame(matrix(NA, nrow = length(times), ncol = 98))
+      sim_dat[, 1] <- times
+      colnames(sim_dat) <- c("time", "averaged", paste("Well", 1:96, sep = ""))
+      
+      # Simulate growth
+      for (i in 3:ncol(sim_dat)) {
+        sim_dat[, i] <- baranyi_gr(times = sim_dat$time, 
+                                   r = 0.02, k = 1, q0 = 0.01,
+                                   m = runif(1, min = 0.01, max = 0.02),
+                                   #m = rgamma(n = 1, shape = 2, scale = 0.02/2),
+                                   init_dens = 0.001)
+      }
+      
+      # Calculate the "average well"
+      sim_dat[, "averaged"] <- rowMeans(sim_dat[, 3:ncol(sim_dat)])
+      
+      # Transform to tidy and calculate per-capita growth rate                  
+      sim_dat_tdy <- trans_wide_to_tidy(sim_dat, id_cols = "time")
+      
+      return(sim_dat_tdy)
+    }
     
   } else if (vignette == 9) {
     # Vignette 9 ----

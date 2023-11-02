@@ -65,13 +65,10 @@ To import block-shaped design files, use `import_blockdesigns`, which will retur
 ### A basic example
 
 
-Let's look at an example. First, we need to create an example file for the sake of this tutorial. **Don't worry how the below code works**, just imagine that you've created this file in Excel.
+Let's look at an example. First, we need to create an example file for the sake of this tutorial (normally you'd create this file in Excel)
 
 ```{r}
-write.csv(
-  file = "mydesign.csv",
-  x = matrix(rep(c("Tr1", "Tr2"), each = 48),
-             nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)))
+make_example(vignette = 3, example = 1, dir = ".")
 ```
 
 Now let's take a look at what the file looks like:
@@ -93,14 +90,10 @@ head(my_design, 20)
 
 What do you do if you have multiple designs? For instance, what if you have several strains each in several treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
 
-First, let's create another example designs file. Again, **don't worry how the below code works**, just imagine that you've created this file in Excel.
+First, let's create another example designs file. Again, just imagine that you've created this file in Excel.
 
 ```{r}
-write.csv(
-  file = "mydesign2.csv",
-  x = matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),
-             nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
-             byrow = TRUE))
+make_example(vignette = 3, example = 2, dir = ".")
 ```
 
 Now let's take a look at what the file looks like:
@@ -290,18 +283,18 @@ my_design_blk <- make_design(
 my_design_blk
 ```
 
-There is also an optional helper function called `make_designpattern`. `make_designpattern` just reminds us what arguments are necessary for each design. For example:
+There is also an optional helper function called `make_designpattern`, or `mdp` for short. `make_designpattern` just reminds us what arguments are necessary for each design. For example:
 
 ```{r}
 my_design_blk <- make_design(
   output_format = "blocks",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = make_designpattern(
+  Bacteria = mdp(
     values = c("Str1", "Str2", "Str3", 
                "Str4", "Str5", "Str6"),
     rows = 2:7, cols = 2:11, pattern = "abc0ef",
     byrow = FALSE),
-  Media = make_designpattern(
+  Media = mdp(
     values = c("Med1", "Med2", "Med3",
                "Med4", "Med5", "Med6",
                "Med7", "Med8", "Med9",
@@ -317,12 +310,12 @@ my_design_blk
 my_design_tdy <- make_design(
   output_format = "tidy",
   nrows = 8, ncols = 12, lookup_tbl_start = "a",
-  Bacteria = make_designpattern(
+  Bacteria = mdp(
     values = c("Str1", "Str2", "Str3", 
                "Str4", "Str5", "Str6"),
     rows = 2:7, cols = 2:11, pattern = "abc0ef",
     byrow = FALSE),
-  Media = make_designpattern(
+  Media = mdp(
     values = c("Med1", "Med2", "Med3",
                "Med4", "Med5", "Med6",
                "Med7", "Med8", "Med9",

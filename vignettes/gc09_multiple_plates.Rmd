@@ -21,15 +21,15 @@ knitr::opts_knit$set(root.dir = tempdir())
 
 # Where are we so far?
 
-1. Introduction: `vignette("01_gcplyr")`
-2. Importing and transforming data: `vignette("02_import_transform")`
-3. Incorporating design information: `vignette("03_incorporate_designs")`
-4. Pre-processing and plotting your data: `vignette("04_preprocess_plot")`
-5. Processing your data: `vignette("05_process")`
-6. Analyzing your data: `vignette("06_analyze")`
-7. Dealing with noise: `vignette("07_noise")`
-8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
-9. **Working with multiple plates:** `vignette("09_multiple_plates")`
+1. Introduction: `vignette("gc01_gcplyr")`
+2. Importing and transforming data: `vignette("gc02_import_transform")`
+3. Incorporating design information: `vignette("gc03_incorporate_designs")`
+4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
+5. Processing your data: `vignette("gc05_process")`
+6. Analyzing your data: `vignette("gc06_analyze")`
+7. Dealing with noise: `vignette("gc07_noise")`
+8. Statistics, merging other data, and other resources: `vignette("gc08_conclusion")`
+9. **Working with multiple plates:** `vignette("gc09_multiple_plates")`
 
 
 So far, we've covered everything you can do with `gcplyr` with a single plate. In this vignette, I'll be briefly covering how `gcplyr` can also easily handle multiple plates of data at the same time. I'll be assuming that you've already read the analogous sections on working with a single plate at a time, so if you haven't, now is a good time to go back and do that!

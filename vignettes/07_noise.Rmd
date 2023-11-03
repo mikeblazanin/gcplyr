@@ -57,8 +57,6 @@ example_design <- make_design(
     values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
   "Phage" = make_designpattern(
     values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
-
-sample_wells <- c("A1", "F1", "F10", "E11")
 ```
 
 # Introduction
@@ -79,10 +77,10 @@ Let's start by pulling out some example data. The example data here is the same 
 ex_dat_mrg <- make_example(vignette = 7, example = 1)
 
 # Plot with a log y-axis
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
        aes(x = Time, y = Measurements)) +
   geom_point() +
-  geom_line(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "No"),
+  geom_line(data = dplyr::filter(ex_dat_mrg, noise == "No"),
             lty = 2, color = "red") +
   facet_wrap(~Well) +
   scale_y_continuous(trans = "log10")
@@ -100,18 +98,18 @@ ex_dat_mrg <-
                                    percapita = TRUE, blank = 0))
 
 # Plot derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
        aes(x = Time, y = deriv_2)) +
   geom_point() +
-  geom_line(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "No"),
+  geom_line(data = dplyr::filter(ex_dat_mrg, noise == "No"),
             lty = 2, color = "red") +
   facet_wrap(~Well, scales = "free_y")
 
 # Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
        aes(x = Time, y = derivpercap_2)) +
   geom_point() +
-  geom_line(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "No"),
+  geom_line(data = dplyr::filter(ex_dat_mrg, noise == "No"),
             lty = 2, color = "red") +
   facet_wrap(~Well, scales = "free_y")
 ```
@@ -145,21 +143,21 @@ ex_dat_mrg_wide <-
   pivot_wider(ex_dat_mrg_wide, names_from = deriv, values_from = value)
                                
 #Plot derivative
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = deriv)) +
   geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide, 
                                  noise == "No", window_width_n == 2),
             lty = 2, color = "red") +
   scale_color_grey(start = 0.7, end = 0.1)
        
 #Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = derivpercap)) +
   geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 5),
             lty = 2, color = "red") +
   scale_color_grey(start = 0.7, end = 0.1) +
@@ -202,11 +200,11 @@ ex_dat_mrg_wide <-
                names_prefix = "movavg_", names_to = "window_width_n")
 
 #Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value)) +
   geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 1),
             lty = 2, color = "red") +
   scale_color_grey(start = 0.7, end = 0.1) +
@@ -237,11 +235,11 @@ ex_dat_mrg_wide <-
                names_prefix = "movmed_", names_to = "window_width_n")
 
 #Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value)) +
   geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 1),
             lty = 2, color = "red") +
   scale_color_grey(start = 0.7, end = 0.1) +
@@ -270,11 +268,11 @@ ex_dat_mrg_wide <-
                names_prefix = "loess_", names_to = "span")
 
 #Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value)) +
   geom_line(aes(color = as.factor(as.numeric(span)/100)), lwd = 1, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", span == 0),
             lty = 2, color = "red") +
   scale_color_grey(name = "span", start = 0.7, end = 0.1) +
@@ -303,11 +301,11 @@ ex_dat_mrg_wide <-
                names_prefix = "gam_", names_to = "k")
 
 #Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value)) +
   geom_line(aes(color = as.factor(as.numeric(k))), lwd = 1, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", k == 97),
             lty = 2, color = "red") +
   scale_color_grey(name = "span", start = 0.1, end = 0.7) +
@@ -340,12 +338,12 @@ ex_dat_mrg_wide <-
                names_to = "smoothed", names_prefix = "smoothed_")
 
 #Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value, color = smoothed)) +
   geom_line(lwd = 1, alpha = 0.75) +
   scale_color_grey(start = 0.7, end = 0.1) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", smoothed == "no"),
             lty = 2, color = "red") +
   scale_y_log10() +
@@ -378,22 +376,22 @@ ex_dat_mrg_wide <-
   pivot_wider(ex_dat_mrg_wide, names_from = deriv, values_from = value)
 
 #Plot derivative
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = smderiv, color = window_width_n)) +
   geom_line(lwd = 1, alpha = 0.75) +
   scale_color_grey(start = 0.7, end = 0.1) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 0),
             lty = 2, color = "red")
 
 #Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = smderivpercap, color = window_width_n)) +
   geom_line(lwd = 1, alpha = 0.75) +
   scale_color_grey(start = 0.7, end = 0.1) +
   facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide, Well %in% sample_wells, 
+  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 3),
             lty = 2, color = "red") +
   ylim(NA, 5)
@@ -407,14 +405,14 @@ There is one final strategy we can employ when dealing with noisy data: excludin
 
 ```{r}
 #Plot density
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
        aes(x = Time, y = smoothed_yes)) +
   geom_point() +
   facet_wrap(~Well, scales = "free_y") +
   scale_y_log10()
 
 # Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
        aes(x = Time, y = derivpercap_5)) +
   geom_point() +
   facet_wrap(~Well, scales = "free_y")
@@ -424,8 +422,7 @@ Per-capita growth rates are often very noisy when the density is close to 0, so 
 
 ```{r}
 #Plot density
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes",
-                            smoothed_yes > 0.01),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes", smoothed_yes > 0.01),
        aes(x = Time, y = smoothed_yes)) +
   geom_point() +
   facet_wrap(~Well, scales = "free_y") +
@@ -433,8 +430,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes",
   scale_y_log10()
 
 # Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes",
-                            smoothed_yes > 0.01),
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes", smoothed_yes > 0.01),
        aes(x = Time, y = derivpercap_5)) +
   geom_point() +
   facet_wrap(~Well, scales = "free_y")

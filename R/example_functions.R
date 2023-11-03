@@ -222,7 +222,8 @@ make_example <- function(vignette, example, dir = ".") {
       # For computational speed, let's just keep the wells we'll be focusing on
       #  (for your own analyses, you should skip this step and continue using
       #  all of your data)
-      ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
+      sample_wells <- c("A1", "F1", "F10", "E11")
+      ex_dat_mrg <- ex_dat_mrg[ex_dat_mrg$Well %in% sample_wells, ]
       
       return(ex_dat_mrg)
     }

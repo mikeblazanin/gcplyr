@@ -29,7 +29,7 @@ navbar:
         href: articles/gc07_noise.html
       - text: Statistics, merging other data, and other resources
         href: articles/gc_08conclusion.html
-      - test: Working with multiple plates
+      - text: Working with multiple plates
         href: articles/gc09_multiple_plates.html
   
 reference:

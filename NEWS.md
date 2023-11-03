@@ -1,6 +1,6 @@
 # gcplyr 1.7.1
 
-* fixed broken links to vignettes
+* Fixed broken links to vignettes
 
 # gcplyr 1.7.0
 

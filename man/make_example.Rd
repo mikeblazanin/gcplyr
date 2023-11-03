@@ -4,20 +4,22 @@
 \alias{make_example}
 \title{Create R objects or files as seen in vignette examples}
 \usage{
-make_example(vignette, example, dir = NULL)
+make_example(vignette, example, dir = ".")
 }
 \arguments{
-\item{vignette}{Number of the vignette the example object or file is created in}
+\item{vignette}{Number of the vignette the example object or file is created in.}
 
-\item{example}{Number of the example the object or file is created in}
+\item{example}{Number of the example the object or file is created in.}
 
-\item{dir}{The directory files should be saved into. Only required when
-the specified example writes to file(s)}
+\item{dir}{The directory files should be saved into.}
 }
 \value{
-An R object, or NULL if files have been written
+An R object, or the names of the files if files have been written
 }
 \description{
 This function makes it easy to generate R objects or files that are
-created in the vignette examples.
+created in the vignette examples. Note that this function should not
+be counted on to produce the same output across different versions of
+\code{gcplyr}, as it will be frequently changed to match the examples
+in the vignettes.
 }

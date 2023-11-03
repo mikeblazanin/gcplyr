@@ -1532,7 +1532,9 @@ fill_data_metadata <- function(output, input, rs,
 #' @param filename_sep What character will be used to paste together 
 #'                     filenames when block_name_location = 'filename'.   
 #' @param na The string to use for missing values in the data.
-#' @param dir The directory that file(s) should be written into
+#' @param dir The directory that file(s) will be written into. When 
+#'            \code{dir = NULL}, writes to the current working directory.
+#'            (Can only be used when \code{file = NULL})
 #' @param ... Other arguments passed to \code{write.table}
 #' @return Nothing, but R objects are written to files
 #' 
@@ -1542,9 +1544,18 @@ write_blocks <- function(blocks, file,
                          block_name_location = NULL,
                          block_name_header = "block_name",
                          paste_sep = "_", filename_sep = "_", 
-                         na = "", dir = ".", ...) {
-  #Make sure dir ends in /
-  if(substr(dir, nchar(dir), nchar(dir)) != "/") {dir <- paste0(dir, "/")}
+                         na = "", dir = NULL, ...) {
+  #Checks on dir and file
+  if(is.null(dir)) {
+    dir <- ""
+  } else { #dir is not NULL
+    if(!is.null(file)) {
+      stop("dir must be NULL when file is specified")
+    } else {
+      #Make sure dir ends in /
+      if(substr(dir, nchar(dir), nchar(dir)) != "/") {dir <- paste0(dir, "/")}
+    }
+  }
   
   if(!all(sapply(X = blocks, FUN = length) == 2) |
      !all(unlist(lapply(X = blocks, FUN = names)) %in% c("data", "metadata"))) {

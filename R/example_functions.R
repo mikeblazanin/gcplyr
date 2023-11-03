@@ -102,7 +102,7 @@ make_example <- function(vignette, example, dir = ".") {
                      formatC((example_widedata_noiseless$Time %% 3600) %% 60,
                              width = 2, flag = 0),
                      sep = "_"))
-      blocks <- rep(list(list(data = NA, metadata = NA)), length(temp_filenames))
+      blocks <- rep(list(list(data = NA, metadata = NA)), length(blocknames))
       for (i in 1:length(blocknames)) {
         blocks[[i]]$data <- 
           as.data.frame(matrix(
@@ -115,7 +115,7 @@ make_example <- function(vignette, example, dir = ".") {
       }
       # This code just creates an example file with multiple blocks
       write_blocks(blocks,
-                   file = "blocks_single.csv", dir = dir,
+                   file = paste0(dir, "blocks_single.csv"),
                    output_format = "single",
                    block_name_location = "file")
       message("Files have been written")

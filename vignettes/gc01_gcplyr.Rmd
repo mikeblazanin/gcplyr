@@ -41,7 +41,7 @@ This document gives an introduction of how to use `gcplyr` for each step of a gr
 
 To get started, you need your growth curve data file saved to your computer (.csv, .xls, .xlsx, or any other format that can be read by `read.table`).
 
-Users often want to combine their data with some information on the experimental design of their plate(s). You can save this information into a tabular file as well, or you can just keep it handy to enter directly in `R` (see `vignette("03_incorporate_designs")`).
+Users often want to combine their data with some information on the experimental design of their plate(s). You can save this information into a tabular file as well, or you can just keep it handy to enter directly in `R` (see `vignette("gc03_incorporate_designs")`).
 
 Let's get started by loading `gcplyr`. We're also going to load a couple other packages we'll need.
 

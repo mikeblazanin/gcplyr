@@ -28,7 +28,7 @@
 #' 
 #' @export
 print_df <- function(x, col.names = FALSE, row.names = FALSE) {
-  write.table(format(x, justify = "right"),
+  utils::write.table(format(x, justify = "right"),
               row.names = row.names, col.names = col.names, quote = F)
 }
 

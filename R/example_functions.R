@@ -23,7 +23,7 @@ make_example <- function(vignette, example, dir = ".") {
     
     if(example == 1) { 
       ## Example 1 ----
-      write.csv(example_widedata_noiseless, file = paste0(dir, "widedata.csv"), 
+      utils::write.csv(gcplyr::example_widedata_noiseless, file = paste0(dir, "widedata.csv"), 
                 row.names = FALSE)
       message("Files have been written")
       return(paste0(dir, "widedata.csv"))
@@ -65,24 +65,24 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 1 ----
       temp_filenames <- 
         paste0(dir, "Plate1-", 
-              paste(example_widedata_noiseless$Time %/% 3600,
-                    formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
+              paste(gcplyr::example_widedata_noiseless$Time %/% 3600,
+                    formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %/% 60, 
                             width = 2, flag = 0),
-                    formatC((example_widedata_noiseless$Time %% 3600) %% 60,
+                    formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %% 60,
                             width = 2, flag = 0),
                     sep = "_"), ".csv")
       for (i in 1:length(temp_filenames)) {
-        write.table(
+        utils::write.table(
           cbind(
             matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
                    nrow = 12),
             rbind(rep("", 12),
-                  matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
+                  matrix(c("Time", gcplyr::example_widedata_noiseless$Time[i], rep("", 10)), 
                          ncol = 12),
                   rep("", 12),
                   matrix(1:12, ncol = 12),
                   matrix(
-                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
+                    gcplyr::example_widedata_noiseless[i, 2:ncol(gcplyr::example_widedata_noiseless)],
                     ncol = 12))
           ), 
           file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
@@ -96,10 +96,10 @@ make_example <- function(vignette, example, dir = ".") {
       #Re-run example 1 basically, bc example 2 need to use that
       blocknames <- 
         paste0("Plate1-", 
-               paste(example_widedata_noiseless$Time %/% 3600,
-                     formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
+               paste(gcplyr::example_widedata_noiseless$Time %/% 3600,
+                     formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %/% 60, 
                              width = 2, flag = 0),
-                     formatC((example_widedata_noiseless$Time %% 3600) %% 60,
+                     formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %% 60,
                              width = 2, flag = 0),
                      sep = "_"))
       blocks <- rep(list(list(data = NA, metadata = NA)), length(blocknames))
@@ -107,11 +107,11 @@ make_example <- function(vignette, example, dir = ".") {
         blocks[[i]]$data <- 
           as.data.frame(matrix(
             as.vector(mode = "character",
-                      example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)]),
+                      gcplyr::example_widedata_noiseless[i, 2:ncol(gcplyr::example_widedata_noiseless)]),
             ncol = 12, dimnames = list(LETTERS[1:8], as.character(1:12))))
         blocks[[i]]$metadata <-
           c(block_name = blocknames[i], 
-            time = as.character(example_widedata_noiseless$Time[i]))
+            time = as.character(gcplyr::example_widedata_noiseless$Time[i]))
       }
       # This code just creates an example file with multiple blocks
       write_blocks(blocks,
@@ -125,18 +125,18 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 3 ----
       # This code just creates a wide-shaped example file where the data doesn't
       # start on the first row.
-      temp_example_widedata <- example_widedata_noiseless
+      temp_example_widedata <- gcplyr::example_widedata_noiseless
       colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
                                                sep = "")
       modified_example_widedata <-
         rbind(
-          as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata_noiseless))),
-          colnames(example_widedata_noiseless),
+          as.data.frame(matrix("", nrow = 4, ncol = ncol(gcplyr::example_widedata_noiseless))),
+          colnames(gcplyr::example_widedata_noiseless),
           temp_example_widedata)
       modified_example_widedata[1:2, 1:2] <- 
         c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))
       
-      write.table(modified_example_widedata, file = paste0(dir, "widedata.csv"), 
+      utils::write.table(modified_example_widedata, file = paste0(dir, "widedata.csv"), 
                   row.names = FALSE, col.names = FALSE, sep = ",")
       message("Files have been written")
       return(paste0(dir, "widedata.csv"))
@@ -148,7 +148,7 @@ make_example <- function(vignette, example, dir = ".") {
     
     if(example == 1) {
       ## Example 1 ----
-      write.csv(
+      utils::write.csv(
         file = paste0(dir, "mydesign.csv"),
         x = matrix(rep(c("Tr1", "Tr2"), each = 48),
                    nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)))
@@ -157,7 +157,7 @@ make_example <- function(vignette, example, dir = ".") {
       
     } else if (example == 2) {
       ## Example 2 ----
-      write.csv(
+      utils::write.csv(
         file = paste0(dir, "mydesign2.csv"),
         x = matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),
                    nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
@@ -171,7 +171,7 @@ make_example <- function(vignette, example, dir = ".") {
     
     if (example == 1) {
       ## Example 1 ----
-      example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
+      example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
       example_design <- make_design(
         pattern_split = ",", nrows = 8, ncols = 12,
@@ -205,12 +205,12 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 1 ----
       # This is the data we've been working with previously
       noiseless_data <- 
-        trans_wide_to_tidy(example_widedata_noiseless, id_cols = "Time")
+        trans_wide_to_tidy(gcplyr::example_widedata_noiseless, id_cols = "Time")
       # This is the same data but with simulated noise added
-      noisy_data <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
+      noisy_data <- trans_wide_to_tidy(gcplyr::example_widedata, id_cols = "Time")
       # We'll add some identifiers and then merge them together
-      noiseless_data <- mutate(noiseless_data, noise = "No")
-      noisy_data <- mutate(noisy_data, noise = "Yes")
+      noiseless_data <- dplyr::mutate(noiseless_data, noise = "No")
+      noisy_data <- dplyr::mutate(noisy_data, noise = "Yes")
       ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data)
       ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design)
       
@@ -251,7 +251,7 @@ make_example <- function(vignette, example, dir = ".") {
       for (i in 3:ncol(sim_dat)) {
         sim_dat[, i] <- baranyi_gr(times = sim_dat$time, 
                                    r = 0.02, k = 1, q0 = 0.01,
-                                   m = runif(1, min = 0.01, max = 0.02),
+                                   m = stats::runif(1, min = 0.01, max = 0.02),
                                    #m = rgamma(n = 1, shape = 2, scale = 0.02/2),
                                    init_dens = 0.001)
       }
@@ -273,49 +273,49 @@ make_example <- function(vignette, example, dir = ".") {
       #block-shaped files for multiple plates easily separable
       temp_filenames1 <- 
         paste0(dir, "Plate1-", 
-              paste(example_widedata_noiseless$Time %/% 3600,
-                    formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
+              paste(gcplyr::example_widedata_noiseless$Time %/% 3600,
+                    formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %/% 60, 
                             width = 2, flag = 0),
-                    formatC((example_widedata_noiseless$Time %% 3600) %% 60,
+                    formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %% 60,
                             width = 2, flag = 0),
                     sep = "_"), ".csv")
       temp_filenames2 <- 
         paste0(dir, "Plate2-", 
-              paste(example_widedata_noiseless$Time %/% 3600,
-                    formatC((example_widedata_noiseless$Time %% 3600) %/% 60, 
+              paste(gcplyr::example_widedata_noiseless$Time %/% 3600,
+                    formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %/% 60, 
                             width = 2, flag = 0),
-                    formatC((example_widedata_noiseless$Time %% 3600) %% 60,
+                    formatC((gcplyr::example_widedata_noiseless$Time %% 3600) %% 60,
                             width = 2, flag = 0),
                     sep = "_"), ".csv")
       for (i in 1:length(temp_filenames1)) {
-        write.table(
+        utils::write.table(
           cbind(
             matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
                    nrow = 12),
             rbind(rep("", 12),
-                  matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
+                  matrix(c("Time", gcplyr::example_widedata_noiseless$Time[i], rep("", 10)), 
                          ncol = 12),
                   rep("", 12),
                   matrix(1:12, ncol = 12),
                   matrix(
-                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
+                    gcplyr::example_widedata_noiseless[i, 2:ncol(gcplyr::example_widedata_noiseless)],
                     ncol = 12))
           ), 
           file = temp_filenames1[i], quote = FALSE, row.names = FALSE, sep = ",",
           col.names = FALSE)
       }
       for (i in 1:length(temp_filenames2)) {
-        write.table(
+        utils::write.table(
           cbind(
             matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
                    nrow = 12),
             rbind(rep("", 12),
-                  matrix(c("Time", example_widedata_noiseless$Time[i], rep("", 10)), 
+                  matrix(c("Time", gcplyr::example_widedata_noiseless$Time[i], rep("", 10)), 
                          ncol = 12),
                   rep("", 12),
                   matrix(1:12, ncol = 12),
                   matrix(
-                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
+                    gcplyr::example_widedata_noiseless[i, 2:ncol(gcplyr::example_widedata_noiseless)],
                     ncol = 12))
           ), 
           file = temp_filenames2[i], quote = FALSE, row.names = FALSE, sep = ",",
@@ -327,7 +327,7 @@ make_example <- function(vignette, example, dir = ".") {
     } else if (example == 2) {
       ## Example 2 ----
       #Interleaved block-shaped files
-      times <- c(example_widedata_noiseless$Time, example_widedata_noiseless$Time + 1)
+      times <- c(gcplyr::example_widedata_noiseless$Time, gcplyr::example_widedata_noiseless$Time + 1)
       times <- times[order(times)]
       
       temp_filenames <-
@@ -338,7 +338,7 @@ make_example <- function(vignette, example, dir = ".") {
                 sep = "_"), ".csv", sep = "")
       
       for (i in 1:length(temp_filenames)) {
-        write.table(
+        utils::write.table(
           cbind(
             matrix(c("", "", "", "", "A", "B", "C", "D", "E", "F", "G", "H"), 
                    nrow = 12),
@@ -348,7 +348,7 @@ make_example <- function(vignette, example, dir = ".") {
                   rep("", 12),
                   matrix(1:12, ncol = 12),
                   matrix(
-                    example_widedata_noiseless[i, 2:ncol(example_widedata_noiseless)],
+                    gcplyr::example_widedata_noiseless[i, 2:ncol(gcplyr::example_widedata_noiseless)],
                     ncol = 12))
           ), 
           file = temp_filenames[i], quote = FALSE, row.names = FALSE, sep = ",",
@@ -361,20 +361,20 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 3 ----
       # This code just creates a wide-shaped example file where the data doesn't
       # start on the first row.
-      temp_example_widedata <- example_widedata_noiseless
+      temp_example_widedata <- gcplyr::example_widedata_noiseless
       colnames(temp_example_widedata) <- paste("V", 1:ncol(temp_example_widedata),
                                                sep = "")
       modified_example_widedata <-
         rbind(
-          as.data.frame(matrix("", nrow = 4, ncol = ncol(example_widedata_noiseless))),
-          colnames(example_widedata_noiseless),
+          as.data.frame(matrix("", nrow = 4, ncol = ncol(gcplyr::example_widedata_noiseless))),
+          colnames(gcplyr::example_widedata_noiseless),
           temp_example_widedata)
       modified_example_widedata[1:2, 1:2] <- 
         c("Experiment name", "Start date", "Experiment_1", as.character(Sys.Date()))
       
-      write.table(modified_example_widedata, file = paste0(dir, "widedata.csv"), 
+      utils::write.table(modified_example_widedata, file = paste0(dir, "widedata.csv"), 
                   row.names = FALSE, col.names = FALSE, sep = ",")
-      write.table(modified_example_widedata, file = paste0(dir, "widedata2.csv"), 
+      utils::write.table(modified_example_widedata, file = paste0(dir, "widedata2.csv"), 
                   row.names = FALSE, col.names = FALSE, sep = ",")
       message("Files have been written")
       return(paste0(dir, c("widedata.csv", "widedata2.csv")))

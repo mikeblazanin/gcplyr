@@ -411,7 +411,7 @@ read_blocks <- function(files, extension = NULL,
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = setNames("NA", block_name_header))), 
+                             "metadata" = stats::setNames("NA", block_name_header))), 
                    nblocks)
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
@@ -1286,7 +1286,7 @@ make_design <- function(nrows = NULL, ncols = NULL,
   output <- rep(list(list(
     "data" = matrix(NA, nrow = nrows, ncol = ncols,
                     dimnames = list(block_row_names, block_col_names)),
-                    "metadata" = setNames("NA", block_name_header))),
+                    "metadata" = stats::setNames("NA", block_name_header))),
     length(unique(names(dot_args))))
   
   #Note dot_args structure

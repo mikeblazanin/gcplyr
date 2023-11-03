@@ -14,7 +14,7 @@ both data and metadata in a variety of output formats"><!-- mathjax --><script s
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,10 +22,7 @@ both data and metadata in a variety of output formats"><!-- mathjax --><script s
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/gcplyr.html">Get started</a>
-</li>
-<li class="nav-item dropdown">
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/gcplyr.html">Introduction</a>
@@ -78,9 +75,11 @@ both <code>data</code> and <code>metadata</code> in a variety of output formats<
 <span>  <span class="va">file</span>,</span>
 <span>  output_format <span class="op">=</span> <span class="st">"multiple"</span>,</span>
 <span>  block_name_location <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  block_name_header <span class="op">=</span> <span class="st">"block_name"</span>,</span>
 <span>  paste_sep <span class="op">=</span> <span class="st">"_"</span>,</span>
 <span>  filename_sep <span class="op">=</span> <span class="st">"_"</span>,</span>
 <span>  na <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -134,6 +133,11 @@ both <code>data</code> and <code>metadata</code> in a variety of output formats<
                           included as a row in the output file.</p></dd>
 
 
+<dt>block_name_header</dt>
+<dd><p>The name of the field containing the
+<code>block_names</code></p></dd>
+
+
 <dt>paste_sep</dt>
 <dd><p>When <code>output_format = 'pasted'</code>, what character
 will be used to paste together blocks.</p></dd>
@@ -146,6 +150,12 @@ filenames when block_name_location = 'filename'.</p></dd>
 
 <dt>na</dt>
 <dd><p>The string to use for missing values in the data.</p></dd>
+
+
+<dt>dir</dt>
+<dd><p>The directory that file(s) will be written into. When 
+<code>dir = NULL</code>, writes to the current working directory.
+(Can only be used when <code>file = NULL</code>)</p></dd>
 
 
 <dt>...</dt>

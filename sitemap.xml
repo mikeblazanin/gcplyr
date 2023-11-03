@@ -10,31 +10,34 @@
     <loc>https://mikeblazanin.github.io/gcplyr/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/analyze.html</loc>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc01_gcplyr.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/conclusion.html</loc>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc02_import_transform.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gcplyr.html</loc>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc03_incorporate_designs.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/import_transform.html</loc>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc04_preprocess_plot.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/incorporate_designs.html</loc>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc05_process.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc08_conclusion.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc09_multiple_plates.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/noise.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/preprocess_plot.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/process.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/authors.html</loc>
@@ -103,6 +106,9 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/make_designpattern.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/make_example.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/make_tidydesign.html</loc>
   </url>
   <url>
@@ -116,6 +122,9 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/paste_blocks.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/print_df.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/read_blocks.html</loc>

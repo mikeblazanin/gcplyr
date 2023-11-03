@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,10 +18,7 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/gcplyr.html">Get started</a>
-</li>
-<li class="nav-item dropdown">
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/gcplyr.html">Introduction</a>
@@ -61,8 +58,25 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.7.0" id="gcplyr-170">gcplyr 1.7.0<a class="anchor" aria-label="anchor" href="#gcplyr-170"></a></h2>
+<ul><li><p>read_blocks now returns blocks whose row.names are always a character vector</p></li>
+<li><p>merge_dfs can now do inner, left, and right joins (in addition to the original capacity to do full joins)</p></li>
+<li><p>Strings to be coerced into NA can now be specified to separate_tidy</p></li>
+<li><p>The directory to write files to can now be specified to write_blocks</p></li>
+<li><p>In read_blocks the metadata field name where block names are stored can now be specified via the block_name_header argument</p></li>
+<li><p>There is a new vignette demonstrating how to work with multiple plates at once</p></li>
+<li><p>Examples throughout all vignettes are now created with a make_example function for streamlined readability</p></li>
+<li><p>read_blocks, read_wides, read_tidys, and make_design now provide better error messages when inputs are out of range</p></li>
+<li><p>merge_dfs now provides a message with the number of dropped rows when drop = TRUE</p></li>
+<li><p>Fix to bug in read_blocks where arguments for read.csv could not be passed via …</p></li>
+<li><p>Fix to bug where merge_dfs would not drop incomplete cases unless both x and y were specified</p></li>
+<li><p>Vignettes are now numbered so they are sorted correctly on CRAN</p></li>
+<li><p>Various minor documentation improvements</p></li>
+<li><p>Various backend improvements</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.6.0" id="gcplyr-160">gcplyr 1.6.0<a class="anchor" aria-label="anchor" href="#gcplyr-160"></a></h2><p class="text-muted">CRAN release: 2023-09-13</p>
-<ul><li>The behavior of smooth_data when return_fitobject = TRUE has changed. It now returns a list containing the output of each smoothing method directly (previously the returned objects were modified from the output of the smoothing method to always have a first element of ‘fitted’ values and a second element of ‘residuals’)</li>
+<ul><li>The behavior of smooth_data when return_fitobject = TRUE has changed. It now returns a list containing the output of each smoothing method directly (previously the returned objects were modified from the output of the smoothing method to always have a first element of ‘fitted’ values and a second element of ‘residuals’) &gt;&gt;&gt;&gt;&gt;&gt;&gt; master</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.2" id="gcplyr-152">gcplyr 1.5.2<a class="anchor" aria-label="anchor" href="#gcplyr-152"></a></h2><p class="text-muted">CRAN release: 2023-05-03</p>

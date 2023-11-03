@@ -12,7 +12,7 @@ for later merging with read data"><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,10 +20,7 @@ for later merging with read data"><!-- mathjax --><script src="https://cdnjs.clo
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/gcplyr.html">Get started</a>
-</li>
-<li class="nav-item dropdown">
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/gcplyr.html">Introduction</a>
@@ -75,6 +72,7 @@ for later merging with read data</p>
 <span>  ncols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  block_row_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  block_col_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  block_name_header <span class="op">=</span> <span class="st">"block_name"</span>,</span>
 <span>  output_format <span class="op">=</span> <span class="st">"tidy"</span>,</span>
 <span>  wellnames_numeric <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  wellnames_sep <span class="op">=</span> <span class="st">""</span>,</span>
@@ -95,6 +93,11 @@ for later merging with read data</p>
 <dt>block_row_names, block_col_names</dt>
 <dd><p>Names of the rows, columns
 of the plate blockmeasures data</p></dd>
+
+
+<dt>block_name_header</dt>
+<dd><p>The name of the field containing the
+<code>block_names</code></p></dd>
 
 
 <dt>output_format</dt>

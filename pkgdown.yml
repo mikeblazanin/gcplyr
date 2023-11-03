@@ -2,15 +2,16 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  analyze: analyze.html
-  conclusion: conclusion.html
-  gcplyr: gcplyr.html
-  import_transform: import_transform.html
-  incorporate_designs: incorporate_designs.html
-  noise: noise.html
-  preprocess_plot: preprocess_plot.html
-  process: process.html
-last_built: 2023-10-06T15:22Z
+  gc01_gcplyr: gc01_gcplyr.html
+  gc02_import_transform: gc02_import_transform.html
+  gc03_incorporate_designs: gc03_incorporate_designs.html
+  gc04_preprocess_plot: gc04_preprocess_plot.html
+  gc05_process: gc05_process.html
+  gc06_analyze: gc06_analyze.html
+  gc07_noise: gc07_noise.html
+  gc08_conclusion: gc08_conclusion.html
+  gc09_multiple_plates: gc09_multiple_plates.html
+last_built: 2023-11-03T17:28Z
 urls:
   reference: https://mikeblazanin.github.io/gcplyr/reference
   article: https://mikeblazanin.github.io/gcplyr/articles

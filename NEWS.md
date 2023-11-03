@@ -1,3 +1,7 @@
+# gcplyr 1.7.1
+
+* fixed broken links to vignettes
+
 # gcplyr 1.7.0
 
 * read_blocks now returns blocks whose row.names are always a character vector

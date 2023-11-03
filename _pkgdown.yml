@@ -88,11 +88,16 @@ reference:
   - which_min_gc
   - which_max_gc
   - extr_val
+  - print_df
 - title: Example data
   desc: "Example wide-shaped data.frames of growth curves data"
   contents:
   - example_widedata
   - example_widedata_noiseless
+- title: Example function
+  desc: "Function to generate files or objects seen in documentation examples"
+  contents:
+  - make_example
 - title: Legacy functions
   desc: "These functions have been deprecated"
   contents:

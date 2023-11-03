@@ -29,6 +29,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. **Statistics, merging other data, and other resources:** `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`
 
 So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, plotted, and analyzed our data. The only things left are a few notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
@@ -232,7 +233,9 @@ Additionally, one `R` package doesn't implement fitting-style approaches, but do
 
 # What's next?
 
-You've finished all the documentation. Congratulations! `gcplyr` is a powerful framework to build additional analyses on, since the data is nicely organized. Feel free to reach out to me with any questions, comments, or concerns you might have. I'd love to continue making `gcplyr` as useful for others in the scientific community as it has been for me. You can reach me at mikeblazanin [at] gmail [dot] com.
+You've finished all of the core documentation. Congratulations! `gcplyr` is a powerful framework to build additional analyses on, since the data is nicely organized. Feel free to reach out to me with any questions, comments, or concerns you might have. I'd love to continue making `gcplyr` as useful for others in the scientific community as it has been for me. You can reach me at mikeblazanin [at] gmail [dot] com.
+
+If you'd like to read about how to work with multiple plates of data at once, check out our final vignette: `vignette("09_multiple_plates")`
 
 1. Introduction: `vignette("01_gcplyr")`
 2. Importing and transforming data: `vignette("02_import_transform")`
@@ -242,3 +245,4 @@ You've finished all the documentation. Congratulations! `gcplyr` is a powerful f
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. **Working with multiple plates: `vignette("09_multiple_plates")`**

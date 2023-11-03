@@ -55,6 +55,7 @@ mylist
 ```
 
 We've created a list with 3 elements:
+
 * the first element is a vector with only one entry, "A"
 * the second element is a vector with three entries
 * the third element is a matrix with the numbers 1 through 9
@@ -95,7 +96,7 @@ Let's generate some example files to see how this works. When working with real 
 
 ```{r}
 filenames_sep <- make_example(vignette = 9, example = 1, dir = "./example_data")
-filenames_sep
+head(filenames_sep)
 ```
 As we can see, the names for the files have either "Plate1" or "Plate2" in them. We can use that to simply import them separately. If you would like to later work with them as a unit, you can save them into a list.
 
@@ -120,7 +121,7 @@ Let's generate some example files to see how this works. When working with real 
 
 ```{r}
 filenames_mixed <- make_example(vignette = 9, example = 2, dir = "./example_data")
-filenames_mixed
+head(filenames_mixed)
 ```
 
 In this scenario, there are two plates: the first plate was read every 15 minutes, and the second plate was read 1 second after each time the first plate was read. To read them and separate them out, we set the `num_plates` argument to the number of plates.
@@ -204,7 +205,7 @@ print_df(head(data_and_designs))
 
 ## Plates with a shared design
 
-If, instead, all your plates have the same design, you can merge the design with all of them at once by collapsing your list of data in the merge step. Don't worry about losing track of your plates, the `file` column that is automatically generated should differentiate the separate plates you read-in.
+If, instead, all your plates have the same design, you can merge the design with all of them at once by collapsing your list of data in the merge step. Don't worry about losing track of your plates, the `file` column that is automatically generated should differentiate the separate plates you read in.
 
 ```{r}
 example_design <- make_design(

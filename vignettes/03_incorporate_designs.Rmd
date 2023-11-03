@@ -29,6 +29,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`
 
 So far, we've imported and transformed our measures data into `R`. Now we're going to address how to incorporate our experimental design.
 
@@ -70,7 +71,7 @@ Now let's take a look at what the file looks like:
 print_df(read.csv("mydesign.csv", header = FALSE, colClasses = "character"))
 ```
 
-Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns` saving it with the column name `Treatment_numbers`.
+Here we can see that our design has Treatment 1 on the left-hand side of the plate (wells in columns 1 through 6), and Treatment 2 on the right-hand side of the plate (wells in columns 7 through 12). Let's import this design using `import_blockdesigns`, saving it with the column name `Treatment_numbers`.
 
 ```{r}
 my_design <- import_blockdesigns(files = "mydesign.csv", 
@@ -369,7 +370,7 @@ print_df(read.csv("Design.csv", header = FALSE, colClasses = "character"))
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
 
 # Merging spectrophotometric and design data
-Once we have both our design and data in the`R`environment and tidy-shaped, we can merge them using `merge_dfs`.
+Once we have both our design and data in `R` and tidy-shaped, we can merge them using `merge_dfs`.
 
 For this, we'll use the data in the `example_widedata_noiseless` dataset that is included with `gcplyr`, and which was the source for our previous examples with `import_blockmeasures` and `read_wides`.
 
@@ -450,3 +451,4 @@ Now that you've merged your data and designs, you can pre-process and plot your 
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`

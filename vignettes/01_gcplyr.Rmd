@@ -39,7 +39,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 
 This document gives an introduction of how to use `gcplyr` for each step of a growth curve analysis.
 
-To get started, you need your growth curve data file saved to your computer (.csv, .xls, or .xlsx).
+To get started, you need your growth curve data file saved to your computer (.csv, .xls, .xlsx, or any other format that can be read by `read.table`).
 
 Users often want to combine their data with some information on the experimental design of their plate(s). You can save this information into a tabular file as well, or you can just keep it handy to enter directly in `R` (see `vignette("03_incorporate_designs")`).
 
@@ -133,3 +133,4 @@ Generally, working with `gcplyr` will follow a number of steps, each of which is
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`

@@ -29,6 +29,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`
 
 Previously, we gave a quick demonstration of what `gcplyr` can do. Here, we're going into more detail about how to import your data into `R` and and transform it into a better layout.
 
@@ -324,15 +325,15 @@ To import tidy-shaped data, you could use the built-in `R` functions like `read.
 If you've read in your tidy-shaped data, you won't need to transform it, so you can skip down to the **[What's next?]** section.
 
 # Transforming data
-Now that you've gotten your data into the `R` environment, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
+Now that you've gotten your data into `R`, we need to transform it before we can do analyses. To reiterate, this is necessary because most plate readers that generate growth curve data outputs it in block-shaped or wide-shaped files, but tidy-shaped `data.frame`s are the best shape for analyses and required by gcplyr.
 
 You can transform your `data.frame`s using the `trans_*` functions in `gcplyr`.
 
 ## Transforming from wide-shaped to tidy-shaped
 
-If the data you've read into the`R`environment is wide-shaped (or you've gotten wide-shaped data by transforming your originally block-shaped data), you'll transform it to tidy-shaped using `trans_wide_to_tidy`. 
+If the data you've read into the `R` environment is wide-shaped (or you've gotten wide-shaped data by transforming your originally block-shaped data), you'll transform it to tidy-shaped using `trans_wide_to_tidy`. 
 
-First, you need to provide `trans_wide_to_tidy` with the`R`object created by `read_wides` or by `trans_block_to_wide`. 
+First, you need to provide `trans_wide_to_tidy` with the `R` object created by `import_blockmeasures` or `read_wides`. 
 
 Then, you have to specify one of:
 
@@ -364,3 +365,4 @@ Now that you've imported and transformed your data to be tidy-shaped, you likely
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`

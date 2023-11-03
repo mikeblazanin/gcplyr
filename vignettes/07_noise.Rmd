@@ -29,6 +29,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 6. Analyzing your data: `vignette("06_analyze")`
 7. **Dealing with noise:** `vignette("07_noise")`
 8. Statistics, merging other data, and other resources: `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`
 
 So far, we've imported and transformed our measures, combined them with our design information, pre-processed, processed, plotted, and analyzed our data. Here, we're going to learn potential strategies for dealing with noise in our growth curve data.
 
@@ -460,3 +461,4 @@ Now that you've analyzed your data and dealt with any noise, there's just some c
 6. Analyzing your data: `vignette("06_analyze")`
 7. Dealing with noise: `vignette("07_noise")`
 8. **Statistics, merging other data, and other resources:** `vignette("08_conclusion")`
+9. Working with multiple plates: `vignette("09_multiple_plates")`

@@ -76,7 +76,7 @@ Broadly speaking, there are three strategies we can use to deal with noise:
 Let's start by pulling out some example data. The example data here is the same example data we've been working with, along with a version of that data with simulated noise added to it.
 
 ```{r}
-ex_dat_mrg <- make_example(vigette = 7, example = 1)
+ex_dat_mrg <- make_example(vignette = 7, example = 1)
 
 # Plot with a log y-axis
 ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells, noise == "Yes"),

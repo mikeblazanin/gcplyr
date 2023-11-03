@@ -1,8 +1,32 @@
-# gcplyr 1.6.0.9000
+# gcplyr 1.7.0
 
-stuff here
+* read_blocks now returns blocks whose row.names are always a character vector
 
-Note that read_blocks now returns row.names as a character by default
+* merge_dfs can now do inner, left, and right joins (in addition to the original capacity to do full joins)
+
+* Strings to be coerced into NA can now be specified to separate_tidy
+
+* The directory to write files to can now be specified to write_blocks
+
+* In read_blocks the metadata field name where block names are stored can now be specified via the block_name_header argument
+
+* There is a new vignette demonstrating how to work with multiple plates at once
+
+* Examples throughout all vignettes are now created with a make_example function for streamlined readability
+
+* read_blocks, read_wides, read_tidys, and make_design now provide better error messages when inputs are out of range
+
+* merge_dfs now provides a message with the number of dropped rows when drop = TRUE
+
+* Fix to bug in read_blocks where arguments for read.csv could not be passed via ...
+
+* Fix to bug where merge_dfs would not drop incomplete cases unless both x and y were specified
+
+* Vignettes are now numbered so they are sorted correctly on CRAN
+
+* Various minor documentation improvements
+
+* Various backend improvements
 
 # gcplyr 1.6.0
 

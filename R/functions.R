@@ -168,7 +168,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
           dots_parser(readxl::read_xlsx, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
-  }
+  } else {stop("read_gcfile was passed an invalid extension")}
   return(temp)
 }
 
@@ -376,6 +376,7 @@ read_blocks <- function(files, extension = NULL,
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
       warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
+      extension[!extension %in% c("csv", "xls", "xlsx")] <- "tbl"
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", nblocks, 
@@ -650,6 +651,7 @@ read_wides <- function(files, extension = NULL,
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
       warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
+      extension[!extension %in% c("csv", "xls", "xlsx")] <- "tbl"
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", nwides,
@@ -867,6 +869,7 @@ read_tidys <- function(files, extension = NULL,
                         USE.NAMES = FALSE)
     if(any(!extension %in% c("csv", "xls", "xlsx"))) {
       warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
+      extension[!extension %in% c("csv", "xls", "xlsx")] <- "tbl"
     }
   } else {
     extension <- checkdim_inputs(extension, "extension", length(files))

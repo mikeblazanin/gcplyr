@@ -3,6 +3,11 @@ library(gcplyr)
 library(dplyr)
 library(ggplot2)
 
+#Okabe and Ito 2008 colorblind-safe qualitative color scale
+my_cols <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
+             "#D55E00", "#CC79A7", "#000000")
+scales::show_col(my_cols)
+
 dat <- cran_downloads(
   package = c("gcplyr", "QurvE", "growthcurver", "growthrates",
               "opm", "growr", "biogrowth"), 
@@ -14,10 +19,15 @@ dat <- mutate(group_by(dat, package),
                                      sm_method = "moving-average",
                                      window_width_n = 5))
 
-plotdat <- filter(dat, 
-                  package %in% c("gcplyr", "growthcurver", "QurvE", "growthrates"))
-colorfunc <- colorRampPalette(c("lightpink3", "lightblue3", "darkseagreen1"))
-colors <- colorfunc(length(unique(plotdat$package))-1)
+print(summarize(group_by(dat, package), downloads = mean(count)))
+
+plotdat <- filter(
+  dat, 
+  package %in% c("gcplyr", "growthcurver", "QurvE", "growthrates", "biogrowth"))
+
+# colorfunc <- colorRampPalette(c("lightpink3", "lightblue3", "darkseagreen1"))
+# colors <- colorfunc(length(unique(plotdat$package))-1)
+colors = my_cols
 
 ggplot(data = plotdat, aes(x = date)) +
   # geom_point(data = filter(plotdat, package != "gcplyr"), 

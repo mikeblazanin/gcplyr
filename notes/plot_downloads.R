@@ -11,13 +11,13 @@ scales::show_col(my_cols)
 dat <- cran_downloads(
   package = c("gcplyr", "QurvE", "growthcurver", "growthrates",
               "opm", "growr", "biogrowth"), 
-  from = "2023-01-01", to = Sys.Date())
+  from = "2023-01-01", to = (Sys.Date()-1))
 dat$package <- relevel(factor(dat$package), ref = "gcplyr")
 
 dat <- mutate(group_by(dat, package),
-              sm_count = smooth_data(x = date, y = count,
-                                     sm_method = "moving-average",
-                                     window_width_n = 5))
+              sm_count = smooth_data(x = as.numeric(date), y = count,
+                                     sm_method = "loess",
+                                     span = 28/length(unique(dat$date))))
 
 print(summarize(group_by(dat, package), downloads = mean(count)))
 
@@ -36,7 +36,7 @@ ggplot(data = plotdat, aes(x = date)) +
             aes(y = sm_count, color = package), alpha = 0.8) +
   scale_color_manual(values = colors) +
   geom_point(data = filter(plotdat, package == "gcplyr"), 
-             aes(y = count)) +
+             aes(y = count), alpha = 0.5) +
   geom_line(data = filter(plotdat, package == "gcplyr"), 
-            aes(y = sm_count), lwd = 1.25) +
+            aes(y = sm_count), lwd = 1.25, alpha = 0.5) +
   theme_bw()

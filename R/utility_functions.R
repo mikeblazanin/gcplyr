@@ -48,7 +48,9 @@ print_df <- function(x, col.names = FALSE, row.names = FALSE) {
 check_input_dimensions <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
   if (length(input) != needed_len) {
-    if(length(input) != 1) {
+    if(length(input) == 0) {
+      stop(paste0("length(", input_name, ") is 0"))
+    } else if(length(input) != 1) {
       stop(paste("More than one", input_name, "value is supplied, but the number
                    of", input_name, "values is not equal to", needed_name))
     } else {

@@ -161,7 +161,7 @@ from_excel <- function(x) {
 #' Use this in cases where a parent function calls multiple sub-functions
 #' and passes the ... dots argument to each, but some arguments users
 #' specify in the ... dots argument only work for some of the sub-functions.
-#' In this case, dots_parser will check and run \code{FUN} with only
+#' In this case, parse_dots will check and run \code{FUN} with only
 #' the arguments that \code{FUN} accepts
 #' 
 #' @param FUN The function to be called
@@ -171,7 +171,7 @@ from_excel <- function(x) {
 #' @return The output of \code{FUN} operating on arguments in \code{...}
 #' 
 #' @noRd
-dots_parser <- function(FUN, ...) {
+parse_dots <- function(FUN, ...) {
   argnames <- names(formals(FUN))
   dots <- list(...)
   return(do.call(FUN, dots[names(dots) %in% argnames]))

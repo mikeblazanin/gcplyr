@@ -175,7 +175,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
   } else {warning("extension not checked by read_gcfile, report this bug to gcplyr maintainer")}
   
   if (extension == "tbl" | extension == "table") {
-    readgcfile_temp <- dots_parser(utils::read.table, file = file,
+    readgcfile_temp <- parse_dots(utils::read.table, file = file,
                         na.strings = na.strings, colClasses = "character",
                         ...)
   } else if (extension == "csv") {
@@ -187,7 +187,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     fill <- dots_checker("fill", TRUE, ...)
     comment.char <- dots_checker("comment.char", "", ...)
     
-    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+    readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
@@ -201,7 +201,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     fill <- dots_checker("fill", TRUE, ...)
     comment.char <- dots_checker("comment.char", "", ...)
     
-    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+    readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
@@ -215,7 +215,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     fill <- dots_checker("fill", TRUE, ...)
     comment.char <- dots_checker("comment.char", "", ...)
     
-    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+    readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
@@ -229,7 +229,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     fill <- dots_checker("fill", TRUE, ...)
     comment.char <- dots_checker("comment.char", "", ...)
     
-    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+    readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
@@ -238,14 +238,14 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     suppressMessages(
       readgcfile_temp <- 
         as.data.frame(
-          dots_parser(readxl::read_xls, path = file, 
+          parse_dots(readxl::read_xls, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
   } else if (extension == "xlsx") {
     suppressMessages(
       readgcfile_temp <- 
         as.data.frame(
-          dots_parser(readxl::read_xlsx, path = file, 
+          parse_dots(readxl::read_xlsx, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
   } else {stop("read_gcfile was passed an invalid extension")}
@@ -1123,7 +1123,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 import_blockdesigns <- function(files, block_names = NULL, 
                                 block_name_header = "block_name", 
                                 sep = NULL, ...) {
-  blocks <- dots_parser(read_blocks, 
+  blocks <- parse_dots(read_blocks, 
                         block_names = block_names, files = files, 
                         block_name_header = block_name_header, ...)
   
@@ -1151,18 +1151,18 @@ import_blockdesigns <- function(files, block_names = NULL,
       } else {sep <- sep[which(not_in_blocks)[1]]}
     }
 
-    blocks_pasted <- dots_parser(paste_blocks, blocks = blocks,
+    blocks_pasted <- parse_dots(paste_blocks, blocks = blocks,
                                  sep = sep, nested_metadata = TRUE, ...)
   } else {blocks_pasted <- blocks}
   
-  wides <- dots_parser(trans_block_to_wide, blocks = blocks_pasted,
+  wides <- parse_dots(trans_block_to_wide, blocks = blocks_pasted,
                        nested_metadata = TRUE, ...)
   
   #Transform to tidy, dropping the block_name column and using it
   # as the column name for the values column
   vals_colname <- wides[1, block_name_header]
     
-  tidys <- dots_parser(
+  tidys <- parse_dots(
     trans_wide_to_tidy, 
     wides = wides[, -which(block_name_header == colnames(wides))], 
     data_cols = colnames(wides)[colnames(wides) != block_name_header], 
@@ -1170,7 +1170,7 @@ import_blockdesigns <- function(files, block_names = NULL,
     ...)
   
   if(length(files) > 1) {
-    tidy_sep <- dots_parser(separate_tidy, 
+    tidy_sep <- parse_dots(separate_tidy, 
                             data = tidys, sep = sep, col = vals_colname)
   } else {tidy_sep <- tidys}
     
@@ -2614,7 +2614,7 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                      na.action = "na.exclude", ...)
     } else if (sm_method == "gam") {
       temp <- 
-        dots_parser(
+        parse_dots(
           FUN = mgcv::gam,
           formula = formula, data = data[subset_by == unique(subset_by)[i], ],
           na.action = "na.exclude", ...)

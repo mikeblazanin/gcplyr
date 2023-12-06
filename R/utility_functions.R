@@ -578,7 +578,7 @@ check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
 #' I didn't write this, see: https://stackoverflow.com/a/24569739/14805829
 #' 
 #' @noRd
-myTryCatch <- function(expr) {
+gcTryCatch <- function(expr) {
   warn <- err <- NULL
   value <- withCallingHandlers(
     tryCatch(expr, error=function(e) {
@@ -754,7 +754,7 @@ NULL
 #' @rdname MinMaxGC
 #' @export 
 max_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
-  caught_log <- myTryCatch(max(..., na.rm = na.rm))
+  caught_log <- gcTryCatch(max(..., na.rm = na.rm))
   if(!is.null(caught_log$error)) {stop(caught_log$error)}
   if(!is.null(caught_log$warning)) {
     if(grepl("no non-missing arguments", caught_log$warning)) {
@@ -768,7 +768,7 @@ max_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #' @rdname MinMaxGC
 #' @export 
 min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
-  caught_log <- myTryCatch(min(..., na.rm = na.rm))
+  caught_log <- gcTryCatch(min(..., na.rm = na.rm))
   if(!is.null(caught_log$error)) {stop(caught_log$error)}
   if(!is.null(caught_log$warning)) {
     if(grepl("no non-missing arguments", caught_log$warning)) {

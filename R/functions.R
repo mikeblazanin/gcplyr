@@ -2931,7 +2931,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
     if(!is.null(blank)) {sub_y <- sub_y - blank[i]}
     
     if(trans_y == "log") {
-      caught_log <- myTryCatch(log(sub_y))
+      caught_log <- gcTryCatch(log(sub_y))
       if(!is.null(caught_log$warning)) {
         warning(paste("during log-transformation,", caught_log$warning))
         caught_log$value[is.nan(caught_log$value)] <- NA}
@@ -3670,7 +3670,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   
   if(trans_y == "log") {
     if(!is.null(y) && length(y) > 0) {
-      caught_log <- myTryCatch(log(y))
+      caught_log <- gcTryCatch(log(y))
       if(!is.null(caught_log$warning)) {
         warning(paste("during log-transformation,", caught_log$warning))
         caught_log$value[is.nan(caught_log$value)] <- NA}

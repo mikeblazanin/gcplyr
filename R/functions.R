@@ -116,16 +116,16 @@ infer_names <- function(df,
 #' 
 #' @param extension The vector of extensions or NULL
 #' @param files The vector of filenames/paths
-#' @param needed_len Parameter to pass to \code{checkdim_inputs} for
+#' @param needed_len Parameter to pass to \code{check_input_dimensions} for
 #'                   desired length of output vector
-#' @param ... Other arguments to pass to \code{checkdim_inputs}, most
+#' @param ... Other arguments to pass to \code{check_input_dimensions}, most
 #'            frequently \code{needed_name} for what the desired length 
 #'            corresponds to (e.g. number of files)
 #' 
 #' @return vector of extensions
 #' 
 #' @noRd
-checkinfer_ext <- function(extension, files, needed_len, ...) {
+infer_check_ext <- function(extension, files, needed_len, ...) {
   valid_exts <- c("tbl", "table", "csv", "csv2", 
                   "delim", "delim2", "xls", "xlsx")
   
@@ -138,7 +138,7 @@ checkinfer_ext <- function(extension, files, needed_len, ...) {
       extension[!extension %in% valid_exts] <- "tbl"
     }
   } else {
-    extension <- checkdim_inputs(extension, "extension", needed_len, needed_name)
+    extension <- check_input_dimensions(extension, "extension", needed_len, needed_name)
     if(any(!extension %in% valid_exts)) {
       stop("Extension provided by user must be one of the valid values")
     }
@@ -409,14 +409,14 @@ read_blocks <- function(files, extension = NULL,
                  length(startcol), length(endcol), length(sheet),
                  na.rm = TRUE)
   
-  files <- checkdim_inputs(files, "files", nblocks, "the number of blocks")
+  files <- check_input_dimensions(files, "files", nblocks, "the number of blocks")
   
   if(!is.null(startrow) & !all(is.numeric(startrow))) {
     startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
     startrow <- as.numeric(startrow)
   }
   if(is.null(startrow)) {startrow <- rep(NA, nblocks)} 
-  startrow <- checkdim_inputs(startrow, "startrow", nblocks, 
+  startrow <- check_input_dimensions(startrow, "startrow", nblocks, 
                               "the number of blocks")
   
   if(!is.null(endrow) & !all(is.numeric(endrow))) {
@@ -424,14 +424,14 @@ read_blocks <- function(files, extension = NULL,
     endrow <- as.numeric(endrow)
   }
   if(is.null(endrow)) {endrow <- rep(NA, nblocks)}
-  endrow <- checkdim_inputs(endrow, "endrow", nblocks, "the number of blocks")
+  endrow <- check_input_dimensions(endrow, "endrow", nblocks, "the number of blocks")
   
   if(!is.null(startcol) & !all(is.numeric(startcol))) {
     startcol[!is.numeric(startcol)] <- from_excel(startcol[!is.numeric(startcol)])
     startcol <- as.numeric(startcol)
   }
   if(is.null(startcol)) {startcol <- rep(NA, nblocks)}
-  startcol <- checkdim_inputs(startcol, "startcol", nblocks, 
+  startcol <- check_input_dimensions(startcol, "startcol", nblocks, 
                               "the number of blocks")
   
   if(!is.null(endcol) & !all(is.numeric(endcol))) {
@@ -439,13 +439,13 @@ read_blocks <- function(files, extension = NULL,
     endcol <- as.numeric(endcol)
   }
   if(is.null(endcol)) {endcol <- rep(NA, nblocks)}
-  endcol <- checkdim_inputs(endcol, "endcol", nblocks, "the number of blocks")
+  endcol <- check_input_dimensions(endcol, "endcol", nblocks, "the number of blocks")
   
   if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", nblocks, "the number of blocks")
+    sheet <- check_input_dimensions(sheet, "sheet", nblocks, "the number of blocks")
   }
-  header <- checkdim_inputs(header, "header", nblocks, "the number of blocks")
-  sider <- checkdim_inputs(sider, "sider", nblocks, "the number of blocks")
+  header <- check_input_dimensions(header, "header", nblocks, "the number of blocks")
+  sider <- check_input_dimensions(sider, "sider", nblocks, "the number of blocks")
   
   if (!is.null(block_names) & length(block_names) != nblocks) {
     stop("block_names must be the same length as the number of blocks")
@@ -456,7 +456,7 @@ read_blocks <- function(files, extension = NULL,
   }
   
   #Determine file extension(s)
-  extension <- checkinfer_ext(
+  extension <- infer_check_ext(
     extension = extension, files = files,
     needed_len = nblocks, needed_name = "the number of blocks")
   
@@ -469,10 +469,10 @@ read_blocks <- function(files, extension = NULL,
       }
       if(is.list(metadata[[i]])) {
         metadata[[i]][[1]] <- 
-          checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
+          check_input_dimensions(metadata[[i]][[1]], names(metadata)[i],
                           nblocks, "the number of blocks")
         metadata[[i]][[2]] <- 
-          checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
+          check_input_dimensions(metadata[[i]][[2]], names(metadata)[i],
                           nblocks, "the number of blocks")
       }
     }
@@ -676,14 +676,14 @@ read_wides <- function(files, extension = NULL,
                 length(startcol), length(endcol), length(sheet),
                 na.rm = TRUE)
   
-  files <- checkdim_inputs(files, "files", nwides, "the number of wides")
+  files <- check_input_dimensions(files, "files", nwides, "the number of wides")
   
   if(!is.null(startrow) & !all(is.numeric(startrow))) {
     startrow[!is.numeric(startrow)] <- from_excel(startrow[!is.numeric(startrow)])
     startrow <- as.numeric(startrow)
   }
   if(is.null(startrow)) {startrow <- NA}
-  startrow <- checkdim_inputs(startrow, "startrow", nwides,
+  startrow <- check_input_dimensions(startrow, "startrow", nwides,
                               "the number of wides")
   
   if(!is.null(endrow) & !all(is.numeric(endrow))) {
@@ -691,7 +691,7 @@ read_wides <- function(files, extension = NULL,
     endrow <- as.numeric(endrow)
   }
   if(is.null(endrow)) {endrow <- NA}
-  endrow <- checkdim_inputs(endrow, "endrow", nwides,
+  endrow <- check_input_dimensions(endrow, "endrow", nwides,
                             "the number of wides")
 
   if(!is.null(startcol) & !all(is.numeric(startcol))) {
@@ -699,7 +699,7 @@ read_wides <- function(files, extension = NULL,
     startcol <- as.numeric(startcol)
   }
   if(is.null(startcol)) {startcol <- NA}
-  startcol <- checkdim_inputs(startcol, "startcol", nwides,
+  startcol <- check_input_dimensions(startcol, "startcol", nwides,
                               "the number of wides")
   
   if(!is.null(endcol) & !all(is.numeric(endcol))) {
@@ -707,11 +707,11 @@ read_wides <- function(files, extension = NULL,
     endcol <- as.numeric(endcol)
   }
   if(is.null(endcol)) {endcol <- NA}
-  endcol <- checkdim_inputs(endcol, "endcol", nwides,
+  endcol <- check_input_dimensions(endcol, "endcol", nwides,
                             "the number of wides")
   
   if(!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", nwides,
+    sheet <- check_input_dimensions(sheet, "sheet", nwides,
                              "the number of wides")
   }
   
@@ -720,7 +720,7 @@ read_wides <- function(files, extension = NULL,
   }
   
   #Determine file extension(s)
-  extension <- checkinfer_ext(
+  extension <- infer_check_ext(
     extension = extension, files = files,
     needed_len = nwides, needed_name = "the number of wides")
   
@@ -743,10 +743,10 @@ read_wides <- function(files, extension = NULL,
       }
       if(is.list(metadata[[i]])) {
         metadata[[i]][[1]] <- 
-          checkdim_inputs(metadata[[i]][[1]], names(metadata)[i],
+          check_input_dimensions(metadata[[i]][[1]], names(metadata)[i],
                           nwides, "the number of blocks")
         metadata[[i]][[2]] <- 
-          checkdim_inputs(metadata[[i]][[2]], names(metadata)[i],
+          check_input_dimensions(metadata[[i]][[2]], names(metadata)[i],
                           nwides, "the number of blocks")
       }
     }
@@ -913,23 +913,23 @@ read_tidys <- function(files, extension = NULL,
     endcol <- from_excel(endcol)}
   
   if(is.null(startrow)) {startrow <- NA}
-  startrow <- checkdim_inputs(startrow, "startrow", length(files))
+  startrow <- check_input_dimensions(startrow, "startrow", length(files))
   
   if (is.null(endrow)) {endrow <- NA}
-  endrow <- checkdim_inputs(endrow, "endrow", length(files))
+  endrow <- check_input_dimensions(endrow, "endrow", length(files))
   
   if (is.null(startcol)) {startcol <- NA}
-  startcol <- checkdim_inputs(startcol, "startcol", length(files))
+  startcol <- check_input_dimensions(startcol, "startcol", length(files))
   
   if (is.null(endcol)) {endcol <- NA}
-  endcol <- checkdim_inputs(endcol, "endcol", length(files))
+  endcol <- check_input_dimensions(endcol, "endcol", length(files))
   
   if (!is.null(sheet)) {
-    sheet <- checkdim_inputs(sheet, "sheet", length(files))
+    sheet <- check_input_dimensions(sheet, "sheet", length(files))
   }
   
   #Determine file extension(s)
-  extension <- checkinfer_ext(
+  extension <- infer_check_ext(
     extension = extension, files = files, needed_len = length(files))
   
   #Check for names error
@@ -2108,20 +2108,20 @@ trans_wide_to_tidy <- function(wides,
   if (!is.list(id_cols)) {
     id_cols <- list(id_cols)
   }
-  id_cols <- checkdim_inputs(id_cols, "id_cols", length(wides))
+  id_cols <- check_input_dimensions(id_cols, "id_cols", length(wides))
   
   if (!is.list(data_cols)) {
     data_cols <- list(data_cols)
   }
-  data_cols <- checkdim_inputs(data_cols, "data_cols", length(wides))
+  data_cols <- check_input_dimensions(data_cols, "data_cols", length(wides))
   
   #Check cols inputs
   if (any(!is.na(data_cols) & !is.na(id_cols))) {
     warning("Cannot provide both data_cols and id_cols for a given wides, using data_cols only\n")
   }
   
-  names_to <- checkdim_inputs(names_to, "names_to", length(wides))
-  values_to <- checkdim_inputs(values_to, "values_to", length(wides))
+  names_to <- check_input_dimensions(names_to, "names_to", length(wides))
+  values_to <- check_input_dimensions(values_to, "values_to", length(wides))
   
   #Create values_transform list as appropriate
   if("values_transform" %in% names(list(...))) {
@@ -2914,7 +2914,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   if(is.null(blank)) {
     if(percapita == TRUE) {stop("percapita == TRUE but blank is NULL")}
   } else { #blank is not NULL
-    blank <- checkdim_inputs(
+    blank <- check_input_dimensions(
       blank, "blank", needed_len = length(unique(subset_by)),
       needed_name = "the number of unique subset_by values") 
   }

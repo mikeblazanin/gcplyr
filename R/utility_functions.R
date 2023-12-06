@@ -45,7 +45,7 @@ print_df <- function(x, col.names = FALSE, row.names = FALSE) {
 #' @return The values of \code{input} coerced to a vector of length \code{needed_len}
 #' 
 #' @noRd
-checkdim_inputs <- function(input, input_name, needed_len,
+check_input_dimensions <- function(input, input_name, needed_len,
                             needed_name = "the number of files") {
   if (length(input) != needed_len) {
     if(length(input) != 1) {

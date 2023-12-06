@@ -112,6 +112,46 @@ infer_names <- function(df,
 }
 
 
+#' An internal function that handles checking and inferring extensions
+#' 
+#' @param extension The vector of extensions or NULL
+#' @param files The vector of filenames/paths
+#' @param needed_len Parameter to pass to \code{checkdim_inputs} for
+#'                   desired length of output vector
+#' @param ... Other arguments to pass to \code{checkdim_inputs}, most
+#'            frequently \code{needed_name} for what the desired length 
+#'            corresponds to (e.g. number of files)
+#' 
+#' @return vector of extensions
+#' 
+#' @noRd
+checkinfer_ext <- function(extension, files, needed_len, ...) {
+  valid_exts <- c("tbl", "table", "csv", "csv2", 
+                  "delim", "delim2", "xls", "xlsx")
+  
+  #Determine file extension(s)
+  if (is.null(extension)) {
+    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
+                        USE.NAMES = FALSE)
+    if(any(!extension %in% valid_exts)) {
+      warning("Extension inferred but not one of the valid values. Will treat as tbl\n")
+      extension[!extension %in% valid_exts] <- "tbl"
+    }
+  } else {
+    extension <- checkdim_inputs(extension, "extension", needed_len, needed_name)
+    if(any(!extension %in% valid_exts)) {
+      stop("Extension provided by user must be one of the valid values")
+    }
+  }
+  if(any(extension %in% c("xls", "xlsx")) && 
+     !requireNamespace("readxl", quietly = TRUE)) {
+    stop("Package \"readxl\" must be installed to read xls or xlsx files",
+         call. = FALSE)
+  }
+  return(extension)
+}
+
+
 #' An internal function that handles reading a file in table format
 #' 
 #' @param file The filename or path
@@ -126,15 +166,20 @@ infer_names <- function(df,
 #' 
 #' @noRd
 read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
-  if (extension == "tbl") {
+  if(extension %in% c("tbl", "table", "csv", "csv2", "delim", "delim2")) {
     if("colClasses" %in% names(list(...))) {
-      warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
-    temp <- dots_parser(utils::read.table, file = file,
+      warning("specified colClasses is being ignored, read_gcfile always uses colClasses = 'character'")}
+  } else if (extension %in% c("xls", "xlsx")) {
+    if("col_types" %in% names(list(...))) {
+      warning("specified col_types is being ignored, read_gcfile always uses col_types = 'text'")}
+  } else {warning("extension not checked by read_gcfile, report this bug to gcplyr maintainer")}
+  
+  if (extension == "tbl" | extension == "table") {
+    readgcfile_temp <- dots_parser(utils::read.table, file = file,
                         na.strings = na.strings, colClasses = "character",
                         ...)
   } else if (extension == "csv") {
-    #define defaults for csv if user didn't specify them
-    # (this re-creates the behavior of read.csv, but allows that
+    #define defaults (this re-creates the behavior of read.csv, but allows
     # behavior to be overridden by user if desired)
     sep <- dots_checker("sep", ",", ...)
     quote <- dots_checker("quote", "\"", ...)
@@ -142,34 +187,69 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
     fill <- dots_checker("fill", TRUE, ...)
     comment.char <- dots_checker("comment.char", "", ...)
     
-    if("colClasses" %in% names(list(...))) {
-      warning("specified colClasses is being ignored, read_blocks always uses colClasses = 'character'")}
+    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+                        colClasses = "character", header = FALSE,
+                        na.strings = na.strings, sep = sep,
+                        quote = quote, dec = dec, fill = fill,
+                        comment.char = comment.char, ...)
+  } else if (extension == "csv2") {
+    #define defaults (this re-creates the behavior of read.csv2, but allows
+    # behavior to be overridden by user if desired)
+    sep <- dots_checker("sep", ";", ...)
+    quote <- dots_checker("quote", "\"", ...)
+    dec <- dots_checker("dec", ",", ...)
+    fill <- dots_checker("fill", TRUE, ...)
+    comment.char <- dots_checker("comment.char", "", ...)
     
-    temp <- dots_parser(utils::read.table, file = file, 
+    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+                        colClasses = "character", header = FALSE,
+                        na.strings = na.strings, sep = sep,
+                        quote = quote, dec = dec, fill = fill,
+                        comment.char = comment.char, ...)
+  } else if (extension == "delim") {
+    #define defaults (this re-creates the behavior of read.delim, but allows
+    # behavior to be overridden by user if desired)
+    sep <- dots_checker("sep", "\t", ...)
+    quote <- dots_checker("quote", "\"", ...)
+    dec <- dots_checker("dec", ".", ...)
+    fill <- dots_checker("fill", TRUE, ...)
+    comment.char <- dots_checker("comment.char", "", ...)
+    
+    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
+                        colClasses = "character", header = FALSE,
+                        na.strings = na.strings, sep = sep,
+                        quote = quote, dec = dec, fill = fill,
+                        comment.char = comment.char, ...)
+  } else if (extension == "delim2") {
+    #define defaults (this re-creates the behavior of read.delim2, but allows
+    # behavior to be overridden by user if desired)
+    sep <- dots_checker("sep", "\t", ...)
+    quote <- dots_checker("quote", "\"", ...)
+    dec <- dots_checker("dec", ",", ...)
+    fill <- dots_checker("fill", TRUE, ...)
+    comment.char <- dots_checker("comment.char", "", ...)
+    
+    readgcfile_temp <- dots_parser(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
                         comment.char = comment.char, ...)
   } else if (extension == "xls") {
-    if("col_types" %in% names(list(...))) {
-      warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
     suppressMessages(
-      temp <- 
+      readgcfile_temp <- 
         as.data.frame(
           dots_parser(readxl::read_xls, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
   } else if (extension == "xlsx") {
-    if("col_types" %in% names(list(...))) {
-      warning("specified col_types is being ignored, read_blocks always uses col_types = 'text'")}
     suppressMessages(
-      temp <- 
+      readgcfile_temp <- 
         as.data.frame(
           dots_parser(readxl::read_xlsx, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
   } else {stop("read_gcfile was passed an invalid extension")}
-  return(temp)
+  return(readgcfile_temp)
 }
 
 
@@ -203,12 +283,17 @@ get_metadata <- function(df, row, col) {
 #' 
 #' @param files A vector of filepaths relative to the current working directory
 #'              where each filepath is a single plate read
-#' @param extension (optional) the extension of the files:
-#'                  "csv", "xls", or "xlsx", or "tbl" for use of read.table
+#' @param extension (optional) the extension of the files: 
+#'                  "csv", "xls", or "xlsx"
 #'                  
-#'                  If none provided, \code{read_blocks} will infer file extension from
-#'                  provided filenames. When extension is not "csv", "xls", or
-#'                  "xlsx" will use \code{utils::read.table}
+#'                  Alternatively, "tbl" or "table" to use \code{read.table} to
+#'                  read the file, "csv2" to use \code{read.csv2}, "delim" to 
+#'                  use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+#'                  
+#'                  If none provided, \code{read_blocks} will infer file 
+#'                  extension from provided filenames. When extension is not 
+#'                  "csv", "xls", or "xlsx", will use \code{read.table} to 
+#'                  read the file.
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the measures data are located in \code{files}.
 #'                 
@@ -371,25 +456,9 @@ read_blocks <- function(files, extension = NULL,
   }
   
   #Determine file extension(s)
-  if (is.null(extension)) {
-    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
-                        USE.NAMES = FALSE)
-    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
-      extension[!extension %in% c("csv", "xls", "xlsx")] <- "tbl"
-    }
-  } else {
-    extension <- checkdim_inputs(extension, "extension", nblocks, 
-                                 "the number of blocks")
-    if(any(!extension %in% c("csv", "xls", "xlsx", "tbl"))) {
-      stop("Extension provided by user must be one of: csv, xls, xlsx, tbl")
-    }
-  }
-  if(any(extension %in% c("xls", "xlsx")) && 
-     !requireNamespace("readxl", quietly = TRUE)) {
-    stop("Package \"readxl\" must be installed to read xls or xlsx files",
-         call. = FALSE)
-  }
+  extension <- checkinfer_ext(
+    extension = extension, files = files,
+    needed_len = nblocks, needed_name = "the number of blocks")
   
   #Check metadata for any list entries, if there are and they're not
   # the right length, pass error. Otherwise, replicate as needed
@@ -523,12 +592,17 @@ read_blocks <- function(files, extension = NULL,
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a widemeasures set of data
-#' @param extension (optional) the extension of the files:
-#'                  "csv", "xls", or "xlsx", or "tbl" for use of read.table
+#' @param extension (optional) the extension of the files: 
+#'                  "csv", "xls", or "xlsx"
 #'                  
-#'                  If none provided, \code{read_wides} will infer file 
+#'                  Alternatively, "tbl" or "table" to use \code{read.table} to
+#'                  read the file, "csv2" to use \code{read.csv2}, "delim" to 
+#'                  use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+#'                  
+#'                  If none provided, \code{read_blocks} will infer file 
 #'                  extension from provided filenames. When extension is not 
-#'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
+#'                  "csv", "xls", or "xlsx", will use \code{read.table} to 
+#'                  read the file.
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in \code{files}.
 #'                 
@@ -646,23 +720,9 @@ read_wides <- function(files, extension = NULL,
   }
   
   #Determine file extension(s)
-  if(is.null(extension)) {
-    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
-                        USE.NAMES = FALSE)
-    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
-      extension[!extension %in% c("csv", "xls", "xlsx")] <- "tbl"
-    }
-  } else {
-    extension <- checkdim_inputs(extension, "extension", nwides,
-                                 "the number of wides")
-    stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
-  }
-  if(any(extension %in% c("xls", "xlsx")) && 
-     !requireNamespace("readxl", quietly = TRUE)) {
-    stop("Package \"readxl\" must be installed to read xls or xlsx files",
-         call. = FALSE)
-  }
+  extension <- checkinfer_ext(
+    extension = extension, files = files,
+    needed_len = nwides, needed_name = "the number of wides")
   
   #Check for names error
   if (!is.null(run_names)) {stopifnot(length(run_names) == nwides)}
@@ -771,12 +831,17 @@ read_wides <- function(files, extension = NULL,
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a tidy-shaped data file
-#' @param extension (optional) the extension of the files:
-#'                  "csv", "xls", or "xlsx", or "tbl" for use of read.table
+#' @param extension (optional) the extension of the files: 
+#'                  "csv", "xls", or "xlsx"
 #'                  
-#'                  If none provided, \code{read_tidys} will infer file 
+#'                  Alternatively, "tbl" or "table" to use \code{read.table} to
+#'                  read the file, "csv2" to use \code{read.csv2}, "delim" to 
+#'                  use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+#'                  
+#'                  If none provided, \code{read_blocks} will infer file 
 #'                  extension from provided filenames. When extension is not 
-#'                  "csv", "xls", or "xlsx" will use \code{utils::read.table}
+#'                  "csv", "xls", or "xlsx", will use \code{read.table} to 
+#'                  read the file.
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in \code{files}.
 #'                 
@@ -864,22 +929,8 @@ read_tidys <- function(files, extension = NULL,
   }
   
   #Determine file extension(s)
-  if (is.null(extension)) {
-    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings",
-                        USE.NAMES = FALSE)
-    if(any(!extension %in% c("csv", "xls", "xlsx"))) {
-      warning("Extension inferred but not one of: csv, xls, xlsx. Will treat as tbl\n")
-      extension[!extension %in% c("csv", "xls", "xlsx")] <- "tbl"
-    }
-  } else {
-    extension <- checkdim_inputs(extension, "extension", length(files))
-    stopifnot(all(extension %in% c("csv", "xls", "xlsx", "tbl")))
-  }
-  if(any(extension %in% c("xls", "xlsx")) && 
-     !requireNamespace("readxl", quietly = TRUE)) {
-    stop("Package \"readxl\" must be installed to read xls or xlsx files",
-         call. = FALSE)
-  }
+  extension <- checkinfer_ext(
+    extension = extension, files = files, needed_len = length(files))
   
   #Check for names error
   if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}

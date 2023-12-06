@@ -26,12 +26,17 @@ read_blocks(
 \item{files}{A vector of filepaths relative to the current working directory
 where each filepath is a single plate read}
 
-\item{extension}{(optional) the extension of the files:
-"csv", "xls", or "xlsx", or "tbl" for use of read.table
+\item{extension}{(optional) the extension of the files: 
+"csv", "xls", or "xlsx"
 
-If none provided, \code{read_blocks} will infer file extension from
-provided filenames. When extension is not "csv", "xls", or
-"xlsx" will use \code{utils::read.table}}
+Alternatively, "tbl" or "table" to use \code{read.table} to
+read the file, "csv2" to use \code{read.csv2}, "delim" to 
+use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+
+If none provided, \code{read_blocks} will infer file 
+extension from provided filenames. When extension is not 
+"csv", "xls", or "xlsx", will use \code{read.table} to 
+read the file.}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
 the measures data are located in \code{files}.

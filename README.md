@@ -9,7 +9,7 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.7.0-blue.svg?style=flat&logo=github)](https://github.com/mikeblazanin/gcplyr/commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.7.1-blue.svg?style=flat&logo=github)](https://github.com/mikeblazanin/gcplyr/commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:
@@ -68,21 +68,23 @@ from start to finish.
 
 This documentation is also available as a series of pdf vignette files:
 
-1.  [Introduction](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gcplyr.pdf)
+1.  [Introduction](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc01_gcplyr.pdf)
 2.  [Importing and transforming
-    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/import_transform.pdf)
+    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc02_import_transform.pdf)
 3.  [Incorporating design
-    information](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/incorporate_designs.pdf)
+    information](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc03_incorporate_designs.pdf)
 4.  [Pre-processing and plotting
-    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/preprocess_plot.pdf)
+    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc04_preprocess_plot.pdf)
 5.  [Processing
-    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/process.pdf)
+    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc05_process.pdf)
 6.  [Analyzing
-    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/analyze.pdf)
+    data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc06_analyze.pdf)
 7.  [Dealing with
-    noise](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/noise.pdf)
+    noise](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc07_noise.pdf)
 8.  [Statistics, merging other data, and other
-    resources](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/conclusion.pdf)
+    resources](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc08_conclusion.pdf)
+9.  [Working with multiple
+    plates](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc09_multiple_plates.pdf)
 
 ## Citation
 

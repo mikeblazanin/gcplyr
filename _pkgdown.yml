@@ -14,21 +14,23 @@ navbar:
       text: Articles
       menu:
       - text: Introduction
-        href: articles/gcplyr.html
+        href: articles/gc01_gcplyr.html
       - text: Importing and transforming data
-        href: articles/import_transform.html
+        href: articles/gc02_import_transform.html
       - text: Incorporating design information
-        href: articles/incorporate_designs.html
+        href: articles/gc03_incorporate_designs.html
       - text: Pre-processing and plotting data
-        href: articles/preprocess_plot.html
+        href: articles/gc04_preprocess_plot.html
       - text: Processing data
-        href: articles/process.html
+        href: articles/gc05_process.html
       - text: Analyzing data
-        href: articles/analyze.html
+        href: articles/gc06_analyze.html
       - text: Dealing with noise
-        href: articles/noise.html
+        href: articles/gc07_noise.html
       - text: Statistics, merging other data, and other resources
-        href: articles/conclusion.html
+        href: articles/gc08_conclusion.html
+      - text: Working with multiple plates
+        href: articles/gc09_multiple_plates.html
   
 reference:
 - title: Reading files

@@ -181,11 +181,11 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
   } else if (extension == "csv") {
     #define defaults (this re-creates the behavior of read.csv, but allows
     # behavior to be overridden by user if desired)
-    sep <- dots_checker("sep", ",", ...)
-    quote <- dots_checker("quote", "\"", ...)
-    dec <- dots_checker("dec", ".", ...)
-    fill <- dots_checker("fill", TRUE, ...)
-    comment.char <- dots_checker("comment.char", "", ...)
+    sep <- check_dots("sep", ",", ...)
+    quote <- check_dots("quote", "\"", ...)
+    dec <- check_dots("dec", ".", ...)
+    fill <- check_dots("fill", TRUE, ...)
+    comment.char <- check_dots("comment.char", "", ...)
     
     readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
@@ -195,11 +195,11 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
   } else if (extension == "csv2") {
     #define defaults (this re-creates the behavior of read.csv2, but allows
     # behavior to be overridden by user if desired)
-    sep <- dots_checker("sep", ";", ...)
-    quote <- dots_checker("quote", "\"", ...)
-    dec <- dots_checker("dec", ",", ...)
-    fill <- dots_checker("fill", TRUE, ...)
-    comment.char <- dots_checker("comment.char", "", ...)
+    sep <- check_dots("sep", ";", ...)
+    quote <- check_dots("quote", "\"", ...)
+    dec <- check_dots("dec", ",", ...)
+    fill <- check_dots("fill", TRUE, ...)
+    comment.char <- check_dots("comment.char", "", ...)
     
     readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
@@ -209,11 +209,11 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
   } else if (extension == "delim") {
     #define defaults (this re-creates the behavior of read.delim, but allows
     # behavior to be overridden by user if desired)
-    sep <- dots_checker("sep", "\t", ...)
-    quote <- dots_checker("quote", "\"", ...)
-    dec <- dots_checker("dec", ".", ...)
-    fill <- dots_checker("fill", TRUE, ...)
-    comment.char <- dots_checker("comment.char", "", ...)
+    sep <- check_dots("sep", "\t", ...)
+    quote <- check_dots("quote", "\"", ...)
+    dec <- check_dots("dec", ".", ...)
+    fill <- check_dots("fill", TRUE, ...)
+    comment.char <- check_dots("comment.char", "", ...)
     
     readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,
@@ -223,11 +223,11 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
   } else if (extension == "delim2") {
     #define defaults (this re-creates the behavior of read.delim2, but allows
     # behavior to be overridden by user if desired)
-    sep <- dots_checker("sep", "\t", ...)
-    quote <- dots_checker("quote", "\"", ...)
-    dec <- dots_checker("dec", ",", ...)
-    fill <- dots_checker("fill", TRUE, ...)
-    comment.char <- dots_checker("comment.char", "", ...)
+    sep <- check_dots("sep", "\t", ...)
+    quote <- check_dots("quote", "\"", ...)
+    dec <- check_dots("dec", ",", ...)
+    fill <- check_dots("fill", TRUE, ...)
+    comment.char <- check_dots("comment.char", "", ...)
     
     readgcfile_temp <- parse_dots(utils::read.table, file = file, 
                         colClasses = "character", header = FALSE,

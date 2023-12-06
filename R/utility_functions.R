@@ -188,7 +188,7 @@ parse_dots <- function(FUN, ...) {
 #' @return The value for argname, either the default or as-specified in \code{...}
 #' 
 #' @noRd
-dots_checker <- function(argname, default, ...) {
+check_dots <- function(argname, default, ...) {
   if(!argname %in% names(list(...))) {return(default)
   } else {return(list(...)[[argname]])}
 }

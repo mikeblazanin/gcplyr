@@ -10,14 +10,17 @@ scales::show_col(my_cols)
 
 dat <- cran_downloads(
   package = c("gcplyr", "QurvE", "growthcurver", "growthrates",
-              "opm", "growr", "biogrowth"), 
+              "opm", "growr", "biogrowth", ), 
   from = "2023-01-01", to = (Sys.Date()-1))
 dat$package <- relevel(factor(dat$package), ref = "gcplyr")
 
 dat <- mutate(group_by(dat, package),
-              sm_count = smooth_data(x = as.numeric(date), y = count,
+              sm_count2 = smooth_data(x = as.numeric(date), y = count,
                                      sm_method = "loess",
-                                     span = 28/length(unique(dat$date))))
+                                     span = 28/length(unique(dat$date))),
+              sm_count = smooth_data(x = as.numeric(date), y = count,
+                                     sm_method = "moving-average",
+                                     window_width_n = 15))
 
 print(summarize(group_by(dat, package), downloads = mean(count)))
 

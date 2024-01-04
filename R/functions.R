@@ -351,7 +351,7 @@ get_metadata <- function(df, row, col) {
 #' @param block_names (optional) vector of names corresponding to each plate
 #'                 in \code{files}. If not provided, block_names are inferred
 #'                 from the filenames
-#' @param block_name_header The name of the metadata field containing the
+#' @param block_names_header The name of the metadata field containing the
 #'                          \code{block_names}
 #' @param block_names_dot If block_names are inferred from filenames, should 
 #'                        the leading './' (if any) be retained
@@ -387,6 +387,8 @@ get_metadata <- function(df, row, col) {
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'                   or \code{utils::read.table}
+#' @param block_name_header Allowed for backward compatibility; 
+#'               \code{block_names_header} is now the preferred argument name.
 #' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'              or \code{utils::read.table}
@@ -433,12 +435,20 @@ read_blocks <- function(files, extension = NULL,
                         startcol = NULL, endcol = NULL,
                         sheet = NULL, metadata = NULL,
                         block_names = NULL,
-                        block_name_header = "block_name",
+                        block_names_header = "block_name",
                         block_names_dot = FALSE,
                         block_names_path = TRUE, block_names_ext = FALSE,
                         header = NA, sider = NA,
                         wellnames_numeric = FALSE,
-                        na.strings = c("NA", ""), ...) {
+                        na.strings = c("NA", ""),
+                        block_name_header,
+                        ...) {
+  if(!base::missing(block_name_header)) {
+    if(!base::missing(block_names_header)) {
+      warning("Ignoring block_name_header")
+    } else {block_names_header <- block_name_header}
+  }
+  
   nblocks <- max(length(files), length(startrow), length(endrow),
                  length(startcol), length(endcol), length(sheet),
                  na.rm = TRUE)
@@ -515,11 +525,11 @@ read_blocks <- function(files, extension = NULL,
   #Create empty list for read-in block measures
   if (is.null(metadata)) { #there is no user-specified metadata
     outputs <- rep(list(list("data" = NA, 
-                             "metadata" = stats::setNames("NA", block_name_header))), 
+                             "metadata" = stats::setNames("NA", block_names_header))), 
                    nblocks)
   } else { #there is user-specified metadata
     metadata_vector <- rep(NA, times = length(metadata)+1)
-    names(metadata_vector) <- c(block_name_header, names(metadata))
+    names(metadata_vector) <- c(block_names_header, names(metadata))
     #Okay so the goal here is to have each block measures returned as an item in a big list
     #each item will itself be a named list with 2 things: "data" and "metadata"
     #data is just the dataframe (with colnames & rownames inferred or not)
@@ -575,9 +585,9 @@ read_blocks <- function(files, extension = NULL,
     ##Add metadata
     #Add filenames to metadata
     if (!is.null(block_names)) { #block_names were provided
-      outputs[[i]]$metadata[block_name_header] <- block_names[i]
+      outputs[[i]]$metadata[block_names_header] <- block_names[i]
     } else { #block_names were not provided, infer from filename
-      outputs[[i]]$metadata[block_name_header] <- 
+      outputs[[i]]$metadata[block_names_header] <- 
         parse_filestrings(
           files[i], keep_dot = block_names_dot, 
           keep_path = block_names_path, keep_ext = block_names_ext)

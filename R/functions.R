@@ -112,9 +112,9 @@ infer_names <- function(df,
 }
 
 
-#' An internal function that handles checking and inferring extensions
+#' An internal function that handles checking and inferring (from extension) filetypes
 #' 
-#' @param extension The vector of extensions or NULL
+#' @param filetype The vector of filetypes (often extensions) or NULL
 #' @param files The vector of filenames/paths
 #' @param needed_len Parameter to pass to \code{check_input_dimensions} for
 #'                   desired length of output vector
@@ -122,33 +122,28 @@ infer_names <- function(df,
 #'            frequently \code{needed_name} for what the desired length 
 #'            corresponds to (e.g. number of files)
 #' 
-#' @return vector of extensions
+#' @return vector of filetypes
 #' 
 #' @noRd
-infer_check_ext <- function(extension, files, needed_len, ...) {
+infer_check_filetype <- function(filetype, files, needed_len, ...) {
   valid_exts <- c("tbl", "table", "csv", "csv2", 
                   "delim", "delim2", "xls", "xlsx")
   
-  #Determine file extension(s)
-  if (is.null(extension)) {
-    extension <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
+  #Determine filetype(s)
+  if (is.null(filetype)) {
+    filetype <- vapply(files, tools::file_ext, FUN.VALUE = "return strings", 
                         USE.NAMES = FALSE)
-    if(any(!extension %in% valid_exts)) {
-      warning("Extension inferred but not one of the valid values. Will treat as tbl\n")
-      extension[!extension %in% valid_exts] <- "tbl"
+    if(any(!filetype %in% valid_exts)) {
+      warning("filetype inferred but not one of the valid values. Will treat as tbl\n")
+      filetype[!filetype %in% valid_exts] <- "tbl"
     }
   } else {
-    extension <- check_input_dimensions(extension, "extension", needed_len, needed_name)
-    if(any(!extension %in% valid_exts)) {
-      stop("Extension provided by user must be one of the valid values")
+    filetype <- check_input_dimensions(filetype, "filetype", needed_len, needed_name)
+    if(any(!filetype %in% valid_exts)) {
+      stop("filetype provided by user must be one of the valid values")
     }
   }
-  if(any(extension %in% c("xls", "xlsx")) && 
-     !requireNamespace("readxl", quietly = TRUE)) {
-    stop("Package \"readxl\" must be installed to read xls or xlsx files",
-         call. = FALSE)
-  }
-  return(extension)
+  return(filetype)
 }
 
 
@@ -181,7 +176,9 @@ parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
 #' An internal function that handles reading a file in table format
 #' 
 #' @param file The filename or path
-#' @param extension The extension of the file, one of 'tbl', 'csv', 'xls', 'xlsx'
+#' @param filetype The type of file, one of:
+#'                 'tbl', 'table', 'csv', 'xls', 'xlsx', 'csv2', 'delim',
+#'                 'delim2'
 #' @param na.strings Strings to be interpreted as \code{NA}
 #' @param sheet What sheet to read (only needed for 'xls' and 'xlsx')
 #' 
@@ -191,20 +188,26 @@ parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
 #' @return The \code{data.frame} resulting from reading the file
 #' 
 #' @noRd
-read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
-  if(extension %in% c("tbl", "table", "csv", "csv2", "delim", "delim2")) {
+read_gcfile <- function(file, filetype, na.strings, sheet = NULL, ...) {
+  if(any(filetype %in% c("xls", "xlsx")) && 
+     !requireNamespace("readxl", quietly = TRUE)) {
+    stop("Package \"readxl\" must be installed to read xls or xlsx files",
+         call. = FALSE)
+  }
+  
+  if(filetype %in% c("tbl", "table", "csv", "csv2", "delim", "delim2")) {
     if("colClasses" %in% names(list(...))) {
       warning("specified colClasses is being ignored, read_gcfile always uses colClasses = 'character'")}
-  } else if (extension %in% c("xls", "xlsx")) {
+  } else if (filetype %in% c("xls", "xlsx")) {
     if("col_types" %in% names(list(...))) {
       warning("specified col_types is being ignored, read_gcfile always uses col_types = 'text'")}
-  } else {warning("extension not checked by read_gcfile, report this bug to gcplyr maintainer")}
+  } else {warning("filetype not checked by read_gcfile, report this bug to gcplyr maintainer")}
   
-  if (extension == "tbl" | extension == "table") {
+  if (filetype == "tbl" | filetype == "table") {
     readgcfile_temp <- parse_dots(utils::read.table, file = file,
                         na.strings = na.strings, colClasses = "character",
                         ...)
-  } else if (extension == "csv") {
+  } else if (filetype == "csv") {
     #define defaults (this re-creates the behavior of read.csv, but allows
     # behavior to be overridden by user if desired)
     sep <- check_dots("sep", ",", ...)
@@ -218,7 +221,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
                         comment.char = comment.char, ...)
-  } else if (extension == "csv2") {
+  } else if (filetype == "csv2") {
     #define defaults (this re-creates the behavior of read.csv2, but allows
     # behavior to be overridden by user if desired)
     sep <- check_dots("sep", ";", ...)
@@ -232,7 +235,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
                         comment.char = comment.char, ...)
-  } else if (extension == "delim") {
+  } else if (filetype == "delim") {
     #define defaults (this re-creates the behavior of read.delim, but allows
     # behavior to be overridden by user if desired)
     sep <- check_dots("sep", "\t", ...)
@@ -246,7 +249,7 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
                         comment.char = comment.char, ...)
-  } else if (extension == "delim2") {
+  } else if (filetype == "delim2") {
     #define defaults (this re-creates the behavior of read.delim2, but allows
     # behavior to be overridden by user if desired)
     sep <- check_dots("sep", "\t", ...)
@@ -260,21 +263,21 @@ read_gcfile <- function(file, extension, na.strings, sheet = NULL, ...) {
                         na.strings = na.strings, sep = sep,
                         quote = quote, dec = dec, fill = fill,
                         comment.char = comment.char, ...)
-  } else if (extension == "xls") {
+  } else if (filetype == "xls") {
     suppressMessages(
       readgcfile_temp <- 
         as.data.frame(
           parse_dots(readxl::read_xls, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
-  } else if (extension == "xlsx") {
+  } else if (filetype == "xlsx") {
     suppressMessages(
       readgcfile_temp <- 
         as.data.frame(
           parse_dots(readxl::read_xlsx, path = file, 
                       col_names = FALSE, col_types = "text", 
                       sheet = sheet, na = na.strings, ...)))
-  } else {stop("read_gcfile was passed an invalid extension")}
+  } else {stop("read_gcfile was passed an invalid filetype")}
   return(readgcfile_temp)
 }
 
@@ -309,17 +312,17 @@ get_metadata <- function(df, row, col) {
 #' 
 #' @param files A vector of filepaths relative to the current working directory
 #'              where each filepath is a single plate read
-#' @param extension (optional) the extension of the files: 
-#'                  "csv", "xls", or "xlsx"
+#' @param filetype (optional) the type(s) of the files. Options include:
+#' 
+#'                  "csv", "xls", or "xlsx".
 #'                  
-#'                  Alternatively, "tbl" or "table" to use \code{read.table} to
-#'                  read the file, "csv2" to use \code{read.csv2}, "delim" to 
+#'                  "tbl" or "table" to use \code{read.table} to read the file,
+#'                  "csv2" to use \code{read.csv2}, "delim" to 
 #'                  use \code{read.delim}, or "delim2" to use \code{read.delim2}.
 #'                  
-#'                  If none provided, \code{read_blocks} will infer file 
-#'                  extension from provided filenames. When extension is not 
-#'                  "csv", "xls", or "xlsx", will use \code{read.table} to 
-#'                  read the file.
+#'                  If none provided, \code{read_blocks} will infer filetype(s) 
+#'                  from the extension(s) in \code{files}. When extension is 
+#'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the measures data are located in \code{files}.
 #'                 
@@ -387,6 +390,8 @@ get_metadata <- function(df, row, col) {
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'                   or \code{utils::read.table}
+#' @param extension Allowed for backward compatibility; \code{filetype} is
+#'                  now the preferred argument name.
 #' @param block_name_header Allowed for backward compatibility; 
 #'               \code{block_names_header} is now the preferred argument name.
 #' @param ...   Other arguments passed to \code{utils::read.csv},
@@ -430,7 +435,7 @@ get_metadata <- function(df, row, col) {
 #'         provided) and any specified metadata.
 #'
 #' @export     
-read_blocks <- function(files, extension = NULL, 
+read_blocks <- function(files, filetype = NULL, 
                         startrow = NULL, endrow = NULL, 
                         startcol = NULL, endcol = NULL,
                         sheet = NULL, metadata = NULL,
@@ -441,11 +446,17 @@ read_blocks <- function(files, extension = NULL,
                         header = NA, sider = NA,
                         wellnames_numeric = FALSE,
                         na.strings = c("NA", ""),
-                        block_name_header,
+                        extension, block_name_header,
                         ...) {
+  
+  if(!base::missing(extension)) {
+    if(!base::missing(filetype)) {
+      warning("Ignoring extension, using filetype")
+    } else {filetype <- extension}
+  }
   if(!base::missing(block_name_header)) {
     if(!base::missing(block_names_header)) {
-      warning("Ignoring block_name_header")
+      warning("Ignoring block_name_header, using block_names_header")
     } else {block_names_header <- block_name_header}
   }
   
@@ -499,9 +510,9 @@ read_blocks <- function(files, extension = NULL,
     stop("not all metadata have names")
   }
   
-  #Determine file extension(s)
-  extension <- infer_check_ext(
-    extension = extension, files = files,
+  #Determine filetype(s)
+  filetype <- infer_check_filetype(
+    filetype = filetype, files = files,
     needed_len = nblocks, needed_name = "the number of blocks")
   
   #Check metadata for any list entries, if there are and they're not
@@ -543,7 +554,7 @@ read_blocks <- function(files, extension = NULL,
   
   #Import data
   for (i in 1:nblocks) {
-    temp <- read_gcfile(file = files[i], extension = extension[i],
+    temp <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer rows, cols, rownames, colnames
@@ -630,23 +641,23 @@ read_blocks <- function(files, extension = NULL,
 #' A function that imports widemeasures in files into the R environment
 #' 
 #' @details
-#' startrow, endrow, startcol, endcol, timecol, sheet and extension 
+#' startrow, endrow, startcol, endcol, timecol, sheet and filetype 
 #' can either be a single value that applies for all files or
 #' vectors or lists the same length as \code{files}, 
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a widemeasures set of data
-#' @param extension (optional) the extension of the files: 
-#'                  "csv", "xls", or "xlsx"
+#' @param filetype (optional) the type(s) of the files. Options include:
+#' 
+#'                  "csv", "xls", or "xlsx".
 #'                  
-#'                  Alternatively, "tbl" or "table" to use \code{read.table} to
-#'                  read the file, "csv2" to use \code{read.csv2}, "delim" to 
+#'                  "tbl" or "table" to use \code{read.table} to read the file,
+#'                  "csv2" to use \code{read.csv2}, "delim" to 
 #'                  use \code{read.delim}, or "delim2" to use \code{read.delim2}.
 #'                  
-#'                  If none provided, \code{read_blocks} will infer file 
-#'                  extension from provided filenames. When extension is not 
-#'                  "csv", "xls", or "xlsx", will use \code{read.table} to 
-#'                  read the file.
+#'                  If none provided, \code{read_wides} will infer filetype(s) 
+#'                  from the extension(s) in \code{files}. When extension is 
+#'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in \code{files}.
 #'                 
@@ -698,6 +709,8 @@ read_blocks <- function(files, extension = NULL,
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'                   or \code{utils::read.table}
+#' @param extension Allowed for backward compatibility; \code{filetype} is
+#'                  now the preferred argument name.
 #' @param names_to_col Allowed for backward compatibility; 
 #'               \code{run_names_header} is now the preferred argument name.
 #' @param ...   Other arguments passed to \code{utils::read.csv},
@@ -708,7 +721,7 @@ read_blocks <- function(files, extension = NULL,
 #'         A list of widemeasures named by filename
 #' 
 #' @export
-read_wides <- function(files, extension = NULL, 
+read_wides <- function(files, filetype = NULL, 
                        startrow = NULL, endrow = NULL, 
                        startcol = NULL, endcol = NULL,
                        header = TRUE,
@@ -719,7 +732,7 @@ read_wides <- function(files, extension = NULL,
                        run_names_ext = FALSE,
                        metadata = NULL, 
                        na.strings = c("NA", ""),
-                       names_to_col,
+                       extension, names_to_col,
                        ...) {
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow
@@ -727,9 +740,14 @@ read_wides <- function(files, extension = NULL,
   #           if header FALSE
   #             columns numbered V1...Vn
   
+  if(!base::missing(extension)) {
+    if(!base::missing(filetype)) {
+      warning("Ignoring extension, using filetype")
+    } else {filetype <- extension}
+  }
   if(!base::missing(names_to_col)) {
     if(!base::missing(run_names_header)) {
-      warning("Ignoring names_to_col")
+      warning("Ignoring names_to_col, using run_names_header")
     } else {run_names_header <- names_to_col}
   }
 
@@ -780,9 +798,9 @@ read_wides <- function(files, extension = NULL,
     stop("not all metadata have names")
   }
   
-  #Determine file extension(s)
-  extension <- infer_check_ext(
-    extension = extension, files = files,
+  #Determine filetype(s)
+  filetype <- infer_check_filetype(
+    filetype = filetype, files = files,
     needed_len = nwides, needed_name = "the number of wides")
   
   #Check for names error
@@ -818,7 +836,7 @@ read_wides <- function(files, extension = NULL,
   
   #Import data
   for (i in 1:nwides) {
-    temp <- read_gcfile(file = files[i], extension = extension[i],
+    temp <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer colnames/take subsets as needed
@@ -892,17 +910,17 @@ read_wides <- function(files, extension = NULL,
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a tidy-shaped data file
-#' @param extension (optional) the extension of the files: 
-#'                  "csv", "xls", or "xlsx"
+#' @param filetype (optional) the type(s) of the files. Options include:
+#' 
+#'                  "csv", "xls", or "xlsx".
 #'                  
-#'                  Alternatively, "tbl" or "table" to use \code{read.table} to
-#'                  read the file, "csv2" to use \code{read.csv2}, "delim" to 
+#'                  "tbl" or "table" to use \code{read.table} to read the file,
+#'                  "csv2" to use \code{read.csv2}, "delim" to 
 #'                  use \code{read.delim}, or "delim2" to use \code{read.delim2}.
 #'                  
-#'                  If none provided, \code{read_blocks} will infer file 
-#'                  extension from provided filenames. When extension is not 
-#'                  "csv", "xls", or "xlsx", will use \code{read.table} to 
-#'                  read the file.
+#'                  If none provided, \code{read_tidys} will infer filetype(s) 
+#'                  from the extension(s) in \code{files}. When extension is 
+#'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in \code{files}.
 #'                 
@@ -946,6 +964,8 @@ read_wides <- function(files, extension = NULL,
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'                   or \code{utils::read.table}
+#' @param extension Allowed for backward compatibility; \code{filetype} is
+#'                  now the preferred argument name.
 #' @param names_to_col Allowed for backward compatibility; 
 #'               \code{run_names_header} is now the preferred argument name.
 #' @param ...   Other arguments passed to \code{utils::read.csv},
@@ -955,7 +975,7 @@ read_wides <- function(files, extension = NULL,
 #'               
 #' @details
 #' \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-#' \code{sheet} and \code{extension} can either be a single value that 
+#' \code{sheet} and \code{filetype} can either be a single value that 
 #' applies for all files or vectors or lists the same length as \code{files}
 #' 
 #' Note that the startrow is always assumed to be a header
@@ -964,7 +984,7 @@ read_wides <- function(files, extension = NULL,
 #'         A list of tidy-shaped data.frames named by filename
 #'         
 #' @export
-read_tidys <- function(files, extension = NULL, 
+read_tidys <- function(files, filetype = NULL, 
                        startrow = NULL, endrow = NULL, 
                        startcol = NULL, endcol = NULL,
                        sheet = NULL, 
@@ -972,12 +992,17 @@ read_tidys <- function(files, extension = NULL,
                        run_names_dot = FALSE, run_names_path = TRUE,
                        run_names_ext = FALSE,
                        na.strings = c("NA", ""),
-                       names_to_col,
+                       extension, names_to_col,
                        ...) {
   
+  if(!base::missing(extension)) {
+    if(!base::missing(filetype)) {
+      warning("Ignoring extension, using filetype")
+    } else {filetype <- extension}
+  }
   if(!base::missing(names_to_col)) {
     if(!base::missing(run_names_header)) {
-      warning("Ignoring names_to_col")
+      warning("Ignoring names_to_col, using run_names_header")
     } else {run_names_header <- names_to_col}
   }
   
@@ -1006,9 +1031,9 @@ read_tidys <- function(files, extension = NULL,
     sheet <- check_input_dimensions(sheet, "sheet", length(files))
   }
   
-  #Determine file extension(s)
-  extension <- infer_check_ext(
-    extension = extension, files = files, needed_len = length(files))
+  #Determine filetype(s)
+  filetype <- infer_check_filetype(
+    filetype = filetype, files = files, needed_len = length(files))
   
   #Check for names error
   if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}
@@ -1025,7 +1050,7 @@ read_tidys <- function(files, extension = NULL,
   
   #Import data
   for (i in 1:length(files)) {
-    temp <- read_gcfile(file = files[i], extension = extension[i],
+    temp <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer colnames/take subsets as needed

@@ -667,12 +667,12 @@ read_blocks <- function(files, extension = NULL,
 #'              sheet
 #' @param run_names Names to give the widemeasures read in. By default uses the
 #'                   file names if not specified
-#' @param names_to_col Should the run names (provided in \code{run_names}
-#'                     or inferred from \code{files}) be added as a column to the
-#'                     widemeasures? If \code{names_to_col} is NULL, they will not be.
-#'                     If \code{names_to_col} is a string, that string will be
-#'                     the column header for the column where the names will be
-#'                     stored
+#' @param run_names_header Should the run names (provided in \code{run_names}
+#'                     or inferred from \code{files}) be added as a column to 
+#'                     thenwidemeasures? If \code{run_names_header} is NULL, 
+#'                     they will not be. If \code{run_names_header} is a string, 
+#'                     that string will be the column header for the column 
+#'                     where the names will be stored
 #' @param run_names_dot If run_names are inferred from filenames, should 
 #'                        the leading './' (if any) be retained
 #' @param run_names_path If run_names are inferred from filenames, should 
@@ -698,6 +698,8 @@ read_blocks <- function(files, extension = NULL,
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'                   or \code{utils::read.table}
+#' @param names_to_col Allowed for backward compatibility; 
+#'               \code{run_names_header} is now the preferred argument name.
 #' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
@@ -712,17 +714,24 @@ read_wides <- function(files, extension = NULL,
                        header = TRUE,
                        sheet = NULL, 
                        run_names = NULL,
-                       names_to_col = "file",
+                       run_names_header = "file",
                        run_names_dot = FALSE, run_names_path = TRUE,
                        run_names_ext = FALSE,
                        metadata = NULL, 
                        na.strings = c("NA", ""),
+                       names_to_col,
                        ...) {
   #Logic 2.0: if header TRUE
   #             if startrow provided, header is startrow
   #             if startrow not provided, header is 1
   #           if header FALSE
   #             columns numbered V1...Vn
+  
+  if(!base::missing(names_to_col)) {
+    if(!base::missing(run_names_header)) {
+      warning("Ignoring names_to_col")
+    } else {run_names_header <- names_to_col}
+  }
 
   nwides <- max(length(files), length(startrow), length(endrow),
                 length(startcol), length(endcol), length(sheet),
@@ -848,9 +857,9 @@ read_wides <- function(files, extension = NULL,
     } else {metadata_vector <- NULL}
     
     #Add run_names if requested as column
-    if(!is.null(names_to_col)) {
+    if(!is.null(run_names_header)) {
       metadata_vector <- c(run_names[i], metadata_vector)
-      names(metadata_vector)[1] <- names_to_col
+      names(metadata_vector)[1] <- run_names_header
     }
     #Add metadata (incl run names) on LHS of df in same order as specified
     if (!is.null(metadata_vector)) {
@@ -911,20 +920,20 @@ read_wides <- function(files, extension = NULL,
 #'                  file names if not specified. These names may be added
 #'                  to the resulting data frame depending on the value of
 #'                  the \code{names_to_col} argument
-#' @param names_to_col Should the run names (provided in \code{run_names}
+#' @param run_names_header Should the run names (provided in \code{run_names}
 #'                     or inferred from \code{files}) be added as a column to the
 #'                     output? 
 #'                     
-#'                     If \code{names_to_col} is TRUE, they will be added with.
+#'                     If \code{run_names_header} is TRUE, they will be added with
 #'                     the column name "run_name"
 #'                     
-#'                     If \code{names_to_col} is FALSE, they will not be added.
+#'                     If \code{run_names_header} is FALSE, they will not be added.
 #'                     
-#'                     If \code{names_to_col} is a string, they will be added
+#'                     If \code{run_names_header} is a string, they will be added
 #'                     and the column name will be the string specified
-#'                     for \code{names_to_col}.
+#'                     for \code{run_names_header}.
 #'                     
-#'                     If \code{names_to_col} is NULL, they only will be 
+#'                     If \code{run_names_header} is NULL, they only will be 
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
 #' @param run_names_dot If run_names are inferred from filenames, should 
@@ -937,7 +946,8 @@ read_wides <- function(files, extension = NULL,
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
 #'                   or \code{utils::read.table}
-#'                     
+#' @param names_to_col Allowed for backward compatibility; 
+#'               \code{run_names_header} is now the preferred argument name.
 #' @param ...   Other arguments passed to \code{utils::read.csv},
 #'              \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 #'              \code{utils::read.table}
@@ -958,11 +968,19 @@ read_tidys <- function(files, extension = NULL,
                        startrow = NULL, endrow = NULL, 
                        startcol = NULL, endcol = NULL,
                        sheet = NULL, 
-                       run_names = NULL, names_to_col = NULL,
+                       run_names = NULL, run_names_header = NULL,
                        run_names_dot = FALSE, run_names_path = TRUE,
                        run_names_ext = FALSE,
                        na.strings = c("NA", ""),
+                       names_to_col,
                        ...) {
+  
+  if(!base::missing(names_to_col)) {
+    if(!base::missing(run_names_header)) {
+      warning("Ignoring names_to_col")
+    } else {run_names_header <- names_to_col}
+  }
+  
   if (!is.null(startrow) & !is.numeric(startrow)) {
     startrow <- from_excel(startrow)}
   if (!is.null(endrow) & !is.numeric(endrow)) {
@@ -1024,26 +1042,26 @@ read_tidys <- function(files, extension = NULL,
     colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
     
     #Add run name if needed
-    if(is.null(names_to_col)) {
+    if(is.null(run_names_header)) {
       if (length(outputs) > 1) {
         #names should be saved in a column titled run_name
         outputs[[i]] <- cbind(data.frame("run_name" = run_names[i]),
                               outputs[[i]])
       }
     } else {
-      if(is.character(names_to_col)) {
-        #names should be saved in a column titled the value of names_to_col
+      if(is.character(run_names_header)) {
+        #names should be saved in a column titled the value of run_names_header
         temp <- data.frame("run_name" = run_names[i])
-        names(temp) <- names_to_col
+        names(temp) <- run_names_header
         outputs[[i]] <- cbind(temp, outputs[[i]])
       } else {
-        if(names_to_col) {
-          #names_to_col is TRUE
+        if(run_names_header) {
+          #run_names_header is TRUE
           outputs[[i]] <- cbind(data.frame("run_name" = run_names[i]),
                                 outputs[[i]])
-        } else if (!names_to_col) {
-          #names_to_col is FALSE, so add nothing
-        } else {stop("names_to_col is not one of the valid types")}
+        } else if (!run_names_header) {
+          #run_names_header is FALSE, so add nothing
+        } else {stop("run_names_header is not one of the valid types")}
       }
     }
   }

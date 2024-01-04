@@ -53,14 +53,14 @@ infer_names <- function(df,
     if (is.na(sider)) {
       #This is just a way to check if the top-left cell is empty
       # and if so then we'll use the first row/col as rownames/colnames
-      temp <- c(startrow, startcol)
-      temp[is.na(temp)] <- 1
-      if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
-        output$rownames_col <- temp[2]
-        output$startcol <- temp[2] + 1
+      srsc_vec <- c(startrow, startcol)
+      srsc_vec[is.na(srsc_vec)] <- 1
+      if (df[srsc_vec[1], srsc_vec[2]] == "" | is.na(df[srsc_vec[1], srsc_vec[2]])) {
+        output$rownames_col <- srsc_vec[2]
+        output$startcol <- srsc_vec[2] + 1
       } else {
         output$rownames_col <- 0
-        output$startcol <- temp[2]
+        output$startcol <- srsc_vec[2]
       }
     }
   }
@@ -76,30 +76,30 @@ infer_names <- function(df,
     if (is.na(header)) {
       #This is just a way to check if the top-left cell is empty
       # and if so then we'll use the first row/col as rownames/colnames
-      temp <- c(startrow, startcol)
-      temp[is.na(temp)] <- 1
-      if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
-        output$colnames_row <- temp[1]
-        output$startrow <- temp[1] + 1
+      srsc_vec <- c(startrow, startcol)
+      srsc_vec[is.na(srsc_vec)] <- 1
+      if (df[srsc_vec[1], srsc_vec[2]] == "" | is.na(df[srsc_vec[1], srsc_vec[2]])) {
+        output$colnames_row <- srsc_vec[1]
+        output$startrow <- srsc_vec[1] + 1
       } else {
         output$colnames_row <- 0
-        output$startrow <- temp[1]
+        output$startrow <- srsc_vec[1]
       }
     }
   }
   if (is.na(header) & is.na(sider)) {
-    temp <- c(startrow, startcol)
-    temp[is.na(temp)] <- 1
-    if (df[temp[1], temp[2]] == "" | is.na(df[temp[1], temp[2]])) {
-      output$colnames_row <- temp[1]
-      output$startrow <- temp[1] + 1
-      output$rownames_col <- temp[2]
-      output$startcol <- temp[2] + 1
+    srsc_vec <- c(startrow, startcol)
+    srsc_vec[is.na(srsc_vec)] <- 1
+    if (df[srsc_vec[1], srsc_vec[2]] == "" | is.na(df[srsc_vec[1], srsc_vec[2]])) {
+      output$colnames_row <- srsc_vec[1]
+      output$startrow <- srsc_vec[1] + 1
+      output$rownames_col <- srsc_vec[2]
+      output$startcol <- srsc_vec[2] + 1
     } else {
       output$colnames_row <- 0
-      output$startrow <- temp[1]
+      output$startrow <- srsc_vec[1]
       output$rownames_col <- 0
-      output$startcol <- temp[2]
+      output$startcol <- srsc_vec[2]
     }
   }
   
@@ -554,21 +554,21 @@ read_blocks <- function(files, filetype = NULL,
   
   #Import data
   for (i in 1:nblocks) {
-    temp <- read_gcfile(file = files[i], filetype = filetype[i],
+    readfile <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer rows, cols, rownames, colnames
     inferred_rc <- 
-      infer_names(temp, startrow = startrow[i], endrow = endrow[i],
+      infer_names(readfile, startrow = startrow[i], endrow = endrow[i],
                   startcol = startcol[i], endcol = endcol[i],
                   header = header[i], sider = sider[i])
     
-    if(inferred_rc$startrow < 1 || inferred_rc$endrow > nrow(temp) ||
-       inferred_rc$startcol < 1 || inferred_rc$endcol > ncol(temp)) {
+    if(inferred_rc$startrow < 1 || inferred_rc$endrow > nrow(readfile) ||
+       inferred_rc$startcol < 1 || inferred_rc$endcol > ncol(readfile)) {
       stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     
     #Save information to outputs
-    outputs[[i]]$data <- temp[inferred_rc$startrow:inferred_rc$endrow,
+    outputs[[i]]$data <- readfile[inferred_rc$startrow:inferred_rc$endrow,
                               inferred_rc$startcol:inferred_rc$endcol]
     
     #If temp_colnames or temp_rownames haven't been inferred, number them
@@ -577,7 +577,7 @@ read_blocks <- function(files, filetype = NULL,
         temp_colnames <- paste0("C", 1:ncol(outputs[[i]]$data))
       } else {temp_colnames <- 1:ncol(outputs[[i]]$data)}
     } else {
-      temp_colnames <- temp[inferred_rc$colnames_row, 
+      temp_colnames <- readfile[inferred_rc$colnames_row, 
                             inferred_rc$startcol:inferred_rc$endcol]
     }
     if (is.na(inferred_rc$rownames_col)) {
@@ -585,7 +585,7 @@ read_blocks <- function(files, filetype = NULL,
         temp_rownames <- paste0("R", 1:nrow(outputs[[i]]$data))
       } else {temp_rownames <- to_excel(1:nrow(outputs[[i]]$data))}
     } else {
-      temp_rownames <- temp[inferred_rc$startrow:inferred_rc$endrow, 
+      temp_rownames <- readfile[inferred_rc$startrow:inferred_rc$endrow, 
                             inferred_rc$rownames_col]
     }
     
@@ -608,13 +608,13 @@ read_blocks <- function(files, filetype = NULL,
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           outputs[[i]]$metadata[j+1] <- 
-            get_metadata(df = temp, row = metadata[[j]][1],
+            get_metadata(df = readfile, row = metadata[[j]][1],
                          col = metadata[[j]][2])
         } else { #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
           outputs[[i]]$metadata[j+1] <- 
-            get_metadata(df = temp, row = metadata[[j]][[1]][i],
+            get_metadata(df = readfile, row = metadata[[j]][[1]][i],
                          col = metadata[[j]][[2]][i])
         }
       }

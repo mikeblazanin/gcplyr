@@ -152,6 +152,32 @@ infer_check_ext <- function(extension, files, needed_len, ...) {
 }
 
 
+#' An internal function that handles parsing of filestrings for saving
+#' 
+#' @param filestrings The vector of file/path strings
+#' @param keep_dot Should the leading dot and slash be kept and returned
+#' @param keep_path Should the path to the file be kept and returned
+#' @param keep_ext Should the file extension be kept and returned
+#' 
+#' @return Vector of filestrings modified accordingly
+#' 
+#' @noRd
+parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
+  #infer the names from filenames
+  for (i in 1:length(filestrings)) {
+    if(!keep_dot) { #strip off the dot and leading slash from the beginning
+      filestrings[i] <- sub("^\\./", "", filestrings[i])
+    }
+    if(!keep_path) { #strip off the path from the beginning
+      filestrings[i] <- sub("(^\\.?/?).*/([^/]*$)", "\\1\\2", filestrings[i])
+    }
+    if(!keep_ext) { #strip off the extension from the end
+      filestrings[i] <- sub("(^.*)\\.[[:alnum:]]+$", "\\1", filestrings[i])
+    }
+  }
+  return(filestrings)
+}
+
 #' An internal function that handles reading a file in table format
 #' 
 #' @param file The filename or path
@@ -327,6 +353,12 @@ get_metadata <- function(df, row, col) {
 #'                 from the filenames
 #' @param block_name_header The name of the metadata field containing the
 #'                          \code{block_names}
+#' @param block_names_dot If block_names are inferred from filenames, should 
+#'                        the leading './' (if any) be retained
+#' @param block_names_path If block_names are inferred from filenames, should 
+#'                        the path (if any) be retained
+#' @param block_names_ext If block_names are inferred from filenames, should 
+#'                        the file extension (if any) be retained
 #' @param header   \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 #'                 such values, indicating whether the file(s) contains the
 #'                 column names as its first line. If \code{header = NA}
@@ -402,6 +434,8 @@ read_blocks <- function(files, extension = NULL,
                         sheet = NULL, metadata = NULL,
                         block_names = NULL,
                         block_name_header = "block_name",
+                        block_names_dot = FALSE,
+                        block_names_path = TRUE, block_names_ext = FALSE,
                         header = NA, sider = NA,
                         wellnames_numeric = FALSE,
                         na.strings = c("NA", ""), ...) {
@@ -543,10 +577,10 @@ read_blocks <- function(files, extension = NULL,
     if (!is.null(block_names)) { #block_names were provided
       outputs[[i]]$metadata[block_name_header] <- block_names[i]
     } else { #block_names were not provided, infer from filename
-      #infer the names from filenames, stripping off the extension from end
-      # and the dot at the beginning (if any)
       outputs[[i]]$metadata[block_name_header] <- 
-        sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files[i])
+        parse_filestrings(
+          files[i], keep_dot = block_names_dot, 
+          keep_path = block_names_path, keep_ext = block_names_ext)
     }
     #Add user-specified metadata (if any)
     if (!is.null(metadata)) {
@@ -629,6 +663,12 @@ read_blocks <- function(files, extension = NULL,
 #'                     If \code{names_to_col} is a string, that string will be
 #'                     the column header for the column where the names will be
 #'                     stored
+#' @param run_names_dot If run_names are inferred from filenames, should 
+#'                        the leading './' (if any) be retained
+#' @param run_names_path If run_names are inferred from filenames, should 
+#'                        the path (if any) be retained
+#' @param run_names_ext If run_names are inferred from filenames, should 
+#'                        the file extension (if any) be retained
 #' @param metadata (optional) non-spectrophotometric data that should be 
 #'                 associated with each read widemeasures. A named list where 
 #'                 each item in the list is either: a vector of length 2, or
@@ -663,6 +703,8 @@ read_wides <- function(files, extension = NULL,
                        sheet = NULL, 
                        run_names = NULL,
                        names_to_col = "file",
+                       run_names_dot = FALSE, run_names_path = TRUE,
+                       run_names_ext = FALSE,
                        metadata = NULL, 
                        na.strings = c("NA", ""),
                        ...) {
@@ -729,9 +771,9 @@ read_wides <- function(files, extension = NULL,
   
   #If run_names not provided, infer from filenames
   if (is.null(run_names)) {
-    #infer the names from filenames, stripping off the extension from end
-    # and the dot at the beginning (if any)
-    run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
+    run_names <- parse_filestrings(
+      files, keep_dot = run_names_dot, 
+      keep_path = run_names_path, keep_ext = run_names_ext)
   }
   
   if (!is.null(metadata)) {
@@ -875,6 +917,12 @@ read_wides <- function(files, extension = NULL,
 #'                     If \code{names_to_col} is NULL, they only will be 
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
+#' @param run_names_dot If run_names are inferred from filenames, should 
+#'                        the leading './' (if any) be retained
+#' @param run_names_path If run_names are inferred from filenames, should 
+#'                        the path (if any) be retained
+#' @param run_names_ext If run_names are inferred from filenames, should 
+#'                        the file extension (if any) be retained
 #' @param na.strings A character vector of strings which are to be interpreted
 #'                   as \code{NA} values by \code{utils::read.csv},
 #'                   \code{readxl::read_xls}, \code{readxl::read_xlsx},
@@ -901,6 +949,8 @@ read_tidys <- function(files, extension = NULL,
                        startcol = NULL, endcol = NULL,
                        sheet = NULL, 
                        run_names = NULL, names_to_col = NULL,
+                       run_names_dot = FALSE, run_names_path = TRUE,
+                       run_names_ext = FALSE,
                        na.strings = c("NA", ""),
                        ...) {
   if (!is.null(startrow) & !is.numeric(startrow)) {
@@ -937,9 +987,9 @@ read_tidys <- function(files, extension = NULL,
   
   #If run_names not provided, infer from filenames
   if (is.null(run_names)) {
-    #infer the names from filenames, stripping off the extension from end
-    # and the dot at the beginning (if any)
-    run_names <- sub("^\\.?/?(.*)\\.[[:alnum:]]+$", "\\1", files)
+    run_names <- parse_filestrings(
+      files, keep_dot = run_names_dot, 
+      keep_path = run_names_path, keep_ext = run_names_ext)
   }
   
   #Create empty recipient list

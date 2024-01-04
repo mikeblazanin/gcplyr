@@ -65,6 +65,42 @@ test_that("infer_names works as expected", {
          rownames_col = NA, colnames_row = NA))
 })
 
+test_that("parse_filestrings works correctly", {
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = TRUE, keep_path = TRUE, keep_ext = TRUE),
+    "./test/test2/test3.csv")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = FALSE, keep_path = TRUE, keep_ext = TRUE),
+    "test/test2/test3.csv")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = TRUE, keep_path = FALSE, keep_ext = TRUE),
+    "./test3.csv")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = TRUE, keep_path = TRUE, keep_ext = FALSE),
+    "./test/test2/test3")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = FALSE, keep_path = FALSE, keep_ext = TRUE),
+    "test3.csv")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = FALSE, keep_path = TRUE, keep_ext = FALSE),
+    "test/test2/test3")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = TRUE, keep_path = FALSE, keep_ext = FALSE),
+    "./test3")
+  expect_equal(
+    parse_filestrings("./test/test2/test3.csv",
+                      keep_dot = FALSE, keep_path = FALSE, keep_ext = FALSE),
+    "test3")
+})
+
+
 test_that("read_blocks reads data correctly", {
   #Make test blockcurves data
   

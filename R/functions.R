@@ -554,21 +554,21 @@ read_blocks <- function(files, filetype = NULL,
   
   #Import data
   for (i in 1:nblocks) {
-    readfile <- read_gcfile(file = files[i], filetype = filetype[i],
+    rawfile <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer rows, cols, rownames, colnames
     inferred_rc <- 
-      infer_names(readfile, startrow = startrow[i], endrow = endrow[i],
+      infer_names(rawfile, startrow = startrow[i], endrow = endrow[i],
                   startcol = startcol[i], endcol = endcol[i],
                   header = header[i], sider = sider[i])
     
-    if(inferred_rc$startrow < 1 || inferred_rc$endrow > nrow(readfile) ||
-       inferred_rc$startcol < 1 || inferred_rc$endcol > ncol(readfile)) {
+    if(inferred_rc$startrow < 1 || inferred_rc$endrow > nrow(rawfile) ||
+       inferred_rc$startcol < 1 || inferred_rc$endcol > ncol(rawfile)) {
       stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     
     #Save information to outputs
-    outputs[[i]]$data <- readfile[inferred_rc$startrow:inferred_rc$endrow,
+    outputs[[i]]$data <- rawfile[inferred_rc$startrow:inferred_rc$endrow,
                               inferred_rc$startcol:inferred_rc$endcol]
     
     #If temp_colnames or temp_rownames haven't been inferred, number them
@@ -577,7 +577,7 @@ read_blocks <- function(files, filetype = NULL,
         temp_colnames <- paste0("C", 1:ncol(outputs[[i]]$data))
       } else {temp_colnames <- 1:ncol(outputs[[i]]$data)}
     } else {
-      temp_colnames <- readfile[inferred_rc$colnames_row, 
+      temp_colnames <- rawfile[inferred_rc$colnames_row, 
                             inferred_rc$startcol:inferred_rc$endcol]
     }
     if (is.na(inferred_rc$rownames_col)) {
@@ -585,7 +585,7 @@ read_blocks <- function(files, filetype = NULL,
         temp_rownames <- paste0("R", 1:nrow(outputs[[i]]$data))
       } else {temp_rownames <- to_excel(1:nrow(outputs[[i]]$data))}
     } else {
-      temp_rownames <- readfile[inferred_rc$startrow:inferred_rc$endrow, 
+      temp_rownames <- rawfile[inferred_rc$startrow:inferred_rc$endrow, 
                             inferred_rc$rownames_col]
     }
     
@@ -608,13 +608,13 @@ read_blocks <- function(files, filetype = NULL,
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           outputs[[i]]$metadata[j+1] <- 
-            get_metadata(df = readfile, row = metadata[[j]][1],
+            get_metadata(df = rawfile, row = metadata[[j]][1],
                          col = metadata[[j]][2])
         } else { #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
           outputs[[i]]$metadata[j+1] <- 
-            get_metadata(df = readfile, row = metadata[[j]][[1]][i],
+            get_metadata(df = rawfile, row = metadata[[j]][[1]][i],
                          col = metadata[[j]][[2]][i])
         }
       }
@@ -836,22 +836,22 @@ read_wides <- function(files, filetype = NULL,
   
   #Import data
   for (i in 1:nwides) {
-    temp <- read_gcfile(file = files[i], filetype = filetype[i],
+    rawfile <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer colnames/take subsets as needed
-    if(is.na(endrow[i])) {endrow[i] <- nrow(temp)}
-    if(is.na(endcol[i])) {endcol[i] <- ncol(temp)}
+    if(is.na(endrow[i])) {endrow[i] <- nrow(rawfile)}
+    if(is.na(endcol[i])) {endcol[i] <- ncol(rawfile)}
     if(is.na(startcol[i])) {startcol[i] <- 1}
     if (is.na(startrow[i])) {startrow[i] <- 1}
-    if(startrow[i] < 1 || endrow[i] > nrow(temp) ||
-       startcol[i] < 1 || endcol[i] > ncol(temp)) {
+    if(startrow[i] < 1 || endrow[i] > nrow(rawfile) ||
+       startcol[i] < 1 || endcol[i] > ncol(rawfile)) {
       stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     if (header == TRUE) { #so colnames taken from file
-      outputs[[i]] <- temp[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
-      colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
+      outputs[[i]] <- rawfile[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
+      colnames(outputs[[i]]) <- rawfile[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
-      outputs[[i]] <- temp[startrow[i]:endrow[i], startcol[i]:endcol[i]]
+      outputs[[i]] <- rawfile[startrow[i]:endrow[i], startcol[i]:endcol[i]]
       colnames(outputs[[i]]) <- paste0("V", 1:ncol(outputs[[i]]))
     }
     
@@ -862,13 +862,13 @@ read_wides <- function(files, filetype = NULL,
       for (j in 1:length(metadata)) {
         if(!is.list(metadata[[j]])) { #metadata item is a vector
           metadata_vector[j] <- 
-            get_metadata(df = temp, row = metadata[[j]][1],
+            get_metadata(df = rawfile, row = metadata[[j]][1],
                          col = metadata[[j]][2])
         } else {  #metadata item is a list (presumably of two vectors)
           #the first vector is the rows for each ith block
           #the second vector is the columns for each ith block
           metadata_vector[j] <- 
-            get_metadata(df = temp, row = metadata[[j]][[1]][i],
+            get_metadata(df = rawfile, row = metadata[[j]][[1]][i],
                          col = metadata[[j]][[2]][i])
         }
       }
@@ -1050,21 +1050,21 @@ read_tidys <- function(files, filetype = NULL,
   
   #Import data
   for (i in 1:length(files)) {
-    temp <- read_gcfile(file = files[i], filetype = filetype[i],
+    rawfile <- read_gcfile(file = files[i], filetype = filetype[i],
                         na.strings = na.strings, sheet = sheet[i], ...)
     
     #Infer colnames/take subsets as needed
-    if(is.na(endrow[i])) {endrow[i] <- nrow(temp)}
-    if(is.na(endcol[i])) {endcol[i] <- ncol(temp)}
+    if(is.na(endrow[i])) {endrow[i] <- nrow(rawfile)}
+    if(is.na(endcol[i])) {endcol[i] <- ncol(rawfile)}
     if(is.na(startcol[i])) {startcol[i] <- 1}
     if (is.na(startrow[i])) {startrow[i] <- 1}
-    if(startrow[i] < 1 || endrow[i] > nrow(temp) ||
-       startcol[i] < 1 || endcol[i] > ncol(temp)) {
+    if(startrow[i] < 1 || endrow[i] > nrow(rawfile) ||
+       startcol[i] < 1 || endcol[i] > ncol(rawfile)) {
       stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     
     #Get header
-    outputs[[i]] <- temp[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
-    colnames(outputs[[i]]) <- temp[(startrow[i]), startcol[i]:endcol[i]]
+    outputs[[i]] <- rawfile[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
+    colnames(outputs[[i]]) <- rawfile[(startrow[i]), startcol[i]:endcol[i]]
     
     #Add run name if needed
     if(is.null(run_names_header)) {
@@ -1076,9 +1076,9 @@ read_tidys <- function(files, filetype = NULL,
     } else {
       if(is.character(run_names_header)) {
         #names should be saved in a column titled the value of run_names_header
-        temp <- data.frame("run_name" = run_names[i])
-        names(temp) <- run_names_header
-        outputs[[i]] <- cbind(temp, outputs[[i]])
+        temp_runname_df <- data.frame("run_name" = run_names[i])
+        names(temp_runname_df) <- run_names_header
+        outputs[[i]] <- cbind(temp_runname_df, outputs[[i]])
       } else {
         if(run_names_header) {
           #run_names_header is TRUE

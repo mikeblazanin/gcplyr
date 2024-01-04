@@ -118,6 +118,8 @@ infer_names <- function(df,
 #' @param files The vector of filenames/paths
 #' @param needed_len Parameter to pass to \code{check_input_dimensions} for
 #'                   desired length of output vector
+#' @param needed_name Parameter to pass to \code{check_input_dimensions} for
+#'                    name of desired length for error message
 #' @param ... Other arguments to pass to \code{check_input_dimensions}, most
 #'            frequently \code{needed_name} for what the desired length 
 #'            corresponds to (e.g. number of files)
@@ -125,7 +127,7 @@ infer_names <- function(df,
 #' @return vector of filetypes
 #' 
 #' @noRd
-infer_check_filetype <- function(filetype, files, needed_len, ...) {
+infer_check_filetype <- function(filetype, files, needed_len, needed_name, ...) {
   valid_exts <- c("tbl", "table", "csv", "csv2", 
                   "delim", "delim2", "xls", "xlsx")
   
@@ -1033,7 +1035,8 @@ read_tidys <- function(files, filetype = NULL,
   
   #Determine filetype(s)
   filetype <- infer_check_filetype(
-    filetype = filetype, files = files, needed_len = length(files))
+    filetype = filetype, files = files, needed_len = length(files),
+    needed_name = "the number of tidys")
   
   #Check for names error
   if (!is.null(run_names)) {stopifnot(length(run_names) == length(files))}

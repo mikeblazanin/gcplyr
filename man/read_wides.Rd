@@ -6,7 +6,7 @@
 \usage{
 read_wides(
   files,
-  extension = NULL,
+  filetype = NULL,
   startrow = NULL,
   endrow = NULL,
   startcol = NULL,
@@ -14,12 +14,14 @@ read_wides(
   header = TRUE,
   sheet = NULL,
   run_names = NULL,
-  names_to_col = "file",
+  run_names_header = "file",
   run_names_dot = FALSE,
   run_names_path = TRUE,
   run_names_ext = FALSE,
   metadata = NULL,
   na.strings = c("NA", ""),
+  extension,
+  names_to_col,
   ...
 )
 }
@@ -27,17 +29,17 @@ read_wides(
 \item{files}{A vector of filepaths (relative to current working directory)
 where each one is a widemeasures set of data}
 
-\item{extension}{(optional) the extension of the files: 
-"csv", "xls", or "xlsx"
+\item{filetype}{(optional) the type(s) of the files. Options include:
 
-Alternatively, "tbl" or "table" to use \code{read.table} to
-read the file, "csv2" to use \code{read.csv2}, "delim" to 
-use \code{read.delim}, or "delim2" to use \code{read.delim2}.
-
-If none provided, \code{read_blocks} will infer file 
-extension from provided filenames. When extension is not 
-"csv", "xls", or "xlsx", will use \code{read.table} to 
-read the file.}
+                 "csv", "xls", or "xlsx".
+                 
+                 "tbl" or "table" to use \code{read.table} to read the file,
+                 "csv2" to use \code{read.csv2}, "delim" to 
+                 use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+                 
+                 If none provided, \code{read_wides} will infer filetype(s) 
+                 from the extension(s) in \code{files}. When extension is 
+                 not "csv", "xls", or "xlsx", will use "table".}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
 the data are located in \code{files}.
@@ -63,12 +65,12 @@ sheet}
 \item{run_names}{Names to give the widemeasures read in. By default uses the
 file names if not specified}
 
-\item{names_to_col}{Should the run names (provided in \code{run_names}
-or inferred from \code{files}) be added as a column to the
-widemeasures? If \code{names_to_col} is NULL, they will not be.
-If \code{names_to_col} is a string, that string will be
-the column header for the column where the names will be
-stored}
+\item{run_names_header}{Should the run names (provided in \code{run_names}
+or inferred from \code{files}) be added as a column to 
+thenwidemeasures? If \code{run_names_header} is NULL, 
+they will not be. If \code{run_names_header} is a string, 
+that string will be the column header for the column 
+where the names will be stored}
 
 \item{run_names_dot}{If run_names are inferred from filenames, should 
 the leading './' (if any) be retained}
@@ -100,6 +102,12 @@ as \code{NA} values by \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx},
 or \code{utils::read.table}}
 
+\item{extension}{Allowed for backward compatibility; \code{filetype} is
+now the preferred argument name.}
+
+\item{names_to_col}{Allowed for backward compatibility; 
+\code{run_names_header} is now the preferred argument name.}
+
 \item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
 \code{utils::read.table}}
@@ -112,7 +120,7 @@ A dataframe containing a single widemeasures, or
 A function that imports widemeasures in files into the R environment
 }
 \details{
-startrow, endrow, startcol, endcol, timecol, sheet and extension 
+startrow, endrow, startcol, endcol, timecol, sheet and filetype 
 can either be a single value that applies for all files or
 vectors or lists the same length as \code{files},
 }

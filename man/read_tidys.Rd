@@ -6,18 +6,20 @@
 \usage{
 read_tidys(
   files,
-  extension = NULL,
+  filetype = NULL,
   startrow = NULL,
   endrow = NULL,
   startcol = NULL,
   endcol = NULL,
   sheet = NULL,
   run_names = NULL,
-  names_to_col = NULL,
+  run_names_header = NULL,
   run_names_dot = FALSE,
   run_names_path = TRUE,
   run_names_ext = FALSE,
   na.strings = c("NA", ""),
+  extension,
+  names_to_col,
   ...
 )
 }
@@ -25,17 +27,17 @@ read_tidys(
 \item{files}{A vector of filepaths (relative to current working directory)
 where each one is a tidy-shaped data file}
 
-\item{extension}{(optional) the extension of the files: 
-"csv", "xls", or "xlsx"
+\item{filetype}{(optional) the type(s) of the files. Options include:
 
-Alternatively, "tbl" or "table" to use \code{read.table} to
-read the file, "csv2" to use \code{read.csv2}, "delim" to 
-use \code{read.delim}, or "delim2" to use \code{read.delim2}.
-
-If none provided, \code{read_blocks} will infer file 
-extension from provided filenames. When extension is not 
-"csv", "xls", or "xlsx", will use \code{read.table} to 
-read the file.}
+                 "csv", "xls", or "xlsx".
+                 
+                 "tbl" or "table" to use \code{read.table} to read the file,
+                 "csv2" to use \code{read.csv2}, "delim" to 
+                 use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+                 
+                 If none provided, \code{read_tidys} will infer filetype(s) 
+                 from the extension(s) in \code{files}. When extension is 
+                 not "csv", "xls", or "xlsx", will use "table".}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
 the data are located in \code{files}.
@@ -57,20 +59,20 @@ file names if not specified. These names may be added
 to the resulting data frame depending on the value of
 the \code{names_to_col} argument}
 
-\item{names_to_col}{Should the run names (provided in \code{run_names}
+\item{run_names_header}{Should the run names (provided in \code{run_names}
 or inferred from \code{files}) be added as a column to the
 output? 
 
-If \code{names_to_col} is TRUE, they will be added with.
+If \code{run_names_header} is TRUE, they will be added with
 the column name "run_name"
 
-If \code{names_to_col} is FALSE, they will not be added.
+If \code{run_names_header} is FALSE, they will not be added.
 
-If \code{names_to_col} is a string, they will be added
+If \code{run_names_header} is a string, they will be added
 and the column name will be the string specified
-for \code{names_to_col}.
+for \code{run_names_header}.
 
-If \code{names_to_col} is NULL, they only will be 
+If \code{run_names_header} is NULL, they only will be 
 added if there are multiple tidy data.frames being read.
 In which case, the column name will be "run_name"}
 
@@ -87,6 +89,12 @@ the file extension (if any) be retained}
 as \code{NA} values by \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx},
 or \code{utils::read.table}}
+
+\item{extension}{Allowed for backward compatibility; \code{filetype} is
+now the preferred argument name.}
+
+\item{names_to_col}{Allowed for backward compatibility; 
+\code{run_names_header} is now the preferred argument name.}
 
 \item{...}{Other arguments passed to \code{utils::read.csv},
 \code{readxl::read_xls}, \code{readxl::read_xlsx}, or
@@ -107,7 +115,7 @@ or run names as an added column in the output.
 }
 \details{
 \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-\code{sheet} and \code{extension} can either be a single value that 
+\code{sheet} and \code{filetype} can either be a single value that 
 applies for all files or vectors or lists the same length as \code{files}
 
 Note that the startrow is always assumed to be a header

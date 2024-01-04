@@ -15,6 +15,9 @@ read_wides(
   sheet = NULL,
   run_names = NULL,
   names_to_col = "file",
+  run_names_dot = FALSE,
+  run_names_path = TRUE,
+  run_names_ext = FALSE,
   metadata = NULL,
   na.strings = c("NA", ""),
   ...
@@ -66,6 +69,15 @@ widemeasures? If \code{names_to_col} is NULL, they will not be.
 If \code{names_to_col} is a string, that string will be
 the column header for the column where the names will be
 stored}
+
+\item{run_names_dot}{If run_names are inferred from filenames, should 
+the leading './' (if any) be retained}
+
+\item{run_names_path}{If run_names are inferred from filenames, should 
+the path (if any) be retained}
+
+\item{run_names_ext}{If run_names are inferred from filenames, should 
+the file extension (if any) be retained}
 
 \item{metadata}{(optional) non-spectrophotometric data that should be 
 associated with each read widemeasures. A named list where 

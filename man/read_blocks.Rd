@@ -15,6 +15,9 @@ read_blocks(
   metadata = NULL,
   block_names = NULL,
   block_name_header = "block_name",
+  block_names_dot = FALSE,
+  block_names_path = TRUE,
+  block_names_ext = FALSE,
   header = NA,
   sider = NA,
   wellnames_numeric = FALSE,
@@ -75,6 +78,15 @@ from the filenames}
 
 \item{block_name_header}{The name of the metadata field containing the
 \code{block_names}}
+
+\item{block_names_dot}{If block_names are inferred from filenames, should 
+the leading './' (if any) be retained}
+
+\item{block_names_path}{If block_names are inferred from filenames, should 
+the path (if any) be retained}
+
+\item{block_names_ext}{If block_names are inferred from filenames, should 
+the file extension (if any) be retained}
 
 \item{header}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 such values, indicating whether the file(s) contains the

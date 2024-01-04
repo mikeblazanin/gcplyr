@@ -14,6 +14,9 @@ read_tidys(
   sheet = NULL,
   run_names = NULL,
   names_to_col = NULL,
+  run_names_dot = FALSE,
+  run_names_path = TRUE,
+  run_names_ext = FALSE,
   na.strings = c("NA", ""),
   ...
 )
@@ -70,6 +73,15 @@ for \code{names_to_col}.
 If \code{names_to_col} is NULL, they only will be 
 added if there are multiple tidy data.frames being read.
 In which case, the column name will be "run_name"}
+
+\item{run_names_dot}{If run_names are inferred from filenames, should 
+the leading './' (if any) be retained}
+
+\item{run_names_path}{If run_names are inferred from filenames, should 
+the path (if any) be retained}
+
+\item{run_names_ext}{If run_names are inferred from filenames, should 
+the file extension (if any) be retained}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \code{utils::read.csv},

@@ -10,7 +10,7 @@ scales::show_col(my_cols)
 
 dat <- cran_downloads(
   package = c("gcplyr", "QurvE", "growthcurver", "growthrates",
-              "opm", "growr", "biogrowth", ), 
+              "opm", "growr", "biogrowth"), 
   from = "2023-01-01", to = (Sys.Date()-1))
 dat$package <- relevel(factor(dat$package), ref = "gcplyr")
 
@@ -38,7 +38,7 @@ ggplot(data = plotdat, aes(x = date)) +
   geom_line(data = filter(plotdat, package != "gcplyr"), 
             aes(y = sm_count, color = package), alpha = 0.8) +
   scale_color_manual(values = colors) +
-  geom_point(data = filter(plotdat, package == "gcplyr"), 
+  geom_point(data = filter(plotdat, package == "gcplyr"),
              aes(y = count), alpha = 0.5) +
   geom_line(data = filter(plotdat, package == "gcplyr"), 
             aes(y = sm_count), lwd = 1.25, alpha = 0.5) +

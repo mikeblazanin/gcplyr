@@ -809,7 +809,8 @@ extr_val <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {
   if(allNA_NA ==  TRUE && all(is.na(i))) {
     return(NA)
   } else {
-    i <- i[!is.na(i)]
+    x <- x[!is.na(x)]
     return(x[i])
   }
 }
+

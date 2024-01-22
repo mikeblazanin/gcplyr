@@ -2573,7 +2573,8 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'          \code{formula} and \code{data} *must* be provided via \code{...}
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
-#'                  "moving-average", "moving-median", "loess", and "gam"
+#'                  "moving-average", "moving-median", "loess", "gam",
+#'                  and "smooth.spline".
 #' @param subset_by An optional vector as long as \code{y}. 
 #'                  \code{y} will be split by the unique values of this vector 
 #'                  and the derivative for each group will be calculated 
@@ -2625,7 +2626,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            \code{mgcv::s} to smooth the data. The data argument should be a 
 #'            \code{data.frame} containing the variables in the formula.
 #'            In such cases, \code{subset_by} can still be specified as a vector
-#'            as long as \code{nrow(data)}
+#'            with length \code{nrow(data)}
 #' 
 #' @return If \code{return_fitobject == FALSE:}
 #' 
@@ -2641,8 +2642,9 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
   
-  if(!sm_method %in% c("moving-average", "moving-median", "gam", "loess")) {
-    stop("sm_method must be one of: moving-average, moving-median, gam, or loess")
+  if(!sm_method %in% c("moving-average", "moving-median", "gam", 
+                       "loess", "smooth.spline")) {
+    stop("sm_method must be one of: moving-average, moving-median, gam, loess, or smooth.spline")
   }
 
   check_grouped(name_for_error = "smooth_data", subset_by = subset_by)
@@ -2700,42 +2702,50 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   for (i in 1:length(unique(subset_by))) {
     #Calculate fitted values
     if (sm_method == "moving-average") {
-      temp <- 
+      smoothed_object <- 
         list(
           moving_average(formula = formula, 
                          data = data[subset_by == unique(subset_by)[i], ],
                          ...))
-      names(temp) <- "fitted"
+      names(smoothed_object) <- "fitted"
     } else if (sm_method == "moving-median") {
-      temp <-
+      smoothed_object <-
         list(
           moving_median(formula = formula,
                         data = data[subset_by == unique(subset_by)[i], ],
                         ...))
-      names(temp) <- "fitted"
+      names(smoothed_object) <- "fitted"
     } else if (sm_method == "loess") {
-      temp <- 
+      smoothed_object <- 
         stats::loess(formula = formula, 
                      data = data[subset_by == unique(subset_by)[i], ],
                      na.action = "na.exclude", ...)
     } else if (sm_method == "gam") {
-      temp <- 
+      smoothed_object <- 
         parse_dots(
           FUN = mgcv::gam,
           formula = formula, data = data[subset_by == unique(subset_by)[i], ],
           na.action = "na.exclude", ...)
+    } else if (sm_method == "smooth.spline") {
+      smoothed_object <-
+        parse_dots(
+          FUN = stats::smooth.spline,
+          x = x, y = y,
+          ...)
     }
     
     #Store results as requested
     if (return_fitobject) {
-      fits_list[[i]] <- temp
+      fits_list[[i]] <- smoothed_object
     } else {
       #Fill in output if needed
       if(sm_method %in% c("gam", "loess")) {
         out[subset_by == unique(subset_by)[i]] <-
-          stats::predict(temp, newdata = data[subset_by == unique(subset_by)[i], ])
+          stats::predict(smoothed_object, newdata = data[subset_by == unique(subset_by)[i], ])
+      } else if (sm_method == "smooth.spline") {
+        out[subset_by == unique(subset_by)[i]] <- smoothed_object$y
       } else {
-        out[subset_by == unique(subset_by)[i]] <- temp[["fitted"]]
+        out[subset_by == unique(subset_by)[i]] <- smoothed_object[["fitted"]]
       }
     }
   }

@@ -288,11 +288,13 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 # Maximum growth rate and minimum doubling time {#max_percap}
 
-If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("gc05_process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`). 
+If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("gc05_process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`).
 
 We can also save the time when this maximum occurs using the `which_max_gc` function. `which_max_gc` returns the *index* of the maximum value, so then we can get the `Time` value at that index and save it to a column titled `max_percap_time`. (`which_max_gc` and `extr_val` work just like `R`'s built-in `which.max` and `[`, but with better default settings for growth curve analyses with `summarize`)
 
 If you would like the equivalent minimum doubling time, you can simply calculate the maximum growth rate as above and then convert that into the equivalent minimum doubling time using the `doubling_time` function.
+
+It is important to note that `gcplyr` calculates the maximum *realized* growth rate during your growth curve. This is distinct from the intrinsic growth rate (the maximum *possible* growth rate), although the two will be quite similar if you started your growth curves at sufficiently low densities (see: [Ghenu et al., 2024. Challenges and pitfalls of inferring microbial growth rates from lab cultures. Frontiers in Ecology and Evolution.](https://doi.org/10.3389/fevo.2023.1313500))
 
 ```{r}
 ex_dat_mrg_sum <- 

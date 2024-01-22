@@ -37,7 +37,7 @@ ggplot(data = plotdat, aes(x = date)) +
   #            aes(y = count, color = package), alpha = 0.5) +
   geom_line(data = filter(plotdat, package != "gcplyr"), 
             aes(y = sm_count, color = package), alpha = 0.8) +
-  scale_color_manual(values = colors) +
+  scale_color_manual(values = colors[c(1,2,3,7)]) +
   geom_point(data = filter(plotdat, package == "gcplyr"),
              aes(y = count), alpha = 0.5) +
   geom_line(data = filter(plotdat, package == "gcplyr"), 

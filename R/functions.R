@@ -2565,10 +2565,12 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' This function calls other functions to smooth growth curve data
 #' 
 #' @param ... Arguments passed to \code{stats::loess}, \code{mgcv::gam},
-#'            \code{moving_average}, or \code{moving_median}. Typically
-#'            includes tuning parameter(s), which in some cases are required.
+#'            \code{moving_average}, \code{moving_median}, or 
+#'            \code{stats::smooth.spline}. Typically includes tuning 
+#'            parameter(s), which in some cases are required.
 #'            See Details for more information.
-#' @param x An (optional) vector of predictor values to smooth along (e.g. time)
+#' @param x An (often optional) vector of predictor values to smooth along 
+#'          (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density). If NULL,
 #'          \code{formula} and \code{data} *must* be provided via \code{...}
 #' @param sm_method Argument specifying which smoothing method should
@@ -2641,12 +2643,11 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         return_fitobject = FALSE) {
-  
   if(!sm_method %in% c("moving-average", "moving-median", "gam", 
                        "loess", "smooth.spline")) {
     stop("sm_method must be one of: moving-average, moving-median, gam, loess, or smooth.spline")
   }
-
+  
   check_grouped(name_for_error = "smooth_data", subset_by = subset_by)
   
   #Parse x and y, and/or ... args, into formula and data
@@ -2729,7 +2730,8 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
     } else if (sm_method == "smooth.spline") {
       smoothed_object <-
         parse_dots(
-          FUN = stats::smooth.spline,
+          FUN = gc_smooth.spline,
+          SUBFUN = stats::smooth.spline,
           x = x, y = y,
           ...)
     }
@@ -2899,6 +2901,66 @@ moving_median <- function(formula, data, window_width_n = NULL,
   
   return(results)
 }
+
+#' Fit a Smoothing Spline
+#' 
+#' This function is a wrapper for \code{stats::smooth.spline}, which fits 
+#' a cubic smoothing spline to the supplied data, but includes the option
+#' to remove \code{NA} values, and returns values in the original order.
+#' 
+#' @param x A vector giving the values of the predictor variable, or a
+#'          list or a two-column matrix specifying x and y.
+#' @param y A vector giving the values of the response variable. If \code{y} is
+#'          missing or \code{NULL}, the responses are assumed to be specified
+#'          by \code{x}, with \code{x} the index vector.
+#' @param ... Additional arguments passed to \code{stats::smooth.spline}.
+#' @param na.rm logical whether NA's should be removed before analyzing.
+#'              Required to be TRUE if any \code{x} or \code{y} values are NA.
+#'              
+#' @details See \code{stats::smooth.spline}              
+#' 
+#' @return Similar to \code{stats::smooth.spline}, an object of class 
+#'         "\code{smooth.spline"} with many components. Differs in that
+#'         x, y, and w have NA's at any indices where \code{x} or \code{y} were 
+#'         NA in the inputs, and x, y, and w are returned to match the input 
+#'         \code{x} in order and length
+#' 
+#' @export   
+gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
+  #remove NAs
+  xy_nas_removed <- rm_nas(x = x, y = y, 
+                           na.rm = na.rm, stopifNA = TRUE)
+  if(length(xy_nas_removed[["y"]]) <= 1) {ans <- NA; next}
+  
+  #Reorder as needed
+  xy_reordered <- reorder_xy(x = xy_nas_removed[["x"]], y = xy_nas_removed[["y"]])
+  
+  #Calculate
+  ans <- stats::smooth.spline(x = xy_reordered[["x"]],
+                              y = xy_reordered[["y"]],
+                              ...)
+  
+  #Back to original order
+  # (but smooth.spline only returns distinct values of x, so this matching
+  # duplicates any values that were not distinct in the input
+  ans$w <- ans$w[match(xy_nas_removed[["x"]], ans$x)]
+  ans$y <- ans$y[match(xy_nas_removed[["x"]], ans$x)]
+  ans$x <- ans$x[match(xy_nas_removed[["x"]], ans$x)]
+  
+  #Add NAs
+  ans$x <- add_nas(
+    x = ans$x,
+    nas_indices_removed = xy_nas_removed[["nas_indices_removed"]])[["x"]]
+  ans$y <- add_nas(
+    x = ans$y,
+    nas_indices_removed = xy_nas_removed[["nas_indices_removed"]])[["x"]]
+  ans$w <- add_nas(
+    x = ans$w,
+    nas_indices_removed = xy_nas_removed[["nas_indices_removed"]])[["x"]]
+  
+  return(ans)
+}
+
 
 # Processing: Derivatives ----
 

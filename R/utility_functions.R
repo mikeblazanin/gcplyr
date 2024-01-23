@@ -167,14 +167,17 @@ from_excel <- function(x) {
 #' the arguments that \code{FUN} accepts
 #' 
 #' @param FUN The function to be called
+#' @param SUBFUN A subfunction called by \code{FUN}, so all arguments for
+#'               the subfunction should be passed to \code{FUN}
 #' @param ... Additional arguments, some of which may not be arguments
 #'            for \code{FUN}
 #' 
 #' @return The output of \code{FUN} operating on arguments in \code{...}
 #' 
 #' @noRd
-parse_dots <- function(FUN, ...) {
+parse_dots <- function(FUN, SUBFUN = NULL, ...) {
   argnames <- names(formals(FUN))
+  if(!is.null(SUBFUN)) {argnames <- c(argnames, names(formals(SUBFUN)))}
   dots <- list(...)
   return(do.call(FUN, dots[names(dots) %in% argnames]))
 }

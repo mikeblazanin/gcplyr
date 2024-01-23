@@ -218,6 +218,78 @@ test_that("smooth_data returns properly for gam", {
   expect_equal(temp$sm, expected = expect6)
 })
 
+test_that("smooth_data returns properly for smooth.spline", {
+  add_nas <- function(x, nas_indices_removed) {
+      return_indices <- 1:length(x)
+      for (index in nas_indices_removed) {
+        return_indices[return_indices >= index] <-
+          return_indices[return_indices >= index] + 1
+      }
+      
+      out <- rep(NA, length(x) + length(nas_indices_removed))
+      out[return_indices] <- x
+      
+      return(out)
+  }
+  
+  library(dplyr)
+  set.seed(1)
+  data <- data.frame("x" = 1:100,
+                     "y" = 10/(1+exp(-.1*((1:100) - 50))) +
+                       rnorm(100, sd = 0.5),
+                     "grp" = rep("A", 100))
+  expect1 <- stats::smooth.spline(x = data$x, y = data$y)$y
+  temp <- mutate(group_by(data, grp),
+                 sm = smooth_data(x = x, y = y, 
+                                  sm_method = "smooth.spline"))
+  expect_equal(temp$sm, expected = expect1)
+  
+  #Out of order data
+  data2 <- data.frame(x = c(50:100, 1:49), y = sqrt(c(50:100, 1:49)),
+                      grp = rep("A", 100))
+  expect2 <- stats::smooth.spline(x = data2$x, y = data2$y)
+  expect2$y <- expect2$y[match(data2$x, expect2$x)]
+  temp <- mutate(group_by(data2, grp),
+                 sm = smooth_data(x = x, y = y, sm_method = "smooth.spline"))
+  expect_equal(temp$sm, expected = as.vector(expect2$y))
+  
+  #Now test with NA's and out-of-order data
+  data3 <- data.frame(x = c(50:65, NA, 66:100, NA, 2:48, NA), 
+                      y = c(NA, sqrt(50:75), NA, sqrt(76:100), sqrt(1:48)),
+                      grp = rep("A", 101))
+  expect3 <- 
+    stats::smooth.spline(x = data3$x[!is.na(data3$x) & !is.na(data3$y)], 
+                         y = data3$y[!is.na(data3$x) & !is.na(data3$y)])
+  expect3$y <- expect3$y[match(data3$x, expect3$x)]
+  temp <- mutate(group_by(data3, grp),
+                 sm = smooth_data(x = x, y = y, sm_method = "smooth.spline"))
+  expect_equal(temp$sm, expected = expect3$y)
+  
+  #Now test with duplicate x values
+  data4 <- data.frame(x = c(50:100, 1:49, 50), y = sqrt(c(50:100, 1:49, 51)),
+                      grp = rep("A", 101))
+  expect4 <- 
+    stats::smooth.spline(x = data4$x, y = data4$y)
+  expect4$y <- expect4$y[match(data4$x, expect4$x)]
+  temp <- mutate(group_by(data4, grp),
+                 sm = smooth_data(x = x, y = y, sm_method = "smooth.spline"))
+  expect_equal(temp$sm, expected = expect4$y)
+  
+  #Now test when passing arguments
+  expect5 <- stats::smooth.spline(x = data$x, y = data$y, df = 7)$y
+  temp <- mutate(group_by(data, grp),
+                 sm = smooth_data(x = x, y = y, 
+                                  sm_method = "smooth.spline", df = 7))
+  expect_equal(temp$sm, expected = expect5)
+  
+  expect5 <- stats::smooth.spline(x = data$x, y = data$y, spar = 0.5)$y
+  temp <- mutate(group_by(data, grp),
+                 sm = smooth_data(x = x, y = y, 
+                                  sm_method = "smooth.spline", spar = 0.5))
+  expect_equal(temp$sm, expected = expect5)
+})
+
+
 test_that("smooth_data checks for grouping", {
   library(dplyr)
   mydf <- data.frame(x = 1:20, y = sqrt(1:20), 

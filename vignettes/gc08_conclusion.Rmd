@@ -210,7 +210,7 @@ While `gcplyr` focuses on manipulation of growth curves data and the first analy
 
 Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully choose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. 
 
-A number of `R` packages implement fitting-style approaches, which I list here for readers to explore on their own. At some point in the future, I hope to incorporate more direct examples of how to use tidy-shaped data imported and manipulated by `gcplyr` with these packages.
+A number of `R` packages implement fitting-style approaches, which I list here for readers to explore on their own.
 
 * [`growthcurver`](https://github.com/sprouffske/growthcurver)
 * [`QurvE`](https://nicwir.github.io/QurvE/)

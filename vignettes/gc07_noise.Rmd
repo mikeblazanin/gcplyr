@@ -66,11 +66,13 @@ Oftentimes, growth curve data produced by a plate reader will have some noise it
 
 When assessing the effects of noise in our data, one of the first steps is simply to visualize our data, including both the raw data and any derivatives we'll be analyzing. This is especially important because per-capita derivatives can be very sensitive to noise, especially when density is low. By visualizing our data, we can assess whether the noise we see is likely to throw off our analyses.
 
-Broadly speaking, there are three strategies we can use to deal with noise:
+Broadly speaking, there are three strategies we can use to deal with noise.
 
-* [Using fitting during derivative calculations](#FittingDeriv)
-* [Smooth the raw data](#Smoothing)
-* [Exclude low-density data points](#SubsetAnalysis)
+1. [Excluding low-density data points](#SubsetAnalysis)
+2. [Using fitting during derivative calculations](#FittingDeriv)
+3. [Smoothing the raw data](#Smoothing)
+
+Each approach is progressively more involved, so I recommend trying them out in that order. Typically, noise is most problematic in the derivatives, and all three approaches will help with that. However, if you're dealing with substantial noise in your raw density data, only approach #3 will help.
 
 Let's start by pulling out some example data. The example data here is the same example data we've been working with, along with a version of that data with simulated noise added to it.
 
@@ -115,13 +117,63 @@ ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
   facet_wrap(~Well, scales = "free_y")
 ```
 
-Those values are jumping all over the place, including some where the growth rate was calculated as infinite! Let's see what we can do to address this.
+Those values are jumping all over the place! Let's see what we can do to address this.
+
+# Summarizing on subsets of derivatives {#SubsetAnalysis}
+
+One strategy we can employ when dealing with noisy data is excluding data points where the density is near 0. If we compare our per-capita growth rates and our density plots, we'll see that most of the noise occurs when the density is very close to 0:
+
+```{r}
+#Plot density
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
+       aes(x = Time, y = Measurements)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free_y") +
+  scale_y_log10()
+
+# Plot per-capita derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
+       aes(x = Time, y = derivpercap_2)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free_y")
+```
+
+Per-capita growth rates are often very noisy when the density is close to 0, so it can make sense to simply exclude those data points.
+
+```{r}
+#Plot density
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes", Measurements > 0.01),
+       aes(x = Time, y = Measurements)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free_y") +
+  geom_hline(yintercept = 0.01, lty = 2) +
+  scale_y_log10()
+
+# Plot per-capita derivative
+ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes", Measurements > 0.01),
+       aes(x = Time, y = derivpercap_2)) +
+  geom_point() +
+  facet_wrap(~Well, scales = "free_y")
+```
+
+When we limit our analysis to data points where the density is not too close to 0, much of the noise in our per-capita derivative disappears.
+
+To take this to the final step, we can use these cutoffs in our `summarize` commands to calculate the maximum growth rate of the bacteria when their density is at least 0.01.
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
+            max_growth_rate = max(derivpercap_2[Measurements > 0.01], 
+                                  na.rm = TRUE))
+head(ex_dat_mrg_sum)
+```
+
 
 # Fitting during derivative calculation {#FittingDeriv}
 
-One thing we can do is calculate derivatives by fitting a line to a moving window of multiple points. (You might recall we previously used this in the Calculating Derivatives article `vignette("gc05_process")`.)
+The next approach to try is to calculate derivatives by fitting a line to multiple points. (You might recall we previously used this in the Calculating Derivatives article `vignette("gc05_process")`.)
 
-To use the fitting functionality of `calc_deriv`, specify either the `window_width` or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. Note that when using `calc_deriv` in this way, you should use *as few* points as is necessary for your analyses to work, so you should visualize different window widths and choose the smallest one that is sufficient for your analyses to succeed.
+To use the fitting functionality of `calc_deriv`, specify either the `window_width` or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. I recommend using as small a window as possible, like `window_width_n = 3` or `window_width_n = 5`. Visualize different window widths and choose the smallest one that is sufficient for your analyses to succeed.
 
 ```{r}
 ex_dat_mrg <- 
@@ -146,78 +198,47 @@ ex_dat_mrg_wide <-
 #Plot derivative
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = deriv)) +
-  geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
+  geom_line(aes(color = window_width_n), linewidth = 0.6) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide, 
                                  noise == "No", window_width_n == 2),
             lty = 2, color = "red") +
-  scale_color_grey(start = 0.7, end = 0.1)
+  scale_color_grey(start = 0.8, end = 0) +
+  theme_bw()
        
 #Plot per-capita derivative
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = derivpercap)) +
-  geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
+  geom_line(aes(color = window_width_n), linewidth = 0.6, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 5),
             lty = 2, color = "red") +
-  scale_color_grey(start = 0.7, end = 0.1) +
-  ylim(NA, 5)
+  scale_color_grey(start = 0.8, end = 0) +
+  ylim(NA, 5) +
+  theme_bw()
 ```
 
-As we can see, increasing the width of the window reduces the effects of noise, getting us closer to the noiseless data (red line). However, if we go too far (like `window_width_n = 9` for the plain derivative), we'll start over-smoothing our data, making peaks shorter and valleys shallower.
+As we can see, increasing the width of the window reduces the effects of noise, getting us closer to the noiseless data (red line). However, it also starts making peaks shorter and valleys shallower. Finding the right width that balances those two effects is the key to choosing the right `window_width`.
 
 # Smoothing raw data {#Smoothing}
 
-Smoothing raw density data is a straightforward approach to reduce the effects of noise. `gcplyr` has a `smooth_data` function that can carry out such smoothing. `smooth_data` has four different smoothing algorithms to choose from: `moving-average`, `moving-median`, `loess`, and `gam`. 
+Finally, smoothing the raw density data can reduce the effects of noise. `gcplyr` has a `smooth_data` function that can carry out such smoothing. `smooth_data` has five different smoothing algorithms to choose from: `moving-average`, `moving-median`, `loess`, `gam`, and `smooth.spline`. 
 
-* `moving-average` is a simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
-* `moving-median` is another simple smoothing algorithm that primarily acts to reduce the effects of outliers on the data
-* `loess` is a spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
-* `gam` is also spline-fitting approach that uses polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
+* `moving-average` and `moving-median` are simple smoothing algorithms that primarily act to reduce the effects of outliers on the data
+* `loess`, `gam`, and `smooth.spline` are spline-fitting approaches that use polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
 
-**Additionally, all four smoothing algorithms have a tuning parameter** that controls how "smoothed" the data are. 
+Generally, I recommend sticking to the first two algorithms, alone or in combination, since the others tend to add artifacts when used on growth curve data.
 
-Smoothing data is a step that alters the values you will analyze. Because of that it can be rife with pitfalls. You should strive to do *as little* smoothing as is necessary for your analyses to work. To do so, run smoothing with different tuning parameter values and plot the results. Then, choose the parameter value that smooths the data as little as necessary. Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than treating the smoothed data as your source.
+**Regardless of which smoothing algorithm you use, you will need to set a tuning parameter** that controls how "smoothed" the data are. Smoothing data is a step that alters the values you will analyze. Because of that it can be rife with pitfalls. I recommend choosing the value that smooths the data as little as necessary for your analyses to work. To do so, try smoothing with different tuning parameter values, plot the results, then choose the least smoothed one you can.
+
+Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than presenting the smoothed data as your source.
 
 To use `smooth_data`, pass your x and y values, your method of choice, and any additional arguments needed for the method. It will return a vector of your smoothed y values.
 
-## Smoothing with moving-average
-
-For `moving-average`, there are two tuning parameters to choose between: `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. Here, we'll show moving averages with `window_width_n` values of 5 or 9 data points wide (`movavg_1` is just our raw, unsmoothed data).
-
-```{r}
-ex_dat_mrg <-
-  mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-         movavg_1 = Measurements,
-         movavg_5 = smooth_data(x = Time, y = Measurements,
-              sm_method = "moving-average", window_width_n = 5),
-         movavg_9 = smooth_data(x = Time, y = Measurements,
-              sm_method = "moving-average", window_width_n = 9))
-
-#Reshape our data for plotting purposes
-ex_dat_mrg_wide <- 
-  pivot_longer(ex_dat_mrg, cols = starts_with("movavg"),
-               names_prefix = "movavg_", names_to = "window_width_n")
-
-#Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
-       aes(x = Time, y = value)) +
-  geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
-  facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
-                                 noise == "No", window_width_n == 1),
-            lty = 2, color = "red") +
-  scale_color_grey(start = 0.7, end = 0.1) +
-  scale_y_log10() +
-  ggtitle("moving-average")
-```
-
-Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, as the window width gets larger, it also starts underrepresenting the maximum density peaks relative to the true value (red line).
-
 ## Smoothing with moving-median
 
-For `moving-median`, there are the same two tuning parameters: `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. Here, we'll show moving medians with windows that are 5 and 9 data points wide (`movemed_1` is just our raw, unsmoothed data).
+For `moving-median`, there are two tuning parameters to choose between: `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. Here, we'll show moving medians with windows that are 5 and 9 data points wide (`movemed_1` is just our raw, unsmoothed data).
 
 ```{r}
 ex_dat_mrg <-
@@ -238,87 +259,56 @@ ex_dat_mrg_wide <-
 #Plot data
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value)) +
-  geom_line(aes(color = window_width_n), lwd = 1, alpha = 0.75) +
+  geom_line(aes(color = window_width_n), linewidth = 0.6, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 1),
             lty = 2, color = "red") +
-  scale_color_grey(start = 0.7, end = 0.1) +
+  scale_color_grey(start = 0.8, end = 0) +
   scale_y_log10() +
-  ggtitle("moving-median")
+  ggtitle("moving-median") +
+  theme_bw()
 ```
 
 Here we can see that `moving-median` has done a great job excluding noise without biasing our data very far from the true values (red line). However, it has produced a smoothed density that is fairly "jumpy", something that is common with moving-median. To address this, you often will need to combine `moving-median` with other smoothing methods.
 
-## Smoothing with LOESS
+## Smoothing with moving-average
 
-For `loess`, the tuning parameter is the `span` argument. `loess` works by doing fits on subset windows of the data centered at each data point. These fits can be linear (`degree = 1`) or polynomial (typically `degree = 2`). `span` is the width of the window, as a fraction of all data points. For instance, with the default `span` of 0.75, 75% of the data points are included in each window. Thus, span values typically are between 0 and 1 (although see `?loess` for use of `span` values greater than 1), and larger values are more "smoothed". Here, we'll show `loess` smoothing with spans of 0.15 and 0.35 and `degree = 1` (`loess_0` is just our raw, unsmoothed data).
-
-```{r}
-ex_dat_mrg <-
-  mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-         loess_0 = Measurements,
-         loess_15 = smooth_data(x = Time, y = Measurements,
-                                 sm_method = "loess", span = .15, degree = 1),
-         loess_35 = smooth_data(x = Time, y = Measurements,
-                                 sm_method = "loess", span = .35, degree = 1))
-
-#Reshape our data for plotting purposes
-ex_dat_mrg_wide <- 
-  pivot_longer(ex_dat_mrg, cols = starts_with("loess"),
-               names_prefix = "loess_", names_to = "span")
-
-#Plot data
-ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
-       aes(x = Time, y = value)) +
-  geom_line(aes(color = as.factor(as.numeric(span)/100)), lwd = 1, alpha = 0.75) +
-  facet_wrap(~Well, scales = "free_y") +
-  geom_line(data = dplyr::filter(ex_dat_mrg_wide,
-                                 noise == "No", span == 0),
-            lty = 2, color = "red") +
-  scale_color_grey(name = "span", start = 0.7, end = 0.1) +
-  scale_y_log10() +
-  ggtitle("loess")
-```
-
-Here we can see that `loess` with smaller spans have smoothed the data somewhat but are still sensitive to outliers. However, `loess` with a larger span has introduced significant bias relative to the true values (red line). It doesn't seem like `loess` is working well for this data.
-
-## Smoothing with GAM
-
-For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"** (note this is opposite the trend with other smoothing methods). However, **unlike earlier methods, `k` values that are too large are also problematic**, as they will tend to 'overfit' the data. `k` cannot be larger than the number of data points, and should usually be substantially smaller than that. Also note that **`gam` can sometimes create artifacts**, especially oscillations in your density and derivatives. You should check that `gam` is not doing so before carrying on with your analyses. Here, we'll show `gam` smoothing with `k` values of 8 and 15 (`gam_97` is just our raw, unsmoothed data).
+For `moving-average`, there are the same two tuning parameters: `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll show moving averages with `window_width_n` values of 5 or 9 data points wide (`movavg_1` is just our raw, unsmoothed data).
 
 ```{r}
 ex_dat_mrg <-
   mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-         gam_97 = Measurements,
-         gam_15 = smooth_data(x = Time, y = Measurements,
-                                  sm_method = "gam", k = 15),
-         gam_8 = smooth_data(x = Time, y = Measurements,
-                                 sm_method = "gam", k = 8))
+         movavg_1 = Measurements,
+         movavg_5 = smooth_data(x = Time, y = Measurements,
+              sm_method = "moving-average", window_width_n = 5),
+         movavg_9 = smooth_data(x = Time, y = Measurements,
+              sm_method = "moving-average", window_width_n = 9))
 
 #Reshape our data for plotting purposes
 ex_dat_mrg_wide <- 
-  pivot_longer(ex_dat_mrg, cols = starts_with("gam"),
-               names_prefix = "gam_", names_to = "k")
+  pivot_longer(ex_dat_mrg, cols = starts_with("movavg"),
+               names_prefix = "movavg_", names_to = "window_width_n")
 
 #Plot data
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value)) +
-  geom_line(aes(color = as.factor(as.numeric(k))), lwd = 1, alpha = 0.75) +
+  geom_line(aes(color = window_width_n), linewidth = 0.6, alpha = 0.75) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide,
-                                 noise == "No", k == 97),
+                                 noise == "No", window_width_n == 1),
             lty = 2, color = "red") +
-  scale_color_grey(name = "span", start = 0.1, end = 0.7) +
+  scale_color_grey(start = 0.8, end = 0) +
   scale_y_log10() +
-  ggtitle("gam")
+  ggtitle("moving-average") +
+  theme_bw()
 ```
 
-Here we can see that `gam` with lower values of `k` increasingly smooths the data. However, at basically all values of `k` it introduces significant bias and artifacts, so it doesn't seem like `gam` is working well for this data.
+Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, as the window width gets larger, it also starts underrepresenting the maximum density peaks relative to the true value (red line).
 
 ## Combining multiple smoothing methods
 
-Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing continuously smooth data. In contrast, `moving-average`, `loess`, and `gam` work better at producing continuously smooth data, but aren't as good at removing outliers. Here's an example using the strengths of both `moving-median` and `moving-average`.
+Often, combining multiple smoothing methods can provide improved results. For instance, `moving-median` is particularly good at removing outliers, but not very good at producing smoothly changing data. In contrast, `moving-average` works well at producing smoothly changing data, but isn't as good at removing outliers. Often, we can get the best of both by using `moving-median` first, followed by `moving-average`:
 
 ```{r}
 ex_dat_mrg <-
@@ -341,17 +331,28 @@ ex_dat_mrg_wide <-
 #Plot data
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = value, color = smoothed)) +
-  geom_line(lwd = 1, alpha = 0.75) +
-  scale_color_grey(start = 0.7, end = 0.1) +
+  geom_line(linewidth = 0.6, alpha = 0.75) +
+  scale_color_grey(start = 0.8, end = 0) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", smoothed == "no"),
             lty = 2, color = "red") +
   scale_y_log10() +
-  ggtitle("median then average smoothing")
+  ggtitle("median then average smoothing") +
+  theme_bw()
 ```
 
 Here we can see that the combination of minimal `moving-median` and `moving-average` smoothing has produced a curve that has most of the noise removed with minimal introduction of bias relative to the true values (red line).
+
+## Smoothing with other methods
+
+I typically recommend against using other smoothing algorithms, since they have a tendency to add artifacts to growth curve data. However, they may work for your analyses, so if you are considering using them make sure to plot the smoothed output to check for any introduced artifacts.
+
+For `loess`, the tuning parameter is the `span` argument. `loess` works by doing fits on subset windows of the data centered at each data point. `span` is the width of the window, as a fraction of all data points. `span` values typically are between 0 and 1, and larger values are more "smoothed". The fits can be linear (`degree = 1`) or polynomial (typically `degree = 2`). 
+
+For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"**. However, **unlike earlier methods, `k` values that are too large are also problematic**, as they will tend to 'overfit' the data.
+
+For `smooth.spline`, the primary tuning parameters are `df` and `spar`. `df` is the number of degrees of freedom, and must be between 1 and the number of unique x values. `spar` is the smoothing parameter, and is typically between 0 and 1.
 
 # Calculating derivatives of smoothed data {#DerivsOfSmoothed}
 
@@ -379,75 +380,28 @@ ex_dat_mrg_wide <-
 #Plot derivative
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = smderiv, color = window_width_n)) +
-  geom_line(lwd = 1, alpha = 0.75) +
-  scale_color_grey(start = 0.7, end = 0.1) +
+  geom_line(linewidth = 0.6, alpha = 0.75) +
+  scale_color_grey(start = 0.8, end = 0) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 0),
-            lty = 2, color = "red")
+            lty = 2, color = "red") +
+  theme_bw()
 
 #Plot per-capita derivative
 ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
        aes(x = Time, y = smderivpercap, color = window_width_n)) +
-  geom_line(lwd = 1, alpha = 0.75) +
-  scale_color_grey(start = 0.7, end = 0.1) +
+  geom_line(linewidth = 0.6, alpha = 0.75) +
+  scale_color_grey(start = 0.8, end = 0) +
   facet_wrap(~Well, scales = "free_y") +
   geom_line(data = dplyr::filter(ex_dat_mrg_wide,
                                  noise == "No", window_width_n == 3),
             lty = 2, color = "red") +
-  ylim(NA, 5)
+  ylim(NA, 5) +
+  theme_bw()
 ```
 
 Here we can see that calculating derivatives from smoothed raw data can be a powerfully useful combination.
-
-# Summarizing on subsets of derivatives {#SubsetAnalysis}
-
-There is one final strategy we can employ when dealing with noisy data: excluding data points where the density is near 0. If we compare our per-capita growth rates and our density plots, we'll see that most of the noise occurs when the density is very close to 0:
-
-```{r}
-#Plot density
-ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
-       aes(x = Time, y = smoothed_yes)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free_y") +
-  scale_y_log10()
-
-# Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes"),
-       aes(x = Time, y = derivpercap_5)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free_y")
-```
-
-Per-capita growth rates are often very noisy when the density is close to 0, so it can make sense to simply exclude those data points.
-
-```{r}
-#Plot density
-ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes", smoothed_yes > 0.01),
-       aes(x = Time, y = smoothed_yes)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free_y") +
-  geom_hline(yintercept = 0.01, lty = 2) +
-  scale_y_log10()
-
-# Plot per-capita derivative
-ggplot(data = dplyr::filter(ex_dat_mrg, noise == "Yes", smoothed_yes > 0.01),
-       aes(x = Time, y = derivpercap_5)) +
-  geom_point() +
-  facet_wrap(~Well, scales = "free_y")
-```
-
-When we limit our analysis to data points where the density is not too close to 0, much of the noise in our per-capita derivative disappears.
-
-To take this to the final step, we can use these cutoffs in our `summarize` commands to calculate the maximum growth rate of the bacteria when their density is at least 0.01.
-
-```{r}
-ex_dat_mrg_sum <-
-  summarize(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage, noise),
-            max_growth_rate = max(derivpercap_5[smoothed_yes > 0.01], 
-                                  na.rm = TRUE))
-head(ex_dat_mrg_sum)
-```
 
 # What's next?
 

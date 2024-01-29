@@ -1,5 +1,5 @@
 ---
-title: "Importing and transforming data"
+title: "Importing and reshaping data"
 author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:

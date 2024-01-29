@@ -136,7 +136,7 @@ ggplot(data = data_sum, aes(x = auc)) +
 Generally, working with `gcplyr` will follow a number of steps, each of which is likely to be only one or a few lines of code in your final script. We've explained each of these steps in a page linked below. To start, we'll learn how to import our data into `R` and transform it into a convenient format.
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. **Importing and transforming data: `vignette("gc02_import_transform")`**
+2. **Importing and transforming data: `vignette("gc02_import_reshape")`**
 3. Incorporating design information: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`

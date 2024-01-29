@@ -65,7 +65,7 @@ which breaks down a typical workflow using `gcplyr` from start to
 finish, starting with the introduction:
 
 1.  **Introduction: `vignette("gc01_gcplyr")`**
-2.  Importing and transforming data: `vignette("gc02_import_transform")`
+2.  Importing and transforming data: `vignette("gc02_import_reshape")`
 3.  Incorporating design information:
     `vignette("gc03_incorporate_designs")`
 4.  Pre-processing and plotting your data:

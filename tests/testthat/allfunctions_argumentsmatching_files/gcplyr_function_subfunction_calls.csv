@@ -45,6 +45,7 @@ read_wides,utils::read.table
 separate_tidy,tidyr::separate
 smooth_data,stats::loess
 smooth_data,mgcv::gam
+smooth_data,gcplyr::gc_smooth.spline
 smooth_data,gcplyr::moving_average
 smooth_data,gcplyr::moving_median
 smooth_data,mgcv::s

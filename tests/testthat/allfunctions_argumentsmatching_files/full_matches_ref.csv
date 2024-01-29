@@ -4,6 +4,7 @@ first_below,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endp
 first_maxima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
 first_minima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
 first_peak,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
+gc_smooth.spline,stats::smooth.spline,"x, y",x
 import_blockdesigns,gcplyr::paste_blocks,sep,x
 import_blockdesigns,gcplyr::read_blocks,"files, block_names, block_name_header",x
 import_blockdesigns,gcplyr::separate_tidy,sep,x
@@ -22,6 +23,7 @@ read_wides,readxl::read_xls,sheet,x
 read_wides,readxl::read_xlsx,sheet,x
 read_wides,utils::read.table,"header, na.strings",x
 separate_tidy,tidyr::separate,"data, col, into, sep",x
+smooth_data,gcplyr::gc_smooth.spline,"x, y",x
 smooth_data,gcplyr::moving_average,,NA
 smooth_data,gcplyr::moving_median,,NA
 smooth_data,mgcv::gam,,x

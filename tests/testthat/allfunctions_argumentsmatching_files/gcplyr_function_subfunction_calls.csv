@@ -12,6 +12,7 @@ first_maxima,gcplyr::find_local_extrema
 first_minima,gcplyr::find_local_extrema
 first_peak,gcplyr::find_local_extrema
 from_excel,NA
+gc_smooth.spline,stats::smooth.spline
 import_blockdesigns,gcplyr::read_blocks
 import_blockdesigns,gcplyr::paste_blocks
 import_blockdesigns,gcplyr::trans_block_to_wide

@@ -92,6 +92,13 @@ ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% c("A1", "A7", "B4", "B10",
 
 Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. gcplyr makes it easy to calculate a number of metrics of interest, which I've grouped below into categories:
 
+### Most common metrics
+
+* [the lag time](#lag)
+* [the maximum cellular growth rate (i.e. minimum doubling time)](#max_percap)
+* [the maximum density (e.g. carrying capacity)](#maxdens)
+* [the area under the curve](#auc)
+
 ### Growth
 
 * [the initial density](#init_dens)

@@ -139,7 +139,7 @@ test_that("which_min_gc and which_max_gc return correctly", {
   
 test_that("extr_val returns correctly", {
   expect_equal(extr_val(1:10, 2), 2)
-  expect_equal(extr_val(1:10, 11), NA)
+  expect_equal(extr_val(1:10, 11), as.numeric(NA))
   expect_equal(extr_val(1:10, 0), c(1:10)[0])
   expect_equal(extr_val(1:10, -2), c(1, 3:10))
   expect_equal(extr_val(c(1:5, c(NA, NA), 8:10), 5), 5)

@@ -32,7 +32,7 @@ derivative is returned}
 
 \item{x_scale}{Numeric to scale x by in derivative calculation
 
-Set x_scale to the ratio of the the units of 
+Set x_scale to the ratio of the units of 
 x to the desired units. E.g. if x is in seconds, but the 
 desired derivative is in units of /minute, set 
 \code{x_scale = 60} (since there are 60 seconds in 1 minute).}
@@ -70,7 +70,10 @@ specifies the width of the window in units of \code{x}.
 When using \code{window_width} and \code{window_width_n} 
 at the same time, windows are conservative. Points 
 included in each window will meet both the 
-\code{window_width} and the \code{window_width_n}}
+\code{window_width} and the \code{window_width_n}.
+
+A value of \code{window_width_n = 3} or 
+\code{window_width_n = 5} is often the most effective.}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
                 transformation of y-values.

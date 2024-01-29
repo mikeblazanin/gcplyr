@@ -15,18 +15,21 @@ smooth_data(
 }
 \arguments{
 \item{...}{Arguments passed to \code{stats::loess}, \code{mgcv::gam},
-\code{moving_average}, or \code{moving_median}. Typically
-includes tuning parameter(s), which in some cases are required.
+\code{moving_average}, \code{moving_median}, or 
+\code{stats::smooth.spline}. Typically includes tuning 
+parameter(s), which in some cases are required.
 See Details for more information.}
 
-\item{x}{An (optional) vector of predictor values to smooth along (e.g. time)}
+\item{x}{An (often optional) vector of predictor values to smooth along 
+(e.g. time)}
 
 \item{y}{A vector of response values to be smoothed (e.g. density). If NULL,
 \code{formula} and \code{data} *must* be provided via \code{...}}
 
 \item{sm_method}{Argument specifying which smoothing method should
 be used to smooth data. Options include 
-"moving-average", "moving-median", "loess", and "gam"}
+"moving-average", "moving-median", "loess", "gam",
+and "smooth.spline".}
 
 \item{subset_by}{An optional vector as long as \code{y}. 
 \code{y} will be split by the unique values of this vector 
@@ -94,5 +97,5 @@ For \code{moving_average} and \code{moving_median},
            \code{mgcv::s} to smooth the data. The data argument should be a 
            \code{data.frame} containing the variables in the formula.
            In such cases, \code{subset_by} can still be specified as a vector
-           as long as \code{nrow(data)}
+           with length \code{nrow(data)}
 }

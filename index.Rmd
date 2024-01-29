@@ -66,7 +66,7 @@ The best way to get started is to read through the articles series, which breaks
 
 1. **Introduction: `vignette("gc01_gcplyr")`**
 2. Importing and transforming data: `vignette("gc02_import_reshape")`
-3. Incorporating design information: `vignette("gc03_incorporate_designs")`
+3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`
 6. Analyzing your data: `vignette("gc06_analyze")`

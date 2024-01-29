@@ -66,7 +66,7 @@ finish, starting with the introduction:
 
 1.  **Introduction: `vignette("gc01_gcplyr")`**
 2.  Importing and transforming data: `vignette("gc02_import_reshape")`
-3.  Incorporating design information:
+3.  Incorporating experimental designs:
     `vignette("gc03_incorporate_designs")`
 4.  Pre-processing and plotting your data:
     `vignette("gc04_preprocess_plot")`

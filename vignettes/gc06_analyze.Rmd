@@ -23,7 +23,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 
 1. Introduction: `vignette("gc01_gcplyr")`
 2. Importing and transforming data: `vignette("gc02_import_reshape")`
-3. Incorporating design information: `vignette("gc03_incorporate_designs")`
+3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`
 6. **Analyzing your data:** `vignette("gc06_analyze")`
@@ -518,7 +518,7 @@ Now that you've analyzed your data, you can read about approaches to deal with n
 
 1. Introduction: `vignette("gc01_gcplyr")`
 2. Importing and transforming data: `vignette("gc02_import_reshape")`
-3. Incorporating design information: `vignette("gc03_incorporate_designs")`
+3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`
 6. Analyzing your data: `vignette("gc06_analyze")`

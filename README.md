@@ -71,8 +71,8 @@ This documentation is also available as a series of pdf vignette files:
 1.  [Introduction](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc01_gcplyr.pdf)
 2.  [Importing and transforming
     data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc02_import_reshape.pdf)
-3.  [Incorporating design
-    information](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc03_incorporate_designs.pdf)
+3.  [Incorporating experimental
+    designs](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc03_incorporate_designs.pdf)
 4.  [Pre-processing and plotting
     data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc04_preprocess_plot.pdf)
 5.  [Processing

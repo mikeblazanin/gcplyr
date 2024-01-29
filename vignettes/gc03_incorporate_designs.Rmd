@@ -369,7 +369,7 @@ print_df(read.csv("Design.csv", header = FALSE, colClasses = "character"))
 
 Here we can see all our design information has been saved to a single file, and the metadata has been added in rows before each block.
 
-# Merging spectrophotometric and design data
+# Merging growth curve data with designs
 Once we have both our design and data in `R` and tidy-shaped, we can merge them using `merge_dfs`.
 
 For this, we'll use the data in the `example_widedata_noiseless` dataset that is included with `gcplyr`, and which was the source for our previous examples with `import_blockmeasures` and `read_wides`.

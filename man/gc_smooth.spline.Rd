@@ -21,7 +21,7 @@ Required to be TRUE if any \code{x} or \code{y} values are NA.}
 }
 \value{
 Similar to \code{stats::smooth.spline}, an object of class 
-        "\code{smooth.spline"} with many components. Differs in that
+        "\code{smooth.spline}" with many components. Differs in that
         x, y, and w have NA's at any indices where \code{x} or \code{y} were 
         NA in the inputs, and x, y, and w are returned to match the input 
         \code{x} in order and length

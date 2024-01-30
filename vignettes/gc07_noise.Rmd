@@ -43,23 +43,6 @@ library(ggplot2)
 library(tidyr)
 ```
 
-```{r}
-# This code was previously explained
-# Here we're re-running it so it's available for us to work with
-example_design <- make_design(
-  pattern_split = ",", nrows = 8, ncols = 12,
-  "Bacteria_strain" = make_designpattern(
-    values = paste("Strain", 1:48),
-    rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
-  "Bacteria_strain" = make_designpattern(
-    values = paste("Strain", 1:48),
-    rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE),
-  "Phage" = make_designpattern(
-    values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
-  "Phage" = make_designpattern(
-    values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
-```
-
 # Introduction
 
 Oftentimes, growth curve data produced by a plate reader will have some noise it it. Since `gcplyr` does model-free analyses, our approach can sometimes be sensitive to noise, necessitating steps to reduce the effects of noise.

@@ -431,6 +431,12 @@ Here's what the resulting data.frame looks like:
 head(example_design, 20)
 ```
 
+Note for future use, this design is actually included with `gcplyr` for easy reference:
+
+```{r}
+head(example_design_tidy)
+```
+
 And finally, we merge the two using `merge_dfs`, saving the result to `ex_dat_mrg`, short for example_data_merged. `merge_dfs` merges using columns with the same name between the two data.frames.
 
 ```{r}

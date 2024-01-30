@@ -2908,8 +2908,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
 #' a cubic smoothing spline to the supplied data, but includes the option
 #' to remove \code{NA} values, and returns values in the original order.
 #' 
-#' @param x A vector giving the values of the predictor variable, or a
-#'          list or a two-column matrix specifying x and y.
+#' @param x A vector giving the values of the predictor variable.
 #' @param y A vector giving the values of the response variable. If \code{y} is
 #'          missing or \code{NULL}, the responses are assumed to be specified
 #'          by \code{x}, with \code{x} the index vector.
@@ -2930,7 +2929,8 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   #remove NAs
   xy_nas_removed <- rm_nas(x = x, y = y, 
                            na.rm = na.rm, stopifNA = TRUE)
-  if(length(xy_nas_removed[["y"]]) <= 1) {ans <- NA; next}
+  if(length(xy_nas_removed[["y"]]) <= 1) {
+    return(list(x = rep(NA, length(x)), y = rep(NA, length(x))))}
   
   #Reorder as needed
   xy_reordered <- reorder_xy(x = xy_nas_removed[["x"]], y = xy_nas_removed[["y"]])

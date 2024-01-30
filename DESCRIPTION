@@ -2,11 +2,11 @@ Type: Package
 Package: gcplyr
 Title: Manipulate and Analyze Growth Curve Data
 Version: 1.7.1.9000
-Date: 2023-11-03
+Date: 2024-01-29
 Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 
                comment = c(ORCID = "0000-0003-4630-6235"))
-Description: Easy import, manipulation, and model-free analysis of
+Description: Easy import, reshaping, and model-free analysis of
     microbial growth curve data, as commonly output by plate readers.
     Tools for reshaping common plate reader outputs into 'tidy' formats and
     merging them with design information, making data easy to work with using 

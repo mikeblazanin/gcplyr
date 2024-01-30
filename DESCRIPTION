@@ -1,7 +1,7 @@
 Type: Package
 Package: gcplyr
 Title: Manipulate and Analyze Growth Curve Data
-Version: 1.7.1.9004
+Version: 1.8.0
 Date: 2024-01-29
 Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 

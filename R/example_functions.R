@@ -31,7 +31,20 @@ make_example <- function(vignette, example, dir = ".") {
     } else if (example == 2) { 
       ## Example 2 ----
       #Simple design written to file
-      write_blocks(gcplyr::example_design_tidy, file = NULL, dir = dir)
+      example_design <- make_design(
+        output_format = "blocks",
+        pattern_split = ",", nrows = 8, ncols = 12,
+        "Bacteria_strain" = make_designpattern(
+          values = paste("Strain", 1:48),
+          rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
+        "Bacteria_strain" = make_designpattern(
+          values = paste("Strain", 1:48),
+          rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE),
+        "Phage" = make_designpattern(
+          values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
+        "Phage" = make_designpattern(
+          values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
+      write_blocks(example_design, file = NULL, dir = dir)
       message("Files have been written")
       return(paste0(dir, c("Bacteria_strain.csv", "Phage.csv")))
     }

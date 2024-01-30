@@ -13,7 +13,7 @@
     <loc>https://mikeblazanin.github.io/gcplyr/articles/gc01_gcplyr.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc02_import_transform.html</loc>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc02_import_reshape.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/articles/gc03_incorporate_designs.html</loc>
@@ -73,6 +73,9 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/doubling_time.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/example_design_tidy.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata.html</loc>
   </url>
   <url>
@@ -86,6 +89,9 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/from_excel.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/gc_smooth.spline.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/import_blockdesigns.html</loc>

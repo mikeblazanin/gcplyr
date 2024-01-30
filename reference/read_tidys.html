@@ -4,7 +4,7 @@ wrapper for utils::read.csv, readxl::read_xls,
 readxl::read_xls, or readxl::read_xlsx, but can handle
 multiple files at once and has additional options for taking subsets 
 of rows/columns rather than the entire file and for adding filename 
-or run names as an added column in the output."><title>Read tidy-shaped files — read_tidys • gcplyr</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Read tidy-shaped files — read_tidys"><meta property="og:description" content="A function that imports tidy-shaped files into R. Largely acts as a
+or run names as an added column in the output."><title>Read tidy-shaped files — read_tidys • gcplyr</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Read tidy-shaped files — read_tidys"><meta property="og:description" content="A function that imports tidy-shaped files into R. Largely acts as a
 wrapper for utils::read.csv, readxl::read_xls,
 readxl::read_xls, or readxl::read_xlsx, but can handle
 multiple files at once and has additional options for taking subsets 
@@ -20,7 +20,7 @@ or run names as an added column in the output."><!-- mathjax --><script src="htt
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,8 +32,8 @@ or run names as an added column in the output."><!-- mathjax --><script src="htt
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/gc01_gcplyr.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/gc02_import_transform.html">Importing and transforming data</a>
-    <a class="dropdown-item" href="../articles/gc03_incorporate_designs.html">Incorporating design information</a>
+    <a class="dropdown-item" href="../articles/gc02_import_reshape.html">Importing and reshaping data</a>
+    <a class="dropdown-item" href="../articles/gc03_incorporate_designs.html">Incorporating experimental designs</a>
     <a class="dropdown-item" href="../articles/gc04_preprocess_plot.html">Pre-processing and plotting data</a>
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
@@ -82,15 +82,20 @@ or run names as an added column in the output.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_tidys</span><span class="op">(</span></span>
 <span>  <span class="va">files</span>,</span>
-<span>  extension <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filetype <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  startrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  endrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  startcol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  endcol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sheet <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  run_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  names_to_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  run_names_header <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  run_names_dot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  run_names_path <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  run_names_ext <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  na.strings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NA"</span>, <span class="st">""</span><span class="op">)</span>,</span>
+<span>  <span class="va">extension</span>,</span>
+<span>  <span class="va">names_to_col</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -102,12 +107,15 @@ or run names as an added column in the output.</p>
 where each one is a tidy-shaped data file</p></dd>
 
 
-<dt>extension</dt>
-<dd><p>(optional) the extension of the files:
-"csv", "xls", or "xlsx", or "tbl" for use of read.table</p>
-<p>If none provided, <code>read_tidys</code> will infer file 
-extension from provided filenames. When extension is not 
-"csv", "xls", or "xlsx" will use <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.table</a></code></p></dd>
+<dt>filetype</dt>
+<dd><p>(optional) the type(s) of the files. Options include:</p>
+<p>"csv", "xls", or "xlsx".</p>                 
+<p>"tbl" or "table" to use <code>read.table</code> to read the file,
+                 "csv2" to use <code>read.csv2</code>, "delim" to 
+                 use <code>read.delim</code>, or "delim2" to use <code>read.delim2</code>.</p>                 
+<p>If none provided, <code>read_tidys</code> will infer filetype(s) 
+                 from the extension(s) in <code>files</code>. When extension is 
+                 not "csv", "xls", or "xlsx", will use "table".</p></dd>
 
 
 <dt>startrow, endrow, startcol, endcol</dt>
@@ -134,19 +142,34 @@ to the resulting data frame depending on the value of
 the <code>names_to_col</code> argument</p></dd>
 
 
-<dt>names_to_col</dt>
+<dt>run_names_header</dt>
 <dd><p>Should the run names (provided in <code>run_names</code>
 or inferred from <code>files</code>) be added as a column to the
 output?</p>
-<p>If <code>names_to_col</code> is TRUE, they will be added with.
+<p>If <code>run_names_header</code> is TRUE, they will be added with
 the column name "run_name"</p>
-<p>If <code>names_to_col</code> is FALSE, they will not be added.</p>
-<p>If <code>names_to_col</code> is a string, they will be added
+<p>If <code>run_names_header</code> is FALSE, they will not be added.</p>
+<p>If <code>run_names_header</code> is a string, they will be added
 and the column name will be the string specified
-for <code>names_to_col</code>.</p>
-<p>If <code>names_to_col</code> is NULL, they only will be 
+for <code>run_names_header</code>.</p>
+<p>If <code>run_names_header</code> is NULL, they only will be 
 added if there are multiple tidy data.frames being read.
 In which case, the column name will be "run_name"</p></dd>
+
+
+<dt>run_names_dot</dt>
+<dd><p>If run_names are inferred from filenames, should 
+the leading './' (if any) be retained</p></dd>
+
+
+<dt>run_names_path</dt>
+<dd><p>If run_names are inferred from filenames, should 
+the path (if any) be retained</p></dd>
+
+
+<dt>run_names_ext</dt>
+<dd><p>If run_names are inferred from filenames, should 
+the file extension (if any) be retained</p></dd>
 
 
 <dt>na.strings</dt>
@@ -154,6 +177,16 @@ In which case, the column name will be "run_name"</p></dd>
 as <code>NA</code> values by <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.csv</a></code>,
 <code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_xls</a></code>, <code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_xlsx</a></code>,
 or <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.table</a></code></p></dd>
+
+
+<dt>extension</dt>
+<dd><p>Allowed for backward compatibility; <code>filetype</code> is
+now the preferred argument name.</p></dd>
+
+
+<dt>names_to_col</dt>
+<dd><p>Allowed for backward compatibility; 
+<code>run_names_header</code> is now the preferred argument name.</p></dd>
 
 
 <dt>...</dt>
@@ -173,7 +206,7 @@ sheet</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>startrow</code>, <code>endrow</code>, <code>startcol</code>, <code>endcol</code>, 
-<code>sheet</code> and <code>extension</code> can either be a single value that 
+<code>sheet</code> and <code>filetype</code> can either be a single value that 
 applies for all files or vectors or lists the same length as <code>files</code></p>
 <p>Note that the startrow is always assumed to be a header</p>
     </div>

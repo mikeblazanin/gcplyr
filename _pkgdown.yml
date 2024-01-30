@@ -15,9 +15,9 @@ navbar:
       menu:
       - text: Introduction
         href: articles/gc01_gcplyr.html
-      - text: Importing and transforming data
-        href: articles/gc02_import_transform.html
-      - text: Incorporating design information
+      - text: Importing and reshaping data
+        href: articles/gc02_import_reshape.html
+      - text: Incorporating experimental designs
         href: articles/gc03_incorporate_designs.html
       - text: Pre-processing and plotting data
         href: articles/gc04_preprocess_plot.html
@@ -66,6 +66,7 @@ reference:
   - moving_average
   - moving_median
   - calc_deriv
+  - gc_smooth.spline
 - title: Analyzing growth curve data
   desc: "Functions to analyze growth curve data by summarizing into metrics"
   contents:

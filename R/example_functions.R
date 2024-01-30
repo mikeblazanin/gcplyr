@@ -212,7 +212,7 @@ make_example <- function(vignette, example, dir = ".") {
       noiseless_data <- dplyr::mutate(noiseless_data, noise = "No")
       noisy_data <- dplyr::mutate(noisy_data, noise = "Yes")
       ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data)
-      ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design)
+      ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design_tidy)
       
       ex_dat_mrg$Well <- 
         factor(ex_dat_mrg$Well,

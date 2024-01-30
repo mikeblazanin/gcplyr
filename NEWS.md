@@ -1,3 +1,33 @@
+# gcplyr 1.8.0
+
+* read_ and import_ functions can now use any of the utils::read.table file types, including csv, csv2, delim, and delim2
+
+* The extension argument of read_ and import_ functions has been deprecated, the new argument name is filetype
+
+* The block_name_header argument in read_blocks has been deprecated, the new argument name is block_names_header
+
+* The names_to_col argument in read_wides and read_tidys has been deprecated, the new argument name is run_names_header
+
+* read_ and import_ functions have new arguments (_dot, _path, and _ext), which users can set to determine how file names/paths are saved in the resulting object
+
+* smooth_data has a new smoothing method: smooth.spline. This method uses stats::smooth.spline via a gcplyr wrapper function gc_smooth.spline
+
+* The area under the curve function auc now has a subset argument
+
+* There is a new data object included in the package: example_design_tidy. This object is tidy-shaped and contains the plate layout design for the example_widedata and example_widedata_noiseless datasets that have been included with gcplyr
+
+* find_local_extrema and find_threshold_crosses now have consistent handling of the subset argument, including treating NA's in subset as FALSE with a warning
+
+* Bug fix where reading files failed if extension was not specified by user and extension inferred from the filename was not .xls, .xlsx, .csv, or .tbl
+
+* Bug fix for extr_val where na.rm = TRUE was not working correctly
+
+* Improved error message when user specifies argument with length 0
+
+* Various backend improvements, including renaming internal functions for consistent style and renaming internal objects to be more unique for less ambiguous error messages
+
+* Various vignette improvements
+
 # gcplyr 1.7.1
 
 * Fixed broken links to vignettes
@@ -35,7 +65,6 @@
 # gcplyr 1.6.0
 
 * The behavior of smooth_data when return_fitobject = TRUE has changed. It now returns a list containing the output of each smoothing method directly (previously the returned objects were modified from the output of the smoothing method to always have a first element of 'fitted' values and a second element of 'residuals')
->>>>>>> master
 
 # gcplyr 1.5.2
 

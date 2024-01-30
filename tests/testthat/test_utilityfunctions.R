@@ -146,3 +146,14 @@ test_that("extr_val returns correctly", {
   expect_equal(extr_val(c(1:5, c(NA, NA), 8:10), 7), 9)
   expect_equal(extr_val(c(NA, NA, NA), 2), NA)
 })
+
+test_that("take_subset returns correctly", {
+  expect_equal(take_subset(x = 1:10, subset = c(T, T, T, F, F, T, T, T, T, T)),
+               list(x = c(1, 2, 3, 6:10), y = NULL, indices = c(1:3, 6:10)))
+  expect_equal(take_subset(y = 1:10, subset = c(T, T, T, T, T, T, T, T, F, F)),
+                 list(x = NULL, y = 1:8, indices = c(1:8)))
+  expect_warning(take_subset(y = 1:10, subset = c(T, T, T, T, T, T, T, T, NA, F)),
+                 "subset contains NA's")
+  expect_equal(take_subset(x = 1:10, subset = NULL),
+               list(x = 1:10, y = NULL, indices = 1:10))
+})

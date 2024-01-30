@@ -817,3 +817,42 @@ extr_val <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {
   }
 }
 
+#' A function that takes a subset of x and y
+#' 
+#' Vectors will have all values removed where subset is FALSE or NA
+#' 
+#' @params x,y Vector to remove values from.
+#' @param subset logical, TRUE values are kept
+#' @return A list containing: x and y with values removed
+#'                            the original indices of the retained values
+#'                            that were returned, such that the original index
+#'                            of the ith value in the returned vector is
+#'                            indices[i]
+#'                            
+#' @noRd
+take_subset <- function(x = NULL, y = NULL, subset = NULL) {
+  if(!is.null(x) && !is.null(y) && length(x) != length(y)) {
+    stop("x and y must be the same length")}
+  if(!is.null(subset) && (!is.null(x) | !is.null(y))) {
+    if(!is.null(y) && length(subset) != length(y)) {
+      stop("subset and y must be the same length")}
+    if(!is.null(x) && length(subset) != length(x)) {
+      stop("subset and x must be the same length")}
+    if(!all(is.logical(subset))) {
+      stop("subset must be a vector of logical values")}
+    if(any(is.na(subset))) {
+      warning("subset contains NA's, treating NA's as FALSE")
+      subset[is.na(subset)] <- FALSE
+    }
+    indices <- which(subset)
+    if(!is.null(x)) {x <- x[indices]}
+    if(!is.null(y)) {y <- y[indices]}
+    return(list(x = x, y = y, indices = indices))
+    
+  } else {
+    if(!is.null(x)) {indices <- 1:length(x)
+    } else if (!is.null(y)) {indices <- 1:length(y)
+    } else {indices <- NULL}
+    return(list(x = x, y = y, indices = indices))
+  }
+}

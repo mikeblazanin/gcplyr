@@ -821,7 +821,7 @@ extr_val <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {
 #' 
 #' Vectors will have all values removed where subset is FALSE or NA
 #' 
-#' @params x,y Vector to remove values from.
+#' @param x,y Vector to remove values from.
 #' @param subset logical, TRUE values are kept
 #' @return A list containing: x and y with values removed
 #'                            the original indices of the retained values

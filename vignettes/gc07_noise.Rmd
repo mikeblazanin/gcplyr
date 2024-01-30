@@ -22,7 +22,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Where are we so far?
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. Importing and transforming data: `vignette("gc02_import_reshape")`
+2. Importing and reshaping data: `vignette("gc02_import_reshape")`
 3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`
@@ -391,7 +391,7 @@ Here we can see that calculating derivatives from smoothed raw data can be a pow
 Now that you've analyzed your data and dealt with any noise, there's just some concluding notes on best practices for running statistics, merging growth curve analyses with other data, and additional resources for analyzing growth curves. 
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. Importing and transforming data: `vignette("gc02_import_reshape")`
+2. Importing and reshaping data: `vignette("gc02_import_reshape")`
 3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`

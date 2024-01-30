@@ -120,9 +120,9 @@ to_excel <- function(x) {
     val <- x[i]
     chars <- c()
     while(val > 0) {
-      temp <- divisor_modulo_excel(val)
-      val <- temp[1]
-      rem <- temp[2]
+      divisor_modulo_excel_output <- divisor_modulo_excel(val)
+      val <- divisor_modulo_excel_output[1]
+      rem <- divisor_modulo_excel_output[2]
       chars <- c(LETTERS[rem], chars)
     }
     out <- c(out, paste(chars, collapse = ""))
@@ -147,9 +147,9 @@ from_excel <- function(x) {
   x_splt <- strsplit(x[not_nums], "")
   for (i in 1:length(x_splt)) {
     #Get indices of letters
-    temp <- match(x_splt[[i]], LETTERS)
+    letter_indices <- match(x_splt[[i]], LETTERS)
     #Multiply indices by powers of 26
-    out[not_nums[i]] <- sum(temp*26**((length(temp)-1):0))
+    out[not_nums[i]] <- sum(letter_indices*26**((length(letter_indices)-1):0))
   }
   if(any(is.na(out))) {
     stop(paste("Failed to convert from Excel-format:",
@@ -471,13 +471,13 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
   window_ends <- matrix(data = length(x), nrow = length(x), ncol = 3)
   
   if(!is.null(window_width_n)) {
-    temp <- 
+    candidate_window_edges <- 
       lapply(X = as.list(1:length(x)),
              xvals = x,
              FUN = function(xidx, xvals) {
                which(abs(xidx - 1:length(xvals)) <= (window_width_n - 1)/2)})
-    window_starts[, 1] <- sapply(temp, min)
-    window_ends[, 1] <- sapply(temp, max)
+    window_starts[, 1] <- sapply(candidate_window_edges, min)
+    window_ends[, 1] <- sapply(candidate_window_edges, max)
     if(edge_NA) {
       window_starts[(1:length(x) + (window_width_n - 1)/2 >= length(x)+1) |
                       (1:length(x) - (window_width_n - 1)/2 <= 0), 1] <- NA
@@ -486,12 +486,12 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
     }
   }
   if(!is.null(window_width)) {
-    temp <- lapply(X = as.list(1:length(x)),
+    candidate_window_edges <- lapply(X = as.list(1:length(x)),
                    xvals = x,
                    FUN = function(xidx, xvals) {
                      which(abs(xvals - xvals[xidx]) <= window_width/2)})
-    window_starts[, 2] <- sapply(temp, min)
-    window_ends[, 2] <- sapply(temp, max)
+    window_starts[, 2] <- sapply(candidate_window_edges, min)
+    window_ends[, 2] <- sapply(candidate_window_edges, max)
     if(edge_NA) {
       window_starts[(x + window_width/2 > max(x)) |
                       (x - window_width/2 < min(x)), 2] <- NA

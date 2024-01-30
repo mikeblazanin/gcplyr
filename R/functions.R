@@ -1762,9 +1762,10 @@ write_blocks <- function(blocks, file,
     rs <- 1 #row start index
     for (i in 1:length(blocks)) {
       #Use sub-function to fill all blocks into output df
-      temp <- fill_data_metadata(output = output, input = blocks[[i]], rs = rs)
-      output <- temp[[1]]
-      rs <- temp[[2]]
+      fill_data_metadata_tempoutput <- 
+        fill_data_metadata(output = output, input = blocks[[i]], rs = rs)
+      output <- fill_data_metadata_tempoutput[[1]]
+      rs <- fill_data_metadata_tempoutput[[2]]
     }
     #Write file
     utils::write.table(output, file = paste0(dir, file), sep = ",", na = na,
@@ -2236,7 +2237,7 @@ trans_wide_to_tidy <- function(wides,
               values_transform will override values_to_numeric\n")}
   } else {
     if(values_to_numeric) {
-      values_transform = rep(list(list(temp = as.numeric)), length(values_to))
+      values_transform = rep(list(list(templistname = as.numeric)), length(values_to))
       for (i in 1:length(values_to)) {
         names(values_transform[[i]]) <- values_to[i]
       }
@@ -2345,7 +2346,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   if(collapse) {
     #First define the worker func that collapses the df's
     collapse_list <- function(listdfs, names_to) {
-      temp <- NULL
+      collapse_list_output <- NULL
       for (i in 1:length(listdfs)) {
         if(!is.null(names_to) & !is.na(names_to)) {
           #Put name of ea list element (ea df) into column
@@ -2353,10 +2354,10 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
           colnames(listdfs[[i]])[ncol(listdfs[[i]])] <- names_to
         }
         #Collapse dfs together
-        if (is.null(temp)) {temp <- listdfs[[i]]
-        } else {temp <- dplyr::full_join(temp, listdfs[[i]])}
+        if (is.null(collapse_list_output)) {collapse_list_output <- listdfs[[i]]
+        } else {collapse_list_output <- dplyr::full_join(collapse_list_output, listdfs[[i]])}
       }
-      return(temp)
+      return(collapse_list_output)
     }
     
     #Then collapse x and collapse y into dfs as needed
@@ -2548,13 +2549,13 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
     }
   }
   
-  temp <- tidyr::separate(data = data, col = col, into = into, sep = sep, ...)
+  output <- tidyr::separate(data = data, col = col, into = into, sep = sep, ...)
   if(coerce_NA == TRUE) {
-    for (idx in which(colnames(temp) %in% into)) {
-      temp[!is.na(temp[, idx]) & temp[, idx] %in% na.strings, idx] <- NA
+    for (idx in which(colnames(output) %in% into)) {
+      output[!is.na(output[, idx]) & output[, idx] %in% na.strings, idx] <- NA
     }
   }
-  return(temp)
+  return(output)
 }
 
 
@@ -3166,13 +3167,13 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
           #get slope
           # (if trans_y = 'linear', slope is derivative
           #  if trans_y = 'log', slope is already percap deriv)
-          temp <- stats::lm(myy ~ myx, 
+          lmoutput <- stats::lm(myy ~ myx, 
                             data = data.frame(myy = sub_y[windows[[j]]],
                                               myx = sub_x[windows[[j]]]))
-          sub_ans[j] <- temp$coefficients["myx"]*x_scale
+          sub_ans[j] <- lmoutput$coefficients["myx"]*x_scale
           if(percapita == TRUE && trans_y == 'linear') {
             sub_ans[j] <- 
-              sub_ans[j]/temp$fitted.values[which(windows[[j]] == j)]
+              sub_ans[j]/lmoutput$fitted.values[which(windows[[j]] == j)]
           }
         }
       }

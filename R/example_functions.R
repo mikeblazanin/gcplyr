@@ -31,28 +31,7 @@ make_example <- function(vignette, example, dir = ".") {
     } else if (example == 2) { 
       ## Example 2 ----
       #Simple design written to file
-      example_design <- make_design(
-        output_format = "blocks",
-        pattern_split = ",", nrows = 8, ncols = 12,
-        "Bacteria_strain" = make_designpattern(
-          values = paste("Strain", 1:48),
-          rows = 1:8, cols = 1:6,
-          pattern = 1:48,
-          byrow = TRUE),
-        "Bacteria_strain" = make_designpattern(
-          values = paste("Strain", 1:48),
-          rows = 1:8, cols = 7:12,
-          pattern = 1:48,
-          byrow = TRUE),
-        "Phage" = make_designpattern(
-          values = c("No Phage"),
-          rows = 1:8, cols = 1:6,
-          pattern = "1"),
-        "Phage" = make_designpattern(
-          values = c("Phage Added"),
-          rows = 1:8, cols = 7:12,
-          pattern = "1"))
-      write_blocks(example_design, file = NULL, dir = dir)
+      write_blocks(gcplyr::example_design_tidy, file = NULL, dir = dir)
       message("Files have been written")
       return(paste0(dir, c("Bacteria_strain.csv", "Phage.csv")))
     }
@@ -173,19 +152,8 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 1 ----
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
-      example_design <- make_design(
-        pattern_split = ",", nrows = 8, ncols = 12,
-        "Bacteria_strain" = make_designpattern(
-          values = paste("Strain", 1:48),
-          rows = 1:8, cols = 1:6, pattern = 1:48, byrow = TRUE),
-        "Bacteria_strain" = make_designpattern(
-          values = paste("Strain", 1:48),
-          rows = 1:8, cols = 7:12, pattern = 1:48, byrow = TRUE),
-        "Phage" = make_designpattern(
-          values = c("No Phage"), rows = 1:8, cols = 1:6, pattern = "1"),
-        "Phage" = make_designpattern(
-          values = c("Phage Added"), rows = 1:8, cols = 7:12, pattern = "1"))
-      ex_dat_mrg <- merge_dfs(example_tidydata, example_design)
+      ex_dat_mrg <- merge_dfs(example_tidydata,
+                              gcplyr::example_design_tidy)
       
       ex_dat_mrg$Time <-
         paste(ex_dat_mrg$Time %/% 3600,
@@ -212,7 +180,7 @@ make_example <- function(vignette, example, dir = ".") {
       noiseless_data <- dplyr::mutate(noiseless_data, noise = "No")
       noisy_data <- dplyr::mutate(noisy_data, noise = "Yes")
       ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data)
-      ex_dat_mrg <- merge_dfs(ex_dat_mrg, example_design_tidy)
+      ex_dat_mrg <- merge_dfs(ex_dat_mrg, gcplyr::example_design_tidy)
       
       ex_dat_mrg$Well <- 
         factor(ex_dat_mrg$Well,

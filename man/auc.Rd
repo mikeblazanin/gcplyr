@@ -4,7 +4,7 @@
 \alias{auc}
 \title{Calculate area under the curve}
 \usage{
-auc(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE)
+auc(x, y, xlim = NULL, blank = 0, subset = NULL, na.rm = TRUE, neg.rm = FALSE)
 }
 \arguments{
 \item{x}{Numeric vector of x values}
@@ -18,6 +18,9 @@ the end of the data)}
 
 \item{blank}{Value to be subtracted from \code{y} values before calculating
 area under the curve}
+
+\item{subset}{A vector of logical values indicating which x and y values
+should be included (TRUE) or excluded (FALSE).}
 
 \item{na.rm}{a logical indicating whether missing values should be removed}
 

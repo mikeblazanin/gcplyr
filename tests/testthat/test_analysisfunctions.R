@@ -307,14 +307,14 @@ test_that("find_threshold_crosses works correctly", {
     find_threshold_crosses(y = dat$y, x = dat$x,
                            return_rising = TRUE, return_falling = FALSE,
                            threshold = 16.5, return = "index",
-                           subset = dat$x > 15),
+                           subset = dat$x > 15 & !is.na(dat$x)),
     c(3))
   expect_equal(
     find_threshold_crosses(y = dat$y, x = dat$x,
                            return_rising = FALSE, return_falling = TRUE,
                            return_endpoints = TRUE,
                            threshold = 16.5, return = "index",
-                           subset = dat$x < 25),
+                           subset = dat$x < 25 & !is.na(dat$x)),
     c(15, 30))
   
   #data where it never crosses

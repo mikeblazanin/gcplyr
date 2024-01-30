@@ -3367,21 +3367,12 @@ find_local_extrema <- function(y, x = NULL,
   } else {x <- make.numeric(x)}
   
   #Take subset
-  if(!is.null(subset)) {
-    if(length(subset) != length(y)) {stop("subset and y must be the same length")}
-    if(!all(is.logical(subset))) {stop("subset must be vector of logical values")}
-    if(any(is.na(subset))) {
-      warning("subset contains NA's, treating NA's as FALSE")
-      subset[is.na(subset)] <- FALSE
-    }
-    indices <- which(subset)
-    if(!is.null(x)) {x <- x[indices]}
-    y <- y[indices]
-  } else {indices <- 1:length(y)}
+  subset_temp <- take_subset(x = x, y = y, subset = subset)
+  if(length(subset_temp$y) == 0) {return(NA)}
   
   #remove nas
-  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
-  
+  narm_temp <- rm_nas(x = subset_temp$x, y = subset_temp$y, 
+                      na.rm = na.rm, stopifNA = TRUE)
   if(length(narm_temp$y) == 0) {return(NA)}
   
   #reorder
@@ -3427,7 +3418,7 @@ find_local_extrema <- function(y, x = NULL,
     }
     
     #Change indices to account for subset being used
-    output <- indices[output]
+    output <- subset_temp$indices[output]
     
     return(output[order(output)])
   } else if (return == "x") {
@@ -3583,17 +3574,12 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
   x <- make.numeric(x, "x")
   
   #Take subset
-  if(!is.null(subset)) {
-    if(length(subset) != length(y)) {stop("subset and y must be the same length")}
-    if(!all(is.logical(subset))) {stop("subset must be vector of logical values")}
-    indices <- which(subset)
-    if(!is.null(x)) {x <- x[indices]}
-    y <- y[indices]
-  } else {indices <- 1:length(y)}
+  subset_temp <- take_subset(x = x, y = y, subset = subset)
+  if(length(subset_temp$y) == 0) {return(NA)}
   
   #remove nas
-  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
-  
+  narm_temp <- rm_nas(x = subset_temp$x, y = subset_temp$y, 
+                      na.rm = na.rm, stopifNA = TRUE)
   if(length(narm_temp$y) == 0) {return(NA)}
   
   #reorder
@@ -3634,7 +3620,7 @@ find_threshold_crosses <- function(y, x = NULL, threshold,
     }
   
     #Change indices to account for subset being used
-    out_idx <- indices[out_idx]
+    out_idx <- subset_temp$indices[out_idx]
     
     return(out_idx[order(out_idx)])
     

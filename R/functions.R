@@ -3685,6 +3685,8 @@ please use find_threshold_crosses for more flexibility")
 #'             the end of the data)
 #' @param blank Value to be subtracted from \code{y} values before calculating
 #'              area under the curve
+#' @param subset A vector of logical values indicating which x and y values
+#'               should be included (TRUE) or excluded (FALSE).
 #' @param na.rm a logical indicating whether missing values should be removed
 #' @param neg.rm a logical indicating whether \code{y} values below zero should 
 #'               be treated as zeros. If \code{FALSE}, area under the curve
@@ -3698,15 +3700,20 @@ please use find_threshold_crosses for more flexibility")
 #' @return A scalar for the total area under the curve
 #'             
 #' @export
-auc <- function(x, y, xlim = NULL, blank = 0, na.rm = TRUE, neg.rm = FALSE) {
+auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
+                na.rm = TRUE, neg.rm = FALSE) {
   if(!is.vector(x)) {stop(paste("x is not a vector, it is class:", class(x)))}
   if(!is.vector(y)) {stop(paste("y is not a vector, it is class:", class(y)))}
   
   x <- make.numeric(x)
   y <- make.numeric(y)
   
+  #take subset
+  subset_temp <- take_subset(x = x, y = y, subset = subset)
+  
   #remove nas
-  dat <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
+  dat <- rm_nas(x = subset_temp$x, y = subset_temp$y, 
+                na.rm = na.rm, stopifNA = TRUE)
   
   if(length(dat$y) <= 1) {return(NA)}
   

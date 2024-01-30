@@ -97,6 +97,7 @@ reference:
   contents:
   - example_widedata
   - example_widedata_noiseless
+  - example_design_tidy
 - title: Example function
   desc: "Function to generate files or objects seen in documentation examples"
   contents:

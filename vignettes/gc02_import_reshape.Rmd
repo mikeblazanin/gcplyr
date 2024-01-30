@@ -22,7 +22,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Where are we so far?
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. **Importing and transforming data:** `vignette("gc02_import_reshape")`
+2. **Importing and reshaping data:** `vignette("gc02_import_reshape")`
 3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`
@@ -358,7 +358,7 @@ print(head(imported_blocks_now_tidy), row.names = FALSE)
 Now that you've imported and transformed your data to be tidy-shaped, you likely want to incorporate some design information on what went into each well (and plate). Alternatively, if you'd like to skip that step for now, you can go directly to pre-processing and plotting your data
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. Importing and transforming data: `vignette("gc02_import_reshape")`
+2. Importing and reshaping data: `vignette("gc02_import_reshape")`
 3. **Incorporating experimental designs: `vignette("gc03_incorporate_designs")`**
 4. **Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`**
 5. Processing your data: `vignette("gc05_process")`

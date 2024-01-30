@@ -22,7 +22,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 # Where are we so far?
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. Importing and transforming data: `vignette("gc02_import_reshape")`
+2. Importing and reshaping data: `vignette("gc02_import_reshape")`
 3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. **Pre-processing and plotting your data:** `vignette("gc04_preprocess_plot")`
 5. Processing your data: `vignette("gc05_process")`
@@ -128,7 +128,7 @@ Generally speaking, **from here on you should plot your data frequently**, and i
 Now that you've pre-processed and visualized your data, it's time to process (in most cases) and analyze (pretty much always) it! 
 
 1. Introduction: `vignette("gc01_gcplyr")`
-2. Importing and transforming data: `vignette("gc02_import_reshape")`
+2. Importing and reshaping data: `vignette("gc02_import_reshape")`
 3. Incorporating experimental designs: `vignette("gc03_incorporate_designs")`
 4. Pre-processing and plotting your data: `vignette("gc04_preprocess_plot")`
 5. **Processing your data: `vignette("gc05_process")`**

@@ -67,7 +67,7 @@ file names if not specified}
 
 \item{run_names_header}{Should the run names (provided in \code{run_names}
 or inferred from \code{files}) be added as a column to 
-thenwidemeasures? If \code{run_names_header} is NULL, 
+the widemeasures? If \code{run_names_header} is NULL, 
 they will not be. If \code{run_names_header} is a string, 
 that string will be the column header for the column 
 where the names will be stored}

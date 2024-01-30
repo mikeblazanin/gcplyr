@@ -7,8 +7,7 @@
 gc_smooth.spline(x, y = NULL, ..., na.rm = TRUE)
 }
 \arguments{
-\item{x}{A vector giving the values of the predictor variable, or a
-list or a two-column matrix specifying x and y.}
+\item{x}{A vector giving the values of the predictor variable.}
 
 \item{y}{A vector giving the values of the response variable. If \code{y} is
 missing or \code{NULL}, the responses are assumed to be specified

@@ -3788,7 +3788,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 #' 
 #' Lag time is calculated by projecting a tangent line at the point
 #' of maximum (per-capita) derivative backwards to find the time when it
-#' intersects with the starting y-value
+#' intersects with the minimum y-value
 #' 
 #' @param x Vector of x values (typically time)
 #' @param y Vector of y values (typically density)

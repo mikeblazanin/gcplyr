@@ -52,7 +52,7 @@ cases when value will be a vector.
 \description{
 Lag time is calculated by projecting a tangent line at the point
 of maximum (per-capita) derivative backwards to find the time when it
-intersects with the starting y-value
+intersects with the minimum y-value
 }
 \details{
 For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}

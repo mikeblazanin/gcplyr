@@ -41,7 +41,7 @@ version <- gsub('-', '.', version)
 * This merged tidy-shaped data is then easy to work with and plot using functions from `gcplyr` and popular packages `dplyr` and `ggplot2`.
 * `gcplyr` can calculate plain and per-capita derivatives of density data.
 * `gcplyr` has several methods to deal with noise in density or derivatives data.
-* `gcplyr` can extract parameters like growth rate/doubling time, carrying capacity, diauxic shifts, extinction, and more without fitting an equation for growth to your data.
+* `gcplyr` can extract parameters like growth rate/doubling time, maximum density (carrying capacity), lag time, area under the curve, diauxic shifts, extinction, and more without fitting an equation for growth to your data.
 
 **Please send all questions, requests, comments, and bugs to mikeblazanin [at] gmail [dot] com**
 

@@ -59,7 +59,7 @@ For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
 (using the per-capita derivative and \code{trans_y = 'log'}).
 
 Advanced users may wish to use alternate values for the slope, origination
-point, or initial y-value. In that case, values can be supplied to
+point, or minimum y-value. In that case, values can be supplied to
 \code{slope}, \code{x1}, \code{y1}, and/or \code{y0}, which will override
 the default calculations. If and only if all of \code{slope}, \code{x1}, 
 \code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on

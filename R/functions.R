@@ -3163,6 +3163,9 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
       for (j in which(!is.na(windows))) {
         if(any(is.na(sub_y[windows[[j]]]) | is.infinite(sub_y[windows[[j]]]))) {
           sub_ans[j] <- NA
+        } else if(length(windows[[j]]) < 2) {
+          warning("window only contains one data point, returning NA")
+          sub_ans[j] <- NA
         } else {
           #get slope
           # (if trans_y = 'linear', slope is derivative

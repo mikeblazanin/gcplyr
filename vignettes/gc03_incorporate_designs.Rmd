@@ -112,7 +112,7 @@ You can import tidy-shaped designs with `read_tidys`.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-Once these design elements have been read into the `R` environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging spectrophotometric and design data]** section.
+Once these design elements have been read into the `R` environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging growth curve data with designs]** section.
 
 # Generating designs in R
 If you'd rather make your design data.frames in R, `make_design` can create:

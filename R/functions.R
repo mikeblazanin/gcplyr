@@ -3714,6 +3714,10 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
   #take subset
   subset_temp <- take_subset(x = x, y = y, subset = subset)
   
+  #Save original min and max x values so we don't warn when xlim is larger
+  #than range of x after NA's have been removed
+  x_orig <- c("min" = min(x, na.rm = TRUE), "max" = max(x, na.rm = TRUE))
+  
   #remove nas
   dat <- rm_nas(x = subset_temp$x, y = subset_temp$y, 
                 na.rm = na.rm, stopifNA = TRUE)
@@ -3734,7 +3738,8 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
     if(is.na(xlim[1])) {xlim[1] <- x[1]}
     if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
     if(xlim[1] < x[1]) {
-      warning("xlim specifies lower limit below the range of x\n")
+      if(xlim[1] < x_orig[1]) {
+        warning("xlim specifies lower limit below the range of x\n")} 
       xlim[1] <- x[1]
     } else { #add lower xlim to the x vector and the interpolated y to y vector
       if (!(xlim[1] %in% x)) {
@@ -3753,7 +3758,8 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
     }
        
     if(xlim[2] > x[length(x)]) {
-      warning("xlim specifies upper limit above the range of x\n")
+      if(xlim[2] > x_orig[2]) {
+        warning("xlim specifies upper limit above the range of x\n")}
       xlim[2] <- x[length(x)]
     } else { #add upper xlim to the x vector and the interpolated y to y vector
       if (!(xlim[2] %in% x)) {

@@ -22,6 +22,11 @@ test_that("auc returns correctly with xlim", {
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(2, NA)), 332)
   expect_equal(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, 7)), 115)
   expect_error(auc(x = 1:10, y = (1:10)**2, xlim = c(NA, NA)))
+  expect_warning(auc(x = 2:8, y = (2:8)**2, xlim = c(1, 8)),
+                 "xlim specifies lower limit below the range of x")
+  expect_warning(auc(x = 2:8, y = (2:8)**2, xlim = c(2, 9)),
+                 "xlim specifies upper limit above the range of x")
+  expect_equal(auc(x = 1:10, y = c(NA, (2:9)**2, NA), xlim = c(1, 10)), 241.5)
 })
 
 test_that("lag_time returns correctly", {

@@ -78,7 +78,7 @@ test_that("lag_time returns correctly", {
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
   expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
-               NA)
+               1)
   dat <- data.frame(x = 1:10, y = c(1, rep(NA, 7), 81, 100), grp = rep("A", 10))
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))

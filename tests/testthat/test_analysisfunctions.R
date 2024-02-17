@@ -88,13 +88,13 @@ test_that("lag_time returns correctly", {
   #y data is all NAs
   dat <- data.frame(x = 1:10, y = rep(NA, 10), deriv = 1:10)
   expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
-               NA)
+               as.numeric(NA))
   
   #All y values are 0
   dat <- data.frame(x = 1:10, y = rep(0, 10), deriv = 1:10)
   expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
                  "infinite values created")
-  expect_equal(lag, NA)
+  expect_equal(lag, as.numeric(NA))
   
   #All deriv are 0
   dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(0, 10))

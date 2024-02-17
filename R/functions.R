@@ -3868,18 +3868,16 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     if(!is.null(y1)) {y1 <- log(y1)}
   }
   
-  #Check
-  if(length(y) < 2 && (is.null(y0) || is.null(y1))) {return(NA)}
-  
   #Calculate y0
   if(is.null(y0)) {
     if(is.null(y)) {stop("y or y0 must be provided")}
-    if(length(y) < 1) {return(NA)}
+    y_noNAs <- rm_nas(y = y, na.rm = na.rm)[["y"]] #remove NAs from y alone
+    if(length(y_noNAs) < 1 || any(is.na(y_noNAs))) {return(as.numeric(NA))}
     if(na.rm == TRUE &&
        min(y, na.rm = na.rm) != min(rm_nas(x = x, y = y, na.rm = na.rm)[["y"]])) {
       warning("min(y) does not equal min(y[!is.na(x)])")}
     #use vector of y's where the only values removed are those where y is NA
-    y0 <- min(y, na.rm = na.rm)
+    y0 <- min(y_noNAs)
   }
   
   #Save original x values for later use
@@ -3895,7 +3893,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   
   if(is.null(slope)) {
     if(is.null(deriv)) {stop("deriv or slope must be provided")}
-    if(length(deriv) < 1) {return(NA)}
+    if(length(deriv) < 1) {return(as.numeric(NA))}
     slope <- max(deriv, na.rm = na.rm)
   }
   
@@ -3906,7 +3904,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
       if(is.null(y)) {stop("y1, or deriv and y, must be provided")}
       if(is.null(x)) {stop("x1, or deriv and x, must be provided")}
     }
-    if(length(deriv) < 1 || length(y) < 1 || length(x) < 1) {return(NA)}
+    if(length(deriv) < 1 || length(y) < 1 || length(x) < 1) {return(as.numeric(NA))}
     idxs <- which(deriv == max(deriv, na.rm = na.rm))
     if(length(idxs) > 1) {
       warning("multiple timepoints have the maximum derivative, using the first")}

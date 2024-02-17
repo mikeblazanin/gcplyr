@@ -63,7 +63,7 @@ test_that("lag_time returns correctly", {
     abline(h = m)
   }
   
-  #Data has lots of NA's
+  #y data has lots of NA's
   dat <- data.frame(x = 1:100, y = (-10):89, grp = rep("A", 100))
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
@@ -73,7 +73,7 @@ test_that("lag_time returns correctly", {
     "infinite values")
   expect_equal(lag, 12)
   
-  #Data is nearly all NAs
+  #y data is nearly all NAs
   dat <- data.frame(x = 1:10, y = c(1, rep(NA, 8), 100), grp = rep("A", 10))
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
@@ -85,7 +85,7 @@ test_that("lag_time returns correctly", {
   expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
                1)
   
-  #Data is all NAs
+  #y data is all NAs
   dat <- data.frame(x = 1:10, y = rep(NA, 10), deriv = 1:10)
   expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
                NA)
@@ -107,6 +107,15 @@ test_that("lag_time returns correctly", {
   expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
                  "multiple timepoints have")
   expect_equal(lag, 1)
+  
+  #Deriv has NA values where min(y) is
+  dat <- data.frame(x = 1:10, y = exp(1:10), deriv = c(NA, 1, rep(0.9, 8)))
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv), 1)
+  
+  #min(y) occurs where x is NA
+  dat <- data.frame(x = c(NA, 2:10), y = exp(1:10), deriv = 1:10)
+  expect_warning(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+                 regexp = "min\\(y\\) does not equal min")
 })
 
 test_that("doubling_time returns correctly", {

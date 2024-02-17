@@ -116,6 +116,25 @@ test_that("lag_time returns correctly", {
   dat <- data.frame(x = c(NA, 2:10), y = exp(1:10), deriv = 1:10)
   expect_warning(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
                  regexp = "min\\(y\\) does not equal min")
+  
+  #lag time is less than min(x)
+  dat <- data.frame(x = 1:10, y = exp(1:10), deriv = c(NA, 0.5, rep(0.1, 8)))
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+                 regexp = "indicating no identifiable lag phase")
+  expect_equal(lag, 0)
+  
+  #lag time is less than min(x[!is.na(y)])
+  dat <- data.frame(x = 1:10, y = c(NA, exp(2:10)), 
+                    deriv = c(NA, NA, 0.8, rep(0.1, 7)))
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+                 regexp = "indicating no identifiable lag phase")
+  expect_equal(lag, 1.75)
+  
+  #na.rm = FALSE
+  dat <- data.frame(x = 1:10, y = c(NA, exp(2:10)), 
+                    deriv = c(NA, NA, 0.8, rep(0.1, 7)))
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, na.rm = FALSE),
+               as.numeric(NA))
 })
 
 test_that("doubling_time returns correctly", {

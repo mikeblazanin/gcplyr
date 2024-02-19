@@ -14,6 +14,7 @@ calc_deriv(
   subset_by = NULL,
   window_width = NULL,
   window_width_n = NULL,
+  window_width_frac = NULL,
   trans_y = "linear",
   na.rm = TRUE
 )
@@ -51,29 +52,32 @@ independently of the others.
 This provides an internally-implemented approach similar
 to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
-\item{window_width_n, window_width}{Set how many data points are used to determine
+\item{window_width_n, window_width, window_width_frac}{Set how many data points are used to determine
 the slope at each point.
      
-When both are \code{NULL}, \code{calc_deriv} 
+When all are \code{NULL}, \code{calc_deriv} 
 calculates the difference or derivative
 of each point with the next point, appending
 \code{NA} at the end.
      
-When one or both are specified, a linear regression 
+When one or multiple are specified, a linear regression 
 is fit to all points in the window to determine the 
 slope.
      
 \code{window_width_n} specifies the width of the
 window in number of data points. \code{window_width}
 specifies the width of the window in units of \code{x}.
+\code{window_width_frac} specifies the width of the
+window as a fraction of the total number of data points.
      
-When using \code{window_width} and \code{window_width_n} 
-at the same time, windows are conservative. Points 
-included in each window will meet both the 
-\code{window_width} and the \code{window_width_n}.
+When using multiple window specifications at the same 
+time, windows are conservative. Points 
+included in each window will meet all of the 
+\code{window_width}, \code{window_width_n}, and
+\code{window_width_frac}.
 
 A value of \code{window_width_n = 3} or 
-\code{window_width_n = 5} is often the most effective.}
+\code{window_width_n = 5} is often a good default.}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
                 transformation of y-values.

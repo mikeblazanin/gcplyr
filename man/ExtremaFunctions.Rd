@@ -13,6 +13,7 @@ find_local_extrema(
   window_width = NULL,
   window_width_n = NULL,
   window_height = NULL,
+  window_width_frac = NULL,
   return = "index",
   return_maxima = TRUE,
   return_minima = TRUE,
@@ -30,6 +31,7 @@ first_maxima(
   window_width = NULL,
   window_width_n = NULL,
   window_height = NULL,
+  window_width_frac = 0.2,
   return = "index",
   return_endpoints = TRUE,
   ...
@@ -41,6 +43,7 @@ first_minima(
   window_width = NULL,
   window_width_n = NULL,
   window_height = NULL,
+  window_width_frac = 0.2,
   return = "index",
   return_endpoints = TRUE,
   ...
@@ -51,31 +54,28 @@ first_minima(
 
 \item{x}{Optional numeric vector of corresponding x values}
 
-\item{window_width}{Width of the window (in units of \code{x}) used to
-search for local extrema. A narrower width will be more
-sensitive to narrow local maxima/minima, while a wider
-width will be less sensitive to local maxima/minima.}
+\item{window_width, window_width_n, window_height, window_width_frac}{Arguments that set the width/height of the window used to
+search for local extrema.
 
-\item{window_width_n}{The maximum number of data points a single 
-extrema-search step is allowed to take. For example,
-when maxima-finding, the function will not pass
-a valley consisting of more than \code{window_width_n}
-data points.
+\code{window_width} is in units of \code{x}.
 
-A smaller \code{window_width_n} will be more sensitive 
-to narrow local maxima/minima, while a larger 
-\code{window_width_n} will be less sensitive to 
-narrow local maxima/minima.}
+\code{window_width_n} is in units of number of data points.
 
-\item{window_height}{The maximum change in \code{y} a single extrema-search
-step is allowed to take.  For example, when 
-maxima-finding, the function will not pass a
-valley deeper than \code{window_height}.
+\code{window_height} is the maximum change in \code{y} 
+a single extrema-search step is allowed to take.
 
-A smaller \code{window_height} will be more sensitive 
-to shallow local maxima/minima, while a larger 
-\code{window_height} will be less sensitive to 
-shallow maxima/minima.}
+\code{window_width_frac} is as a fraction of the total
+number of data points.
+
+For example, the function will not pass a peak or valley
+more than \code{window_width_n} data points wide, nor
+a peak/valley taller or deeper than \code{window_height}.
+
+A narrower width will be more sensitive to narrow local 
+maxima/minima, while a wider width will be less sensitive 
+to local maxima/minima. A smaller height will be more 
+sensitive to shallow local maxima/minima, while a larger 
+height will be less sensitive to shallow maxima/minima.}
 
 \item{return}{One of c("index", "x", "y"), determining whether the function
 will return the index, x value, or y value associated with the
@@ -129,19 +129,16 @@ These functions take a vector of \code{y} values and identify local extrema.
 }
 \details{
 For \code{find_local_extrema}, one of \code{window_width}, 
-\code{window_width_n}, or \code{window_height} must be provided.
+\code{window_width_n}, \code{window_height}, or \code{window_width_frac}
+must be provided.
 
-For \code{first_minima} and \code{first_maxima}, if none of 
-\code{window_width}, \code{window_width_n}, or \code{window_height} are 
-provided, \code{window_width_n} is set to 20% of the data by default.
+For \code{first_minima} or \code{first_maxima}, set 
+\code{window_width_frac = NULL} to override default width behavior.
 
-If multiple of \code{window_width}, \code{window_width_n}, or 
-\code{window_height} are provided, steps are limited conservatively 
-(a single step must meet all criteria)
+If multiple of \code{window_width}, \code{window_width_n},
+\code{window_height}, or \code{window_width_frac} are provided, steps 
+are limited conservatively (a single step must meet all criteria).
 
-This function is designed to be compatible for use within
- \code{dplyr::group_by} and \code{dplyr::summarize}
- 
 In the case of exact ties in \code{y} values within a window, only the 
 first local extrema is returned.
 }

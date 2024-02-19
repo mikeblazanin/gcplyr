@@ -92,7 +92,4 @@ point, or minimum y-value. In that case, values can be supplied to
 the default calculations. If and only if all of \code{slope}, \code{x1}, 
 \code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on
 their inputs and will return a vector of lag time values.
-
-This function is designed to be compatible for use within
- \code{dplyr::group_by} and \code{dplyr::summarize}
 }

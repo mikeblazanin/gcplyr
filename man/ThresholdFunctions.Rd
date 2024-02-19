@@ -106,7 +106,3 @@ to pass to \code{find_threshold_crosses}}
 These functions take a vector of \code{y} values and identify points where
 the \code{y} values cross some \code{threshold} y value.
 }
-\details{
-This function is designed to be compatible for use within
- \code{dplyr::group_by} and \code{dplyr::summarize}
-}

@@ -80,9 +80,6 @@ for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 If none of \code{window_width}, \code{window_width_n}, or 
 \code{window_height} are provided, default value of \code{window_width_n}
 will be used.
-
-This function is designed to be compatible for use within
- \code{dplyr::group_by} and \code{dplyr::summarize}
 }
 \seealso{
 [first_maxima()]

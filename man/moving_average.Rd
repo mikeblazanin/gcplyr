@@ -9,6 +9,7 @@ moving_average(
   data,
   window_width_n = NULL,
   window_width = NULL,
+  window_width_frac = NULL,
   na.rm = TRUE,
   warn_nonnumeric_sort = TRUE
 )
@@ -23,6 +24,9 @@ and numeric predictor (time).}
 (therefore, must be an odd number of points)}
 
 \item{window_width}{Width of the moving average window (in units of \code{x})}
+
+\item{window_width_frac}{Width of the window (as a fraction of the total
+number of data points).}
 
 \item{na.rm}{logical whether NA's should be removed before analyzing}
 

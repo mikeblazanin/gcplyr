@@ -9,7 +9,8 @@ moving_average(
   data,
   window_width_n = NULL,
   window_width = NULL,
-  na.rm = TRUE
+  na.rm = TRUE,
+  warn_nonnumeric_sort = TRUE
 )
 }
 \arguments{
@@ -24,6 +25,10 @@ and numeric predictor (time).}
 \item{window_width}{Width of the moving average window (in units of \code{x})}
 
 \item{na.rm}{logical whether NA's should be removed before analyzing}
+
+\item{warn_nonnumeric_sort}{logical whether warning should be issued when 
+predictor variable that data is sorted by is 
+non-numeric.}
 }
 \value{
 Vector of smoothed data, with NA's appended at both ends

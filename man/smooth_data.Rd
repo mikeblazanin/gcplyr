@@ -10,7 +10,8 @@ smooth_data(
   y = NULL,
   sm_method,
   subset_by = NULL,
-  return_fitobject = FALSE
+  return_fitobject = FALSE,
+  warn_gam_no_s = TRUE
 )
 }
 \arguments{
@@ -39,9 +40,12 @@ independently of the others.
 This provides an internally-implemented approach similar
 to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
-\item{return_fitobject}{logical indicating whether entire object returned
+\item{return_fitobject}{logical whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.}
+
+\item{warn_gam_no_s}{logical whether warning should be issued when gam is 
+used without \code{s()} in the formula.}
 }
 \value{
 If \code{return_fitobject == FALSE:}

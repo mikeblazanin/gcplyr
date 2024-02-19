@@ -4,7 +4,17 @@
 \alias{auc}
 \title{Calculate area under the curve}
 \usage{
-auc(x, y, xlim = NULL, blank = 0, subset = NULL, na.rm = TRUE, neg.rm = FALSE)
+auc(
+  x,
+  y,
+  xlim = NULL,
+  blank = 0,
+  subset = NULL,
+  na.rm = TRUE,
+  neg.rm = FALSE,
+  warn_xlim_out_of_range = TRUE,
+  warn_negative_y = TRUE
+)
 }
 \arguments{
 \item{x}{Numeric vector of x values}
@@ -28,6 +38,13 @@ should be included (TRUE) or excluded (FALSE).}
 be treated as zeros. If \code{FALSE}, area under the curve
 for negative \code{y} values will be calculated normally,
 effectively subtracting from the returned value.}
+
+\item{warn_xlim_out_of_range}{logical whether warning should be issued when 
+xlim is lower than the lowest x value or higher
+than the highest x value.}
+
+\item{warn_negative_y}{logical whether warning should be issued when 
+\code{neg.rm == FALSE} but some y values are below 0.}
 }
 \value{
 A scalar for the total area under the curve

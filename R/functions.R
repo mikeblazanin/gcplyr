@@ -2585,9 +2585,11 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'                  
 #'                  This provides an internally-implemented approach similar
 #'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
-#' @param return_fitobject logical indicating whether entire object returned
+#' @param return_fitobject logical whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
+#' @param warn_gam_no_s logical whether warning should be issued when gam is 
+#'                      used without \code{s()} in the formula.
 #'
 #' @details 
 #'            For \code{moving_average} and \code{moving_median}, 
@@ -2643,7 +2645,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' 
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
-                        return_fitobject = FALSE) {
+                        return_fitobject = FALSE, warn_gam_no_s = TRUE) {
   if(!sm_method %in% c("moving-average", "moving-median", "gam", 
                        "loess", "smooth.spline")) {
     stop("sm_method must be one of: moving-average, moving-median, gam, loess, or smooth.spline")
@@ -2685,7 +2687,7 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   if (sm_method == "gam") {
     if(!requireNamespace("mgcv", quietly = TRUE)) {
       stop("Package \"mgcv\" must be installed to use gam", call. = FALSE)}
-    if(substr(as.character(formula[3]), 1, 2) != "s(") {
+    if(warn_gam_no_s && substr(as.character(formula[3]), 1, 2) != "s(") {
       warning("gam method is called without 's()' to smooth\n")}
   }
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
@@ -2770,12 +2772,16 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving average window (in units of \code{x})
 #' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#'                             predictor variable that data is sorted by is 
+#'                             non-numeric.
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
 moving_average <- function(formula, data, window_width_n = NULL, 
-                           window_width = NULL, na.rm = TRUE) {
+                           window_width = NULL, na.rm = TRUE,
+                           warn_nonnumeric_sort = TRUE) {
   if(is.null(window_width) & is.null(window_width_n)) {
     stop("window_width or window_width_n must be provided")}
   
@@ -2797,7 +2803,7 @@ moving_average <- function(formula, data, window_width_n = NULL,
   
   #Check x for being correct format
   if(!is.numeric(data[, predictor_var])) {
-    if (!canbe.numeric(data[, predictor_var])) {
+    if (warn_nonnumeric_sort && !canbe.numeric(data[, predictor_var])) {
       warning(paste0("data is being sorted by order(", predictor_var,
                     "), but ", predictor_var, " is not numeric\n"))
     } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
@@ -2842,12 +2848,16 @@ moving_average <- function(formula, data, window_width_n = NULL,
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving median window (in units of \code{x})|
 #' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#'                             predictor variable that data is sorted by is 
+#'                             non-numeric.
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
 moving_median <- function(formula, data, window_width_n = NULL, 
-                          window_width = NULL, na.rm = TRUE) {
+                          window_width = NULL, na.rm = TRUE,
+                          warn_nonnumeric_sort = TRUE) {
   if(is.null(window_width) & is.null(window_width_n)) {
     stop("window_width or window_width_n must be provided")}
   
@@ -2869,7 +2879,7 @@ moving_median <- function(formula, data, window_width_n = NULL,
   
   #Check x for being correct format
   if(!is.numeric(data[, predictor_var])) {
-    if (!canbe.numeric(data[, predictor_var])) {
+    if (warn_nonnumeric_sort && !canbe.numeric(data[, predictor_var])) {
       warning(paste0("data is being sorted by order(", predictor_var,
                     "), but ", predictor_var, " is not numeric\n"))
     } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
@@ -3695,6 +3705,11 @@ please use find_threshold_crosses for more flexibility")
 #'               be treated as zeros. If \code{FALSE}, area under the curve
 #'               for negative \code{y} values will be calculated normally,
 #'               effectively subtracting from the returned value.
+#' @param warn_xlim_out_of_range logical whether warning should be issued when 
+#'                             xlim is lower than the lowest x value or higher
+#'                             than the highest x value.
+#' @param warn_negative_y logical whether warning should be issued when 
+#'                        \code{neg.rm == FALSE} but some y values are below 0.
 #' 
 #' @details 
 #' This function is designed to be compatible for use within
@@ -3704,7 +3719,8 @@ please use find_threshold_crosses for more flexibility")
 #'             
 #' @export
 auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
-                na.rm = TRUE, neg.rm = FALSE) {
+                na.rm = TRUE, neg.rm = FALSE,
+                warn_xlim_out_of_range = TRUE, warn_negative_y = TRUE) {
   if(!is.vector(x)) {stop(paste("x is not a vector, it is class:", class(x)))}
   if(!is.vector(y)) {stop(paste("y is not a vector, it is class:", class(y)))}
   
@@ -3738,7 +3754,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
     if(is.na(xlim[1])) {xlim[1] <- x[1]}
     if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
     if(xlim[1] < x[1]) {
-      if(xlim[1] < x_orig[1]) {
+      if(warn_xlim_out_of_range && xlim[1] < x_orig[1]) {
         warning("xlim specifies lower limit below the range of x\n")} 
       xlim[1] <- x[1]
     } else { #add lower xlim to the x vector and the interpolated y to y vector
@@ -3758,7 +3774,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
     }
        
     if(xlim[2] > x[length(x)]) {
-      if(xlim[2] > x_orig[2]) {
+      if(warn_xlim_out_of_range && xlim[2] > x_orig[2]) {
         warning("xlim specifies upper limit above the range of x\n")}
       xlim[2] <- x[length(x)]
     } else { #add upper xlim to the x vector and the interpolated y to y vector
@@ -3782,7 +3798,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
   
   if(any(y < 0)) {
     if(neg.rm == TRUE) {y[y < 0] <- 0
-    } else {warning("some y values are below 0")}
+    } else if(warn_negative_y) {warning("some y values are below 0")}
   }
   
   #Calculate auc
@@ -3820,6 +3836,22 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 #'           will be calculated as \code{y[which.max(deriv)]}.
 #' @param y0 y value (typically density) to find intersection of slope from
 #'             x1, y1 with. If not provided, will be calculated as \code{min(y)}
+#' @param warn_logtransform_warnings logical whether warning should be issued 
+#'                             when log(y) produced warnings.
+#' @param warn_logtransform_infinite logical whether warning should be issued 
+#'                             when log(y) produced infinite values that will
+#'                             be treated as \code{NA}.
+#' @param warn_min_y_mismatch logical whether warning should be issued when 
+#'                            \code{min(y)} does not equal 
+#'                            \code{min(y[!is.na(x)])}.
+#' @param warn_multiple_maxderiv logical whether warning should be issued when 
+#'                             there are multiple points in \code{deriv} that
+#'                             are tied for the highest, and only the first
+#'                             will be used.
+#' @param warn_one_lag logical whether warning should be issued when 
+#'                     some, but not all, inputs are vectorized, and
+#'                     only one lag time value will be returned.
+#'                            
 #' @details 
 #' For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
 #' (using the per-capita derivative and \code{trans_y = 'log'}).
@@ -3840,7 +3872,12 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 #' @export
 lag_time <- function(x = NULL, y = NULL, deriv = NULL, 
                      trans_y = "log", na.rm = TRUE,
-                     slope = NULL, x1 = NULL, y1 = NULL, y0 = NULL) {
+                     slope = NULL, x1 = NULL, y1 = NULL, y0 = NULL,
+                     warn_logtransform_warnings = TRUE,
+                     warn_logtransform_infinite = TRUE,
+                     warn_min_y_mismatch = TRUE,
+                     warn_multiple_maxderiv = TRUE,
+                     warn_one_lag = TRUE, warn_no_lag = TRUE) {
   x <- make.numeric(x, "x")
   y <- make.numeric(y, "y")
   deriv <- make.numeric(deriv, "deriv")
@@ -3854,13 +3891,15 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     if(!is.null(y) && length(y) > 0) {
       caught_log <- gcTryCatch(log(y))
       if(!is.null(caught_log$warning)) {
-        warning(paste("during log-transformation,", caught_log$warning))
+        if(warn_logtransform_warnings) {
+          warning(paste("during log-transformation,", caught_log$warning))}
         caught_log$value[is.nan(caught_log$value)] <- NA}
       if(!is.null(caught_log$error)) {
         stop(paste("during log-transformation,", caught_log$error))}
       y <- caught_log$value
       if(any(is.infinite(y))) {
-        warning("infinite values created during log-transformation, treating as NA's")
+        if(warn_logtransform_infinite) {
+          warning("infinite values created during log-transformation, treating as NA's")}
         y[is.infinite(y)] <- NA
       }
     }
@@ -3873,7 +3912,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     if(is.null(y)) {stop("y or y0 must be provided")}
     y_noNAs <- rm_nas(y = y, na.rm = na.rm)[["y"]] #remove NAs from y alone
     if(length(y_noNAs) < 1 || any(is.na(y_noNAs))) {return(as.numeric(NA))}
-    if(na.rm == TRUE &&
+    if(warn_min_y_mismatch && na.rm == TRUE &&
        min(y, na.rm = na.rm) != min(rm_nas(x = x, y = y, na.rm = na.rm)[["y"]])) {
       warning("min(y) does not equal min(y[!is.na(x)])")}
     #use vector of y's where the only values removed are those where y is NA
@@ -3906,20 +3945,20 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
     }
     if(length(deriv) < 1 || length(y) < 1 || length(x) < 1) {return(as.numeric(NA))}
     idxs <- which(deriv == max(deriv, na.rm = na.rm))
-    if(length(idxs) > 1) {
+    if(warn_multiple_maxderiv && length(idxs) > 1) {
       warning("multiple timepoints have the maximum derivative, using the first")}
     y1 <- y[idxs[1]]
     x1 <- x[idxs[1]]
   }
 
   if(!all_same(c(length(y0), length(y1), length(slope), length(x1)))) {
-    warning("Only returning the first lag time value")
+    if(warn_one_lag) {warning("Only returning the first lag time value")}
     y0 <- y0[1]; y1 <- y1[1]; slope <- slope[1]; x1 <- x1[1]
   }
   lagvals <- solve_linear(x1 = x1, y1 = y1, m = slope, y2 = y0, named = FALSE)
 
-  if(length(lagvals) == 1 && !is.na(lagvals) && !is.null(xy_noNAs[["x"]]) && 
-     lagvals < min(xy_noNAs[["x"]])) {
+  if(warn_no_lag && length(lagvals) == 1 && !is.na(lagvals) && 
+     !is.null(xy_noNAs[["x"]]) && lagvals < min(xy_noNAs[["x"]])) {
     warning("lag time is less than min(x), indicating no identifiable lag phase")}
   return(lagvals)
 }

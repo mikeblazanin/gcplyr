@@ -479,7 +479,7 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
   #Convert window_width_frac into window_width_n 
   # (using the smaller of the two if both are specified)
   if(!is.null(window_width_frac)) {
-    calc_width_n <- min(1,
+    calc_width_n <- max(1,
                         round(window_width_frac * length(y)) -
                           (1 - round(window_width_frac * length(y))%%2))
     if(!is.null(window_width_n)) {

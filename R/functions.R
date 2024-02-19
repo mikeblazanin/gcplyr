@@ -1188,11 +1188,6 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'                          \code{block_names}
 #' @param sep   If block design files are already pasted,
 #'              sep specifies the string separating design elements
-#'              
-#'              If NULL, \code{import_blockdesigns} will assume no elements
-#'              are already pasted together and attempt to find a character
-#'              not used in the imported files to paste and later separate
-#'              design elements.
 #' @param ...   Other arguments to pass to \code{read_blocks}, 
 #'              \code{paste_blocks}, \code{trans_block_to_wide},
 #'              \code{trans_wide_to_tidy}, or \code{separate_tidy}.
@@ -1234,29 +1229,7 @@ import_blockdesigns <- function(files, block_names = NULL,
                         block_name_header = block_name_header, ...)
   
   if(length(files) > 1) {
-    if(is.null(sep)) {
-      #No sep provided, so look for a character that is not present
-      # in the data/metadata and so can be used as a separator
-      sep <- c("_", " ", "-", ",", ";")
-      
-      not_in_blocks <-
-        sapply(
-          X = sep,
-          FUN = function(y) {
-            !any(grepl(pattern = y, fixed = TRUE,
-                       x = unlist(
-                         lapply(X = blocks,
-                                FUN = function(x) {
-                                  c(unlist(x[1]), unlist(x[2]))
-                                }))))
-          })
-      
-      if(!any(not_in_blocks)) {
-        stop("all of '_', ' ', '-', ',', and ';' are found in the files,
-              specify a sep not found in the files")
-      } else {sep <- sep[which(not_in_blocks)[1]]}
-    }
-
+    if(is.null(sep)) {sep <- find_char_for_sep(blocks, nested_metadata = TRUE)[1]}
     blocks_pasted <- parse_dots(paste_blocks, blocks = blocks,
                                  sep = sep, nested_metadata = TRUE, ...)
   } else {blocks_pasted <- blocks}

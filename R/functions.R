@@ -1521,7 +1521,7 @@ do you need to set `lookup_tbl_start` differently?")
   
   if(output_format %in% c("blocks_pasted", "wide", "tidy")) {
     if(length(dot_args) > 1) {
-      sep <- sep_finder(output, nested_metadata = TRUE)[1]
+      sep <- find_char_for_sep(output, nested_metadata = TRUE)[1]
       output <- paste_blocks(output, nested_metadata = TRUE, sep = sep)
     }
     if(output_format %in% c("wide", "tidy")) {

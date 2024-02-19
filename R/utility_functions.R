@@ -232,7 +232,7 @@ infer_block_metadata <- function(blocks) {
 #'         as a separator without issue (or error if none can be found)
 #' 
 #' @noRd
-sep_finder <- function(blocks, nested_metadata = NULL) {
+find_char_for_sep <- function(blocks, nested_metadata = NULL) {
   if (is.null(nested_metadata)) {
     nested_metadata <- infer_block_metadata(blocks)
   }

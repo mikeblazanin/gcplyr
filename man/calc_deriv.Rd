@@ -16,7 +16,10 @@ calc_deriv(
   window_width_n = NULL,
   window_width_frac = NULL,
   trans_y = "linear",
-  na.rm = TRUE
+  na.rm = TRUE,
+  warn_logtransform_warnings = TRUE,
+  warn_logtransform_infinite = TRUE,
+  warn_window_toosmall = TRUE
 )
 }
 \arguments{
@@ -95,6 +98,19 @@ A value of \code{window_width_n = 3} or
                 more sensitive to incorrect values of \code{blank}.}
 
 \item{na.rm}{logical whether NA's should be removed before analyzing}
+
+\item{warn_logtransform_warnings}{logical whether warning should be issued 
+when log(y) produced warnings.}
+
+\item{warn_logtransform_infinite}{logical whether warning should be issued 
+when log(y) produced infinite values that will
+be treated as \code{NA}.}
+
+\item{warn_window_toosmall}{logical whether warning should be issued 
+when only one data point is in the window
+set by \code{window_width_n}, 
+\code{window_width}, or \code{window_width_frac},
+and so \code{NA} will be returned.}
 }
 \value{
 A vector of values for the plain (if \code{percapita = FALSE})

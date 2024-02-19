@@ -3046,6 +3046,16 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'                 at or below 0 will become undefined and results will be 
 #'                 more sensitive to incorrect values of \code{blank}.
 #' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_logtransform_warnings logical whether warning should be issued 
+#'                             when log(y) produced warnings.
+#' @param warn_logtransform_infinite logical whether warning should be issued 
+#'                             when log(y) produced infinite values that will
+#'                             be treated as \code{NA}.
+#' @param warn_window_toosmall logical whether warning should be issued 
+#'                             when only one data point is in the window
+#'                             set by \code{window_width_n}, 
+#'                             \code{window_width}, or \code{window_width_frac},
+#'                             and so \code{NA} will be returned.
 #' 
 #' @details For per-capita derivatives, \code{trans_y = 'linear'} and
 #'          \code{trans_y = 'log'} approach the same value as time resolution
@@ -3073,7 +3083,10 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        x_scale = 1, blank = NULL, subset_by = NULL, 
                        window_width = NULL, window_width_n = NULL, 
                        window_width_frac = NULL,
-                       trans_y = "linear", na.rm = TRUE) {
+                       trans_y = "linear", na.rm = TRUE,
+                       warn_logtransform_warnings = TRUE,
+                       warn_logtransform_infinite = TRUE,
+                       warn_window_toosmall = TRUE) {
   #Check inputs
   if(!return %in% c("derivative", "difference")) {
     stop("return must be one of c('derivative', 'difference')")}
@@ -3127,13 +3140,15 @@ window_width_frac are used")}
     if(trans_y == "log") {
       caught_log <- gcTryCatch(log(sub_y))
       if(!is.null(caught_log$warning)) {
-        warning(paste("during log-transformation,", caught_log$warning))
+        if(warn_logtransform_warnings) {
+          warning(paste("during log-transformation,", caught_log$warning))}
         caught_log$value[is.nan(caught_log$value)] <- NA}
       if(!is.null(caught_log$error)) {
         stop(paste("during log-transformation,", caught_log$error))}
       sub_y <- caught_log$value
       if(any(is.infinite(sub_y))) {
-        warning("infinite values created during log-transformation, treating as NA's")
+        if(warn_logtransform_infinite) {
+          warning("infinite values created during log-transformation, treating as NA's")}
         sub_y[is.infinite(sub_y)] <- NA
       }
     }
@@ -3178,7 +3193,8 @@ window_width_frac are used")}
         if(any(is.na(sub_y[windows[[j]]]) | is.infinite(sub_y[windows[[j]]]))) {
           sub_ans[j] <- NA
         } else if(length(windows[[j]]) < 2) {
-          warning("window only contains one data point, returning NA")
+          if(warn_window_toosmall) {
+            warning("window only contains one data point, returning NA")}
           sub_ans[j] <- NA
         } else {
           #get slope

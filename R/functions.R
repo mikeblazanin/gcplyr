@@ -1248,7 +1248,7 @@ import_blockdesigns <- function(files, block_names = NULL,
     values_to = vals_colname, values_to_numeric = FALSE,
     ...)
   
-  if(length(files) > 1) {
+  if(!is.null(sep)) {
     tidy_sep <- parse_dots(separate_tidy, 
                             data = tidys, sep = sep, col = vals_colname)
   } else {tidy_sep <- tidys}

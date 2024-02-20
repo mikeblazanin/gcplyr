@@ -1255,8 +1255,8 @@ import_blockdesigns <-
   function(files, block_names = NULL, block_name_header = "block_name", 
            join_designs = TRUE, sep = NULL, values_colname = "Designs", 
            keep_blocknames = !join_designs, ...) {
-    if(!is.null(sep) && join_designs == TRUE) {
-      warning("join_designs = TRUE, ignoring sep")}
+    if(!is.null(sep) && join_designs == FALSE) {
+      warning("join_designs = FALSE, ignoring sep")}
     
   blocks <- parse_dots(read_blocks, 
                         block_names = block_names, files = files, 

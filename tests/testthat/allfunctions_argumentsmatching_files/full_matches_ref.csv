@@ -1,8 +1,8 @@
 gcplyr_func,other_func,matches,checked
 first_above,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endpoints",x
 first_below,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endpoints",x
-first_maxima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
-first_minima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
+first_maxima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, window_width_frac, return, return_endpoints",x
+first_minima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, window_width_frac, return, return_endpoints",x
 first_peak,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
 gc_smooth.spline,stats::smooth.spline,"x, y",x
 import_blockdesigns,gcplyr::paste_blocks,sep,x

@@ -8,30 +8,48 @@ import_blockdesigns(
   files,
   block_names = NULL,
   block_name_header = "block_name",
+  join_designs = TRUE,
   sep = NULL,
+  values_colname = "Designs",
+  keep_blocknames = !join_designs,
   ...
 )
 }
 \arguments{
-\item{files}{Vector of filenames (as strings), each of which is a 
-block-shaped designs file. Inputs can be .csv, .xls, or .xlsx}
+\item{files}{A vector of filepaths relative to the current working directory
+where each filepath is a single plate read to be read by
+\code{read_blocks}.}
 
-\item{block_names}{Vector of names for design elements. These will be the
-resulting column names in the output data frame. Should be 
-in the same order as \code{files} and/or same order
-as corresponding \code{files} themselves. If \code{NULL},
-file names will be used as column names.}
+\item{block_names}{Vector of names corresponding to each design element (each
+block). Inferred from filenames, if not specified.
 
-\item{block_name_header}{The column name for the column containing the
-\code{block_names}}
+When \code{keep_blocknames = TRUE}, a column with the column
+name specified by \code{block_name_header} will contain these
+names.
 
-\item{sep}{If block design files are already pasted,
-sep specifies the string separating design elements
+When \code{join_designs = TRUE}, the \code{block_names} are
+also used as the output column names for each separated
+design column.}
 
-If NULL, \code{import_blockdesigns} will assume no elements
-are already pasted together and attempt to find a character
-not used in the imported files to paste and later separate
-design elements.}
+\item{block_name_header}{When \code{keep_blocknames = TRUE}, the column name of the
+column containing the \code{block_names}.}
+
+\item{join_designs}{logical indicating whether blocks (if there are multiple)
+should be treated as describing the same plate (and so joined
+as columns in the tidy output). If \code{FALSE}, will be 
+treated as describing different plates (and so joined as
+rows in the tidy output).}
+
+\item{sep}{If designs have been pasted together, this specifies the
+string they should be split apart by via \code{separate_tidy}.}
+
+\item{values_colname}{When \code{join_designs = FALSE}, the column name
+of the column that will contain all the design values.}
+
+\item{keep_blocknames}{logical indicating whether the column containing
+\code{block_names} (or those inferred from file names) should
+be retained in the output. By default, blocknames are retained
+only if \code{join_designs = FALSE}.}
 
 \item{...}{Other arguments to pass to \code{read_blocks}, 
 \code{paste_blocks}, \code{trans_block_to_wide},
@@ -41,13 +59,25 @@ See Details for more information}
 }
 \value{
 A tidy-shaped \code{data.frame} containing the design information
-        from \code{files}
+        from \code{files}. This always includes a "Well" column. 
+        
+        If \code{keep_blocknames = TRUE}, this includes a column with the
+        column name specified by \code{block_name_header} and containing
+        \code{block_names} (or those inferred from file names).
+        
+        If \code{join_designs = TRUE}, each block has been joined as a
+        column, with the columns named according to \code{block_names} 
+        (or inferred from file names) and containing the contents of 
+        each corresponding block. If \code{join_designs = FALSE}, each
+        block has been joined as rows, with a single column with the
+        name specified by \code{values_colnames} containing the
+        contents of all the blocks.
 }
 \description{
 Function to import block-shaped designs from files and return tidy designs.
-This function acts as a wrapper to call \code{read_blocks}, 
+This function acts as a wrapper that calls \code{read_blocks}, 
 \code{paste_blocks}, \code{trans_block_to_wide}, \code{trans_wide_to_tidy}, 
-and \code{separate_tidys} in one go
+and \code{separate_tidys}
 }
 \details{
 Common arguments that you may want to provide via \code{...}
@@ -55,16 +85,16 @@ Common arguments that you may want to provide via \code{...}
 
              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
              \code{sheet} - specifying the location of design information 
-             inside \code{files} to \code{read_blocks}
+             inside \code{files} to \code{read_blocks}.
              
-             \code{wellnames_sep} - specifying what character (or "" for none)
-             should be used when pasting together the rownames and
+             \code{wellnames_sep} - specifying what character (or "" for 
+             none) should be used when pasting together the rownames and
              column names. Note that this should be chosen to match
              the well names in your measures.
              
              Note that \code{import_blockdesigns} cannot currently handle
              metadata specified via the \code{metadata} argument of
-             \code{read_blocks}
+             \code{read_blocks}.
              
              If you find yourself needing more control, you can run the 
              steps manually, first reading with \code{read_blocks},

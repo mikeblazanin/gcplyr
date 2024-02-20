@@ -1172,22 +1172,40 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' Import blockdesigns
 #' 
 #' Function to import block-shaped designs from files and return tidy designs.
-#' This function acts as a wrapper to call \code{read_blocks}, 
+#' This function acts as a wrapper that calls \code{read_blocks}, 
 #' \code{paste_blocks}, \code{trans_block_to_wide}, \code{trans_wide_to_tidy}, 
-#' and \code{separate_tidys} in one go
+#' and \code{separate_tidys}
 #'
-#' @param files Vector of filenames (as strings), each of which is a 
-#'              block-shaped designs file. Inputs can be .csv, .xls, or .xlsx
+#' @param files A vector of filepaths relative to the current working directory
+#'              where each filepath is a single plate read to be read by
+#'              \code{read_blocks}.
 #' @param block_names
-#'              Vector of names for design elements. These will be the
-#'              resulting column names in the output data frame. Should be 
-#'              in the same order as \code{files} and/or same order
-#'              as corresponding \code{files} themselves. If \code{NULL},
-#'              file names will be used as column names.
-#' @param block_name_header The column name for the column containing the
-#'                          \code{block_names}
-#' @param sep   If block design files are already pasted,
-#'              sep specifies the string separating design elements
+#'              Vector of names corresponding to each design element (each
+#'              block). Inferred from filenames, if not specified.
+#'              
+#'              When \code{keep_blocknames = TRUE}, a column with the column
+#'              name specified by \code{block_name_header} will contain these
+#'              names.
+#'              
+#'              When \code{join_designs = TRUE}, the \code{block_names} are
+#'              also used as the output column names for each separated
+#'              design column.
+#' @param block_name_header 
+#'              When \code{keep_blocknames = TRUE}, the column name of the
+#'              column containing the \code{block_names}.
+#' @param join_designs logical indicating whether blocks (if there are multiple)
+#'              should be treated as describing the same plate (and so joined
+#'              as columns in the tidy output). If \code{FALSE}, will be 
+#'              treated as describing different plates (and so joined as
+#'              rows in the tidy output).
+#' @param sep   If designs have been pasted together, this specifies the
+#'              string they should be split apart by via \code{separate_tidy}.
+#' @param values_colname When \code{join_designs = FALSE}, the column name
+#'              of the column that will contain all the design values.
+#' @param keep_blocknames logical indicating whether the column containing
+#'              \code{block_names} (or those inferred from file names) should
+#'              be retained in the output. By default, blocknames are retained
+#'              only if \code{join_designs = FALSE}.             
 #' @param ...   Other arguments to pass to \code{read_blocks}, 
 #'              \code{paste_blocks}, \code{trans_block_to_wide},
 #'              \code{trans_wide_to_tidy}, or \code{separate_tidy}.
@@ -1199,16 +1217,16 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' 
 #'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
 #'              \code{sheet} - specifying the location of design information 
-#'              inside \code{files} to \code{read_blocks}
+#'              inside \code{files} to \code{read_blocks}.
 #'              
-#'              \code{wellnames_sep} - specifying what character (or "" for none)
-#'              should be used when pasting together the rownames and
+#'              \code{wellnames_sep} - specifying what character (or "" for 
+#'              none) should be used when pasting together the rownames and
 #'              column names. Note that this should be chosen to match
 #'              the well names in your measures.
 #'              
 #'              Note that \code{import_blockdesigns} cannot currently handle
 #'              metadata specified via the \code{metadata} argument of
-#'              \code{read_blocks}
+#'              \code{read_blocks}.
 #'              
 #'              If you find yourself needing more control, you can run the 
 #'              steps manually, first reading with \code{read_blocks},
@@ -1218,17 +1236,33 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              \code{separate_tidys}.
 #'              
 #' @return A tidy-shaped \code{data.frame} containing the design information
-#'         from \code{files}
+#'         from \code{files}. This always includes a "Well" column. 
+#'         
+#'         If \code{keep_blocknames = TRUE}, this includes a column with the
+#'         column name specified by \code{block_name_header} and containing
+#'         \code{block_names} (or those inferred from file names).
+#'         
+#'         If \code{join_designs = TRUE}, each block has been joined as a
+#'         column, with the columns named according to \code{block_names} 
+#'         (or inferred from file names) and containing the contents of 
+#'         each corresponding block. If \code{join_designs = FALSE}, each
+#'         block has been joined as rows, with a single column with the
+#'         name specified by \code{values_colnames} containing the
+#'         contents of all the blocks.
 #' 
 #' @export
-import_blockdesigns <- function(files, block_names = NULL, 
-                                block_name_header = "block_name", 
-                                sep = NULL, ...) {
+import_blockdesigns <- 
+  function(files, block_names = NULL, block_name_header = "block_name", 
+           join_designs = TRUE, sep = NULL, values_colname = "Designs", 
+           keep_blocknames = !join_designs, ...) {
+    if(!is.null(sep) && join_designs == TRUE) {
+      warning("join_designs = TRUE, ignoring sep")}
+    
   blocks <- parse_dots(read_blocks, 
                         block_names = block_names, files = files, 
                         block_name_header = block_name_header, ...)
   
-  if(length(blocks) > 1) {
+  if(join_designs && length(blocks) > 1) {
     if(is.null(sep)) {sep <- find_char_for_sep(blocks, nested_metadata = TRUE)[1]}
     blocks_pasted <- parse_dots(paste_blocks, blocks = blocks,
                                  sep = sep, nested_metadata = TRUE, ...)
@@ -1237,20 +1271,24 @@ import_blockdesigns <- function(files, block_names = NULL,
   wides <- parse_dots(trans_block_to_wide, blocks = blocks_pasted,
                        nested_metadata = TRUE, ...)
   
-  #Transform to tidy, dropping the block_name column and using it
-  # as the column name for the values column
-  vals_colname <- wides[1, block_name_header]
-    
-  tidys <- parse_dots(
-    trans_wide_to_tidy, 
-    wides = wides[, -which(block_name_header == colnames(wides))], 
-    data_cols = colnames(wides)[colnames(wides) != block_name_header], 
-    values_to = vals_colname, values_to_numeric = FALSE,
-    ...)
+  #If needed, save block_name_column value to use as col name
+  if(join_designs) {values_colname <- wides[1, block_name_header]}
   
-  if(!is.null(sep)) {
+  #If needed, drop the block name col
+  if(!keep_blocknames) {
+    wides <- wides[, -which(block_name_header == colnames(wides))]}
+  
+  #Transform to tidy
+  tidys <- parse_dots(
+      trans_wide_to_tidy, 
+      wides = wides, 
+      data_cols = colnames(wides)[colnames(wides) != block_name_header], 
+      values_to = values_colname, values_to_numeric = FALSE,
+      ...)
+  
+  if(join_designs && !is.null(sep)) {
     tidy_sep <- 
-      parse_dots(separate_tidy, data = tidys, sep = sep, col = vals_colname)
+      parse_dots(separate_tidy, data = tidys, sep = sep, col = values_colname)
   } else {tidy_sep <- tidys}
     
   return(tidy_sep)

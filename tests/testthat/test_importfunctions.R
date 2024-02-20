@@ -45,6 +45,20 @@ test_that("import_blockdesigns works correctly", {
                strain = rep(paste0("str", 1:8), each = 12),
                rep = rep(LETTERS[1:4], each = 12)))
   
+  #Single file, multiple designs in it but they're not pasted
+  dat3 <- cbind(c("", LETTERS[1:8]), rbind(c(1:12), dat3))
+  dat4 <- cbind(c("", LETTERS[1:8]), rbind(c(1:12), dat4))
+  dat_3_4 <- rbind(dat3, matrix("", nrow = 1, ncol = 13), dat4)
+  write.table(dat_3_4, "strain_and_rep.csv", row.names = FALSE,
+            col.names = FALSE, sep = ",")
+  expect_equal(
+    import_blockdesigns("strain_and_rep.csv",
+                        startrow = c(1, 11), endrow = c(9, 19),
+                        block_names = c("strain", "rep")),
+    data.frame(Well = paste0(rep(LETTERS[1:8], each = 12), 1:12),
+               strain = rep(paste0("str", 1:8), each = 12),
+               rep = rep(LETTERS[1:4], each = 12)))
+  
   #Multiple files, ea w/ pasted designs
   dat5 <- matrix(paste0("str", 1:8), nrow = 8, ncol = 12)
   dat5 <- matrix(paste0(dat5, "_", LETTERS[1:4]), nrow = 8, ncol = 12)

@@ -1228,7 +1228,7 @@ import_blockdesigns <- function(files, block_names = NULL,
                         block_names = block_names, files = files, 
                         block_name_header = block_name_header, ...)
   
-  if(length(files) > 1) {
+  if(length(blocks) > 1) {
     if(is.null(sep)) {sep <- find_char_for_sep(blocks, nested_metadata = TRUE)[1]}
     blocks_pasted <- parse_dots(paste_blocks, blocks = blocks,
                                  sep = sep, nested_metadata = TRUE, ...)

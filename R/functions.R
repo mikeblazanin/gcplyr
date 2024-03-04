@@ -2772,6 +2772,23 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 
 #' Do all setup steps for moving window smoothing function
 #' 
+#' @param formula Formula specifying the numeric response (density) 
+#'                and numeric predictor (time).
+#' @param data Dataframe containing variables in \code{formula}
+#' @param x A vector of predictor values to smooth along (e.g. time)
+#' @param y A vector of response values to be smoothed (e.g. density).
+#' @param window_width_n Number of data points wide the moving window is
+#'                     (therefore, must be an odd number of points)
+#' @param window_width Width of the moving window (in units of \code{x})
+#' @param window_width_n_frac Width of the window (as a fraction of the total
+#'                          number of data points).
+#' @param window_width_frac Width of the window (as a fraction of the range of
+#'                          \code{x})
+#' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#'                             predictor variable that data is sorted by is 
+#'                             non-numeric.
+#'                             
 #' @return List containing: x values, y values,
 #'                          indices for original order, 
 #'                          indices where NA's were removed
@@ -2783,6 +2800,13 @@ set_up_moving_sm <- function(formula, data, x, y,
                              window_width_n_frac,
                              window_width_frac,
                              na.rm, warn_nonnumeric_sort) {
+  NA_to_NULL <- function(x) {
+    if(!is.null(x) && length(x) == 1 && is.na(x)) {return(NULL)}}
+  window_width_n <- NA_to_NULL(window_width_n)
+  window_width <- NA_to_NULL(window_width)
+  window_width_n_frac <- NA_to_NULL(window_width_n_frac)
+  window_width_frac <- NA_to_NULL(window_width_frac)
+  
   if(is.null(window_width) && is.null(window_width_n) && 
      is.null(window_width_frac) && is.null(window_width_n_frac)) {
     stop("window_width, window_width_n, window_width_frac, or window_width_n_frac\nmust be provided")}
@@ -2850,7 +2874,11 @@ set_up_moving_sm <- function(formula, data, x, y,
 #'                             non-numeric.
 #' 
 #' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
-#'          must be provided
+#'          must be provided.
+#'          
+#'          Values of \code{NULL} or \code{NA} will be ignored for any of
+#'          \code{window_width_n}, \code{window_width},
+#'          \code{window_width_n_frac}, or \code{window_width_frac}
 #'          
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 

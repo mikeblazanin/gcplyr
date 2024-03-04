@@ -184,7 +184,7 @@ test_that("find_local_extrema works correctly", {
                                   window_width_n = 5),
                c(2, 12))
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  window_width_frac = 0.25),
+                                  window_width_n_frac = 0.25),
                c(2, 12))
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
                                   window_height = 3),
@@ -193,7 +193,7 @@ test_that("find_local_extrema works correctly", {
                                   window_width_n = 13),
                12)
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
-                                  window_width_frac = 13/nrow(dat)),
+                                  window_width_n_frac = 13/nrow(dat)),
                12)
   expect_equal(find_local_extrema(y = dat$y, return_minima = FALSE,
                                   window_height = 5),
@@ -205,7 +205,7 @@ test_that("find_local_extrema works correctly", {
                                   window_width_n = 5),
                c(9, 19))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  window_width_frac = 5/nrow(dat)),
+                                  window_width_n_frac = 5/nrow(dat)),
                c(9, 19))
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
                                   window_height = 3),
@@ -214,7 +214,7 @@ test_that("find_local_extrema works correctly", {
                                   window_width_n = 13),
                19)
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
-                                  window_width_frac = 13/nrow(dat)),
+                                  window_width_n_frac = 13/nrow(dat)),
                19)
   expect_equal(find_local_extrema(x = dat$x, y = dat$y, return_minima = FALSE,
                                   window_height = 5),

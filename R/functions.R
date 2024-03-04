@@ -2814,7 +2814,7 @@ parse_formula_data <- function(formula, data) {
 #' @param window_width_n Number of data points wide the moving average window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving average window (in units of \code{x})
-#' @param window_width_frac Width of the window (as a fraction of the total
+#' @param window_width_n_frac Width of the window (as a fraction of the total
 #'                          number of data points).
 #' @param na.rm logical whether NA's should be removed before analyzing
 #' @param warn_nonnumeric_sort logical whether warning should be issued when 
@@ -2829,11 +2829,11 @@ parse_formula_data <- function(formula, data) {
 #' @export   
 moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                            window_width_n = NULL, 
-                           window_width = NULL, window_width_frac = NULL,
+                           window_width = NULL, window_width_n_frac = NULL,
                            na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
   if(is.null(window_width) && is.null(window_width_n) && 
-     is.null(window_width_frac)) {
-    stop("window_width, window_width_n, or window_width_frac must be provided")}
+     is.null(window_width_n_frac)) {
+    stop("window_width, window_width_n, or window_width_n_frac must be provided")}
   
   if((is.null(formula) || is.null(data)) && (is.null(x) || is.null(y))) {
     stop("formula and data, or x and y, must be provided")}
@@ -2874,7 +2874,7 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   #Get windows
   windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
                          window_width = window_width, 
-                         window_width_frac = window_width_frac, edge_NA = TRUE)
+                         window_width_n_frac = window_width_n_frac, edge_NA = TRUE)
   #Calculate average
   results <- sapply(windows, y = y, FUN = function(x, y) {mean(y[x])})
   #Put back in original order
@@ -2898,7 +2898,7 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #' @param window_width_n Number of data points wide the moving median window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving median window (in units of \code{x})|
-#' @param window_width_frac Width of the window (as a fraction of the total
+#' @param window_width_n_frac Width of the window (as a fraction of the total
 #'                          number of data points).
 #' @param na.rm logical whether NA's should be removed before analyzing
 #' @param warn_nonnumeric_sort logical whether warning should be issued when 
@@ -2913,11 +2913,11 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #' @export   
 moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                           window_width_n = NULL, 
-                          window_width = NULL, window_width_frac = NULL,
+                          window_width = NULL, window_width_n_frac = NULL,
                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
   if(is.null(window_width) && is.null(window_width_n) && 
-     is.null(window_width_frac)) {
-    stop("window_width, window_width_n, or window_width_frac must be provided")}
+     is.null(window_width_n_frac)) {
+    stop("window_width, window_width_n, or window_width_n_frac must be provided")}
   
   if((is.null(formula) || is.null(data)) && (is.null(x) || is.null(y))) {
     stop("formula and data, or x and y, must be provided")}
@@ -3061,7 +3061,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'                  
 #'                  This provides an internally-implemented approach similar
 #'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
-#' @param window_width_n,window_width,window_width_frac
+#' @param window_width_n,window_width,window_width_n_frac
 #'                  Set how many data points are used to determine
 #'                  the slope at each point.
 #'                       
@@ -3077,14 +3077,14 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'                  \code{window_width_n} specifies the width of the
 #'                  window in number of data points. \code{window_width}
 #'                  specifies the width of the window in units of \code{x}.
-#'                  \code{window_width_frac} specifies the width of the
+#'                  \code{window_width_n_frac} specifies the width of the
 #'                  window as a fraction of the total number of data points.
 #'                       
 #'                  When using multiple window specifications at the same 
 #'                  time, windows are conservative. Points 
 #'                  included in each window will meet all of the 
 #'                  \code{window_width}, \code{window_width_n}, and
-#'                  \code{window_width_frac}.
+#'                  \code{window_width_n_frac}.
 #'                  
 #'                  A value of \code{window_width_n = 3} or 
 #'                  \code{window_width_n = 5} is often a good default.
@@ -3111,7 +3111,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' @param warn_window_toosmall logical whether warning should be issued 
 #'                             when only one data point is in the window
 #'                             set by \code{window_width_n}, 
-#'                             \code{window_width}, or \code{window_width_frac},
+#'                             \code{window_width}, or \code{window_width_n_frac},
 #'                             and so \code{NA} will be returned.
 #' 
 #' @details For per-capita derivatives, \code{trans_y = 'linear'} and
@@ -3139,7 +3139,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        x_scale = 1, blank = NULL, subset_by = NULL, 
                        window_width = NULL, window_width_n = NULL, 
-                       window_width_frac = NULL,
+                       window_width_n_frac = NULL,
                        trans_y = "linear", na.rm = TRUE,
                        warn_logtransform_warnings = TRUE,
                        warn_logtransform_infinite = TRUE,
@@ -3150,9 +3150,9 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
   
   if(return == "difference" && 
      (!is.null(window_width_n) | !is.null(window_width) | 
-      !is.null(window_width_frac))) {
+      !is.null(window_width_n_frac))) {
     stop("return must be 'derivative' when window_width, window_width_n, or 
-window_width_frac are used")}
+window_width_n_frac are used")}
   
   if(!trans_y %in% c("linear", "log")) {
     stop("trans_y must be one of c('linear', 'log')")}
@@ -3224,7 +3224,7 @@ window_width_frac are used")}
     sub_x <- order_temp[["x"]]
     
     if(is.null(window_width) & is.null(window_width_n) & 
-       is.null(window_width_frac)) {
+       is.null(window_width_n_frac)) {
       #Calculate differences
       sub_ans <- sub_y[2:length(sub_y)]-sub_y[1:(length(sub_y)-1)]
       
@@ -3245,7 +3245,7 @@ window_width_frac are used")}
       windows <- get_windows(x = sub_x, y = sub_y, edge_NA = TRUE,
                              window_width_n = window_width_n, 
                              window_width = window_width,
-                             window_width_frac = window_width_frac)
+                             window_width_n_frac = window_width_n_frac)
       for (j in which(!is.na(windows))) {
         if(any(is.na(sub_y[windows[[j]]]) | is.infinite(sub_y[windows[[j]]]))) {
           sub_ans[j] <- NA
@@ -3319,7 +3319,7 @@ doubling_time <- function(y, x_scale = 1) {
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
-#' @param window_width,window_width_n,window_height,window_width_frac
+#' @param window_width,window_width_n,window_height,window_width_n_frac
 #'                   Arguments that set the width/height of the window used to
 #'                   search for local extrema.
 #'                   
@@ -3330,7 +3330,7 @@ doubling_time <- function(y, x_scale = 1) {
 #'                   \code{window_height} is the maximum change in \code{y} 
 #'                   a single extrema-search step is allowed to take.
 #'                   
-#'                   \code{window_width_frac} is as a fraction of the total
+#'                   \code{window_width_n_frac} is as a fraction of the total
 #'                   number of data points.
 #'                   
 #'                   For example, the function will not pass a peak or valley
@@ -3364,14 +3364,14 @@ doubling_time <- function(y, x_scale = 1) {
 #' 
 #' @details 
 #' For \code{find_local_extrema}, one of \code{window_width}, 
-#' \code{window_width_n}, \code{window_height}, or \code{window_width_frac}
+#' \code{window_width_n}, \code{window_height}, or \code{window_width_n_frac}
 #' must be provided.
 #' 
 #' For \code{first_minima} or \code{first_maxima}, set 
-#' \code{window_width_frac = NULL} to override default width behavior.
+#' \code{window_width_n_frac = NULL} to override default width behavior.
 #' 
 #' If multiple of \code{window_width}, \code{window_width_n},
-#' \code{window_height}, or \code{window_width_frac} are provided, steps 
+#' \code{window_height}, or \code{window_width_n_frac} are provided, steps 
 #' are limited conservatively (a single step must meet all criteria).
 #' 
 #' In the case of exact ties in \code{y} values within a window, only the 
@@ -3406,7 +3406,7 @@ find_local_extrema <- function(y, x = NULL,
                                window_width = NULL,
                                window_width_n = NULL,
                                window_height = NULL,
-                               window_width_frac = NULL,
+                               window_width_n_frac = NULL,
                                return = "index",
                                return_maxima = TRUE, return_minima = TRUE,
                                return_endpoints = TRUE,
@@ -3433,8 +3433,8 @@ find_local_extrema <- function(y, x = NULL,
   }
   #Check inputs
   if (is.null(window_width_n) && is.null(window_height) &&
-      is.null(window_width) && is.null(window_width_frac)) {
-    stop("window_width, window_width_n, window_height, or window_width_frac must be specified")
+      is.null(window_width) && is.null(window_width_n_frac)) {
+    stop("window_width, window_width_n, window_height, or window_width_n_frac must be specified")
   }
   if (!is.null(window_width) && is.null(x)) {
     stop("window_width is specified, but x is not provided")
@@ -3471,7 +3471,7 @@ find_local_extrema <- function(y, x = NULL,
   
   windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
               window_width = window_width, window_height = window_height,
-              window_width_frac = window_width_frac,
+              window_width_n_frac = window_width_n_frac,
               edge_NA = FALSE, force_height_multi_n = TRUE)
   
   #ID extrema as those points that are the local max or min
@@ -3525,7 +3525,7 @@ first_maxima <- function(y, x = NULL,
                        window_width = NULL,
                        window_width_n = NULL,
                        window_height = NULL,
-                       window_width_frac = 0.2,
+                       window_width_n_frac = 0.2,
                        return = "index", return_endpoints = TRUE, 
                        ...) {
   if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
@@ -3540,7 +3540,7 @@ use find_local_extrema for more flexibility")
                             window_width = window_width,
                             window_width_n = window_width_n,
                             window_height = window_height,
-                            window_width_frac = window_width_frac,
+                            window_width_n_frac = window_width_n_frac,
                             return = return, ...)[1])
 }
 
@@ -3550,7 +3550,7 @@ first_minima <- function(y, x = NULL,
                          window_width = NULL,
                          window_width_n = NULL,
                          window_height = NULL,
-                         window_width_frac = 0.2,
+                         window_width_n_frac = 0.2,
                          return = "index", return_endpoints = TRUE, 
                          ...) {
   if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
@@ -3565,7 +3565,7 @@ use find_local_extrema for more flexibility")
                             window_width = window_width,
                             window_width_n = window_width_n,
                             window_height = window_height,
-                            window_width_frac,
+                            window_width_n_frac,
                             return = return, ...)[1])
 }
 

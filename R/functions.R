@@ -2874,7 +2874,8 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   #Get windows
   windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
                          window_width = window_width, 
-                         window_width_n_frac = window_width_n_frac, edge_NA = TRUE)
+                         window_width_n_frac = window_width_n_frac, 
+                         edge_NA = TRUE)
   #Calculate average
   results <- sapply(windows, y = y, FUN = function(x, y) {mean(y[x])})
   #Put back in original order
@@ -2956,7 +2957,9 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   
   #Get windows
   windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
-                         window_width = window_width, edge_NA = TRUE)
+                         window_width = window_width,
+                         window_width_n_frac = window_width_n_frac,
+                         edge_NA = TRUE)
   #Calculate median
   results <- sapply(windows, y = y, FUN = function(x, y) {stats::median(y[x])})
   #Put back in original order

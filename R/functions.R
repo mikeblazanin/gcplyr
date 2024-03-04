@@ -2828,10 +2828,9 @@ set_up_moving_sm <- function(formula, data, x, y,
               nas_indices_removed = narm_temp[["nas_indices_removed"]]))
 }
 
-
-#' Moving average smoothing
+#' Moving window smoothing
 #' 
-#' This function uses a moving average to smooth data
+#' These functions use a moving window to smooth data
 #' 
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
@@ -2855,7 +2854,11 @@ set_up_moving_sm <- function(formula, data, x, y,
 #'          
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
-#' @export   
+#' @name MovingWindowFunctions
+NULL
+
+#' @rdname MovingWindowFunctions
+#' @export
 moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                            window_width_n = NULL, 
                            window_width = NULL, 
@@ -2891,33 +2894,8 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   return(results)
 }
 
-#' Moving median smoothing
-#' 
-#' This function uses a moving median to smooth data
-#' 
-#' @param formula Formula specifying the numeric response (density) 
-#'                and numeric predictor (time).
-#' @param data Dataframe containing variables in \code{formula}
-#' @param x A vector of predictor values to smooth along (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density).
-#' @param window_width_n Number of data points wide the moving window is
-#'                     (therefore, must be an odd number of points)
-#' @param window_width Width of the moving window (in units of \code{x})|
-#' @param window_width_n_frac Width of the window (as a fraction of the total
-#'                          number of data points).
-#' @param window_width_frac Width of the window (as a fraction of the range of
-#'                          \code{x})
-#' @param na.rm logical whether NA's should be removed before analyzing
-#' @param warn_nonnumeric_sort logical whether warning should be issued when 
-#'                             predictor variable that data is sorted by is 
-#'                             non-numeric.
-#'                             
-#' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
-#'          must be provided
-#' 
-#' @return Vector of smoothed data, with NA's appended at both ends
-#' 
-#' @export   
+#' @rdname MovingWindowFunctions
+#' @export 
 moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                           window_width_n = NULL, 
                           window_width = NULL, 

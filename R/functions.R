@@ -2802,38 +2802,22 @@ parse_formula_data <- function(formula, data) {
   return(list(x = x, y = y, predictor = predictor_var, response = response_var))
 }
   
-#' Moving average smoothing
+#' Do all setup steps for moving window smoothing function
 #' 
-#' This function uses a moving average to smooth data
+#' @return List containing: x values, y values,
+#'                          indices for original order, 
+#'                          indices where NA's were removed
 #' 
-#' @param formula Formula specifying the numeric response (density) 
-#'                and numeric predictor (time).
-#' @param data Dataframe containing variables in \code{formula}
-#' @param x A vector of predictor values to smooth along (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density).
-#' @param window_width_n Number of data points wide the moving average window is
-#'                     (therefore, must be an odd number of points)
-#' @param window_width Width of the moving average window (in units of \code{x})
-#' @param window_width_n_frac Width of the window (as a fraction of the total
-#'                          number of data points).
-#' @param na.rm logical whether NA's should be removed before analyzing
-#' @param warn_nonnumeric_sort logical whether warning should be issued when 
-#'                             predictor variable that data is sorted by is 
-#'                             non-numeric.
-#' 
-#' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
-#'          must be provided
-#'          
-#' @return Vector of smoothed data, with NA's appended at both ends
-#' 
-#' @export   
-moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
-                           window_width_n = NULL, 
-                           window_width = NULL, window_width_n_frac = NULL,
-                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
+#' @noRd
+set_up_moving_sm <- function(formula, data, x, y,
+                             window_width_n, 
+                             window_width, 
+                             window_width_n_frac,
+                             window_width_frac,
+                             na.rm, warn_nonnumeric_sort) {
   if(is.null(window_width) && is.null(window_width_n) && 
-     is.null(window_width_n_frac)) {
-    stop("window_width, window_width_n, or window_width_n_frac must be provided")}
+     is.null(window_width_frac) && is.null(window_width_n_frac)) {
+    stop("window_width, window_width_n, window_width_frac, or window_width_n_frac\nmust be provided")}
   
   if((is.null(formula) || is.null(data)) && (is.null(x) || is.null(y))) {
     stop("formula and data, or x and y, must be provided")}
@@ -2871,18 +2855,70 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   x <- order_temp[["x"]]
   y <- order_temp[["y"]]
   
+  return(list(x = x, y = y,
+              order = order_temp[["order"]],
+              nas_indices_removed = narm_temp[["nas_indices_removed"]]))
+}
+
+
+#' Moving average smoothing
+#' 
+#' This function uses a moving average to smooth data
+#' 
+#' @param formula Formula specifying the numeric response (density) 
+#'                and numeric predictor (time).
+#' @param data Dataframe containing variables in \code{formula}
+#' @param x A vector of predictor values to smooth along (e.g. time)
+#' @param y A vector of response values to be smoothed (e.g. density).
+#' @param window_width_n Number of data points wide the moving window is
+#'                     (therefore, must be an odd number of points)
+#' @param window_width Width of the moving window (in units of \code{x})
+#' @param window_width_n_frac Width of the window (as a fraction of the total
+#'                          number of data points).
+#' @param window_width_frac Width of the window (as a fraction of the range of
+#'                          \code{x})
+#' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#'                             predictor variable that data is sorted by is 
+#'                             non-numeric.
+#' 
+#' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
+#'          must be provided
+#'          
+#' @return Vector of smoothed data, with NA's appended at both ends
+#' 
+#' @export   
+moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
+                           window_width_n = NULL, 
+                           window_width = NULL, 
+                           window_width_n_frac = NULL,
+                           window_width_frac = NULL,
+                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
+  #Run all setup steps and checks
+  setup <- set_up_moving_sm(formula = formula, data = data, x = x, y = y,
+                            window_width_n = window_width_n,
+                            window_width = window_width,
+                            window_width_n_frac = window_width_n_frac,
+                            window_width_frac = window_width_frac,
+                            na.rm = na.rm, 
+                            warn_nonnumeric_sort = warn_nonnumeric_sort)
+  
   #Get windows
-  windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
-                         window_width = window_width, 
+  windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
+                         window_width_n = window_width_n,
+                         window_width = window_width,
                          window_width_n_frac = window_width_n_frac, 
+                         window_width_frac = window_width_frac,
                          edge_NA = TRUE)
+  
   #Calculate average
-  results <- sapply(windows, y = y, FUN = function(x, y) {mean(y[x])})
+  results <- sapply(windows, y = setup[["y"]], 
+                    FUN = function(x, y) {mean(y[x])})
   #Put back in original order
-  results <- results[order(order_temp[["order"]])]
+  results <- results[order(setup[["order"]])]
   #Add NA's
   results <- add_nas(x = results, 
-                     nas_indices_removed = narm_temp[["nas_indices_removed"]])[["x"]]
+                     nas_indices_removed = setup[["nas_indices_removed"]])[["x"]]
   
   return(results)
 }
@@ -2896,11 +2932,13 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #' @param data Dataframe containing variables in \code{formula}
 #' @param x A vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density).
-#' @param window_width_n Number of data points wide the moving median window is
+#' @param window_width_n Number of data points wide the moving window is
 #'                     (therefore, must be an odd number of points)
-#' @param window_width Width of the moving median window (in units of \code{x})|
+#' @param window_width Width of the moving window (in units of \code{x})|
 #' @param window_width_n_frac Width of the window (as a fraction of the total
 #'                          number of data points).
+#' @param window_width_frac Width of the window (as a fraction of the range of
+#'                          \code{x})
 #' @param na.rm logical whether NA's should be removed before analyzing
 #' @param warn_nonnumeric_sort logical whether warning should be issued when 
 #'                             predictor variable that data is sorted by is 
@@ -2914,60 +2952,37 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #' @export   
 moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                           window_width_n = NULL, 
-                          window_width = NULL, window_width_n_frac = NULL,
+                          window_width = NULL, 
+                          window_width_n_frac = NULL,
+                          window_width_frac = NULL,
                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
-  if(is.null(window_width) && is.null(window_width_n) && 
-     is.null(window_width_n_frac)) {
-    stop("window_width, window_width_n, or window_width_n_frac must be provided")}
   
-  if((is.null(formula) || is.null(data)) && (is.null(x) || is.null(y))) {
-    stop("formula and data, or x and y, must be provided")}
-  
-  if(!is.null(formula) && !is.null(data)) {
-    temp_parsed_formula_data <- parse_formula_data(formula, data)
-    x <- temp_parsed_formula_data[["x"]]
-    y <- temp_parsed_formula_data[["y"]]
-  }
-  
-  #Check x for being correct format
-  if(!is.numeric(x)) {
-    if(canbe.numeric(x)) {x <- as.numeric(x) #it can be coerced
-    } else if(warn_nonnumeric_sort) {
-      if(!is.null(formula) && !is.null(data)) {
-        warning(paste0("data is being sorted by order(", 
-                       temp_parsed_formula_data[["predictor"]], "), but ", 
-                       temp_parsed_formula_data[["predictor"]], 
-                       " is not numeric\n"))
-      } else {
-        warning("data is being sorted by order(x), but x is not numeric")
-      }
-    }
-  }
-  #Check y for being the correct format
-  y <- make.numeric(y, "y")
-  
-  #remove nas
-  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)  
-  #Reorder data
-  order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
-  
-  #Make temp vectors of x and y
-  x <- order_temp[["x"]]
-  y <- order_temp[["y"]]
+  #Run all setup steps and checks
+  setup <- set_up_moving_sm(formula = formula, data = data, x = x, y = y,
+                            window_width_n = window_width_n,
+                            window_width = window_width,
+                            window_width_n_frac = window_width_n_frac,
+                            window_width_frac = window_width_frac,
+                            na.rm = na.rm, 
+                            warn_nonnumeric_sort = warn_nonnumeric_sort)
   
   #Get windows
-  windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
+  windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
+                         window_width_n = window_width_n,
                          window_width = window_width,
-                         window_width_n_frac = window_width_n_frac,
+                         window_width_n_frac = window_width_n_frac, 
+                         window_width_frac = window_width_frac,
                          edge_NA = TRUE)
+  
   #Calculate median
-  results <- sapply(windows, y = y, FUN = function(x, y) {stats::median(y[x])})
+  results <- sapply(windows, y = setup[["y"]], 
+                    FUN = function(x, y) {stats::median(y[x])})
   #Put back in original order
-  results <- results[order(order_temp[["order"]])]
+  results <- results[order(setup[["order"]])]
   #Add NA's
   results <- 
     add_nas(x = results, 
-            nas_indices_removed = narm_temp[["nas_indices_removed"]])[["x"]]
+            nas_indices_removed = setup[["nas_indices_removed"]])[["x"]]
   
   return(results)
 }
@@ -3141,7 +3156,9 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' @export   
 calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        x_scale = 1, blank = NULL, subset_by = NULL, 
-                       window_width = NULL, window_width_n = NULL, 
+                       window_width = NULL, 
+                       window_width_n = NULL,
+                       window_width_frac = NULL,
                        window_width_n_frac = NULL,
                        trans_y = "linear", na.rm = TRUE,
                        warn_logtransform_warnings = TRUE,
@@ -3248,7 +3265,8 @@ window_width_n_frac are used")}
       windows <- get_windows(x = sub_x, y = sub_y, edge_NA = TRUE,
                              window_width_n = window_width_n, 
                              window_width = window_width,
-                             window_width_n_frac = window_width_n_frac)
+                             window_width_n_frac = window_width_n_frac,
+                             window_width_frac = window_width_frac)
       for (j in which(!is.na(windows))) {
         if(any(is.na(sub_y[windows[[j]]]) | is.infinite(sub_y[windows[[j]]]))) {
           sub_ans[j] <- NA
@@ -3409,6 +3427,7 @@ find_local_extrema <- function(y, x = NULL,
                                window_width = NULL,
                                window_width_n = NULL,
                                window_height = NULL,
+                               window_width_frac = NULL,
                                window_width_n_frac = NULL,
                                return = "index",
                                return_maxima = TRUE, return_minima = TRUE,
@@ -3472,10 +3491,13 @@ find_local_extrema <- function(y, x = NULL,
   x <- order_temp[["x"]]
   y <- order_temp[["y"]]
   
-  windows <- get_windows(x = x, y = y, window_width_n = window_width_n,
-              window_width = window_width, window_height = window_height,
-              window_width_n_frac = window_width_n_frac,
-              edge_NA = FALSE, force_height_multi_n = TRUE)
+  windows <- get_windows(x = x, y = y, 
+                         window_width_n = window_width_n,
+                         window_width = window_width, 
+                         window_height = window_height,
+                         window_width_n_frac = window_width_n_frac,
+                         window_width_frac = window_width_frac,
+                         edge_NA = FALSE, force_height_multi_n = TRUE)
   
   #ID extrema as those points that are the local max or min
   # in the window centered on them (all non-local extrema should point to

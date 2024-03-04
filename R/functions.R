@@ -2770,38 +2770,6 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   if (return_fitobject == TRUE) {return(fits_list)} else {return(out)}
 }
 
-
-#' Parse formula and data into x and y
-#' 
-#' This function parses a specified formula and data into a vector
-#' of x data and a vector of y data
-#' 
-#' @param formula Formula specifying the numeric response and numeric predictor.
-#' @param data Dataframe containing variables in \code{formula}
-#' 
-#' @return List containing: vector of \code{x}, vector of \code{y},
-#'                          predictor variable name, response variable name
-#' 
-#' @noRd
-parse_formula_data <- function(formula, data) {
-  #Check formula formatting
-  if (length(formula) < 3) {stop("No response variable specified")}
-  if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
-  
-  #Parse formula
-  response_var <- as.character(formula[[2]])
-  predictor_var <- as.character(formula[[3]])
-  
-  #Check for vars in data
-  stopifnot(response_var %in% colnames(data),
-            predictor_var %in% colnames(data))
-  
-  x <- data[, predictor_var]
-  y <- data[, response_var]
-  
-  return(list(x = x, y = y, predictor = predictor_var, response = response_var))
-}
-  
 #' Do all setup steps for moving window smoothing function
 #' 
 #' @return List containing: x values, y values,

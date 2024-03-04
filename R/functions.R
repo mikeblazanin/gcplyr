@@ -2955,6 +2955,70 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   return(results)
 }
 
+#' Predict data by linear interpolation from existing data
+#' 
+#' @param x A vector of known predictor values.
+#' @param y A vector of known response values.
+#' @param newdata A vector of new predictor values for which the response
+#'                value will be predicted
+#' @param extrapolate_predictions 
+#'                Boolean indicating whether values of \code{newdata} that are 
+#'                out of the domain of \code{x} should be predicted (by 
+#'                extrapolating the slope from the endpoints of \code{x}). If
+#'                \code{FALSE}, such values will be returned as \code{NA}.
+#'                                
+#'
+#' @return A vector of response values for each predictor value in 
+#'         \code{newdata}
+interpolate_prediction <- function(
+    x, y, newdata, extrapolate_predictions = TRUE, na.rm = TRUE) {
+  x <- make.numeric(x, "x")
+  y <- make.numeric(y, "y")
+  newdata <- make.numeric(newdata, "newdata")
+  
+  rm_nas(x = x, y = y, na.rm = na.rm)
+  
+  dat <- data.frame(x = rm_nas[["x"]], y = rm_nas[["y"]])
+  dat <- dat[order(dat$x), ]
+  
+  #If any newdata are out of known domain, project endpoint slopes
+  # out to needed newdata points
+  if(any(newdata < min(x))) {
+    if(!extrapolate_predictions) {newdata[newdata < min(x)] <- NA
+    } else {rbind(data.frame(x = min(newdata),
+                             y = solve_linear(x1 = dat$x[1], x2 = dat$x[2],
+                                              y1 = dat$y[1], y2 = dat$y[2],
+                                              x3 = min(newdata))),
+                  dat)
+    }
+  }
+  if(any(newdata > max(x))) {
+    if(!extrapolate_predictions) {newdata[newdata > min(x)] <- NA
+    } else {rbind(dat,
+                  data.frame(x = max(newdata),
+                             y = solve_linear(x1 = dat$x[nrow(dat)], 
+                                              x2 = dat$x[nrow(dat)-1],
+                                              y1 = dat$y[nrow(dat)], 
+                                              y2 = dat$y[nrow(dat)-1],
+                                              x3 = min(newdata))))
+    }
+  }
+  
+  return(
+    solve_linear(
+      x1 = sapply(newdata, 
+                  function(newdata, x) {x[max(which(x < newdata))]}, x = dat$x),
+      x2 = sapply(newdata, 
+                  function(newdata, x) {x[min(which(x >= newdata))]}, x = dat$x),
+      y1 = sapply(newdata, function(newdata, x, y) {y[max(which(x < newdata))]}, 
+                  x = dat$x, y = dat$y),
+      y2 = sapply(newdata, function(newdata, x, y) {y[min(which(x >= newdata))]},
+                  x = dat$x, y = dat$y),
+      x3 = newdata,
+      named = FALSE))
+}
+
+
 #' Fit a Smoothing Spline
 #' 
 #' This function is a wrapper for \code{stats::smooth.spline}, which fits 

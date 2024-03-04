@@ -2771,34 +2771,19 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 }
 
 
-  
-#' Moving average smoothing
+#' Parse formula and data into x and y
 #' 
-#' This function uses a moving average to smooth data
+#' This function parses a specified formula and data into a vector
+#' of x data and a vector of y data
 #' 
-#' @param formula Formula specifying the numeric response (density) 
-#'                and numeric predictor (time).
+#' @param formula Formula specifying the numeric response and numeric predictor.
 #' @param data Dataframe containing variables in \code{formula}
-#' @param window_width_n Number of data points wide the moving average window is
-#'                     (therefore, must be an odd number of points)
-#' @param window_width Width of the moving average window (in units of \code{x})
-#' @param window_width_frac Width of the window (as a fraction of the total
-#'                          number of data points).
-#' @param na.rm logical whether NA's should be removed before analyzing
-#' @param warn_nonnumeric_sort logical whether warning should be issued when 
-#'                             predictor variable that data is sorted by is 
-#'                             non-numeric.
 #' 
-#' @return Vector of smoothed data, with NA's appended at both ends
+#' @return List containing: vector of \code{x}, vector of \code{y},
+#'                          predictor variable name, response variable name
 #' 
-#' @export   
-moving_average <- function(formula, data, window_width_n = NULL, 
-                           window_width = NULL, window_width_frac = NULL,
-                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
-  if(is.null(window_width) && is.null(window_width_n) && 
-     is.null(window_width_frac)) {
-    stop("window_width, window_width_n, or window_width_frac must be provided")}
-  
+#' @noRd
+parse_formula_data <- function(formula, data) {
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}
   if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
@@ -2811,20 +2796,73 @@ moving_average <- function(formula, data, window_width_n = NULL,
   stopifnot(response_var %in% colnames(data),
             predictor_var %in% colnames(data))
   
-  #Check x for being correct format
-  if(!is.numeric(data[, predictor_var])) {
-    if (warn_nonnumeric_sort && !canbe.numeric(data[, predictor_var])) {
-      warning(paste0("data is being sorted by order(", predictor_var,
-                    "), but ", predictor_var, " is not numeric\n"))
-    } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
+  x <- data[, predictor_var]
+  y <- data[, response_var]
+  
+  return(list(x = x, y = y, predictor = predictor_var, response = response_var))
+}
+  
+#' Moving average smoothing
+#' 
+#' This function uses a moving average to smooth data
+#' 
+#' @param formula Formula specifying the numeric response (density) 
+#'                and numeric predictor (time).
+#' @param data Dataframe containing variables in \code{formula}
+#' @param x A vector of predictor values to smooth along (e.g. time)
+#' @param y A vector of response values to be smoothed (e.g. density).
+#' @param window_width_n Number of data points wide the moving average window is
+#'                     (therefore, must be an odd number of points)
+#' @param window_width Width of the moving average window (in units of \code{x})
+#' @param window_width_frac Width of the window (as a fraction of the total
+#'                          number of data points).
+#' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#'                             predictor variable that data is sorted by is 
+#'                             non-numeric.
+#' 
+#' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
+#'          must be provided
+#'          
+#' @return Vector of smoothed data, with NA's appended at both ends
+#' 
+#' @export   
+moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
+                           window_width_n = NULL, 
+                           window_width = NULL, window_width_frac = NULL,
+                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
+  if(is.null(window_width) && is.null(window_width_n) && 
+     is.null(window_width_frac)) {
+    stop("window_width, window_width_n, or window_width_frac must be provided")}
+  
+  if((is.null(formula) || is.null(data)) && (is.null(x) || is.null(y))) {
+    stop("formula and data, or x and y, must be provided")}
+  
+  if(!is.null(formula) && !is.null(data)) {
+    temp_parsed_formula_data <- parse_formula_data(formula, data)
+    x <- temp_parsed_formula_data[["x"]]
+    y <- temp_parsed_formula_data[["y"]]
   }
   
+  #Check x for being correct format
+  if(!is.numeric(x)) {
+    if(canbe.numeric(x)) {x <- as.numeric(x) #it can be coerced
+    } else if(warn_nonnumeric_sort) {
+      if(!is.null(formula) && !is.null(data)) {
+        warning(paste0("data is being sorted by order(", 
+                       temp_parsed_formula_data[["predictor"]], "), but ", 
+                       temp_parsed_formula_data[["predictor"]], 
+                       " is not numeric\n"))
+      } else {
+        warning("data is being sorted by order(x), but x is not numeric")
+      }
+    }
+  }
   #Check y for being the correct format
-  data[, response_var] <- make.numeric(data[, response_var], response_var)
+  y <- make.numeric(y, "y")
   
   #remove nas
-  narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
-                      na.rm = na.rm, stopifNA = TRUE)
+  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)
   
   #Reorder data
   order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
@@ -2855,6 +2893,8 @@ moving_average <- function(formula, data, window_width_n = NULL,
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
 #' @param data Dataframe containing variables in \code{formula}
+#' @param x A vector of predictor values to smooth along (e.g. time)
+#' @param y A vector of response values to be smoothed (e.g. density).
 #' @param window_width_n Number of data points wide the moving median window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving median window (in units of \code{x})|
@@ -2864,43 +2904,49 @@ moving_average <- function(formula, data, window_width_n = NULL,
 #' @param warn_nonnumeric_sort logical whether warning should be issued when 
 #'                             predictor variable that data is sorted by is 
 #'                             non-numeric.
+#'                             
+#' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
+#'          must be provided
 #' 
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
 #' @export   
-moving_median <- function(formula, data, window_width_n = NULL, 
+moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
+                          window_width_n = NULL, 
                           window_width = NULL, window_width_frac = NULL,
                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
   if(is.null(window_width) && is.null(window_width_n) && 
      is.null(window_width_frac)) {
     stop("window_width, window_width_n, or window_width_frac must be provided")}
   
-  #Check formula formatting
-  if (length(formula) < 3) {stop("No response variable specified")}
-  if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
+  if((is.null(formula) || is.null(data)) && (is.null(x) || is.null(y))) {
+    stop("formula and data, or x and y, must be provided")}
   
-  #Parse formula
-  response_var <- as.character(formula[[2]])
-  predictor_var <- as.character(formula[[3]])
-  
-  #Check for vars in data
-  stopifnot(response_var %in% colnames(data),
-            predictor_var %in% colnames(data))
-  
-  #Check x for being correct format
-  if(!is.numeric(data[, predictor_var])) {
-    if (warn_nonnumeric_sort && !canbe.numeric(data[, predictor_var])) {
-      warning(paste0("data is being sorted by order(", predictor_var,
-                    "), but ", predictor_var, " is not numeric\n"))
-    } else {x <- as.numeric(data[, predictor_var])} #it can be coerced
+  if(!is.null(formula) && !is.null(data)) {
+    temp_parsed_formula_data <- parse_formula_data(formula, data)
+    x <- temp_parsed_formula_data[["x"]]
+    y <- temp_parsed_formula_data[["y"]]
   }
   
+  #Check x for being correct format
+  if(!is.numeric(x)) {
+    if(canbe.numeric(x)) {x <- as.numeric(x) #it can be coerced
+    } else if(warn_nonnumeric_sort) {
+      if(!is.null(formula) && !is.null(data)) {
+        warning(paste0("data is being sorted by order(", 
+                       temp_parsed_formula_data[["predictor"]], "), but ", 
+                       temp_parsed_formula_data[["predictor"]], 
+                       " is not numeric\n"))
+      } else {
+        warning("data is being sorted by order(x), but x is not numeric")
+      }
+    }
+  }
   #Check y for being the correct format
-  data[, response_var] <- make.numeric(data[, response_var], response_var)
+  y <- make.numeric(y, "y")
   
   #remove nas
-  narm_temp <- rm_nas(x = data[, predictor_var], y = data[, response_var], 
-                      na.rm = na.rm, stopifNA = TRUE)  
+  narm_temp <- rm_nas(x = x, y = y, na.rm = na.rm, stopifNA = TRUE)  
   #Reorder data
   order_temp <- reorder_xy(x = narm_temp[["x"]], y = narm_temp[["y"]])
   

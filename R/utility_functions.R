@@ -436,9 +436,11 @@ reorder_xy <- function(x = NULL, y) {
 #' @param y Vector of y values
 #' @param window_width Width of the window (in units of \code{x}).
 #' @param window_width_n Width of the window (in number of \code{y} values).
-#' @param window_height The maximum change in \code{y} within each window.
+#' @param window_width_frac Width of the window (as a fraction of the total
+#'                          range of \code{x}).
 #' @param window_width_n_frac Width of the window (as a fraction of the total
 #'                          number of \code{y} values).
+#' @param window_height The maximum change in \code{y} within each window.
 #' @param edge_NA logical for whether windows that pass the edge of the data
 #'                should be returned as NA or simply truncated at the edge
 #'                of the data.
@@ -461,8 +463,9 @@ reorder_xy <- function(x = NULL, y) {
 #'         of the data in the window centered at that point
 #'      
 #' @noRd   
-get_windows <- function(x, y, window_width_n = NULL, window_width = NULL, 
-                        window_height = NULL, window_width_n_frac = NULL,
+get_windows <- function(x, y, window_width = NULL, window_width_n = NULL, 
+                        window_width_frac = NULL, window_width_n_frac = NULL,
+                        window_height = NULL, 
                         edge_NA, force_height_multi_n = FALSE) {
   if(any(c(is.na(x), is.na(y)))) {
     stop("NA's must be removed before getting windows")}
@@ -476,6 +479,15 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
   window_starts <- matrix(data = 1, nrow = length(x), ncol = 3)
   window_ends <- matrix(data = length(x), nrow = length(x), ncol = 3)
   
+  #Convert window_width_frac into window_width
+  # (using the smaller of the two if both are specified)
+  if(!is.null(window_width_frac)) {
+    calc_width <- window_width_frac * (max(x) - min(x))
+    if(!is.null(window_width)) {
+      window_width <- min(calc_width, window_width)
+    } else {window_width <- calc_width}
+  }
+  
   #Convert window_width_n_frac into window_width_n 
   # (using the smaller of the two if both are specified)
   if(!is.null(window_width_n_frac)) {
@@ -486,6 +498,7 @@ get_windows <- function(x, y, window_width_n = NULL, window_width = NULL,
       window_width_n <- min(calc_width_n, window_width_n)
     } else {window_width_n <- calc_width_n}
   }
+  
   if(!is.null(window_width_n)) {
     candidate_window_edges <- 
       lapply(X = as.list(1:length(x)),

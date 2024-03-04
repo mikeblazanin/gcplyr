@@ -2599,6 +2599,9 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' @param return_fitobject logical whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
+#' @param warn_ungrouped logical whether warning should be issued when
+#'                       \code{smooth_data} is being called on ungrouped data
+#'                       and \code{subset_by = NULL}.
 #' @param warn_gam_no_s logical whether warning should be issued when gam is 
 #'                      used without \code{s()} in the formula.
 #'
@@ -2656,13 +2659,15 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' 
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
-                        return_fitobject = FALSE, warn_gam_no_s = TRUE) {
+                        return_fitobject = FALSE, warn_ungrouped = TRUE,
+                        warn_gam_no_s = TRUE) {
   if(!sm_method %in% c("moving-average", "moving-median", "gam", 
                        "loess", "smooth.spline")) {
     stop("sm_method must be one of: moving-average, moving-median, gam, loess, or smooth.spline")
   }
   
-  check_grouped(name_for_error = "smooth_data", subset_by = subset_by)
+  if(warn_ungrouped) {
+    check_grouped(name_for_error = "smooth_data", subset_by = subset_by)}
   
   #Parse x and y, and/or ... args, into formula and data
   if(!is.null(y)) {
@@ -3171,6 +3176,9 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'                 at or below 0 will become undefined and results will be 
 #'                 more sensitive to incorrect values of \code{blank}.
 #' @param na.rm logical whether NA's should be removed before analyzing
+#' @param warn_ungrouped logical whether warning should be issued when
+#'                       \code{smooth_data} is being called on ungrouped data
+#'                       and \code{subset_by = NULL}.
 #' @param warn_logtransform_warnings logical whether warning should be issued 
 #'                             when log(y) produced warnings.
 #' @param warn_logtransform_infinite logical whether warning should be issued 
@@ -3211,6 +3219,7 @@ calc_deriv <- function(y, x = NULL, return = "derivative", percapita = FALSE,
                        window_width_frac = NULL,
                        window_width_n_frac = NULL,
                        trans_y = "linear", na.rm = TRUE,
+                       warn_ungrouped = TRUE,
                        warn_logtransform_warnings = TRUE,
                        warn_logtransform_infinite = TRUE,
                        warn_window_toosmall = TRUE) {
@@ -3239,7 +3248,8 @@ window_width_n_frac are used")}
   x <- make.numeric(x, "x")
   y <- make.numeric(y, "y")
   
-  check_grouped(name_for_error = "calc_deriv", subset_by = subset_by)
+  if(warn_ungrouped) {
+    check_grouped(name_for_error = "calc_deriv", subset_by = subset_by)}
 
   #Set up subset_by
   if(is.null(subset_by)) {subset_by <- rep("A", length(y))}

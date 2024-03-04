@@ -2982,14 +2982,14 @@ interpolate_prediction <- function(
   y <- make.numeric(y, "y")
   newdata <- make.numeric(newdata, "newdata")
   
-  rm_nas(x = x, y = y, na.rm = na.rm)
+  nas_removed <- rm_nas(x = x, y = y, na.rm = na.rm)
   
-  dat <- data.frame(x = rm_nas[["x"]], y = rm_nas[["y"]])
+  dat <- data.frame(x = nas_removed[["x"]], y = nas_removed[["y"]])
   dat <- dat[order(dat$x), ]
   
   #If any newdata are out of known domain, project endpoint slopes
   # out to needed newdata points
-  if(any(newdata < min(x))) {
+  if(any(!is.na(newdata)) && any(newdata < min(x))) {
     if(!extrapolate_predictions) {newdata[newdata < min(x)] <- NA
     } else {rbind(data.frame(x = min(newdata),
                              y = solve_linear(x1 = dat$x[1], x2 = dat$x[2],
@@ -2998,8 +2998,8 @@ interpolate_prediction <- function(
                   dat)
     }
   }
-  if(any(newdata > max(x))) {
-    if(!extrapolate_predictions) {newdata[newdata > min(x)] <- NA
+  if(any(!is.na(newdata)) && any(newdata > max(x))) {
+    if(!extrapolate_predictions) {newdata[newdata > max(x)] <- NA
     } else {rbind(dat,
                   data.frame(x = max(newdata),
                              y = solve_linear(x1 = dat$x[nrow(dat)], 
@@ -3010,8 +3010,14 @@ interpolate_prediction <- function(
     }
   }
   
-  return(
-    solve_linear(
+  nas_removed <- rm_nas(newdata = newdata, na.rm = TRUE)
+  
+  if(length(nas_removed[["newdata"]]) == 0) {
+    return(rep(as.numeric(NA), length(newdata)))
+  } else {
+    newdata <- nas_removed[["newdata"]]
+  
+    out <- solve_linear(
       x1 = sapply(newdata, 
                   function(newdata, x) {x[max(which(x < newdata))]}, x = dat$x),
       x2 = sapply(newdata, 
@@ -3021,7 +3027,13 @@ interpolate_prediction <- function(
       y2 = sapply(newdata, function(newdata, x, y) {y[min(which(x >= newdata))]},
                   x = dat$x, y = dat$y),
       x3 = newdata,
-      named = FALSE))
+      named = FALSE)
+    out <- 
+      add_nas(out,
+              nas_indices_removed = nas_removed[["nas_indices_removed"]])[["x"]]
+    
+    return(out)
+  }
 }
 
 

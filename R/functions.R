@@ -3112,9 +3112,9 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 }
 
 gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
-                     trControl = caret::trainControl(method = "none"), 
+                     trControl = caret::trainControl(), 
                      tuneGrid = NULL,
-                     tuneLength = ifelse(trControl$method == "none", 1, 5)) {
+                     tuneLength = ifelse(trControl$method == "none", 1, 3)) {
   if(!requireNamespace("caret", quietly = TRUE)) {
     stop("Package \"caret\" must be installed to use gc_train", call. = FALSE)}
   
@@ -3134,12 +3134,12 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
         grid <- expand.grid(window_width_n = NA,
                             window_width = NA,
                             window_width_n_frac = NA,
-                            window_width_frac = seq(0, 1, length.out = len))
+                            window_width_frac = seq(0, 0.5, length.out = len))
       } else { #search is random
         grid <- data.frame(window_width_n = NA,
                            window_width = NA,
                            window_width_n_frac = NA,
-                           window_width_frac = runif(n = len))
+                           window_width_frac = runif(n = len, max = 0.5))
       }
       return(grid)
     }
@@ -3169,18 +3169,11 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
     #TODO
   }
   
-  mygrid <- data.frame(window_width_n = NA,
-                       window_width = NA,
-                       window_width_n_frac = NA,
-                       window_width_frac = seq(0, 0.5, length.out = 5))
-  
   train <- caret::train(x = data.frame(x = x), y = y, method = gcmethod,
-               tuneGrid = mygrid)
+                        tuneGrid = tuneGrid, tuneLength = tuneLength,
+                        trControl = trControl)
   
-  # caret::train(x = data.frame(x = x), y = y, method = gcmethod, trControl = trControl,
-  #       tuneGrid = mygrid, tuneLength = tuneLength, ...)
-  
-  return(train)
+  return(train$results)
 }
 
 

@@ -122,6 +122,11 @@ test_that("solve_linear returns correctly", {
   expect_equal(solve_linear(x1 = c(0, 0), y1 = c(0, 0), x2 = c(5, 5),
                             y2 = c(5, 10)),
                stats::setNames(c(1, 2), c("m", "m")))
+  #x1 and x2 are the same
+  expect_equal(solve_linear(x1 = c(5, 10), y1 = c(8, 16), 
+                            x2 = c(5, 10), y2 = c(8, 16),
+                            x3 = c(5, 10), named = FALSE),
+               c(8, 16))
 })
   
 test_that("which_min_gc and which_max_gc return correctly", {

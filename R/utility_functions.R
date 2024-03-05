@@ -689,10 +689,14 @@ solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
   if(!is.null(x2) & !is.null(y2)) {
     m <- (y2-y1)/(x2-x1)
     if(!is.null(x3)) { #return y3
-      out <- m * (x3-x1) + y1
+      out <- ifelse(x3 == x1, y1,
+                    ifelse(x3 == x2, y2,
+                           m * (x3-x1) + y1))
       if(named == TRUE) {names(out) <- rep("y3", length(out))}
     } else if (!is.null(y3)) { #return x3
-      out <- x1 + (y3-y1)/m
+      out <- ifelse(y3 == y1, x1,
+                    ifelse(y3 == y2, x2,
+                           x1 + (y3-y1)/m))
       if(named == TRUE) {names(out) <- rep("x3", length(out))}
     } else { #return m
       out <- m

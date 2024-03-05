@@ -2998,6 +2998,8 @@ interpolate_prediction <- function(
   
   if(length(nas_removed[["x"]]) == 0) {return(rep(NA), length(newdata))}
   
+  dat <- data.frame(x = nas_removed[["x"]], y = nas_removed[["y"]])
+  
   #If any newdata are out of known domain, project endpoint slopes
   # out to needed newdata points
   if(any(!is.na(newdata) & newdata < min(dat$x))) {

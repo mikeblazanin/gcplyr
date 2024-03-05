@@ -332,3 +332,13 @@ test_that("interpolate_prediction works correctly", {
 
 
 
+
+test_that("gc_train returns properly", {
+  dat <- example_widedata[, c("Time", "A1")]
+  dat$A1 <- dat$A1 + rnorm(n = nrow(dat), sd = 0.1)
+  
+  trainout <- gc_train(x = dat$Time, y = dat$A1, sm_method = "moving-average")
+  
+  
+})
+

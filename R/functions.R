@@ -3109,6 +3109,78 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   return(ans)
 }
 
+gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
+                     trControl = caret::trainControl(method = "none"), 
+                     tuneGrid = NULL,
+                     tuneLength = ifelse(trControl$method == "none", 1, 5)) {
+  if(!requireNamespace("caret", quietly = TRUE)) {
+    stop("Package \"caret\" must be installed to use gc_train", call. = FALSE)}
+  
+  gcmethod <- 
+    list(library = "gcplyr", type = "Regression", prob = NULL, sort = NULL)
+  
+  if(sm_method %in% c("moving-average", "moving-median")) {
+    gcmethod$parameters <- 
+      data.frame(parameter = c("window_width_n", "window_width", 
+                               "window_width_n_frac", "window_width_frac"),
+                 class = rep("numeric", 4),
+                 label = c("window_width_n", "window_width", 
+                           "window_width_n_frac", "window_width_frac"))
+    #grid defines the default grid of parameters to search over
+    gcmethod$grid <- function(x, y, len, search) {
+      if(search == "grid") {
+        grid <- expand.grid(window_width_n = NA,
+                            window_width = NA,
+                            window_width_n_frac = NA,
+                            window_width_frac = seq(0, 1, length.out = len))
+      } else { #search is random
+        grid <- data.frame(window_width_n = NA,
+                           window_width = NA,
+                           window_width_n_frac = NA,
+                           window_width_frac = runif(n = len))
+      }
+      return(grid)
+    }
+    
+    gcmethod$fit <- function(x, y, wts, param, lev = NULL, last, 
+                             weights, classProbs, ...) {
+      sm_args <- c(as.list(param), sm_method = sm_method, warn_ungrouped = FALSE)
+      sm_args[["x"]] <- x$x
+      sm_args[["y"]] <- y
+      
+      dat <- do.call(gcplyr::smooth_data, sm_args)
+      
+      return(list(x = x, y = y, fitted = dat))
+    }
+    
+    gcmethod$predict <- function(modelFit, newdata,
+                                 preProc = NULL, submodels = NULL) {
+      return(interpolate_prediction(
+        x = modelFit[["x"]]$x, y = modelFit[["fitted"]], newdata = newdata$x))
+    }
+    
+  } else if(sm_method == "loess") {
+    #TODO
+  } else if(sm_method == "gam") {
+    #TODO
+  } else if(sm_method == "smooth.spline") {
+    #TODO
+  }
+  
+  mygrid <- data.frame(window_width_n = NA,
+                       window_width = NA,
+                       window_width_n_frac = NA,
+                       window_width_frac = seq(0, 0.5, length.out = 5))
+  
+  train <- caret::train(x = data.frame(x = x), y = y, method = gcmethod,
+               tuneGrid = mygrid)
+  
+  # caret::train(x = data.frame(x = x), y = y, method = gcmethod, trControl = trControl,
+  #       tuneGrid = mygrid, tuneLength = tuneLength, ...)
+  
+  return(train)
+}
+
 
 # Processing: Derivatives ----
 

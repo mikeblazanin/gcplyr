@@ -157,3 +157,9 @@ test_that("take_subset returns correctly", {
   expect_equal(take_subset(x = 1:10, subset = NULL),
                list(x = 1:10, y = NULL, indices = 1:10))
 })
+
+test_that("NA_to_NULL returns correctly", {
+  expect_equal(NA_to_NULL(x = 1:5), 1:5)
+  expect_equal(NA_to_NULL(x = NA), NULL)
+  expect_equal(NA_to_NULL(x = c(NA, NA)), c(NA, NA))
+})

@@ -2805,8 +2805,7 @@ set_up_moving_sm <- function(formula, data, x, y,
                              window_width_n_frac,
                              window_width_frac,
                              na.rm, warn_nonnumeric_sort) {
-  NA_to_NULL <- function(x) {
-    if(!is.null(x) && length(x) == 1 && is.na(x)) {return(NULL)}}
+  
   window_width_n <- NA_to_NULL(window_width_n)
   window_width <- NA_to_NULL(window_width)
   window_width_n_frac <- NA_to_NULL(window_width_n_frac)

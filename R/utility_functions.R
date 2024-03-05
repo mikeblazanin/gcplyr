@@ -916,3 +916,15 @@ parse_formula_data <- function(formula, data) {
   
   return(list(x = x, y = y, predictor = predictor_var, response = response_var))
 }
+
+#' Change NA values to NULL
+#' 
+#' @param x Input
+#' 
+#' @return \code{x}, or \code{NULL} if \code{x == NA}
+#' 
+#' @noRd
+NA_to_NULL <- function(x) {
+  if(!is.null(x) && length(x) == 1 && is.na(x)) {return(NULL)
+  } else {return(x)}
+}

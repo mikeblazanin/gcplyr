@@ -2995,22 +2995,24 @@ interpolate_prediction <- function(
   # out to needed newdata points
   if(any(!is.na(newdata)) && any(newdata < min(x))) {
     if(!extrapolate_predictions) {newdata[newdata < min(x)] <- NA
-    } else {rbind(data.frame(x = min(newdata),
-                             y = solve_linear(x1 = dat$x[1], x2 = dat$x[2],
-                                              y1 = dat$y[1], y2 = dat$y[2],
-                                              x3 = min(newdata))),
-                  dat)
+    } else {dat <- 
+      rbind(data.frame(x = min(newdata),
+                       y = solve_linear(x1 = dat$x[1], x2 = dat$x[2],
+                                        y1 = dat$y[1], y2 = dat$y[2],
+                                        x3 = min(newdata))),
+            dat)
     }
   }
   if(any(!is.na(newdata)) && any(newdata > max(x))) {
     if(!extrapolate_predictions) {newdata[newdata > max(x)] <- NA
-    } else {rbind(dat,
-                  data.frame(x = max(newdata),
-                             y = solve_linear(x1 = dat$x[nrow(dat)], 
-                                              x2 = dat$x[nrow(dat)-1],
-                                              y1 = dat$y[nrow(dat)], 
-                                              y2 = dat$y[nrow(dat)-1],
-                                              x3 = min(newdata))))
+    } else {dat <- 
+      rbind(dat,
+            data.frame(x = max(newdata),
+                       y = solve_linear(x1 = dat$x[nrow(dat)], 
+                                        x2 = dat$x[nrow(dat)-1],
+                                        y1 = dat$y[nrow(dat)], 
+                                        y2 = dat$y[nrow(dat)-1],
+                                        x3 = min(newdata))))
     }
   }
   

@@ -2996,12 +2996,11 @@ interpolate_prediction <- function(
   
   nas_removed <- rm_nas(x = x, y = y, na.rm = na.rm)
   
-  dat <- data.frame(x = nas_removed[["x"]], y = nas_removed[["y"]])
-  dat <- dat[order(dat$x), ]
+  if(length(nas_removed[["x"]]) == 0) {return(rep(NA), length(newdata))}
   
   #If any newdata are out of known domain, project endpoint slopes
   # out to needed newdata points
-  if(any(!is.na(newdata)) && any(newdata < min(x))) {
+  if(any(!is.na(newdata) & newdata < min(dat$x))) {
     if(!extrapolate_predictions) {newdata[newdata < min(x)] <- NA
     } else {dat <- 
       rbind(data.frame(x = min(newdata),
@@ -3011,7 +3010,7 @@ interpolate_prediction <- function(
             dat)
     }
   }
-  if(any(!is.na(newdata)) && any(newdata > max(x))) {
+  if(any(!is.na(newdata) & newdata > max(dat$x))) {
     if(!extrapolate_predictions) {newdata[newdata > max(x)] <- NA
     } else {dat <- 
       rbind(dat,
@@ -3020,7 +3019,7 @@ interpolate_prediction <- function(
                                         x2 = dat$x[nrow(dat)-1],
                                         y1 = dat$y[nrow(dat)], 
                                         y2 = dat$y[nrow(dat)-1],
-                                        x3 = min(newdata))))
+                                        x3 = max(newdata))))
     }
   }
   
@@ -3033,10 +3032,10 @@ interpolate_prediction <- function(
   
     out <- solve_linear(
       x1 = sapply(newdata, 
-                  function(newdata, x) {x[max(which(x < newdata))]}, x = dat$x),
+                  function(newdata, x) {x[max(which(x <= newdata))]}, x = dat$x),
       x2 = sapply(newdata, 
                   function(newdata, x) {x[min(which(x >= newdata))]}, x = dat$x),
-      y1 = sapply(newdata, function(newdata, x, y) {y[max(which(x < newdata))]}, 
+      y1 = sapply(newdata, function(newdata, x, y) {y[max(which(x <= newdata))]}, 
                   x = dat$x, y = dat$y),
       y2 = sapply(newdata, function(newdata, x, y) {y[min(which(x >= newdata))]},
                   x = dat$x, y = dat$y),

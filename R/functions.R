@@ -2796,7 +2796,11 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 #'                             
 #' @return List containing: x values, y values,
 #'                          indices for original order, 
-#'                          indices where NA's were removed
+#'                          indices where NA's were removed,
+#'                          window_width_n, 
+#'                          window_width, 
+#'                          window_width_n_frac,
+#'                          window_width_frac,
 #' 
 #' @noRd
 set_up_moving_sm <- function(formula, data, x, y,
@@ -2805,7 +2809,7 @@ set_up_moving_sm <- function(formula, data, x, y,
                              window_width_n_frac,
                              window_width_frac,
                              na.rm, warn_nonnumeric_sort) {
-  
+
   window_width_n <- NA_to_NULL(window_width_n)
   window_width <- NA_to_NULL(window_width)
   window_width_n_frac <- NA_to_NULL(window_width_n_frac)
@@ -2853,7 +2857,11 @@ set_up_moving_sm <- function(formula, data, x, y,
   
   return(list(x = x, y = y,
               order = order_temp[["order"]],
-              nas_indices_removed = narm_temp[["nas_indices_removed"]]))
+              nas_indices_removed = narm_temp[["nas_indices_removed"]],
+              window_width_n = window_width_n, 
+              window_width = window_width, 
+              window_width_n_frac = window_width_n_frac,
+              window_width_frac = window_width_frac))
 }
 
 #' Moving window smoothing
@@ -2908,10 +2916,10 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   
   #Get windows
   windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
-                         window_width_n = window_width_n,
-                         window_width = window_width,
-                         window_width_n_frac = window_width_n_frac, 
-                         window_width_frac = window_width_frac,
+                         window_width_n = setup[["window_width_n"]],
+                         window_width = setup[["window_width"]],
+                         window_width_n_frac = setup[["window_width_n_frac"]], 
+                         window_width_frac = setup[["window_width_frac"]],
                          edge_NA = TRUE)
   
   #Calculate average
@@ -2946,10 +2954,10 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
   
   #Get windows
   windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
-                         window_width_n = window_width_n,
-                         window_width = window_width,
-                         window_width_n_frac = window_width_n_frac, 
-                         window_width_frac = window_width_frac,
+                         window_width_n = setup[["window_width_n"]],
+                         window_width = setup[["window_width"]],
+                         window_width_n_frac = setup[["window_width_n_frac"]], 
+                         window_width_frac = setup[["window_width_frac"]],
                          edge_NA = TRUE)
   
   #Calculate median

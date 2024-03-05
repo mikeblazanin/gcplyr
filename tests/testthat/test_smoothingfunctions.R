@@ -324,6 +324,11 @@ test_that("interpolate_prediction works correctly", {
   expect_equal(interpolate_prediction(x = x, y = y, newdata = c(2.5, 5, 15),
                                       extrapolate_predictions = FALSE),
                c(6.5, 25, as.numeric(NA)))
+  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(0, 11)),
+               c(-2, 119))
+  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(0, 0.5, 10.5, 11)),
+               c(-2, -0.5, 109.5, 119))
 })
+
 
 

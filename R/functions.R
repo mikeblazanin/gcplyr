@@ -3111,6 +3111,109 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   return(ans)
 }
 
+#' Create method argument for caret::train for growth curve smoothers
+#' 
+#' @return A list that can be used as the method argument to
+#'         \code{caret::train}
+make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
+  #Create baseline list
+  gcmethod_out <- 
+    list(library = "gcplyr", type = "Regression", prob = NULL, sort = NULL)
+  
+  #Set up fitting function element
+  gcmethod_out$fit <- function(x, y, wts, param, lev = NULL, last,
+                           weights, classProbs, ...) {
+    sm_args <- c(as.list(param), list(...),
+                 sm_method = sm_method, warn_ungrouped = FALSE)
+    sm_args[["x"]] <- x$x
+    sm_args[["y"]] <- y
+    sm_args[["return_fitobject"]] <- TRUE
+    return(list(x = x, y = y, modelout = do.call(gcplyr::smooth_data, sm_args)[[1]]))
+  }
+  
+  #Set up parameters and grid elements
+  if(!is.null(parameters)) {
+    if(is.data.frame(parameters)) {gcmethod_out$parameters <- parameters
+    } else if(is.vector(parameters)) {
+      gcmethod_out$parameters <- data.frame(parameter = parameters,
+                                            class = "numeric", 
+                                            label = parameters)
+    } else {stop("parameters must be a data.frame, vector, or NULL")}
+  } else if(!is.null(tuneGrid)) {
+    gcmethod_out$parameters <- data.frame(parameter = colnames(tuneGrid),
+                                      class = "numeric", 
+                                      label = colnames(tuneGrid))
+    gcmethod_out$grid <- function(x, y, len, search) {
+      stop("tuneGrid was specified, this grid function should not be called")}
+  } else {
+    
+    #Define the default parameters & grid when tuneGrid is not specified
+    if(sm_method %in% c("moving-average", "moving-median")) {
+      gcmethod_out$parameters <- 
+        data.frame(parameter = "window_width_frac",
+                   class = "numeric", label = "window_width_frac")
+      gcmethod_out$grid <-
+        function(x, y, len, search) {
+          if(search == "grid") {
+            return(data.frame(window_width_frac = seq(0, 0.5, length.out = len)))
+          } else {
+            return(data.frame(window_width_frac = runif(n = len, max = 0.5)))
+          }
+        }
+    } else if(sm_method == "loess") {
+      gcmethod_out$parameters <- 
+        data.frame(parameter = "span", class = "numeric", label = "span")
+      gcmethod_out$grid <-
+        function(x, y, len, search) {
+          if(search == grid) {
+            return(data.frame(span = seq(0, 0.8, length.out = len)))
+          } else {
+            return(data.frame(span = runif(n = len, max = 0.8)))
+          }
+        }
+    } else if(sm_method == "gam") {
+      gcmethod_out$parameters <-
+        data.frame(parameter = "k", class = "numeric", label = "k")
+      gcmethod_out$grid <-
+        function(x, y, len, search) {
+          if(search == grid) {
+            return(data.frame(k = round(seq(1, length(x)/3, length.out = len))))
+          } else {
+            return(data.frame(k = round(runif(n = len, min = 1, max = length(x)/3))))
+          }
+        }
+    } else if(sm_method == "smooth.spline") {
+      gcmethod_out$parameters <- 
+        data.frame(parameter = "spar", class = "numeric", label = "spar")
+      gcmethod_out$grid <-
+        function(x, y, len, search) {
+          if(search == grid) {
+            return(data.frame(spar = seq(0, 0.8, length.out = len)))
+          } else {
+            return(data.frame(spar = runif(n = len, max = 0.8)))
+          }
+        }
+    }
+  }
+  
+  #Define predict function for each method
+  if(sm_method %in% c("moving-average", "moving-median")) {
+    gcmethod_out$predict <- 
+      function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+        return(interpolate_prediction(x = modelFit[["x"]]$x, 
+                                      y = modelFit[["modelout"]][["fitted"]], 
+                                      newdata = newdata$x))}
+  } else if(sm_method %in% c("loess", "gam", "smooth.spline")) {
+    gcmethod_out$predict <-
+      function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+        return(predict(object = modelFit[["modelout"]], newdata = newdata))
+      }
+  }
+  
+  return(gcmethod_out)
+}
+
+
 #' Test efficacy of different smoothing parameters
 #' 
 #' This function is based on \code{caret::train}, which runs models
@@ -3171,90 +3274,10 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
     }
   }
   
-  ##Set up method argument for caret::train
-  gcmethod <- 
-    list(library = "gcplyr", type = "Regression", prob = NULL, sort = NULL)
-  #Set up fitting function
-  gcmethod$fit <- function(x, y, wts, param, lev = NULL, last,
-                           weights, classProbs, ...) {
-    sm_args <- c(as.list(param), list(...),
-                 sm_method = sm_method, warn_ungrouped = FALSE)
-    sm_args[["x"]] <- x$x
-    sm_args[["y"]] <- y
-    sm_args[["return_fitobject"]] <- TRUE
-    return(list(x = x, y = y, modelout = do.call(gcplyr::smooth_data, sm_args)))
-  }
-  #Set up parameters and grid
-  if(!is.null(tuneGrid)) {
-    gcmethod$parameters <- data.frame(parameter = colnames(tuneGrid),
-                                      class = "numeric", label = colnames(tuneGrid))
-    gcmethod$grid <- function(x, y, len, search) {stop("gc_train tuneGrid error")}
-  } else {
-    #Define the default parameters & grid when tuneGrid is not specified
-    
-    if(sm_method %in% c("moving-average", "moving-median")) {
-      gcmethod$parameters <- 
-        data.frame(parameter = "window_width_frac",
-                   class = "numeric", label = "window_width_frac")
-      gcmethod$grid <-
-        function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(window_width_frac = seq(0, 0.5, length.out = len)))
-          } else {
-            return(data.frame(window_width_frac = runif(n = len, max = 0.5)))
-          }
-        }
-    } else if(sm_method == "loess") {
-      gcmethod$parameters <- 
-        data.frame(parameter = "span", class = "numeric", label = "span")
-      gcmethod$grid <-
-        function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(span = seq(0, 0.8, length.out = len)))
-          } else {
-            return(data.frame(span = runif(n = len, max = 0.8)))
-          }
-        }
-    } else if(sm_method == "gam") {
-      gcmethod$parameters <-
-        data.frame(parameter = "k", class = "numeric", label = "k")
-      gcmethod$grid <-
-        function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(k = round(seq(1, length(x)/3, length.out = len))))
-          } else {
-            return(data.frame(k = round(runif(n = len, min = 1, max = length(x)/3))))
-          }
-        }
-    } else if(sm_method == "smooth.spline") {
-      gcmethod$parameters <- 
-        data.frame(parameter = "spar", class = "numeric", label = "spar")
-      gcmethod$grid <-
-        function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(spar = seq(0, 0.8, length.out = len)))
-          } else {
-            return(data.frame(spar = runif(n = len, max = 0.8)))
-          }
-        }
-    }
-  }
+  #Create method argument
+  gcmethod <- make_train_gcmethod(sm_method = sm_method, tuneGrid = tuneGrid)
   
-  #Define predict function for each method
-  if(sm_method %in% c("moving-average", "moving-median")) {
-    gcmethod$predict <- 
-      function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-        return(interpolate_prediction(x = modelFit[["x"]]$x, 
-                                      y = modelFit[["modelout"]][["fitted"]], 
-                                      newdata = newdata$x))}
-  } else if(sm_method %in% c("loess", "gam", "smooth.spline")) {
-    gcmethod$predict <-
-      function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-        return(predict(object = modelFit[["modelout"]], newdata = newdata))
-      }
-  }
-  
-  ##Run train
+  #Run train
   train <- caret::train(x = data.frame(x = x), y = y, method = gcmethod,
                         tuneGrid = tuneGrid, tuneLength = tuneLength,
                         trControl = trControl)

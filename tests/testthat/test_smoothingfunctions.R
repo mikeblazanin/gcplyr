@@ -330,15 +330,352 @@ test_that("interpolate_prediction works correctly", {
                c(-2, -0.5, 109.5, 119))
 })
 
-
-
-
-test_that("gc_train returns properly", {
-  dat <- example_widedata[, c("Time", "A1")]
-  dat$A1 <- dat$A1 + rnorm(n = nrow(dat), sd = 0.1)
+test_that("gc_train and train + make_train_gcmethod match, default conditions", {
+  library(dplyr)
+  library(caret)
+  dat <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
   
-  trainout <- gc_train(x = dat$Time, y = dat$A1, sm_method = "moving-average")
+  #Moving average default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+                 train = gc_train(
+                   x = Time, y = Measurements,
+                   sm_method = "moving-average",
+                   trControl = caret::trainControl(
+                     seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+                 train = caret::train(
+                   x = data.frame(x = Time), y = Measurements,
+                   method = make_train_gcmethod(sm_method = "moving-average"),
+                   trControl = caret::trainControl(
+                     seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
   
+  #Moving median default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-median",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-median"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
   
+  #loess default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "loess",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "loess"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #gam default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "gam",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "gam"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #smooth.spline default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "smooth.spline",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "smooth.spline"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
 })
 
+test_that("gc_train and train + make_train_gcmethod match, length specified", {
+  stop("need to edit tests")
+  
+  library(dplyr)
+  library(caret)
+  dat <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
+  
+  #Moving average default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-average",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-average"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #Moving median default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-median",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-median"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #loess default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "loess",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "loess"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #gam default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "gam",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "gam"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #smooth.spline default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "smooth.spline",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "smooth.spline"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+})
+
+test_that("gc_train and train + make_train_gcmethod match, tuning values specified", {
+  stop("need to edit tests")
+  
+  library(dplyr)
+  library(caret)
+  dat <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
+  
+  #Moving average default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-average",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-average"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #Moving median default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-median",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-median"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #loess default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "loess",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "loess"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #gam default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "gam",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "gam"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #smooth.spline default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "smooth.spline",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "smooth.spline"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+})
+
+test_that("gc_train and train + make_train_gcmethod match, subset_by used", {
+  stop("need to edit tests")
+  
+  library(dplyr)
+  library(caret)
+  dat <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
+  
+  #Moving average default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-average",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-average"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #Moving median default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "moving-median",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "moving-median"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #loess default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "loess",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "loess"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #gam default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "gam",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "gam"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+  
+  #smooth.spline default
+  expect_equal(
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = gc_train(
+              x = Time, y = Measurements,
+              sm_method = "smooth.spline",
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))),
+    reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
+            train = caret::train(
+              x = data.frame(x = Time), y = Measurements,
+              method = make_train_gcmethod(sm_method = "smooth.spline"),
+              trControl = caret::trainControl(
+                seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
+  )
+})

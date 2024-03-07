@@ -3118,7 +3118,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
   #Create baseline list
   gcmethod_out <- 
-    list(library = "gcplyr", type = "Regression", prob = NULL, sort = NULL)
+    list(library = "gcplyr", type = "Regression", prob = NULL)
   
   #Set up fitting function element
   gcmethod_out$fit <- function(x, y, wts, param, lev = NULL, last,
@@ -3155,9 +3155,11 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
       gcmethod_out$grid <-
         function(x, y, len, search) {
           if(search == "grid") {
-            return(data.frame(window_width_frac = seq(0, 0.5, length.out = len)))
+            return(data.frame(
+              window_width_frac = seq(from = 0, to = 0.5, length.out = len)))
           } else {
-            return(data.frame(window_width_frac = runif(n = len, max = 0.5)))
+            return(data.frame(
+              window_width_frac = runif(min = 0, max = 0.5, n = len)))
           }
         }
     } else if(sm_method == "loess") {
@@ -3165,10 +3167,12 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
         data.frame(parameter = "span", class = "numeric", label = "span")
       gcmethod_out$grid <-
         function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(span = seq(0, 0.8, length.out = len)))
+          if(search == "grid") {
+            return(data.frame(
+              span = seq(from = 0.2, to = 0.8, length.out = len)))
           } else {
-            return(data.frame(span = runif(n = len, max = 0.8)))
+            return(data.frame(
+              span = runif(min = 0.1, max = 0.8, n = len)))
           }
         }
     } else if(sm_method == "gam") {
@@ -3176,10 +3180,12 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
         data.frame(parameter = "k", class = "numeric", label = "k")
       gcmethod_out$grid <-
         function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(k = round(seq(1, length(x)/3, length.out = len))))
+          if(search == "grid") {
+            return(data.frame(
+              k = round(seq(from = 3, to = nrow(x)/3, length.out = len))))
           } else {
-            return(data.frame(k = round(runif(n = len, min = 1, max = length(x)/3))))
+            return(data.frame(
+              k = round(runif(min = 3, max = nrow(x)/3, n = len))))
           }
         }
     } else if(sm_method == "smooth.spline") {
@@ -3187,10 +3193,10 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
         data.frame(parameter = "spar", class = "numeric", label = "spar")
       gcmethod_out$grid <-
         function(x, y, len, search) {
-          if(search == grid) {
-            return(data.frame(spar = seq(0, 0.8, length.out = len)))
+          if(search == "grid") {
+            return(data.frame(spar = seq(from = 0, to = 1, length.out = len)))
           } else {
-            return(data.frame(spar = runif(n = len, max = 0.8)))
+            return(data.frame(spar = runif(min = 0, max = 1, n = len)))
           }
         }
     }
@@ -3203,10 +3209,15 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
         return(interpolate_prediction(x = modelFit[["x"]]$x, 
                                       y = modelFit[["modelout"]][["fitted"]], 
                                       newdata = newdata$x))}
-  } else if(sm_method %in% c("loess", "gam", "smooth.spline")) {
+  } else if(sm_method %in% c("loess", "gam")) {
     gcmethod_out$predict <-
       function(modelFit, newdata, preProc = NULL, submodels = NULL) {
         return(predict(object = modelFit[["modelout"]], newdata = newdata))
+      }
+  } else if(sm_method == "smooth.spline") {
+    gcmethod_out$predict <-
+      function(modelFit, newdata, preProc = NULL, submodels = NULL) {
+        return(predict(object = modelFit[["modelout"]], x = newdata$x)$y)
       }
   }
   

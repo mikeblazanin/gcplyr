@@ -338,7 +338,7 @@ I typically recommend against using other smoothing algorithms, since they have 
 
 For `loess`, the tuning parameter is the `span` argument. `loess` works by doing fits on subset windows of the data centered at each data point. `span` is the width of the window, as a fraction of all data points. `span` values typically are between 0 and 1, and larger values are more "smoothed". The fits can be linear (`degree = 1`) or polynomial (typically `degree = 2`). 
 
-For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"**. However, **unlike earlier methods, `k` values that are too large are also problematic**, as they will tend to 'overfit' the data.
+For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with smaller values being more "smoothed". However, unlike earlier methods, `k` values that are too large are also problematic, as they will tend to 'overfit' the data.
 
 For `smooth.spline`, the primary tuning parameters are `df` and `spar`. `df` is the number of degrees of freedom, and must be between 1 and the number of unique x values. `spar` is the smoothing parameter, and is typically between 0 and 1.
 

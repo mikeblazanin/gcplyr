@@ -41,23 +41,24 @@ library(gcplyr)
 ```
 
 # Including design elements
-We often want to combine information about the experimental design with our data. `gcplyr` enables incorporation of design elements in two ways:
+We often want to combine our data with information about the experimental design. `gcplyr` enables incorporation of design elements in two ways:
 
 1. Designs can be imported from files
 2. Designs can be generated in `R` using `make_design`
 
-# Reading design elements from files
-Users can read block-shaped or tidy-shaped design files:
+If you're interested in generating your designs in `R`, see `vignette("gc10_using_make_design")`
+
+When reading design elements from files, `gcplyr` can read block-shaped or tidy-shaped design files:
 
 * If design files are block-shaped, they can be read with `import_blockdesigns`
 * If design files are tidy-shaped, they can simply be read with `read_tidys`
 
-## Importing block-shaped design files
+# Importing block-shaped design files
 To import block-shaped design files, use `import_blockdesigns`, which will return a tidy-shaped designs data frame (or list of data frames).
 
 `import_blockdesigns` only requires a list of filenames (or relative file paths) and will return a data.frame (or list of data frames) in a **tidy format** that you can save in R.
 
-### A basic example
+## A basic example
 
 
 Let's look at an example. First, we need to create an example file for the sake of this tutorial (normally you'd create this file in Excel)
@@ -80,24 +81,33 @@ my_design <- import_blockdesigns(files = "mydesign.csv",
 head(my_design, 20)
 ```
 
-### Importing multiple block-shaped design elements
+## Importing multiple block-shaped design elements
 
 
-What do you do if you have multiple designs? For instance, what if you have several strains each in several treatments? In that case, simply save each design component as a separate file, and import them all in one go with `import_blockdesigns`.
+What do you do if you have multiple designs? For instance, what if you have several strains each in several treatments? In that case, you have two options:
 
-First, let's create another example designs file. Again, just imagine that you've created this file in Excel.
+1. Save each design component as a separate file, or in separate blocks within a file
+2. Save the design components pasted together in a single file
+
+Regardless of which option you use, you can then import them all in one go with `import_blockdesigns`.
+
+### Importing multiple separated block-shaped designs
+
+First, let's create both our example designs files. Again, just imagine that you've created these files in Excel.
 
 ```{r}
+make_example(vignette = 3, example = 1, dir = ".")
 make_example(vignette = 3, example = 2, dir = ".")
 ```
 
-Now let's take a look at what the file looks like:
+Now let's take a look at what these files looks like:
 
 ```{r}
+print_df(read.csv("mydesign.csv", header = FALSE, colClasses = "character"))
 print_df(read.csv("mydesign2.csv", header = FALSE, colClasses = "character"))
 ```
 
-Here we can see that our design has Strain A in the first two rows, Strain B in the next two rows, and so on.
+As before, we have Treatment 1 on the left-hand side, and Treatment 2 on the right-hand side. In addition, we now also have Strain A in the first two rows, Strain B in the next two rows, and so on.
 
 Let's now import both designs using `import_blockdesigns`, saving them to columns named `Treatment_numbers` and `Strain_letters`.
 
@@ -108,20 +118,41 @@ my_design <-
 head(my_design, 20)
 ```
 
-## Importing tidy-shaped design files
+### Importing multiple pasted block-shaped designs
+
+Often, you'll save all the design information into a single block, separating the distinct components of the design with some character.
+
+To demonstrate this, first let's create our example designs file. Again, just imagine that you've created this file in Excel.
+
+```{r}
+make_example(vignette = 3, example = 3, dir = ".")
+```
+
+Now let's take a look at what the file looks like:
+
+```{r}
+print_df(read.csv("mydesign_pasted.csv", header = FALSE, colClasses = "character"))
+```
+
+As before, we have Treatment 1 on the left-hand side, and Treatment 2 on the right-hand side, with Strain A in the first two rows, Strain B in the next two rows, and so on. However, this information is now pasted together, with "_" as the separating string (you can use any string as a separator).
+
+To import this design with `import_blockdesigns`, we simply need to specify the `sep` string, as well as the output column names. The easiest way to specify the column names is to use the `into` argument passed to `separate_tidy`. If `into` is not specified, `import_blockdesigns` will attempt to split the `block_names` (either specified or inferred) with `sep` to generate the output column names.
+
+```{r}
+my_design <- 
+  import_blockdesigns(files = "mydesign_pasted.csv", 
+                      into = c("Treatment_numbers", "Strain_letters"),
+                      sep = " ")
+head(my_design, 20)
+```
+
+# Importing tidy-shaped design files
 You can import tidy-shaped designs with `read_tidys`.
 
 `read_tidys` only requires a filename (or vector of filenames, or relative file paths) and will return a `data.frame` (or list of data.frames) that you can save in R.
 
-Once these design elements have been read into the `R` environment, you won't need to transform them. So you can skip down to learning how to merge them with your data in the **[Merging growth curve data with designs]** section.
+Once these design elements have been read into the `R` environment, they are ready to merge.
 
-# Generating designs in R
-If you'd rather make your design data.frames in R, `make_design` can create:
-
-* block-shaped data.frames with your design information (for saving to files)
-* tidy-shaped data.frames with your design information (for saving to files and merging with tidy-shaped data)
-
-To learn more about using `make_design`, see `vignette("gc10_using_make_design")`
 
 # Merging growth curve data with designs
 Once we have both our design and data in `R` and tidy-shaped, we can merge them using `merge_dfs`.
@@ -155,7 +186,7 @@ example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 ```
 
-`gcplyr` also includes the design for this data for easy use::
+`gcplyr` also includes the design for this data for easy use:
 
 ```{r}
 head(example_design_tidy)

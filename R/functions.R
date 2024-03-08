@@ -3308,7 +3308,7 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                      preProcess = NULL, weights = NULL,
                      metric = ifelse(is.factor(y), "Accuracy", "RMSE"),
                      maximize = ifelse(metric %in% c("RMSE", "logLoss", "MAE", "logLoss"), FALSE, TRUE),
-                     trControl = caret::trainControl(), 
+                     trControl = caret::trainControl(method = "cv"), 
                      tuneGrid = NULL,
                      tuneLength = ifelse(trControl$method == "none", 1, 3),
                      return_trainobject = FALSE) {

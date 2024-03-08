@@ -350,6 +350,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                 x = data.frame(x = Time), y = Measurements,
                 method = make_train_gcmethod(sm_method = mymethod),
                 trControl = caret::trainControl(
+                  method = "cv",
                   seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
     )
   }
@@ -370,6 +371,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                 method = make_train_gcmethod(sm_method = mymethod),
                 tuneLength = 5,
                 trControl = caret::trainControl(
+                  method = "cv",
                   seeds = c(rep(list(c(1,1,1,1,1)), 26), 1)))$results)
     )
   }
@@ -399,6 +401,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                 method = make_train_gcmethod(sm_method = mymethod),
                 tuneGrid = as.data.frame(mytuneGrid),
                 trControl = caret::trainControl(
+                  method = "cv",
                   seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
     )
   }
@@ -420,6 +423,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                 method = make_train_gcmethod(sm_method = mymethod,
                                              subset_by = "Well"),
                 trControl = caret::trainControl(
+                  method = "cv",
                   seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
     )
   }

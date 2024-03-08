@@ -334,7 +334,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
   library(dplyr)
   library(caret)
   dat <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
-  
+
   #Default conditions
   for (mymethod in c("moving-average", "moving-median", "loess",
                      "gam", "smooth.spline")) {
@@ -353,7 +353,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                   seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
     )
   }
-  
+
   #Specifying length
   for (mymethod in c("moving-average", "moving-median", "loess",
                      "gam", "smooth.spline")) {
@@ -373,7 +373,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                   seeds = c(rep(list(c(1,1,1,1,1)), 26), 1)))$results)
     )
   }
-  
+
   methods <- c("moving-average", "moving-median", "loess",
                "gam", "smooth.spline")
   tuneGrids_list <- list(list("window_width_frac" = c(0.2, 0.4)),
@@ -402,7 +402,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                   seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
     )
   }
-  
+
   #subset_by used
   for (mymethod in c("moving-average", "moving-median", "loess",
                      "gam", "smooth.spline")) {

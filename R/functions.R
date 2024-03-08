@@ -3111,12 +3111,31 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   return(ans)
 }
 
-#' Create method argument for caret::train for growth curve smoothers
+#' Create method argument for \code{caret::train} of growth curve smoothers
+#' 
+#' This function generates a list which is compatible to be used as the
+#' \code{method} argument to \code{caret::train}. This enables users to
+#' call \code{caret::train} directly themselves with \code{smooth_data}
+#' smoothing functions.
+#' 
+#' @param sm_method Argument specifying which smoothing method should
+#'                  be used. Options include "moving-average", "moving-median", 
+#'                  "loess", "gam", and "smooth.spline".
+#' @param tuneGrid A data frame with possible tuning value. The columns should 
+#'                 be named the same as the tuning parameters.
+#' @param ... Arguments passed to \code{smooth_data}. These arguments cannot
+#'            overlap with any of those to be tuned.
 #' 
 #' @return A list that can be used as the method argument to
-#'         \code{caret::train}
-make_train_gcmethod <- function(sm_method, tuneGrid = NULL, 
-                                parameters = NULL, ...) {
+#'         \code{caret::train}. Contains elements:
+#'         \code{library}, \code{type}, \code{prob}, \code{fit},
+#'         \code{parameters}, \code{grid}, \code{fit}, and \code{predict}.
+#'         
+#'         See documentation on using a custom model model in 
+#'         \code{caret::train} for more details.
+#'
+#' @export
+make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
   #Create baseline list
   gcmethod_out <- 
     list(library = "gcplyr", type = "Regression", prob = NULL)
@@ -3133,14 +3152,8 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL,
   }
   
   #Set up parameters and grid elements
-  if(!is.null(parameters)) {
-    if(is.data.frame(parameters)) {gcmethod_out$parameters <- parameters
-    } else if(is.vector(parameters)) {
-      gcmethod_out$parameters <- data.frame(parameter = parameters,
-                                            class = "numeric", 
-                                            label = parameters)
-    } else {stop("parameters must be a data.frame, vector, or NULL")}
-  } else if(!is.null(tuneGrid)) {
+  if(!is.null(tuneGrid)) {
+    stopifnot(is.data.frame(tuneGrid))
     gcmethod_out$parameters <- data.frame(parameter = colnames(tuneGrid),
                                       class = "numeric", 
                                       label = colnames(tuneGrid))
@@ -3246,11 +3259,17 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL,
 #'                  
 #'                  This provides an internally-implemented approach similar
 #'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
-#' @param preProcess
-#' @param weights
-#' @param metric
-#' @param maximize
-#' @param trControl
+#' @param preProcess A string vector that defines a pre-processing of the
+#'                   predictor data. The default is no pre-processing.
+#'                   See \code{caret::train} for more details.
+#' @param metric     A string that specifies what summary metric will be
+#'                   used to select the optimal model. By default, possible
+#'                   values are "RMSE" and "Rsquared" for regression.
+#'                   See \code{caret::train} for more details.
+#' @param maximize   A logical: should the metric be maximized or minimized?
+#' @param trControl  A list of values that define how this function acts.
+#'                   See \code{caret::train} and \code{caret::trainControl}
+#'                   for more details.
 #' @param tuneGrid A data frame with possible tuning values, or a named list
 #'                 containing vectors with possible tuning values. If a data 
 #'                 frame, the columns should be named the same as the tuning 
@@ -3258,10 +3277,30 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL,
 #'                 named the same as the tuning parameters. If a list,
 #'                 \code{expand.grid} will be used to make all possible
 #'                 combinations of tuning parameter values.
-#' @param tuneLength
-#' @param return_trainobject
+#' @param tuneLength An integer denoting the amount of granularity in
+#'                   the tuning parameter grid. By default, this argument
+#'                   is the number of levels for each tuning parameter that
+#'                   should be generated. If \code{trControl} has the option
+#'                   \code{search = "random"}, this is the maximum number
+#'                   of tuning parameter combinations that will be generated
+#'                   by the random search. (NOTE: If given, this argument
+#'                   must be named.)
+#' @param return_trainobject A logical indicating whether the entire result
+#'                           of \code{caret::train} should be returned, or
+#'                           only the \code{results} element.
+#'                           
+#' @details See \code{caret::train} for more information.
 #' 
-#' @return 
+#'          For more control, advanced users may call \code{caret::train}
+#'          directly, using \code{make_train_gcmethod} to specify the
+#'          \code{method} argument.
+#' 
+#' @return If \code{return_trainobject = FALSE} (the default), a data frame
+#'         with the values of all tuning parameter combinations and the
+#'         training error rate for each combination (i.e. the \code{results}
+#'         element of the output of \code{caret::train}).
+#'         
+#'         If \code{return_trainobject = TRUE}, the output of \code{caret::train}
 #' 
 #' @export   
 gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
@@ -3287,12 +3326,14 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   }
   
   #Create method argument
-  gcmethod <- make_train_gcmethod(sm_method = sm_method, tuneGrid = tuneGrid)
+  gcmethod <- make_train_gcmethod(sm_method = sm_method, tuneGrid = tuneGrid, ...)
   
   #Run train
   train <- caret::train(x = data.frame(x = x), y = y, method = gcmethod,
-                        tuneGrid = tuneGrid, tuneLength = tuneLength,
-                        trControl = trControl)
+                        preProcess = preProcess, weights = weights,
+                        metric = metric, maximize = maximize,
+                        trControl = trControl,
+                        tuneGrid = tuneGrid, tuneLength = tuneLength)
   
   if(return_trainobject) {return(train)} else {return(train$results)}
 }

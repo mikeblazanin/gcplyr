@@ -3112,6 +3112,8 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   return(ans)
 }
 
+# Processing: Cross-validation ----
+
 #' Create method argument for \code{caret::train} of growth curve smoothers
 #' 
 #' This function generates a list which is compatible to be used as the
@@ -3165,16 +3167,16 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
     #Define the default parameters & grid when tuneGrid is not specified
     if(sm_method %in% c("moving-average", "moving-median")) {
       gcmethod_out$parameters <- 
-        data.frame(parameter = "window_width_frac",
-                   class = "numeric", label = "window_width_frac")
+        data.frame(parameter = "window_width_n",
+                   class = "numeric", label = "window_width_n")
       gcmethod_out$grid <-
         function(x, y, len, search) {
           if(search == "grid") {
-            return(data.frame(
-              window_width_frac = seq(from = 0, to = 0.5, length.out = len)))
+            myseq <- round(seq(from = 1, to = 13, length.out = len))
+            return(data.frame(window_width_n = myseq - (1 - myseq %% 2)))
           } else {
             return(data.frame(
-              window_width_frac = runif(min = 0, max = 0.5, n = len)))
+              window_width_n = sample(x = seq(from = 1, to = 13, by = 2), n = len)))
           }
         }
     } else if(sm_method == "loess") {
@@ -3184,10 +3186,10 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
         function(x, y, len, search) {
           if(search == "grid") {
             return(data.frame(
-              span = seq(from = 0.2, to = 0.8, length.out = len)))
+              span = seq(from = 0.01, to = 0.2, length.out = len)))
           } else {
             return(data.frame(
-              span = runif(min = 0.1, max = 0.8, n = len)))
+              span = runif(min = 0.01, max = 0.2, n = len)))
           }
         }
     } else if(sm_method == "gam") {
@@ -3197,10 +3199,10 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
         function(x, y, len, search) {
           if(search == "grid") {
             return(data.frame(
-              k = round(seq(from = 3, to = nrow(x)/3, length.out = len))))
+              k = round(seq(from = 3, to = nrow(x), length.out = len))))
           } else {
             return(data.frame(
-              k = round(runif(min = 3, max = nrow(x)/3, n = len))))
+              k = round(runif(min = 3, max = nrow(x), n = len))))
           }
         }
     } else if(sm_method == "smooth.spline") {

@@ -3843,11 +3843,12 @@ find_local_extrema <- function(y, x = NULL,
             
 #' @rdname ExtremaFunctions
 #' @export 
-first_maxima <- function(y, x = NULL, 
-                       window_width = NULL,
-                       window_width_n = NULL,
-                       window_height = NULL,
-                       window_width_n_frac = 0.2,
+first_maxima <- function(y, x = NULL,
+                         window_width = NULL,
+                         window_width_n = NULL,
+                         window_height = NULL,
+                         window_width_frac = NULL,
+                         window_width_n_frac = 0.2,
                        return = "index", return_endpoints = TRUE, 
                        ...) {
   if (any(c("return_maxima", "return_minima") %in% names(list(...)))) {
@@ -3862,6 +3863,7 @@ use find_local_extrema for more flexibility")
                             window_width = window_width,
                             window_width_n = window_width_n,
                             window_height = window_height,
+                            window_width_frac = window_width_frac,
                             window_width_n_frac = window_width_n_frac,
                             return = return, ...)[1])
 }
@@ -3872,6 +3874,7 @@ first_minima <- function(y, x = NULL,
                          window_width = NULL,
                          window_width_n = NULL,
                          window_height = NULL,
+                         window_width_frac = NULL,
                          window_width_n_frac = 0.2,
                          return = "index", return_endpoints = TRUE, 
                          ...) {
@@ -3887,7 +3890,8 @@ use find_local_extrema for more flexibility")
                             window_width = window_width,
                             window_width_n = window_width_n,
                             window_height = window_height,
-                            window_width_n_frac,
+                            window_width_frac = window_width_frac,
+                            window_width_n_frac = window_width_n_frac,
                             return = return, ...)[1])
 }
 

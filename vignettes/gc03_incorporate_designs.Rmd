@@ -48,6 +48,7 @@ We often want to combine our data with information about the experimental design
 
 If you're interested in generating your designs in `R`, see `vignette("gc10_using_make_design")`
 
+
 When reading design elements from files, `gcplyr` can read block-shaped or tidy-shaped design files:
 
 * If design files are block-shaped, they can be read with `import_blockdesigns`
@@ -120,7 +121,7 @@ head(my_design, 20)
 
 ### Importing multiple pasted block-shaped designs
 
-Often, you'll save all the design information into a single block, separating the distinct components of the design with some character.
+Alternative to saving your designs separated, often it may be easiest to save all the design information into a single block, separating the distinct components of the design with some character.
 
 To demonstrate this, first let's create our example designs file. Again, just imagine that you've created this file in Excel.
 
@@ -136,13 +137,13 @@ print_df(read.csv("mydesign_pasted.csv", header = FALSE, colClasses = "character
 
 As before, we have Treatment 1 on the left-hand side, and Treatment 2 on the right-hand side, with Strain A in the first two rows, Strain B in the next two rows, and so on. However, this information is now pasted together, with "_" as the separating string (you can use any string as a separator).
 
-To import this design with `import_blockdesigns`, we simply need to specify the `sep` string, as well as the output column names. The easiest way to specify the column names is to use the `into` argument passed to `separate_tidy`. If `into` is not specified, `import_blockdesigns` will attempt to split the `block_names` (either specified or inferred) with `sep` to generate the output column names.
+To import this design with `import_blockdesigns`, we simply need to specify the `sep` string, as well as the output column names. Since the designs have been pasted together, the column names will result from splitting the designs apart. The easiest way to specify these split column names is to use the `into` argument passed to `separate_tidy`. If `into` is not specified, `import_blockdesigns` will attempt to split the `block_names` (either specified or inferred) with `sep` to generate the output column names.
 
 ```{r}
 my_design <- 
   import_blockdesigns(files = "mydesign_pasted.csv", 
                       into = c("Treatment_numbers", "Strain_letters"),
-                      sep = " ")
+                      sep = "_")
 head(my_design, 20)
 ```
 
@@ -189,6 +190,7 @@ example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
 `gcplyr` also includes the design for this data for easy use:
 
 ```{r}
+example_design <- example_design_tidy
 head(example_design_tidy)
 ```
 

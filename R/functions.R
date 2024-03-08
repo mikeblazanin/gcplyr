@@ -2591,7 +2591,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'                  and "smooth.spline".
 #' @param subset_by An optional vector as long as \code{y}. 
 #'                  \code{y} will be split by the unique values of this vector 
-#'                  and the derivative for each group will be calculated 
+#'                  and the smoothed data for each group will be calculated 
 #'                  independently of the others.
 #'                  
 #'                  This provides an internally-implemented approach similar
@@ -3115,7 +3115,8 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' 
 #' @return A list that can be used as the method argument to
 #'         \code{caret::train}
-make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
+make_train_gcmethod <- function(sm_method, tuneGrid = NULL, 
+                                parameters = NULL, ...) {
   #Create baseline list
   gcmethod_out <- 
     list(library = "gcplyr", type = "Regression", prob = NULL)
@@ -3231,9 +3232,8 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, parameters = NULL) {
 #' (in our case different smoothing algorithms) on data across different 
 #' parameter values (in our case different smoothness parameters).
 #' 
-#' @param ... Arguments passed to \code{stats::loess}, \code{mgcv::gam},
-#'            \code{moving_average}, \code{moving_median}, or 
-#'            \code{stats::smooth.spline} which are not to be tuned.
+#' @param ... Arguments passed to \code{smooth_data}. These arguments cannot
+#'            overlap with any of those to be tuned.
 #' @param x A vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density).
 #' @param sm_method Argument specifying which smoothing method should
@@ -3268,7 +3268,8 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                      preProcess = NULL, weights = NULL,
                      metric = ifelse(is.factor(y), "Accuracy", "RMSE"),
                      maximize = ifelse(metric %in% c("RMSE", "logLoss", "MAE", "logLoss"), FALSE, TRUE),
-                     trControl = caret::trainControl(), tuneGrid = NULL,
+                     trControl = caret::trainControl(), 
+                     tuneGrid = NULL,
                      tuneLength = ifelse(trControl$method == "none", 1, 3),
                      return_trainobject = FALSE) {
   if(!requireNamespace("caret", quietly = TRUE)) {

@@ -1288,7 +1288,8 @@ import_blockdesigns <-
   
   if(join_designs && !is.null(sep)) {
     tidy_sep <- 
-      parse_dots(separate_tidy, data = tidys, sep = sep, col = values_colname)
+      parse_dots(separate_tidy, data = tidys, sep = sep, 
+                 col = values_colname, ...)
   } else {tidy_sep <- tidys}
     
   return(tidy_sep)

@@ -13,6 +13,8 @@ first_minima,gcplyr::find_local_extrema
 first_peak,gcplyr::find_local_extrema
 from_excel,NA
 gc_smooth.spline,stats::smooth.spline
+gc_train,caret::train
+gc_train,gcplyr::make_train_gcmethod
 import_blockdesigns,gcplyr::read_blocks
 import_blockdesigns,gcplyr::paste_blocks
 import_blockdesigns,gcplyr::trans_block_to_wide
@@ -25,6 +27,7 @@ make_design,NA
 make_example,NA
 make_designpattern,NA
 make_tidydesign,NA
+make_train_gcmethod,NA
 max_gc,NA
 mdp,NA
 merge_dfs,dplyr::full_join

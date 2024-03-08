@@ -3,9 +3,11 @@ first_above,gcplyr::find_threshold_crosses,return_endpoints,return,x
 first_below,gcplyr::find_threshold_crosses,return_endpoints,return,x
 first_maxima,gcplyr::find_local_extrema,window_width_n,window_width,x
 first_maxima,gcplyr::find_local_extrema,window_width_frac,window_width,x
+first_maxima,gcplyr::find_local_extrema,window_width_n_frac,"window_width,window_width_n",x
 first_maxima,gcplyr::find_local_extrema,return_endpoints,return,x
 first_minima,gcplyr::find_local_extrema,window_width_n,window_width,x
 first_minima,gcplyr::find_local_extrema,window_width_frac,window_width,x
+first_minima,gcplyr::find_local_extrema,window_width_n_frac,"window_width,window_width_n",x
 first_minima,gcplyr::find_local_extrema,return_endpoints,return,x
 first_peak,gcplyr::find_local_extrema,window_width_n,window_width,x
 first_peak,gcplyr::find_local_extrema,return_endpoints,return,x

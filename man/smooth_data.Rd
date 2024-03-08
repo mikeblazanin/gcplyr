@@ -11,6 +11,7 @@ smooth_data(
   sm_method,
   subset_by = NULL,
   return_fitobject = FALSE,
+  warn_ungrouped = TRUE,
   warn_gam_no_s = TRUE
 )
 }
@@ -34,7 +35,7 @@ and "smooth.spline".}
 
 \item{subset_by}{An optional vector as long as \code{y}. 
 \code{y} will be split by the unique values of this vector 
-and the derivative for each group will be calculated 
+and the smoothed data for each group will be calculated 
 independently of the others.
 
 This provides an internally-implemented approach similar
@@ -43,6 +44,10 @@ to \code{dplyr::group_by} and \code{dplyr::mutate}}
 \item{return_fitobject}{logical whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.}
+
+\item{warn_ungrouped}{logical whether warning should be issued when
+\code{smooth_data} is being called on ungrouped data
+and \code{subset_by = NULL}.}
 
 \item{warn_gam_no_s}{logical whether warning should be issued when gam is 
 used without \code{s()} in the formula.}

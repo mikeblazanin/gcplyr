@@ -15,8 +15,10 @@ calc_deriv(
   window_width = NULL,
   window_width_n = NULL,
   window_width_frac = NULL,
+  window_width_n_frac = NULL,
   trans_y = "linear",
   na.rm = TRUE,
+  warn_ungrouped = TRUE,
   warn_logtransform_warnings = TRUE,
   warn_logtransform_infinite = TRUE,
   warn_window_toosmall = TRUE
@@ -55,7 +57,7 @@ independently of the others.
 This provides an internally-implemented approach similar
 to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
-\item{window_width_n, window_width, window_width_frac}{Set how many data points are used to determine
+\item{window_width_n, window_width, window_width_n_frac}{Set how many data points are used to determine
 the slope at each point.
      
 When all are \code{NULL}, \code{calc_deriv} 
@@ -70,14 +72,14 @@ slope.
 \code{window_width_n} specifies the width of the
 window in number of data points. \code{window_width}
 specifies the width of the window in units of \code{x}.
-\code{window_width_frac} specifies the width of the
+\code{window_width_n_frac} specifies the width of the
 window as a fraction of the total number of data points.
      
 When using multiple window specifications at the same 
 time, windows are conservative. Points 
 included in each window will meet all of the 
 \code{window_width}, \code{window_width_n}, and
-\code{window_width_frac}.
+\code{window_width_n_frac}.
 
 A value of \code{window_width_n = 3} or 
 \code{window_width_n = 5} is often a good default.}
@@ -99,6 +101,10 @@ A value of \code{window_width_n = 3} or
 
 \item{na.rm}{logical whether NA's should be removed before analyzing}
 
+\item{warn_ungrouped}{logical whether warning should be issued when
+\code{smooth_data} is being called on ungrouped data
+and \code{subset_by = NULL}.}
+
 \item{warn_logtransform_warnings}{logical whether warning should be issued 
 when log(y) produced warnings.}
 
@@ -109,7 +115,7 @@ be treated as \code{NA}.}
 \item{warn_window_toosmall}{logical whether warning should be issued 
 when only one data point is in the window
 set by \code{window_width_n}, 
-\code{window_width}, or \code{window_width_frac},
+\code{window_width}, or \code{window_width_n_frac},
 and so \code{NA} will be returned.}
 }
 \value{

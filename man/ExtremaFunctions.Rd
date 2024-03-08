@@ -14,6 +14,7 @@ find_local_extrema(
   window_width_n = NULL,
   window_height = NULL,
   window_width_frac = NULL,
+  window_width_n_frac = NULL,
   return = "index",
   return_maxima = TRUE,
   return_minima = TRUE,
@@ -31,7 +32,7 @@ first_maxima(
   window_width = NULL,
   window_width_n = NULL,
   window_height = NULL,
-  window_width_frac = 0.2,
+  window_width_n_frac = 0.2,
   return = "index",
   return_endpoints = TRUE,
   ...
@@ -43,7 +44,7 @@ first_minima(
   window_width = NULL,
   window_width_n = NULL,
   window_height = NULL,
-  window_width_frac = 0.2,
+  window_width_n_frac = 0.2,
   return = "index",
   return_endpoints = TRUE,
   ...
@@ -54,7 +55,7 @@ first_minima(
 
 \item{x}{Optional numeric vector of corresponding x values}
 
-\item{window_width, window_width_n, window_height, window_width_frac}{Arguments that set the width/height of the window used to
+\item{window_width, window_width_n, window_height, window_width_n_frac}{Arguments that set the width/height of the window used to
 search for local extrema.
 
 \code{window_width} is in units of \code{x}.
@@ -64,7 +65,7 @@ search for local extrema.
 \code{window_height} is the maximum change in \code{y} 
 a single extrema-search step is allowed to take.
 
-\code{window_width_frac} is as a fraction of the total
+\code{window_width_n_frac} is as a fraction of the total
 number of data points.
 
 For example, the function will not pass a peak or valley
@@ -129,14 +130,14 @@ These functions take a vector of \code{y} values and identify local extrema.
 }
 \details{
 For \code{find_local_extrema}, one of \code{window_width}, 
-\code{window_width_n}, \code{window_height}, or \code{window_width_frac}
+\code{window_width_n}, \code{window_height}, or \code{window_width_n_frac}
 must be provided.
 
 For \code{first_minima} or \code{first_maxima}, set 
-\code{window_width_frac = NULL} to override default width behavior.
+\code{window_width_n_frac = NULL} to override default width behavior.
 
 If multiple of \code{window_width}, \code{window_width_n},
-\code{window_height}, or \code{window_width_frac} are provided, steps 
+\code{window_height}, or \code{window_width_n_frac} are provided, steps 
 are limited conservatively (a single step must meet all criteria).
 
 In the case of exact ties in \code{y} values within a window, only the 

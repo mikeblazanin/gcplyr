@@ -46,7 +46,7 @@ library(tidyr)
 
 # Introduction
 
-Oftentimes, growth curve data produced by a plate reader will have some noise it it. Since `gcplyr` does model-free analyses, our approach can sometimes be sensitive to noise, necessitating steps to reduce the effects of noise.
+Oftentimes, growth curve data produced by a plate reader will have some noise in it. Since `gcplyr` does model-free analyses, our approach can sometimes be sensitive to noise, necessitating steps to reduce the effects of noise.
 
 When assessing the effects of noise in our data, one of the first steps is simply to visualize our data, including both the raw data and any derivatives we'll be analyzing. This is especially important because per-capita derivatives can be very sensitive to noise, especially when density is low. By visualizing our data, we can assess whether the noise we see is likely to throw off our analyses.
 
@@ -157,7 +157,11 @@ head(ex_dat_mrg_sum)
 
 The next approach to try is to calculate derivatives by fitting a line to multiple points. (You might recall we previously used this in the Calculating Derivatives article `vignette("gc05_process")`.)
 
-To use the fitting functionality of `calc_deriv`, specify either the `window_width` or the `window_width_n` parameter. `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. I recommend using as small a window as possible, like `window_width_n = 3` or `window_width_n = 5`. Visualize different window widths and choose the smallest one that is sufficient for your analyses to succeed.
+To use the fitting functionality of `calc_deriv`, specify the width of the moving window using `window_width`, `window_width_n`, `window_width_frac`, or `window_width_n_frac`. Wider windows will be more smoothed. 
+
+Fitting using a moving window is subject to a trade off between the amount of variance (noise) that remains and the amount of bias added to your data. A small window will allow higher variance but add little bias, while a wide window will allow less variance but add more bias. 
+
+Thus, I recommend using as small a window as possible, like `window_width_n = 3` or `window_width_n = 5`. The best way to figure out what values to use for your data are to try different window widths and plot the results, then choose the smallest one that is sufficient for your analyses to succeed.
 
 ```{r}
 ex_dat_mrg <- 
@@ -207,14 +211,14 @@ As we can see, increasing the width of the window reduces the effects of noise, 
 
 # Smoothing raw data {#Smoothing}
 
-Finally, smoothing the raw density data can reduce the effects of noise. `gcplyr` has a `smooth_data` function that can carry out such smoothing. `smooth_data` has five different smoothing algorithms to choose from: `moving-average`, `moving-median`, `loess`, `gam`, and `smooth.spline`. 
+The final approach to dealing with noise is to smooth the raw density data. `gcplyr` has a `smooth_data` function that can carry out such smoothing. `smooth_data` has five different smoothing algorithms to choose from: `moving-average`, `moving-median`, `loess`, `gam`, and `smooth.spline`. 
 
 * `moving-average` and `moving-median` are simple smoothing algorithms that primarily act to reduce the effects of outliers on the data
 * `loess`, `gam`, and `smooth.spline` are spline-fitting approaches that use polynomial-like curves, which produces curves with smoothly changing derivatives, but can in some cases create curvature artifacts not present in the original data
 
-Generally, I recommend sticking to the first two algorithms, alone or in combination, since the others tend to add artifacts when used on growth curve data.
+Generally, I recommend sticking to the first two algorithms, alone or in combination, since the others tend to add artifacts to the derivatives of growth curve data.
 
-**Regardless of which smoothing algorithm you use, you will need to set a tuning parameter** that controls how "smoothed" the data are. Smoothing data is a step that alters the values you will analyze. Because of that it can be rife with pitfalls. I recommend choosing the value that smooths the data as little as necessary for your analyses to work. To do so, try smoothing with different tuning parameter values, plot the results, then choose the least smoothed one you can.
+**Regardless of which smoothing algorithm you use, you will need to set a tuning parameter** that controls how "smoothed" the data are. That choice is subject to a trade off between the amount of variance (noise) that remains and the amount of bias added to your data. Choosing a value that smooths your data less will allow higher variance but will add little bias to your data, while choosing a value that smooths your data more will allow less variance but add more bias to your data. Because of this, I generally recommend choosing the value that smooths your data as little as necessary for your analyses to work. For more details, see the [Choosing tuning parameter values](#ChoosingTuningParams) section.
 
 Additionally, when sharing your findings, it's important to be transparent by sharing the raw data and smoothing methods, rather than presenting the smoothed data as your source.
 
@@ -222,7 +226,7 @@ To use `smooth_data`, pass your x and y values, your method of choice, and any a
 
 ## Smoothing with moving-median
 
-For `moving-median`, there are two tuning parameters to choose between: `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Wider windows will be more smoothed. Here, we'll show moving medians with windows that are 5 and 9 data points wide (`movemed_1` is just our raw, unsmoothed data).
+For `moving-median`, specify the width of the moving window using `window_width`, `window_width_n`, `window_width_frac`, or `window_width_n_frac`. Wider windows will be more smoothed. Here, we'll show moving medians with windows that are 5 and 9 data points wide (`movemed_1` is just our raw, unsmoothed data).
 
 ```{r}
 ex_dat_mrg <-
@@ -258,7 +262,7 @@ Here we can see that `moving-median` has done a great job excluding noise withou
 
 ## Smoothing with moving-average
 
-For `moving-average`, there are the same two tuning parameters: `window_width` specifies how wide the window used to include points for the fitting is in units of `x`, while `window_width_n` specifies it in number of data points. Here, we'll show moving averages with `window_width_n` values of 5 or 9 data points wide (`movavg_1` is just our raw, unsmoothed data).
+For `moving-average`, specify the width of the moving window using `window_width`, `window_width_n`, `window_width_frac`, or `window_width_n_frac`. Wider windows will be more smoothed. Here, we'll show moving averages with `window_width_n` values of 5 or 9 data points wide (`movavg_1` is just our raw, unsmoothed data).
 
 ```{r}
 ex_dat_mrg <-
@@ -288,7 +292,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg_wide, noise == "Yes"),
   theme_bw()
 ```
 
-Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, as the window width gets larger, it also starts underrepresenting the maximum density peaks relative to the true value (red line).
+Here we can see that `moving-average` has helped reduce the effects of some of that early noise. However, as the window width gets larger, it starts biasing our data more strongly [e.g. underrepresenting the maximum density peaks relative to the true value (red line)].
 
 ## Combining multiple smoothing methods
 
@@ -330,13 +334,61 @@ Here we can see that the combination of minimal `moving-median` and `moving-aver
 
 ## Smoothing with other methods
 
-I typically recommend against using other smoothing algorithms, since they have a tendency to add artifacts to growth curve data. However, they may work for your analyses, so if you are considering using them make sure to plot the smoothed output to check for any introduced artifacts.
+I typically recommend against using other smoothing algorithms, since they have a tendency to add artifacts to the derivatives of growth curve data. However, they may work for your analyses, so if you are considering using them make sure to plot the smoothed output to check for any introduced artifacts.
 
 For `loess`, the tuning parameter is the `span` argument. `loess` works by doing fits on subset windows of the data centered at each data point. `span` is the width of the window, as a fraction of all data points. `span` values typically are between 0 and 1, and larger values are more "smoothed". The fits can be linear (`degree = 1`) or polynomial (typically `degree = 2`). 
 
 For `gam`, the primary tuning parameter is the `k` argument. `gam` works by doing fits on subsets of the data and linking these fits together. `k` determines how many link points ("knots") it can use.  If not specified, the default `k` value for smoothing a time series is 10, with **smaller values being more "smoothed"**. However, **unlike earlier methods, `k` values that are too large are also problematic**, as they will tend to 'overfit' the data.
 
 For `smooth.spline`, the primary tuning parameters are `df` and `spar`. `df` is the number of degrees of freedom, and must be between 1 and the number of unique x values. `spar` is the smoothing parameter, and is typically between 0 and 1.
+
+## Choosing tuning parameter values {#ChoosingTuningParams}
+
+Given that smoothing reduces the variance of your data but adds bias, how can you know what the right value of the tuning 'smoothness' parameter is for your data?
+
+One way you can choose is by trying smoothing with different tuning parameter values, plotting the results, and then choosing the one that smooths your data as little as necessary for your analyses to work. This approach is especially useful if you're trying to deal with noise that is most strongly affecting your derivatives.
+
+An alternative way is to use cross-validation to attempt to estimate the best smoothing parameter value. Cross-validation works by randomly splitting the data into blocks of roughly equal size, leaving out one block and smoothing the data, then seeing how close the smoothed values are to the left-out data, reporting the average error across all the blocks. We can then repeat this whole process at different values of the smoothing parameter, testing which smoothing parameter value gives us the lowest error. Note, however, that this approach doesn't quantify how well the smoothing improved your derivatives.
+
+To do cross-validation of smoothing parameters, use `gc_train`. `gc_train` works similar to `smooth_data`, except that instead of returning the smoothed data values, it returns the average accuracy metrics. Because of this, we have to use `gc_train` within the `dplyr` function `reframe`, which works like `summarize` except that it allows multiple rows to be returned.
+
+By default, `gc_train` will test an evenly spaced grid of three values of the smoothing parameter. Usually, that's not enough values, so you'll want to set the number of values to test with `tuneLength` (more values will take longer to calculate).
+
+```{r}
+training_results <- 
+  reframe(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+          gc_train(x = Time, y = Measurements, 
+                   sm_method = "moving-average",
+                   tuneLength = 5))
+head(training_results)
+```
+
+We can see that `gc_train` has given us a number of accuracy metrics. The first one is 'RMSE', which stands for "root mean squared error" and is often a good default value to use (where lower values are better) to decide what the best parameter value is.
+
+```{r}
+ggplot(data = training_results,
+       aes(x = window_width_frac, y = RMSE)) +
+  geom_point()
+```
+
+Based on this plot, a window_width_frac of 0 has the lowest average error of all the values we tested.
+
+However, oftentimes you will want to tell `gc_train` exactly what values to test with the `tuneGrid` argument:
+
+```{r}
+training_results <- 
+  reframe(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+          gc_train(x = Time, y = Measurements, 
+                   sm_method = "moving-average",
+                   tuneGrid = list(
+                     "window_width_frac" = c(0, 0.025, 0.05, 0.075, 0.1, 0.125))))
+
+ggplot(data = training_results,
+       aes(x = window_width_frac, y = RMSE)) +
+  geom_point()
+```
+
+Here we can see for our example data that cross-validation suggests little smoothing is necessary. This makes sense, since our example data has noise that is most problematic for our derivatives, and cross-validation doesn't consider the derivatives. For your data, I suggest combining cross-validation and manual observation of different smoothings to decide the best smoothing parameter value to use.
 
 # Calculating derivatives of smoothed data {#DerivsOfSmoothed}
 

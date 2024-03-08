@@ -3292,9 +3292,23 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
 #'                           
 #' @details See \code{caret::train} for more information.
 #' 
-#'          For more control, advanced users may call \code{caret::train}
-#'          directly, using \code{make_train_gcmethod} to specify the
-#'          \code{method} argument.
+#'          The default method is k-fold cross-validation 
+#'          (\code{trControl = caret::trainControl(method = "cv")}). 
+#'          
+#'          For less variable, but more computationally costly, cross-validation,
+#'          users may choose to increase the number of folds. This can be
+#'          done by altering the \code{number} argument in 
+#'          \code{caret::trainControl}, or by setting \code{method = "LOOCV"} 
+#'          for leave one out cross-validation where the number of folds is 
+#'          equal to the number of data points. 
+#'          
+#'          For less variable, but more computationally costly, cross-validation,
+#'          users may alternatively choose \code{method = "repeatedcv"} for 
+#'          repeated k-fold cross-validation.
+#' 
+#'          For more control, advanced users may wish to call 
+#'          \code{caret::train} directly, using \code{make_train_gcmethod} to 
+#'          specify the \code{method} argument.
 #' 
 #' @return If \code{return_trainobject = FALSE} (the default), a data frame
 #'         with the values of all tuning parameter combinations and the

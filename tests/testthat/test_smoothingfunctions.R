@@ -330,7 +330,7 @@ test_that("interpolate_prediction works correctly", {
                c(-2, -0.5, 109.5, 119))
 })
 
-test_that("gc_train and train + make_train_gcmethod match", {
+test_that("train_smooth_data and train + makemethod_train_smooth_data match", {
   library(dplyr)
   library(caret)
   dat <- trans_wide_to_tidy(example_widedata, id_cols = "Time")
@@ -340,7 +340,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                      "gam", "smooth.spline")) {
     expect_equal(
       reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
-              train = gc_train(
+              train = train_smooth_data(
                 x = Time, y = Measurements,
                 sm_method = mymethod,
                 trControl = caret::trainControl(
@@ -348,7 +348,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
       reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
               train = caret::train(
                 x = data.frame(x = Time), y = Measurements,
-                method = make_train_gcmethod(sm_method = mymethod),
+                method = makemethod_train_smooth_data(sm_method = mymethod),
                 trControl = caret::trainControl(
                   method = "cv",
                   seeds = c(rep(list(c(1,1,1)), 26), 1)))$results)
@@ -360,7 +360,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                      "gam", "smooth.spline")) {
     expect_equal(
       reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
-              train = gc_train(
+              train = train_smooth_data(
                 x = Time, y = Measurements,
                 sm_method = mymethod, tuneLength = 5,
                 trControl = caret::trainControl(
@@ -368,7 +368,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
       reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
               train = caret::train(
                 x = data.frame(x = Time), y = Measurements,
-                method = make_train_gcmethod(sm_method = mymethod),
+                method = makemethod_train_smooth_data(sm_method = mymethod),
                 tuneLength = 5,
                 trControl = caret::trainControl(
                   method = "cv",
@@ -389,7 +389,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
     mytuneGrid <- tuneGrids_list[[i]]
     expect_equal(
       reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
-              train = gc_train(
+              train = train_smooth_data(
                 x = Time, y = Measurements,
                 sm_method = mymethod,
                 tuneGrid = mytuneGrid,
@@ -398,7 +398,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
       reframe(group_by(filter(dat, Well %in% c("A1", "A7")), Well),
               train = caret::train(
                 x = data.frame(x = Time), y = Measurements,
-                method = make_train_gcmethod(sm_method = mymethod),
+                method = makemethod_train_smooth_data(sm_method = mymethod),
                 tuneGrid = as.data.frame(mytuneGrid),
                 trControl = caret::trainControl(
                   method = "cv",
@@ -411,7 +411,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
                      "gam", "smooth.spline")) {
     expect_equal(
       reframe(filter(dat, Well %in% c("A1", "A7")),
-              train = gc_train(
+              train = train_smooth_data(
                 x = Time, y = Measurements,
                 sm_method = mymethod,
                 subset_by = Well,
@@ -420,7 +420,7 @@ test_that("gc_train and train + make_train_gcmethod match", {
       reframe(filter(dat, Well %in% c("A1", "A7")),
               train = caret::train(
                 x = data.frame(x = Time), y = Measurements,
-                method = make_train_gcmethod(sm_method = mymethod,
+                method = makemethod_train_smooth_data(sm_method = mymethod,
                                              subset_by = "Well"),
                 trControl = caret::trainControl(
                   method = "cv",

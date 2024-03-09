@@ -3138,7 +3138,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'         \code{caret::train} for more details.
 #'
 #' @export
-make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
+makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL, ...) {
   #Create baseline list
   gcmethod_out <- 
     list(library = "gcplyr", type = "Regression", prob = NULL)
@@ -3309,7 +3309,7 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
 #'          repeated k-fold cross-validation.
 #' 
 #'          For more control, advanced users may wish to call 
-#'          \code{caret::train} directly, using \code{make_train_gcmethod} to 
+#'          \code{caret::train} directly, using \code{makemethod_train_smooth_data} to 
 #'          specify the \code{method} argument.
 #' 
 #' @return If \code{return_trainobject = FALSE} (the default), a data frame
@@ -3320,7 +3320,7 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
 #'         If \code{return_trainobject = TRUE}, the output of \code{caret::train}
 #' 
 #' @export   
-gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
+train_smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                      preProcess = NULL, weights = NULL,
                      metric = ifelse(is.factor(y), "Accuracy", "RMSE"),
                      maximize = ifelse(metric %in% c("RMSE", "logLoss", "MAE", "logLoss"), FALSE, TRUE),
@@ -3329,9 +3329,9 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                      tuneLength = ifelse(trControl$method == "none", 1, 3),
                      return_trainobject = FALSE) {
   if(!requireNamespace("caret", quietly = TRUE)) {
-    stop("Package \"caret\" must be installed to use gc_train", call. = FALSE)}
+    stop("Package \"caret\" must be installed to use train_smooth_data", call. = FALSE)}
   
-  check_grouped(func_name = "reframe", name_for_error = "gc_train",
+  check_grouped(func_name = "reframe", name_for_error = "train_smooth_data",
                 subset_by = subset_by)
   
   #Parse tuneGrid
@@ -3343,7 +3343,7 @@ gc_train <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   }
   
   #Create method argument
-  gcmethod <- make_train_gcmethod(sm_method = sm_method, tuneGrid = tuneGrid, ...)
+  gcmethod <- makemethod_train_smooth_data(sm_method = sm_method, tuneGrid = tuneGrid, ...)
   
   #Run train
   train <- caret::train(x = data.frame(x = x), y = y, method = gcmethod,

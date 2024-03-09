@@ -350,20 +350,20 @@ One way you can choose is by trying smoothing with different tuning parameter va
 
 An alternative way is to use cross-validation to attempt to estimate the best smoothing parameter value. Cross-validation works by randomly splitting the data into blocks of roughly equal size, leaving out one block and smoothing the data, then seeing how close the smoothed values are to the left-out data, reporting the average error across all the blocks. We can then repeat this whole process at different values of the smoothing parameter, testing which smoothing parameter value gives us the lowest error. Note, however, that this approach doesn't quantify how well the smoothing improved your derivatives.
 
-To do cross-validation of smoothing parameters, use `gc_train`. `gc_train` works similar to `smooth_data`, except that instead of returning the smoothed data values, it returns the average accuracy metrics. Because of this, we have to use `gc_train` within the `dplyr` function `reframe`, which works like `summarize` except that it allows multiple rows to be returned.
+To do cross-validation of smoothing parameters, use `train_smooth_data`. `train_smooth_data` works similar to `smooth_data`, except that instead of returning the smoothed data values, it returns the average accuracy metrics. Because of this, we have to use `train_smooth_data` within the `dplyr` function `reframe`, which works like `summarize` except that it allows multiple rows to be returned.
 
-By default, `gc_train` will test an evenly spaced grid of three values of the smoothing parameter. Usually, that's not enough values, so you'll want to set the number of values to test with `tuneLength` (more values will take longer to calculate).
+By default, `train_smooth_data` will test an evenly spaced grid of three values of the smoothing parameter. Usually, that's not enough values, so you'll want to set the number of values to test with `tuneLength` (more values will take longer to calculate).
 
 ```{r}
 training_results <- 
   reframe(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-          gc_train(x = Time, y = Measurements, 
+          train_smooth_data(x = Time, y = Measurements, 
                    sm_method = "moving-average",
                    tuneLength = 5))
 head(training_results)
 ```
 
-We can see that `gc_train` has given us a number of accuracy metrics. The first one is 'RMSE', which stands for "root mean squared error" and is often a good default value to use (where lower values are better) to decide what the best parameter value is.
+We can see that `train_smooth_data` has given us a number of accuracy metrics. The first one is 'RMSE', which stands for "root mean squared error" and is often a good default value to use (where lower values are better) to decide what the best parameter value is.
 
 ```{r}
 ggplot(data = training_results,
@@ -373,12 +373,12 @@ ggplot(data = training_results,
 
 Based on this plot, a window_width_n of 1 has the lowest average error of all the values we tested.
 
-However, often you'll want to test different values from the defaults in `gc_train`. To do so, specify exactly what values you want to test with the `tuneGrid` argument:
+However, often you'll want to test different values from the defaults in `train_smooth_data`. To do so, specify exactly what values you want to test with the `tuneGrid` argument:
 
 ```{r}
 training_results <- 
   reframe(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-          gc_train(x = Time, y = Measurements, 
+          train_smooth_data(x = Time, y = Measurements, 
                    sm_method = "moving-average",
                    tuneGrid = list(
                      "window_width_n" = c(1, 3, 5, 9, 13))))

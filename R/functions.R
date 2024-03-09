@@ -2856,6 +2856,11 @@ set_up_moving_sm <- function(formula, data, x, y,
   x <- order_temp[["x"]]
   y <- order_temp[["y"]]
   
+  if(!is.null(window_width_n) && length(x) != length(unique(x))) {
+    warning("not all x values are unique, window_width_n should not be used")}
+  if(!is.null(window_width_n_frac) && length(x) != length(unique(x))) {
+    warning("not all x values are unique, window_width_n_frac should not be used")}
+  
   return(list(x = x, y = y,
               order = order_temp[["order"]],
               nas_indices_removed = narm_temp[["nas_indices_removed"]],

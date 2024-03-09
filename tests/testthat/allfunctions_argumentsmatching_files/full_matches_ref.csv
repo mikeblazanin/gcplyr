@@ -1,12 +1,10 @@
-gcplyr_func,other_func,matches,checked
+﻿gcplyr_func,other_func,matches,checked
 first_above,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endpoints",x
 first_below,gcplyr::find_threshold_crosses,"y, x, threshold, return, return_endpoints",x
 first_maxima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, window_width_frac, window_width_n_frac, return, return_endpoints",x
 first_minima,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, window_width_frac, window_width_n_frac, return, return_endpoints",x
 first_peak,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, window_height, return, return_endpoints",x
 gc_smooth.spline,stats::smooth.spline,"x, y",x
-gc_train,caret::train,x,x
-gc_train,gcplyr::make_train_gcmethod,"sm_method, tuneGrid",x
 import_blockdesigns,gcplyr::paste_blocks,sep,x
 import_blockdesigns,gcplyr::read_blocks,"files, block_names, block_name_header",x
 import_blockdesigns,gcplyr::separate_tidy,sep,x
@@ -31,5 +29,7 @@ smooth_data,gcplyr::moving_median,"x, y",x
 smooth_data,mgcv::gam,,x
 smooth_data,mgcv::s,,NA
 smooth_data,stats::loess,,x
+train_smooth_data,caret::train,x,x
+train_smooth_data,gcplyr::makemethod_train_smooth_data,"sm_method, tuneGrid",x
 trans_wide_to_tidy,tidyr::pivot_longer,"names_to, values_to",x
 write_blocks,utils::write.table,"file, na",x

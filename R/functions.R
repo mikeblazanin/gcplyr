@@ -3131,6 +3131,10 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'                  "loess", "gam", and "smooth.spline".
 #' @param tuneGrid A data frame with possible tuning value. The columns should 
 #'                 be named the same as the tuning parameters.
+#'                 
+#'                 Note that, when using \code{caret::train}, the tuneGrid
+#'                 must be passed both to this function as well as directly
+#'                 to \code{caret::train}.
 #' @param ... Arguments passed to \code{smooth_data}. These arguments cannot
 #'            overlap with any of those to be tuned.
 #' 

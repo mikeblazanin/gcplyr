@@ -3199,10 +3199,10 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
         function(x, y, len, search) {
           if(search == "grid") {
             return(data.frame(
-              k = round(seq(from = 3, to = nrow(x), length.out = len))))
+              k = round(seq(from = 10, to = 0.75*nrow(x), length.out = len))))
           } else {
             return(data.frame(
-              k = round(runif(min = 3, max = nrow(x), n = len))))
+              k = round(runif(min = 10, max = 0.75*nrow(x), n = len))))
           }
         }
     } else if(sm_method == "smooth.spline") {
@@ -3211,9 +3211,9 @@ make_train_gcmethod <- function(sm_method, tuneGrid = NULL, ...) {
       gcmethod_out$grid <-
         function(x, y, len, search) {
           if(search == "grid") {
-            return(data.frame(spar = seq(from = 0, to = 1, length.out = len)))
+            return(data.frame(spar = seq(from = 0, to = 0.5, length.out = len)))
           } else {
-            return(data.frame(spar = runif(min = 0, max = 1, n = len)))
+            return(data.frame(spar = runif(min = 0, max = 0.5, n = len)))
           }
         }
     }

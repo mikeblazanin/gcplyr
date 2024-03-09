@@ -3135,8 +3135,6 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'                 Note that, when using \code{caret::train}, the tuneGrid
 #'                 must be passed both to this function as well as directly
 #'                 to \code{caret::train}.
-#' @param ... Arguments passed to \code{smooth_data}. These arguments cannot
-#'            overlap with any of those to be tuned.
 #' 
 #' @return A list that can be used as the method argument to
 #'         \code{caret::train}. Contains elements:
@@ -3147,7 +3145,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'         \code{caret::train} for more details.
 #'
 #' @export
-makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL, ...) {
+makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
   #Create baseline list
   gcmethod_out <- 
     list(library = "gcplyr", type = "Regression", prob = NULL)
@@ -3264,13 +3262,6 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL, ...) {
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used. Options include "moving-average", "moving-median", 
 #'                  "loess", "gam", and "smooth.spline".
-#' @param subset_by An optional vector as long as \code{y}. 
-#'                  \code{y} will be split by the unique values of this vector 
-#'                  and the derivative for each group will be calculated 
-#'                  independently of the others.
-#'                  
-#'                  This provides an internally-implemented approach similar
-#'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
 #' @param preProcess A string vector that defines a pre-processing of the
 #'                   predictor data. The default is no pre-processing.
 #'                   See \code{caret::train} for more details.
@@ -3329,7 +3320,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL, ...) {
 #'         If \code{return_trainobject = TRUE}, the output of \code{caret::train}
 #' 
 #' @export   
-train_smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
+train_smooth_data <- function(..., x = NULL, y = NULL, sm_method,
                      preProcess = NULL, weights = NULL,
                      metric = ifelse(is.factor(y), "Accuracy", "RMSE"),
                      maximize = ifelse(metric %in% c("RMSE", "logLoss", "MAE", "logLoss"), FALSE, TRUE),
@@ -3337,11 +3328,15 @@ train_smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NU
                      tuneGrid = NULL,
                      tuneLength = ifelse(trControl$method == "none", 1, 3),
                      return_trainobject = FALSE) {
+
   if(!requireNamespace("caret", quietly = TRUE)) {
     stop("Package \"caret\" must be installed to use train_smooth_data", call. = FALSE)}
+  if("subset_by" %in% names(list(...))) {
+    stop("subset_by cannot be used with train_smooth_data, use dplyr::group_by
+and dplyr::reframe instead")}
   
   check_grouped(func_name = "reframe", name_for_error = "train_smooth_data",
-                subset_by = subset_by)
+                subset_by = NULL)
   
   #Parse tuneGrid
   if(!is.null(tuneGrid)) {
@@ -3352,14 +3347,15 @@ train_smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NU
   }
   
   #Create method argument
-  gcmethod <- makemethod_train_smooth_data(sm_method = sm_method, tuneGrid = tuneGrid, ...)
+  gcmethod <- 
+    makemethod_train_smooth_data(sm_method = sm_method, tuneGrid = tuneGrid, ...)
   
   #Run train
   train <- caret::train(x = data.frame(x = x), y = y, method = gcmethod,
                         preProcess = preProcess, weights = weights,
                         metric = metric, maximize = maximize,
                         trControl = trControl,
-                        tuneGrid = tuneGrid, tuneLength = tuneLength)
+                        tuneGrid = tuneGrid, tuneLength = tuneLength, ...)
   
   if(return_trainobject) {return(train)} else {return(train$results)}
 }

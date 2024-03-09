@@ -28,7 +28,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 5. Processing your data: `vignette("gc05_process")`
 6. Analyzing your data: `vignette("gc06_analyze")`
 7. Dealing with noise: `vignette("gc07_noise")`
-8. Statistics, merging other data, and other resources: `vignette("gc08_conclusion")`
+8. Best practices and other tips: `vignette("gc08_conclusion")`
 9. Working with multiple plates: `vignette("gc09_multiple_plates")`
 10. Using make_design to generate experimental designs: `vignette("gc10_using_make_design")`
 
@@ -135,6 +135,6 @@ Now that you've pre-processed and visualized your data, it's time to process (in
 5. **Processing your data: `vignette("gc05_process")`**
 6. **Analyzing your data: `vignette("gc06_analyze")`**
 7. Dealing with noise: `vignette("gc07_noise")`
-8. Statistics, merging other data, and other resources: `vignette("gc08_conclusion")`
+8. Best practices and other tips: `vignette("gc08_conclusion")`
 9. Working with multiple plates: `vignette("gc09_multiple_plates")`
 10. Using make_design to generate experimental designs: `vignette("gc10_using_make_design")`

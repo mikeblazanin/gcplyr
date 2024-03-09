@@ -1,5 +1,5 @@
 ---
-title: "Statistics, merging other data, and other resources"
+title: "Best practices and other tips"
 author: "Mike Blazanin"
 output: 
   rmarkdown::html_vignette:
@@ -28,7 +28,7 @@ knitr::opts_knit$set(root.dir = tempdir())
 5. Processing your data: `vignette("gc05_process")`
 6. Analyzing your data: `vignette("gc06_analyze")`
 7. Dealing with noise: `vignette("gc07_noise")`
-8. **Statistics, merging other data, and other resources:** `vignette("gc08_conclusion")`
+8. **Best practices and other tips:** `vignette("gc08_conclusion")`
 9. Working with multiple plates: `vignette("gc09_multiple_plates")`
 10. Using make_design to generate experimental designs: `vignette("gc10_using_make_design")`
 
@@ -73,15 +73,21 @@ At this point, we've now summarized our growth curves data into some metrics. Ho
 
 ## When should we average replicates?
 
-Before we dig into what we to do next, I want to emphasize something we did *not* do in this workflow: averaging different wells together *before* summarization. In my opinion, averaging should only occur after summarization, not before. Why? Even wells that have the same contents (i.e. are technical replicates) can still differ in their growth due to biological variation (e.g. stochastic growth dynamics). If we average our density values at the beginning, we may introduce bias and we will not have the ability to visualize or assess the biological variation present in our data.
+I want to emphasize something we did *not* do in our workflow: averaging different wells together *before* summarization. In my opinion, averaging should only occur after summarization, not before. Why? Even wells that have the same contents (i.e. are technical replicates) can still differ in their growth due to biological variation (e.g. stochastic growth dynamics). If we average our density values at the beginning, we may introduce bias, and we will not have the ability to visualize or assess the biological variation present in our data.
 
-Let's look at a simple example to demonstrate this point. I'm going to simulate bacterial growth using the Baranyi-Roberts mathematical model of growth, which is logistic growth but with a period of acclimation at the beginning:
+Let's look at a simple example to demonstrate this point. I'm going to simulate bacterial growth using logistic growth, which starts after a finite 'lag period' where the bacteria don't grow at all.
 
-$$\frac{dN}{dt} = \frac{q_{0}}{q_{0} + e^{-mt}} * r N\left(1-\frac{N}{k}\right)$$
+\begin{equation}
+dN/dt =
+ \begin{cases}
+  0 & t < lag \\
+  r N\left(1-\frac{N}{k}\right) & t \ge lag
+ \end{cases}
+\end{equation}
 
-Where $N$ is the population size, $q_{0}$ is a parameter controlling the initial acclimatization state of the population, $m$ is the rate of acclimation, $r$ is the rate of growth, and $k$ is the carrying capacity of the population.
+Where $N$ is the population size, $r$ is the rate of growth, $k$ is the carrying capacity of the population, and $lag$ is the lag time.
 
-In the code below, I've simulated the growth of 96 different wells of bacteria. All the bacteria are identical, except that they differ in the rate at which they acclimate.
+In the code below, I've simulated the growth of 96 different wells of bacteria. All the bacteria grow at exactly the same rate, except they differ in their lag time (how long they wait before starting to grow).
 
 ```{r}
 sim_dat_tdy <- make_example(vignette = 8, example = 1)
@@ -102,7 +108,7 @@ ggplot(data = filter(sim_dat_tdy, Well != "averaged"),
   scale_y_continuous(trans = "log10")
 ```
 
-Here we've plotted each individual well in black, with the "average well" plotted in red. We can clearly see that our different wells are varying in how quickly they're acclimating. Our average well appears to reflect the data pretty well, does it give a good measure for our average maximum per-capita growth rate?
+Here we've plotted each individual well in black, with the "average well" plotted in red. We can clearly see that our different wells are varying in how long their lag time is, but not their growth rate once they start. In contrast, our average well has a quite different shape. Does that affect its maximum growth rate?
 
 ```{r}
 # Summarize our data
@@ -110,21 +116,16 @@ sim_dat_sum <- summarize(group_by(sim_dat_tdy, Well),
                          max_growth_rate = max(percap_deriv, na.rm = TRUE))
 
 # Plot the maximum per-capita growth rates of each well
-#  Add a red line for the max growth rate of the "average well"
-#  Add a dashed line for the average growth rate of all the wells
-ggplot(data = filter(sim_dat_sum, Well != "averaged"), 
-       aes(x = max_growth_rate)) +
-  geom_histogram() +
-  geom_vline(data = filter(sim_dat_sum, Well == "averaged"), 
-             aes(xintercept = max_growth_rate), color = "red") +
-  geom_vline(xintercept = 
-               mean(filter(sim_dat_sum, Well != "averaged")$max_growth_rate),
-             lty = 2)
+#  as well as the 'average' well
+ggplot(data = sim_dat_sum, 
+       aes(x = Well == "averaged", y = max_growth_rate)) +
+  geom_point(alpha = 0.5, position = position_jitter(width = 0.1)) +
+  ylim(0.01, 0.03)
 ```
 
-Here we can see that the maximum growth rate of the "average well" (red line) is not the same as the true average maximum growth rate of all the wells (dashed line). While this bias might seem small, it is in fact very consistent: if you ran this simulation many more times, the "average well" growth rate would nearly always be lower than the true average growth rate. Moreover, this bias extends to many other statistics as well.
+Here we can see that the maximum growth rate of the "average well" is far from the maximum growth rate of each well.
 
-Thus, I recommend against averaging wells together before summarizing, since it often introduces bias and eliminates our ability to visualize variation between replicates.
+Moreover, this bias can show up in other summary metrics as well. An 'average curve' is rarely a good representative of the average of all curves, so I recommend against averaging wells together before summarizing.
 
 ## Carrying out statistical testing
 
@@ -158,17 +159,13 @@ ex_dat_mrg_sum <-
             auc = auc(x = Time, y = smoothed))
 ```
 
-Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. Here we'll generate some mock antibiotic resistance data. Importantly, our data must have matching headers as our growth curve data so that `merge_dfs` knows how to merge the `data.frame`'s. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
+Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. `make_example` has some mock antibiotic resistance data we can use. Importantly, the antibiotic data must have matching headers to our growth curve data so that `merge_dfs` knows how to merge them.
+
+
+Here we'll generate some mock antibiotic resistance data. Importantly, our data must have matching headers as our growth curve data so that `merge_dfs` knows how to merge the `data.frame`'s. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
 
 ```{r}
-set.seed(123)
-antibiotic_dat <- 
-  data.frame(Bacteria_strain = paste("Strain", 1:48),
-             Antibiotic_resis = 
-               ex_dat_mrg_sum$auc[
-                 match(paste("Strain", 1:48), 
-                       ex_dat_mrg_sum$Bacteria_strain)] * 
-               runif(48, 0.5, 1.5) < mean(ex_dat_mrg_sum$auc))
+antibiotic_dat <- make_example(vignette = 8, example = 2)
 
 head(antibiotic_dat)
 ```
@@ -241,6 +238,6 @@ If you'd like to read about how to work with multiple plates of data at once, ch
 5. Processing your data: `vignette("gc05_process")`
 6. Analyzing your data: `vignette("gc06_analyze")`
 7. Dealing with noise: `vignette("gc07_noise")`
-8. Statistics, merging other data, and other resources: `vignette("gc08_conclusion")`
+8. Best practices and other tips: `vignette("gc08_conclusion")`
 9. **Working with multiple plates: `vignette("gc09_multiple_plates")`**
 10. Using make_design to generate experimental designs: `vignette("gc10_using_make_design")`

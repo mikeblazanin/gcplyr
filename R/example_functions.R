@@ -227,13 +227,12 @@ make_example <- function(vignette, example, dir = ".") {
     
     if(example == 1) {
       ## Example 1 ----
-      # Define the function that calculates density according to Baranyi-Roberts eq
-      baranyi_gr <- function(r, k, q0, m, init_dens, times) {
-        # Note: these eqs are the integral of the dN/dt eq in the text above
-        # Acclimation function
-        a <- times + 1/m*log((exp(-m*times)+q0)/(1+q0))
+      # Define the function that calculates density with a discrete lag time
+      lag_then_gr <- function(r, k, lag, init_dens, times) {
+        lagged_times <- times - lag
+        lagged_times <- ifelse(lagged_times < 0, 0, lagged_times)
         # Density function
-        return(k/(1-(1-(k/init_dens))*exp(-r*a)))
+        return(k/(1-(1-(k/init_dens))*exp(-r*lagged_times)))
       }
       
       # Set up our wide-shaped data frame
@@ -244,10 +243,9 @@ make_example <- function(vignette, example, dir = ".") {
       
       # Simulate growth
       for (i in 3:ncol(sim_dat)) {
-        sim_dat[, i] <- baranyi_gr(times = sim_dat$time, 
-                                   r = 0.02, k = 1, q0 = 0.01,
-                                   m = stats::runif(1, min = 0.01, max = 0.02),
-                                   #m = rgamma(n = 1, shape = 2, scale = 0.02/2),
+        sim_dat[, i] <- lag_then_gr(times = sim_dat$time, 
+                                   r = 0.02, k = 1, 
+                                   lag = stats::runif(1, min = 0, max = 500),
                                    init_dens = 0.001)
       }
       
@@ -258,6 +256,17 @@ make_example <- function(vignette, example, dir = ".") {
       sim_dat_tdy <- trans_wide_to_tidy(sim_dat, id_cols = "time")
       
       return(sim_dat_tdy)
+    } else if (example == 2) {
+      ## Example 2 ----
+      set.seed(123)
+      antibiotic_dat <- 
+        data.frame(Bacteria_strain = paste("Strain", 1:48),
+                   Antibiotic_resis = 
+                     ex_dat_mrg_sum$auc[
+                       match(paste("Strain", 1:48), 
+                             ex_dat_mrg_sum$Bacteria_strain)] * 
+                     runif(48, 0.5, 1.5) < mean(ex_dat_mrg_sum$auc))
+      return(antibiotic_dat)
     }
     
   } else if (vignette == 9) {

@@ -25,6 +25,7 @@ Imports:
     tools,
     utils
 Suggests: 
+    caret,
     cowplot,
     ggplot2,
     knitr,

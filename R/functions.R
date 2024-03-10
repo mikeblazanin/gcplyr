@@ -2806,7 +2806,7 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 #'                          window_width_frac,
 #' 
 #' @noRd
-set_up_moving_sm <- function(formula, data, x, y,
+setup_moving_smooth <- function(formula, data, x, y,
                              window_width_n, 
                              window_width, 
                              window_width_n_frac,
@@ -2914,7 +2914,7 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                            window_width_frac = NULL,
                            na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
   #Run all setup steps and checks
-  setup <- set_up_moving_sm(formula = formula, data = data, x = x, y = y,
+  setup <- setup_moving_smooth(formula = formula, data = data, x = x, y = y,
                             window_width_n = window_width_n,
                             window_width = window_width,
                             window_width_n_frac = window_width_n_frac,
@@ -2952,7 +2952,7 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                           na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
   
   #Run all setup steps and checks
-  setup <- set_up_moving_sm(formula = formula, data = data, x = x, y = y,
+  setup <- setup_moving_smooth(formula = formula, data = data, x = x, y = y,
                             window_width_n = window_width_n,
                             window_width = window_width,
                             window_width_n_frac = window_width_n_frac,

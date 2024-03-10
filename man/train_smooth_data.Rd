@@ -9,7 +9,6 @@ train_smooth_data(
   x = NULL,
   y = NULL,
   sm_method,
-  subset_by = NULL,
   preProcess = NULL,
   weights = NULL,
   metric = ifelse(is.factor(y), "Accuracy", "RMSE"),
@@ -31,14 +30,6 @@ overlap with any of those to be tuned.}
 \item{sm_method}{Argument specifying which smoothing method should
 be used. Options include "moving-average", "moving-median", 
 "loess", "gam", and "smooth.spline".}
-
-\item{subset_by}{An optional vector as long as \code{y}. 
-\code{y} will be split by the unique values of this vector 
-and the derivative for each group will be calculated 
-independently of the others.
-
-This provides an internally-implemented approach similar
-to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
 \item{preProcess}{A string vector that defines a pre-processing of the
 predictor data. The default is no pre-processing.

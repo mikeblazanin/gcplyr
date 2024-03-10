@@ -4,7 +4,7 @@
 \alias{makemethod_train_smooth_data}
 \title{Create method argument for \code{caret::train} of growth curve smoothers}
 \usage{
-makemethod_train_smooth_data(sm_method, tuneGrid = NULL, ...)
+makemethod_train_smooth_data(sm_method, tuneGrid = NULL)
 }
 \arguments{
 \item{sm_method}{Argument specifying which smoothing method should
@@ -12,10 +12,11 @@ be used. Options include "moving-average", "moving-median",
 "loess", "gam", and "smooth.spline".}
 
 \item{tuneGrid}{A data frame with possible tuning value. The columns should 
-be named the same as the tuning parameters.}
+be named the same as the tuning parameters.
 
-\item{...}{Arguments passed to \code{smooth_data}. These arguments cannot
-overlap with any of those to be tuned.}
+Note that, when using \code{caret::train}, the tuneGrid
+must be passed both to this function as well as directly
+to \code{caret::train}.}
 }
 \value{
 A list that can be used as the method argument to

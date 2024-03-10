@@ -6,7 +6,7 @@ output:
     toc: true
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{Statistics, merging other data, and other resources}
+  %\VignetteIndexEntry{Best practices and other tips}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

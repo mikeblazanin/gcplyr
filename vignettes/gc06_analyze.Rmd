@@ -79,7 +79,7 @@ ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% c("A1", "A7", "B4", "B10",
 
 # Analyzing data with summarize
 
-Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. gcplyr makes it easy to calculate a number of metrics of interest, which I've grouped below into categories:
+Ultimately, analyzing growth curves requires summarizing the entire time series of data by some metric or metrics. gcplyr makes it easy to calculate a number of metrics of interest, which I've grouped into categories:
 
 ### Most common metrics
 
@@ -149,41 +149,9 @@ Once you've calculated your summarized metrics, you should plot them on the orig
 
 You'll see examples of these plots throughout this article.
 
-# Initial density {#init_dens}
+# The most common metrics
 
-If you want to identify the initial density of your bacteria, it will often be sufficient to use `min_gc` (this works just like `R`'s built-in `min`, but with better default settings for growth curve analyses with `summarize`). 
-
-We can also save the time when this minimum occurs using the `which_min_gc` function. `which_min_gc` returns the *index* of the minimum value, so then we can get the `Time` value at that index and save it to a column titled `min_time`. (`which_min_gc` and `extr_val` work just like `R`'s built-in `which.min` and `[`, but with better default settings for growth curve analyses with `summarize`)
-
-```{r}
-ex_dat_mrg_sum <- 
-  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            min_dens = min_gc(Measurements, na.rm = TRUE),
-            min_time = extr_val(Time, which_min_gc(Measurements)))
-head(ex_dat_mrg_sum)
-
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = Measurements)) +
-  geom_line() +
-  facet_wrap(~Well) +
-  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
-             aes(x = min_time, y = min_dens),
-             size = 2, color = "red")
-```
-
-In some cases (e.g. growing with phages), bacteria may later drop to a lower density than they started in the growth curve. In this case, we want the first *local* minima of the Measurements data, rather than the global minima:
-
-```{r}
-ex_dat_mrg_sum <- 
-  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            min_dens = first_minima(y = Measurements, x = Time, return = "y"),
-            min_time = first_minima(y = Measurements, x = Time, return = "x"))
-head(ex_dat_mrg_sum)
-```
-
-Note that you can tune the sensitivity of `first_minima` to different heights and widths of peaks and valleys using the `window_width`, `window_width_n`, and `window_height` arguments. You should check that `first_minima` is working with your data by plotting it, although the default sensitivity works much of the time.
-
-# Lag time {#lag}
+## Lag time {#lag}
 
 Bacteria often have a period of time before they reach their maximum growth rate. If you would like to quantify this lag time, you can use the `lag_time` function. `lag_time` needs the x and y values, as well as the (per-capita) derivative. It will find the maximum derivative, then project the tangent line with that slope back until it crosses the starting density. 
 
@@ -243,46 +211,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 ```
 
-# Time to reach threshold density {#dens_thresh}
-
-If you want to quantify how long it takes bacteria to reach some threshold density, you can use the `first_above` function. In this example, we'll use a Measurements value of 0.1 as our threshold.
-
-```{r}
-ex_dat_mrg_sum <- 
-  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            above_01 = first_above(y = Measurements, x = Time, 
-                                   threshold = 0.1, return = "x"))
-head(ex_dat_mrg_sum)
-
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = Measurements)) +
-  geom_line() +
-  facet_wrap(~Well) +
-  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
-             aes(xintercept = above_01), lty = 2, color = "red")
-```
-
-# Time to reach threshold growth rate {#percap_thresh}
-
-If you want to quantify how long it takes bacteria to reach some threshold per-capita growth rate, you can use the `first_above` function. In this example, we'll use a per-capita derivative of 1 as our threshold.
-
-```{r}
-ex_dat_mrg_sum <- 
-  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            percap_above_1 = first_above(y = deriv_percap5, x = Time, 
-                                   threshold = 1, return = "x"))
-head(ex_dat_mrg_sum)
-
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = deriv_percap5)) +
-  geom_line() +
-  facet_wrap(~Well) +
-  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
-             aes(xintercept = percap_above_1), lty = 2, color = "red") +
-  coord_cartesian(ylim = c(-1, NA))
-```
-
-# Maximum growth rate and minimum doubling time {#max_percap}
+## Maximum growth rate and minimum doubling time {#max_percap}
 
 If you want to calculate the bacterial maximum growth rate (i.e. the minimum doubling time), it will often be sufficient to use `max_gc` on the per-capita derivatives we calculated in `vignette("gc05_process")`. (`max_gc` works just like `R`'s built-in `max`, but with better default settings for growth curve analyses with `summarize`).
 
@@ -310,7 +239,125 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
   coord_cartesian(ylim = c(-1, NA))
 ```
 
-# Mid-point time or inflection point {#midpoint}
+## Maximum density {#maxdens}
+
+The maximum bacterial density can be a measure of bacterial growth yield/efficiency. If your bacteria plateau in density, the maximum density can also be a measure of bacterial carrying capacity. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc`, `which_max_gc`, and `extr_val` work just like `R`'s built-in `max`, `which.max`, and `[`, but with better default settings for growth curve analyses with `summarize`). 
+
+See [Peak bacterial density] for identifying *local* maxima of `Measurements` (e.g. if you wanted the first peak in Well E11 shown below).
+
+```{r}
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            max_dens = max_gc(Measurements, na.rm = TRUE),
+            max_time = extr_val(Time, which_max_gc(Measurements)))
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(x = max_time, y = max_dens),
+             size = 2, color = "red")
+```
+
+## Area under the curve {#auc}
+
+The area under the curve is a common metric of total bacterial growth, for instance in the presence of antagonists like antibiotics or phages. If you want to calculate the area under the curve, you can use the `gcplyr` function `auc`. Simply specify Time as the x and Measurements as the y data whose area-under-the-curve you want to calculate.
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            auc = auc(x = Time, y = Measurements))
+head(ex_dat_mrg_sum)
+```
+
+# Growth metrics
+
+## Initial density {#init_dens}
+
+If you want to identify the initial density of your bacteria, it will often be sufficient to use `min_gc` (this works just like `R`'s built-in `min`, but with better default settings for growth curve analyses with `summarize`). 
+
+We can also save the time when this minimum occurs using the `which_min_gc` function. `which_min_gc` returns the *index* of the minimum value, so then we can get the `Time` value at that index and save it to a column titled `min_time`. (`which_min_gc` and `extr_val` work just like `R`'s built-in `which.min` and `[`, but with better default settings for growth curve analyses with `summarize`)
+
+```{r}
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            min_dens = min_gc(Measurements, na.rm = TRUE),
+            min_time = extr_val(Time, which_min_gc(Measurements)))
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(x = min_time, y = min_dens),
+             size = 2, color = "red")
+```
+
+In some cases (e.g. growing with phages), bacteria may later drop to a lower density than they started in the growth curve. In this case, we want the first *local* minima of the Measurements data, rather than the global minima:
+
+```{r}
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            min_dens = first_minima(y = Measurements, x = Time, return = "y"),
+            min_time = first_minima(y = Measurements, x = Time, return = "x"))
+head(ex_dat_mrg_sum)
+```
+
+Note that you can tune the sensitivity of `first_minima` to different heights and widths of peaks and valleys using the `window_width`, `window_width_n`, and `window_height` arguments. You should check that `first_minima` is working with your data by plotting it, although the default sensitivity works much of the time.
+
+## Lag time
+
+See [the lag time section in the Most Common Metrics section](#lag)
+
+## Time to reach threshold density {#dens_thresh}
+
+If you want to quantify how long it takes bacteria to reach some threshold density, you can use the `first_above` function. In this example, we'll use a Measurements value of 0.1 as our threshold.
+
+```{r}
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            above_01 = first_above(y = Measurements, x = Time, 
+                                   threshold = 0.1, return = "x"))
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(xintercept = above_01), lty = 2, color = "red")
+```
+
+## Time to reach threshold growth rate {#percap_thresh}
+
+If you want to quantify how long it takes bacteria to reach some threshold per-capita growth rate, you can use the `first_above` function. In this example, we'll use a per-capita derivative of 1 as our threshold.
+
+```{r}
+ex_dat_mrg_sum <- 
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            percap_above_1 = first_above(y = deriv_percap5, x = Time, 
+                                   threshold = 1, return = "x"))
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = deriv_percap5)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells),
+             aes(xintercept = percap_above_1), lty = 2, color = "red") +
+  coord_cartesian(ylim = c(-1, NA))
+```
+
+## Maximum growth rate and minimum doubling time
+
+See [the maximum growth rate section in the Most Common Metrics section](#max_percap)
+
+# Saturation metrics
+
+## Mid-point time or inflection point {#midpoint}
 
 If you want to find the mid-point or inflection point of bacterial growth, there are two different approaches:
 
@@ -339,40 +386,19 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
              aes(xintercept = infl_point), lty = 2, color = "blue")
 ```
 
-# Maximum density {#maxdens}
+## Maximum density
 
-The maximum bacterial density can be a measure of bacterial growth yield/efficiency. If your bacteria plateau in density, the maximum density can also be a measure of bacterial carrying capacity. If you want to quantify the maximum bacterial density, we can use `max_gc` to get the global maxima of `Measurements` (`max_gc`, `which_max_gc`, and `extr_val` work just like `R`'s built-in `max`, `which.max`, and `[`, but with better default settings for growth curve analyses with `summarize`). 
+See [the maximum density section in the Most Common Metrics section](#maxdens)
 
-See [Peak bacterial density] for identifying *local* maxima of `Measurements` (e.g. if you wanted the first peak in Well E11 shown below).
+# Total growth metrics
 
-```{r}
-ex_dat_mrg_sum <- 
-  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            max_dens = max_gc(Measurements, na.rm = TRUE),
-            max_time = extr_val(Time, which_max_gc(Measurements)))
-head(ex_dat_mrg_sum)
+## Area under the curve
 
-ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
-       aes(x = Time, y = Measurements)) +
-  geom_line() +
-  facet_wrap(~Well) +
-  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
-             aes(x = max_time, y = max_dens),
-             size = 2, color = "red")
-```
+See [the area under the curve section in the Most Common Metrics section](#auc)
 
-# Area under the curve {#auc}
+# Diauxic growth metrics
 
-The area under the curve is a common metric of total bacterial growth, for instance in the presence of antagonists like antibiotics or phages. If you want to calculate the area under the curve, you can use the `gcplyr` function `auc`. Simply specify Time as the x and Measurements as the y data whose area-under-the-curve you want to calculate.
-
-```{r}
-ex_dat_mrg_sum <-
-  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
-            auc = auc(x = Time, y = Measurements))
-head(ex_dat_mrg_sum)
-```
-
-# Diauxic shifts {#diauxie}
+## Diauxic shifts {#diauxie}
 
 Bacteria frequently exhibit a second, slower, burst of growth after their first period of rapid growth. This is common in growth curves and is called *diauxic growth*.
 
@@ -423,7 +449,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
 
 If needed, you can tune the sensitivity of `find_local_extrema` to different heights and widths of peaks and valleys using the `window_width`, `window_width_n`, and `window_height` arguments.
 
-# Growth rate during diauxie {#diauxic_percap}
+## Growth rate during diauxie {#diauxic_percap}
 
 In the previous section we identified when bacteria shifted into their second period of rapid growth ('diauxic growth'). If you want to find out what the peak per-capita growth rate was during that second burst, we'll have to use `max` on the subset of data after the diauxic shift identified by `find_local_extrema`
 
@@ -454,7 +480,9 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
              size = 2, color = "red")
 ```
 
-# Peak bacterial density {#peak_dens}
+# Metrics of growth with antagonists
+
+## Peak bacterial density {#peak_dens}
 
 [We previously found the global maximum in bacterial density](#maxdens) using the simple `max_gc` and `which_max_gc` functions. The first *local* maxima can also be of interest. This is especially true when bacteria are grown with phages, where their first peak density can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the first local maxima in bacterial density, you can use the `gcplyr` function `first_maxima`.
 
@@ -480,7 +508,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
 
 Note that you can tune the sensitivity of `first_maxima` to different heights and widths of peaks and valleys using the `window_width`, `window_width_n`, and `window_height` arguments, although the defaults work much of the time.
 
-# Extinction time {#extin_time}
+## Extinction time {#extin_time}
 
 The time when bacterial density falls below some threshold can also be of interest. This is especially true when bacteria are grown with phages, where this 'extinction time' can act as a proxy measure for their susceptibility to the phage. If you're interested in finding the extinction time, you can use the `gcplyr` function `first_below`. In this example, we'll use a Measurements value of 0.15 as our threshold.
 

@@ -25,7 +25,6 @@ knitr::opts_knit$set(root.dir = tempdir())
 #To re-build all vignettes where the rmd was changed more recently than the pdf
 # copy-paste the code below into console (Ctrl+Enter does not work):
 #for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {if(file.info(paste0("./vignettes/", fil))$mtime > file.info(paste0("./vignettes/", sub(x = fil, "\\.Rmd", ".pdf")))$mtime) {rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::pdf_document(toc = TRUE, toc_depth = 4))}}
-
 #To do so for all vignettes, copy-paste the code below into console
 # (Ctrl+Enter does not work):
 #for (fil in list.files(path = "./vignettes/", pattern = ".+Rmd")) {rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::html_vignette(toc = TRUE, toc_dept = 4)); rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::pdf_document(toc = TRUE, toc_depth = 4)); rmarkdown::render(paste0("./vignettes/", fil), rmarkdown::word_document(toc = TRUE, toc_dept = 4))}
@@ -63,8 +62,8 @@ Before digging into the details, here's a simple demonstration of what a final `
 
 ```{r}
 #For the purposes of this demo, we have to create our example data and
-# design files. Normally, the data would be created by a plate reader, and
-# the design would be created by you, the user
+# design files. Normally, the data file would be created by a plate reader, and
+# the design file would be created by you, the user
 
 #Generate our example data file, widedata.csv
 make_example(vignette = 1, example = 1)
@@ -88,11 +87,15 @@ designs <- import_blockdesigns(files = c("Bacteria_strain.csv", "Phage.csv"))
 # Merge our designs and data
 data_merged <- merge_dfs(data_tidy, designs)
 
-# Plot the data
-ggplot(data = data_merged,
-       aes(x = Time, y = Measurements, color = Well)) +
-  geom_line(aes(lty = Phage)) + 
-  guides(color = "none")
+#Set up the Well column so they plot in the correct order
+data_merged$Well <- 
+  factor(data_merged$Well,
+         levels = paste0(rep(LETTERS[1:8], each = 12), 1:12))
+
+#Plot the data
+ggplot(data = data_merged, aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well, nrow = 8, ncol = 12)
 
 # Voila! 8 lines of code and all your data is imported & plotted!
 
@@ -117,23 +120,47 @@ data_sum <- summarize(
 # Print some of the values
 head(data_sum)
 
-# Plot the results for each of the metrics
-ggplot(data = data_sum, aes(x = lag_time)) +
-  geom_histogram()
+#Set up the Well column so they plot in the correct order
+data_sum$Well <- factor(data_sum$Well, 
+                        levels = paste0(rep(LETTERS[1:8], each = 12), 1:12))
 
-ggplot(data = data_sum, aes(x = max_percap)) +
-  geom_histogram()
-
-ggplot(data = data_sum, aes(x = max_dens)) +
-  geom_histogram()
-
-ggplot(data = data_sum, aes(x = auc)) +
-  geom_histogram()
+#Plot lag time
+ggplot(data = data_sum) +
+  geom_text(aes(label = round(lag_time, 2), x = 1, y = 1)) +
+  facet_wrap(~ Well, ncol = 12) +
+  labs(title = "Lag time by well") +
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(),
+        axis.ticks = element_blank())
+#Plot growth rate
+ggplot(data = data_sum) +
+  geom_text(aes(label = round(max_percap, 2), x = 1, y = 1)) +
+  facet_wrap(~ Well, ncol = 12) +
+  labs(title = "Maximum growth rate by well") +
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(),
+        axis.ticks = element_blank())
+#Plot Maximum density
+ggplot(data = data_sum) +
+  geom_text(aes(label = round(max_dens, 2), x = 1, y = 1)) +
+  facet_wrap(~ Well, ncol = 12) +
+  labs(title = "Maximum density by well") +
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(),
+        axis.ticks = element_blank())
+#Plot AUC
+ggplot(data = data_sum) +
+  geom_text(aes(label = round(auc, 2), x = 1, y = 1)) +
+  facet_wrap(~ Well, ncol = 12) +
+  labs(title = "Area under the curve by well") +
+  theme(axis.title = element_blank(), 
+        axis.text = element_blank(),
+        axis.ticks = element_blank())
 ```
 
 # What's next?
 
-Generally, working with `gcplyr` will follow a number of steps, each of which is likely to be only one or a few lines of code in your final script. We've explained each of these steps in a page linked below. To start, we'll learn how to import our data into `R` and transform it into a convenient format.
+In the example here, we've shown how each step of a `gcplyr` workflow is only one or a few lines of code. In the following pages, we've explained each of these steps in depth. To start, we'll learn how to import our data into `R` and transform it into a convenient format.
 
 1. Introduction: `vignette("gc01_gcplyr")`
 2. **Importing and reshaping data: `vignette("gc02_import_reshape")`**

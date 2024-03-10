@@ -355,6 +355,8 @@ To do cross-validation of smoothing parameters, use `train_smooth_data`. `train_
 By default, `train_smooth_data` will test an evenly spaced grid of three values of the smoothing parameter. Usually, that's not enough values, so you'll want to set the number of values to test with `tuneLength` (more values will take longer to calculate).
 
 ```{r}
+ex_dat_mrg <- make_example(vignette = 7, example = 2)
+
 training_results <- 
   reframe(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
           train_smooth_data(x = Time, y = Measurements, 
@@ -377,7 +379,7 @@ However, often you'll want to test different values from the defaults in `train_
 
 ```{r}
 training_results <- 
-  reframe(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+  reframe(group_by(ex_dat_mrg, noise, Bacteria_strain, Phage, Well),
           train_smooth_data(x = Time, y = Measurements, 
                    sm_method = "moving-average",
                    tuneGrid = list(

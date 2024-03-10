@@ -220,7 +220,8 @@ make_example <- function(vignette, example, dir = ".") {
       # We'll add some identifiers and then merge them together
       noiseless_data <- dplyr::mutate(noiseless_data, noise = "No")
       noisy_data <- dplyr::mutate(noisy_data, noise = "Yes")
-      ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data)
+      ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data,
+                              warn_morerows = FALSE)
       ex_dat_mrg <- merge_dfs(ex_dat_mrg, gcplyr::example_design_tidy)
       
       ex_dat_mrg$Well <- 
@@ -233,6 +234,17 @@ make_example <- function(vignette, example, dir = ".") {
       #  all of your data)
       sample_wells <- c("A1", "F1", "F10", "E11")
       ex_dat_mrg <- ex_dat_mrg[ex_dat_mrg$Well %in% sample_wells, ]
+      
+      return(ex_dat_mrg)
+    } else if (example == 2) {
+      ## Example 2 ----
+      noisy_data <- trans_wide_to_tidy(gcplyr::example_widedata, id_cols = "Time")
+      ex_dat_mrg <- merge_dfs(noisy_data, gcplyr::example_design_tidy)
+      
+      ex_dat_mrg$Well <- 
+        factor(ex_dat_mrg$Well,
+               levels = paste(rep(LETTERS[1:8], each = 12), 1:12, sep = ""))
+      ex_dat_mrg$Time <- ex_dat_mrg$Time/3600 #Convert time to hours
       
       return(ex_dat_mrg)
     }

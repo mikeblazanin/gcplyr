@@ -158,6 +158,21 @@ make_example <- function(vignette, example, dir = ".") {
       return(paste0(dir, "mydesign2.csv"))
     } else if (example == 3) {
       ## Example 3 ----
+      utils::write.csv(
+        file = paste0(dir, "mydesign_sep.csv"),
+        x = rbind(matrix(rep(c("Tr1", "Tr2"), each = 48),
+                         nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12)),
+                  matrix(data = "", nrow = 1, ncol = 12,
+                         dimnames = list("", rep("", 12))),
+                  matrix(data = 1:12, nrow = 1, ncol = 12,
+                         dimnames = list("", rep("", 12))),
+                  matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),
+                         nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12),
+                         byrow = TRUE)))
+      message("Files have been written")
+      return(paste0(dir, "mydesign_sep.csv"))
+    } else if (example == 4) {
+      ## Example 3 ----
       pt1 <- matrix(rep(c("Tr1", "Tr2"), each = 48),
                     nrow = 8, ncol = 12, dimnames = list(LETTERS[1:8], 1:12))
       pt2 <- matrix(rep(c("StrA", "StrB", "StrC", "StrD"), each = 24),

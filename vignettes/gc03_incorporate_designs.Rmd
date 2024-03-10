@@ -49,6 +49,7 @@ We often want to combine our data with information about the experimental design
 If you're interested in generating your designs in `R`, see `vignette("gc10_using_make_design")`
 
 
+
 When reading design elements from files, `gcplyr` can read block-shaped or tidy-shaped design files:
 
 * If design files are block-shaped, they can be read with `import_blockdesigns`
@@ -92,7 +93,7 @@ What do you do if you have multiple designs? For instance, what if you have seve
 
 Regardless of which option you use, you can then import them all in one go with `import_blockdesigns`.
 
-### Importing multiple separated block-shaped designs
+### Importing multiple block-shaped designs in separate files
 
 First, let's create both our example designs files. Again, just imagine that you've created these files in Excel.
 
@@ -119,6 +120,24 @@ my_design <-
 head(my_design, 20)
 ```
 
+### Importing multiple separated block-shaped designs in one file
+
+If you have your blocks separated but saved in the same file, you simply specify the location of each block within the file:
+
+```{r}
+make_example(vignette = 3, example = 3, dir = ".")
+
+#Print what the file looks like
+print_df(read.csv("mydesign_sep.csv", header = FALSE, colClasses = "character"))
+
+#Read in the designs
+my_design <- 
+  import_blockdesigns(files = c("mydesign_sep.csv"), 
+                      block_names = c("Treatment_numbers", "Strain_letters"),
+                      startrow = c(1, 11), endrow = c(9, 19))
+head(my_design, 20)
+```
+
 ### Importing multiple pasted block-shaped designs
 
 Alternative to saving your designs separated, often it may be easiest to save all the design information into a single block, separating the distinct components of the design with some character.
@@ -126,18 +145,18 @@ Alternative to saving your designs separated, often it may be easiest to save al
 To demonstrate this, first let's create our example designs file. Again, just imagine that you've created this file in Excel.
 
 ```{r}
-make_example(vignette = 3, example = 3, dir = ".")
+make_example(vignette = 3, example = 4, dir = ".")
 ```
 
 Now let's take a look at what the file looks like:
 
 ```{r}
-print_df(read.csv("mydesign_pasted.csv", header = FALSE, colClasses = "character"))
+print_df(read.csv("mydesign_pasted.csv", header = FALSE, colClasses = "character")[, 1:10])
 ```
 
 As before, we have Treatment 1 on the left-hand side, and Treatment 2 on the right-hand side, with Strain A in the first two rows, Strain B in the next two rows, and so on. However, this information is now pasted together, with "_" as the separating string (you can use any string as a separator).
 
-To import this design with `import_blockdesigns`, we simply need to specify the `sep` string, as well as the output column names. Since the designs have been pasted together, the column names will result from splitting the designs apart. The easiest way to specify these split column names is to use the `into` argument passed to `separate_tidy`. If `into` is not specified, `import_blockdesigns` will attempt to split the `block_names` (either specified or inferred) with `sep` to generate the output column names.
+To import this design with `import_blockdesigns`, we simply need to specify the `sep` string, as well as the output column names. Since the designs have been pasted together, the column names will result from splitting the designs apart. The easiest way to specify these split column names is to use the `into` argument passed to `separate_tidy` [if `into` is not specified, `import_blockdesigns` will attempt to split the `block_names` (either specified or inferred) with `sep` to generate the output column names].
 
 ```{r}
 my_design <- 

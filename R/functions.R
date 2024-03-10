@@ -2339,6 +2339,8 @@ trans_tidy_to_wide <- function() {
 #'                 See \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
 #'                 \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for 
 #'                 more details
+#' @param warn_morerows logical, should a warning be passed when the output
+#'                      has more rows than x and more rows than y?
 #' @param ... Other arguments to pass to the underlying join function. See 
 #'            \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
 #'            \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for options.
@@ -2349,7 +2351,7 @@ trans_tidy_to_wide <- function() {
 #' @export
 merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
                       collapse = FALSE, names_to = NA,
-                      join = "full", ...) {
+                      join = "full", warn_morerows = TRUE, ...) {
   if(!collapse & (inherits(x, "list") | inherits(y, "list"))) {
     stop("if x or y are a list, collapse must be TRUE")}
   if(!join %in% c("full", "right", "left", "inner")) {
@@ -2393,7 +2395,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
     #Join x and y
     if(join == "full") {
       output <- dplyr::full_join(x = x, y = y, by = by, ...)
-      if(nrow(output) > nrow(x) & nrow(output) > nrow(y)) {
+      if(warn_morerows && nrow(output) > nrow(x) && nrow(output) > nrow(y)) {
         warning("\nmerged_df has more rows than x and than y, this may indicate
                mis-matched values in the shared column(s) used to merge 
               (e.g. 'Well')\n")

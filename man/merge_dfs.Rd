@@ -12,6 +12,7 @@ merge_dfs(
   collapse = FALSE,
   names_to = NA,
   join = "full",
+  warn_morerows = TRUE,
   ...
 )
 }
@@ -53,6 +54,9 @@ are 'full' (default), 'inner', 'left', and 'right'.
 See \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
 \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for 
 more details}
+
+\item{warn_morerows}{logical, should a warning be passed when the output
+has more rows than x and more rows than y?}
 
 \item{...}{Other arguments to pass to the underlying join function. See 
 \link[dplyr]{full_join}, \link[dplyr]{left_join}, 

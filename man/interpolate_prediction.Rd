@@ -24,6 +24,8 @@ value will be predicted}
 out of the domain of \code{x} should be predicted (by 
 extrapolating the slope from the endpoints of \code{x}). If
 \code{FALSE}, such values will be returned as \code{NA}.}
+
+\item{na.rm}{logical whether NA's should be removed before making predictions}
 }
 \value{
 A vector of response values for each predictor value in 

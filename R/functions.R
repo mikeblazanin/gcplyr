@@ -2992,7 +2992,7 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #'                out of the domain of \code{x} should be predicted (by 
 #'                extrapolating the slope from the endpoints of \code{x}). If
 #'                \code{FALSE}, such values will be returned as \code{NA}.
-#'                                
+#' @param na.rm logical whether NA's should be removed before making predictions
 #'
 #' @return A vector of response values for each predictor value in 
 #'         \code{newdata}
@@ -3268,6 +3268,8 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #' @param preProcess A string vector that defines a pre-processing of the
 #'                   predictor data. The default is no pre-processing.
 #'                   See \code{caret::train} for more details.
+#' @param weights    A numeric vector of case weights. This argument currently
+#'                   does not affect any \code{train_smooth_data} models.
 #' @param metric     A string that specifies what summary metric will be
 #'                   used to select the optimal model. By default, possible
 #'                   values are "RMSE" and "Rsquared" for regression.
@@ -3396,7 +3398,7 @@ and dplyr::reframe instead")}
 #'                  
 #'                  This provides an internally-implemented approach similar
 #'                  to \code{dplyr::group_by} and \code{dplyr::mutate}
-#' @param window_width_n,window_width,window_width_n_frac
+#' @param window_width,window_width_n,window_width_frac,window_width_n_frac
 #'                  Set how many data points are used to determine
 #'                  the slope at each point.
 #'                       
@@ -3662,7 +3664,7 @@ doubling_time <- function(y, x_scale = 1) {
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
-#' @param window_width,window_width_n,window_height,window_width_n_frac
+#' @param window_width,window_width_n,window_height,window_width_frac,window_width_n_frac
 #'                   Arguments that set the width/height of the window used to
 #'                   search for local extrema.
 #'                   
@@ -4265,6 +4267,8 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 #' @param warn_one_lag logical whether warning should be issued when 
 #'                     some, but not all, inputs are vectorized, and
 #'                     only one lag time value will be returned.
+#' @param warn_no_lag logical whether warning should be issued when calculated
+#'                    lag time is less than the minimum value of x
 #'                            
 #' @details 
 #' For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}

@@ -57,7 +57,7 @@ independently of the others.
 This provides an internally-implemented approach similar
 to \code{dplyr::group_by} and \code{dplyr::mutate}}
 
-\item{window_width_n, window_width, window_width_n_frac}{Set how many data points are used to determine
+\item{window_width, window_width_n, window_width_frac, window_width_n_frac}{Set how many data points are used to determine
 the slope at each point.
      
 When all are \code{NULL}, \code{calc_deriv} 

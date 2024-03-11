@@ -72,6 +72,9 @@ will be used.}
 \item{warn_one_lag}{logical whether warning should be issued when 
 some, but not all, inputs are vectorized, and
 only one lag time value will be returned.}
+
+\item{warn_no_lag}{logical whether warning should be issued when calculated
+lag time is less than the minimum value of x}
 }
 \value{
 Typically a scalar of the lag time in units of x. See Details for

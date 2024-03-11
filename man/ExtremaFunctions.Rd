@@ -57,7 +57,7 @@ first_minima(
 
 \item{x}{Optional numeric vector of corresponding x values}
 
-\item{window_width, window_width_n, window_height, window_width_n_frac}{Arguments that set the width/height of the window used to
+\item{window_width, window_width_n, window_height, window_width_frac, window_width_n_frac}{Arguments that set the width/height of the window used to
 search for local extrema.
 
 \code{window_width} is in units of \code{x}.

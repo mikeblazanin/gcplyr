@@ -35,6 +35,9 @@ be used. Options include "moving-average", "moving-median",
 predictor data. The default is no pre-processing.
 See \code{caret::train} for more details.}
 
+\item{weights}{A numeric vector of case weights. This argument currently
+does not affect any \code{train_smooth_data} models.}
+
 \item{metric}{A string that specifies what summary metric will be
 used to select the optimal model. By default, possible
 values are "RMSE" and "Rsquared" for regression.

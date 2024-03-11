@@ -12,6 +12,8 @@
 #' 
 #' @return An R object, or the names of the files if files have been written
 #' 
+#' @importFrom rlang .data
+#' 
 #' @export
 make_example <- function(vignette, example, dir = ".") {
   #Make sure dir ends in /
@@ -291,9 +293,9 @@ make_example <- function(vignette, example, dir = ".") {
       ex_dat_mrg_sum <-
         dplyr::summarize(
           dplyr::group_by(
-            dplyr::filter(ex_dat_mrg, Phage == "No Phage"),
-            Well, Bacteria_strain, Phage),
-          auc = auc(x = Time, y = Measurements))
+            dplyr::filter(ex_dat_mrg, .data$Phage == "No Phage"),
+            .data$Well, .data$Bacteria_strain, .data$Phage),
+          auc = auc(x = .data$Time, y = .data$Measurements))
       
       set.seed(123)
       antibiotic_dat <- 

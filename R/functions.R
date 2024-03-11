@@ -2996,7 +2996,7 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #'
 #' @return A vector of response values for each predictor value in 
 #'         \code{newdata}
-interpolate_prediction <- function(
+predict_interpolation <- function(
     x, y, newdata, extrapolate_predictions = TRUE, na.rm = TRUE) {
   x <- make.numeric(x, "x")
   y <- make.numeric(y, "y")
@@ -3233,7 +3233,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
   if(sm_method %in% c("moving-average", "moving-median")) {
     gcmethod_out$predict <- 
       function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-        return(interpolate_prediction(x = modelFit[["x"]]$x, 
+        return(predict_interpolation(x = modelFit[["x"]]$x, 
                                       y = modelFit[["modelout"]][["fitted"]], 
                                       newdata = newdata$x))}
   } else if(sm_method %in% c("loess", "gam")) {

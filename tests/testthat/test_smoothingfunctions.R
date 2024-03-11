@@ -307,26 +307,26 @@ test_that("smooth_data checks for grouping", {
                                             sm_method = 'moving-median')))
 })
   
-test_that("interpolate_prediction works correctly", {
+test_that("predict_interpolation works correctly", {
   x <- 1:10
   y <- x**2
   
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(2.5, 6.5)),
+  expect_equal(predict_interpolation(x = x, y = y, newdata = c(2.5, 6.5)),
                c(6.5, 42.5))
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(3, 5, 7)),
+  expect_equal(predict_interpolation(x = x, y = y, newdata = c(3, 5, 7)),
                c(3, 5, 7)**2)
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = 0,
+  expect_equal(predict_interpolation(x = x, y = y, newdata = 0,
                                       extrapolate_predictions = FALSE),
                as.numeric(NA))
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = 15,
+  expect_equal(predict_interpolation(x = x, y = y, newdata = 15,
                                       extrapolate_predictions = FALSE),
                as.numeric(NA))
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(2.5, 5, 15),
+  expect_equal(predict_interpolation(x = x, y = y, newdata = c(2.5, 5, 15),
                                       extrapolate_predictions = FALSE),
                c(6.5, 25, as.numeric(NA)))
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(0, 11)),
+  expect_equal(predict_interpolation(x = x, y = y, newdata = c(0, 11)),
                c(-2, 119))
-  expect_equal(interpolate_prediction(x = x, y = y, newdata = c(0, 0.5, 10.5, 11)),
+  expect_equal(predict_interpolation(x = x, y = y, newdata = c(0, 0.5, 10.5, 11)),
                c(-2, -0.5, 109.5, 119))
 })
 

@@ -3244,7 +3244,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
   } else if(sm_method == "smooth.spline") {
     gcmethod_out$predict <-
       function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-        return(predict(object = modelFit[["modelout"]], x = newdata$x)$y)
+        return(stats::predict(object = modelFit[["modelout"]], x = newdata$x)$y)
       }
   }
   

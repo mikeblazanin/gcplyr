@@ -285,13 +285,15 @@ make_example <- function(vignette, example, dir = ".") {
       return(sim_dat_tdy)
     } else if (example == 2) {
       ## Example 2 ----
-      example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
+      example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
-      ex_dat_mrg <- merge_dfs(example_tidydata, example_design_tidy)
+      ex_dat_mrg <- merge_dfs(example_tidydata, gcplyr::example_design_tidy)
       ex_dat_mrg_sum <-
-        summarize(group_by(dplyr::filter(ex_dat_mrg, Phage == "No Phage"),
-                           Well, Bacteria_strain, Phage),
-                  auc = auc(x = Time, y = Measurements))
+        dplyr::summarize(
+          dplyr::group_by(
+            dplyr::filter(ex_dat_mrg, Phage == "No Phage"),
+            Well, Bacteria_strain, Phage),
+          auc = auc(x = Time, y = Measurements))
       
       set.seed(123)
       antibiotic_dat <- 

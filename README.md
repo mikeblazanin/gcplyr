@@ -9,7 +9,7 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.8.0-blue.svg?style=flat&logo=github)](https://github.com/mikeblazanin/gcplyr/commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.9.0-blue.svg?style=flat&logo=github)](https://github.com/mikeblazanin/gcplyr/commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:
@@ -34,13 +34,21 @@ by plate readers.
 - `gcplyr` has several methods to deal with noise in density or
   derivatives data.
 - `gcplyr` can extract parameters like growth rate/doubling time,
-  carrying capacity, diauxic shifts, extinction, and more without
-  fitting an equation for growth to your data.
+  maximum density (carrying capacity), lag time, area under the curve,
+  diauxic shifts, extinction, and more without fitting an equation for
+  growth to your data.
 
 **Please send all questions, requests, comments, and bugs to
 <mikeblazanin@gmail.com>**
 
 ## Installation
+
+You can install the version most-recently released on CRAN by running
+the following line in R:
+
+``` r
+install.packages("gcplyr")
+```
 
 You can install the most recently-released version from
 [GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
@@ -51,19 +59,12 @@ install.packages("devtools")
 devtools::install_github("mikeblazanin/gcplyr")
 ```
 
-You can install the version most-recently released on CRAN by running
-the following line in R:
-
-``` r
-install.packages("gcplyr")
-```
-
 ## Getting Started
 
 The best way to get started is to check out [the online
 documentation](https://mikeblazanin.github.io/gcplyr/), which includes
 examples of all of the most common `gcplyr` functions and walks through
-how to import, manipulate, and analyze growth curve data using `gcplyr`
+how to import, reshape, and analyze growth curve data using `gcplyr`
 from start to finish.
 
 This documentation is also available as a series of pdf vignette files:
@@ -81,10 +82,12 @@ This documentation is also available as a series of pdf vignette files:
     data](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc06_analyze.pdf)
 7.  [Dealing with
     noise](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc07_noise.pdf)
-8.  [Statistics, merging other data, and other
-    resources](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc08_conclusion.pdf)
+8.  [Best practices and other
+    tips](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc08_conclusion.pdf)
 9.  [Working with multiple
     plates](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc09_multiple_plates.pdf)
+10. [Using
+    make_design](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc10_using_make_design.pdf)
 
 ## Citation
 

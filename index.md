@@ -9,7 +9,7 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.8.0-blue.svg?style=flat&logo=github)](commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.9.0-blue.svg?style=flat&logo=github)](commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:
@@ -34,13 +34,21 @@ by plate readers.
 - `gcplyr` has several methods to deal with noise in density or
   derivatives data.
 - `gcplyr` can extract parameters like growth rate/doubling time,
-  carrying capacity, diauxic shifts, extinction, and more without
-  fitting an equation for growth to your data.
+  maximum density (carrying capacity), lag time, area under the curve,
+  diauxic shifts, extinction, and more without fitting an equation for
+  growth to your data.
 
 **Please send all questions, requests, comments, and bugs to
 mikeblazanin \[at\] gmail \[dot\] com**
 
 ## Installation
+
+You can install the version most-recently released on CRAN by running
+the following line in R:
+
+``` r
+install.packages("gcplyr")
+```
 
 You can install the most recently-released version from
 [GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
@@ -49,13 +57,6 @@ following lines in R:
 ``` r
 install.packages("devtools")
 devtools::install_github("mikeblazanin/gcplyr")
-```
-
-You can install the version most-recently released on CRAN by running
-the following line in R:
-
-``` r
-install.packages("gcplyr")
 ```
 
 ## Getting Started
@@ -73,9 +74,9 @@ finish, starting with the introduction:
 5.  Processing your data: `vignette("gc05_process")`
 6.  Analyzing your data: `vignette("gc06_analyze")`
 7.  Dealing with noise: `vignette("gc07_noise")`
-8.  Statistics, merging other data, and other resources:
-    `vignette("gc08_conclusion")`
+8.  Best practices and other tips: `vignette("gc08_conclusion")`
 9.  Working with multiple plates: `vignette("gc09_multiple_plates")`
+10. Using make_design: `vignette("gc10_using_make_design")`
 
 ## Citation
 

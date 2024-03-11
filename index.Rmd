@@ -47,17 +47,17 @@ version <- gsub('-', '.', version)
 
 ## Installation
 
+You can install the version most-recently released on CRAN by running the following line in R:
+
+``` r
+install.packages("gcplyr")
+```
+
 You can install the most recently-released version from [GitHub](https://github.com/mikeblazanin/gcplyr/) by running the following lines in R:
 
 ``` r
 install.packages("devtools")
 devtools::install_github("mikeblazanin/gcplyr")
-```
-
-You can install the version most-recently released on CRAN by running the following line in R:
-
-``` r
-install.packages("gcplyr")
 ```
 
 ## Getting Started
@@ -71,8 +71,9 @@ The best way to get started is to read through the articles series, which breaks
 5. Processing your data: `vignette("gc05_process")`
 6. Analyzing your data: `vignette("gc06_analyze")`
 7. Dealing with noise: `vignette("gc07_noise")`
-8. Statistics, merging other data, and other resources: `vignette("gc08_conclusion")`
+8. Best practices and other tips: `vignette("gc08_conclusion")`
 9. Working with multiple plates: `vignette("gc09_multiple_plates")`
+10. Using make_design: `vignette("gc10_using_make_design")`
 
 ## Citation
 

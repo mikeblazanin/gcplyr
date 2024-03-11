@@ -3185,7 +3185,8 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
             return(data.frame(window_width_n = myseq - (1 - myseq %% 2)))
           } else {
             return(data.frame(
-              window_width_n = sample(x = seq(from = 1, to = 13, by = 2), n = len)))
+              window_width_n = 
+                base::sample(x = seq(from = 1, to = 13, by = 2), size = len)))
           }
         }
     } else if(sm_method == "loess") {
@@ -3198,7 +3199,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
               span = seq(from = 0.01, to = 0.2, length.out = len)))
           } else {
             return(data.frame(
-              span = runif(min = 0.01, max = 0.2, n = len)))
+              span = stats::runif(min = 0.01, max = 0.2, n = len)))
           }
         }
     } else if(sm_method == "gam") {
@@ -3211,7 +3212,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
               k = round(seq(from = 10, to = 0.75*nrow(x), length.out = len))))
           } else {
             return(data.frame(
-              k = round(runif(min = 10, max = 0.75*nrow(x), n = len))))
+              k = round(stats::runif(min = 10, max = 0.75*nrow(x), n = len))))
           }
         }
     } else if(sm_method == "smooth.spline") {
@@ -3222,7 +3223,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
           if(search == "grid") {
             return(data.frame(spar = seq(from = 0, to = 0.5, length.out = len)))
           } else {
-            return(data.frame(spar = runif(min = 0, max = 0.5, n = len)))
+            return(data.frame(spar = stats::runif(min = 0, max = 0.5, n = len)))
           }
         }
     }
@@ -3238,7 +3239,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
   } else if(sm_method %in% c("loess", "gam")) {
     gcmethod_out$predict <-
       function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-        return(predict(object = modelFit[["modelout"]], newdata = newdata))
+        return(stats::predict(object = modelFit[["modelout"]], newdata = newdata))
       }
   } else if(sm_method == "smooth.spline") {
     gcmethod_out$predict <-

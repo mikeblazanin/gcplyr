@@ -76,7 +76,8 @@ finish, starting with the introduction:
 7.  Dealing with noise: `vignette("gc07_noise")`
 8.  Best practices and other tips: `vignette("gc08_conclusion")`
 9.  Working with multiple plates: `vignette("gc09_multiple_plates")`
-10. Using make_design: `vignette("gc10_using_make_design")`
+10. Using make_design to generate experimental designs:
+    `vignette("gc10_using_make_design")`
 
 ## Citation
 

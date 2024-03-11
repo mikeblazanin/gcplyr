@@ -86,8 +86,8 @@ This documentation is also available as a series of pdf vignette files:
     tips](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc08_conclusion.pdf)
 9.  [Working with multiple
     plates](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc09_multiple_plates.pdf)
-10. [Using
-    make_design](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc10_using_make_design.pdf)
+10. [Using make_design to generate experimental
+    designs](https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc10_using_make_design.pdf)
 
 ## Citation
 

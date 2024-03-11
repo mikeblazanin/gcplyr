@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,8 +45,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="nav-item">
@@ -113,11 +114,14 @@ Blazanin</h4>
 <strong>Dealing with noise:</strong>
 <code><a href="../articles/gc07_noise.html">vignette("gc07_noise")</a></code>
 </li>
-<li>Statistics, merging other data, and other resources:
+<li>Best practices and other tips:
 <code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
 </li>
 <li>Working with multiple plates:
 <code><a href="../articles/gc09_multiple_plates.html">vignette("gc09_multiple_plates")</a></code>
+</li>
+<li>Using make_design to generate experimental designs:
+<code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code>
 </li>
 </ol>
 <p>So far, we’ve imported and transformed our measures, combined them
@@ -128,7 +132,7 @@ dealing with noise in our growth curve data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.8.0, Build Date: 2024-01-29)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.9.0, Build Date: 2024-03-11)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. gcplyr: an R package for microbial growth</span></span>
@@ -151,7 +155,7 @@ dealing with noise in our growth curve data.</p>
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Oftentimes, growth curve data produced by a plate reader will have
-some noise it it. Since <code>gcplyr</code> does model-free analyses,
+some noise in it. Since <code>gcplyr</code> does model-free analyses,
 our approach can sometimes be sensitive to noise, necessitating steps to
 reduce the effects of noise.</p>
 <p>When assessing the effects of noise in our data, one of the first
@@ -179,10 +183,6 @@ of that data with simulated noise added to it.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">7</span>, example <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Time, Well, Measurements, noise)`</span></span>
-<span><span class="co">#&gt; Warning in merge_dfs(noisy_data, noiseless_data): </span></span>
-<span><span class="co">#&gt; merged_df has more rows than x and than y, this may indicate</span></span>
-<span><span class="co">#&gt;                mis-matched values in the shared column(s) used to merge </span></span>
-<span><span class="co">#&gt;               (e.g. 'Well')</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
 <span></span>
 <span><span class="co"># Plot with a log y-axis</span></span>
@@ -193,7 +193,8 @@ of that data with simulated noise added to it.</p>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Transformation introduced infinite values in continuous y-axis</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in scale_y_continuous(trans = "log10"): <span style="color: #00BB00;">log-10</span></span></span>
+<span><span class="co">#&gt; transformation introduced infinite values.</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
 <p>Great! Here we can see how the noisy (points) and noiseless (red
 line) data compare. We’ve plotted our data with log-transformed y-axes,
@@ -219,8 +220,10 @@ like.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">noise</span> <span class="op">==</span> <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_point()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -231,8 +234,10 @@ like.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">noise</span> <span class="op">==</span> <span class="st">"No"</span><span class="op">)</span>,</span>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values (`geom_point()`).</span></span>
-<span><span class="co">#&gt; Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span>
+<span><span class="co">#&gt; Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-2-2.png" width="700"></p>
 <p>Those values are jumping all over the place! Let’s see what we can do
 to address this.</p>
@@ -251,7 +256,8 @@ occurs when the density is very close to 0:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Transformation introduced infinite values in continuous y-axis</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
+<span><span class="co">#&gt; infinite values.</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -260,7 +266,8 @@ occurs when the density is very close to 0:</p>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">derivpercap_2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values (`geom_point()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
 <p>Per-capita growth rates are often very noisy when the density is
 close to 0, so it can make sense to simply exclude those data
@@ -281,7 +288,8 @@ points.</p>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">derivpercap_2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 3 rows containing missing values (`geom_point()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 3 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
 <p>When we limit our analysis to data points where the density is not
 too close to 0, much of the noise in our per-capita derivative
@@ -316,15 +324,20 @@ line to multiple points. (You might recall we previously used this in
 the Calculating Derivatives article
 <code><a href="../articles/gc05_process.html">vignette("gc05_process")</a></code>.)</p>
 <p>To use the fitting functionality of <code>calc_deriv</code>, specify
-either the <code>window_width</code> or the <code>window_width_n</code>
-parameter. <code>window_width</code> specifies how wide the window used
-to include points for the fitting is in units of <code>x</code>, while
-<code>window_width_n</code> specifies it in number of data points. Wider
-windows will be more smoothed. I recommend using as small a window as
-possible, like <code>window_width_n = 3</code> or
-<code>window_width_n = 5</code>. Visualize different window widths and
-choose the smallest one that is sufficient for your analyses to
-succeed.</p>
+the width of the moving window using <code>window_width</code>,
+<code>window_width_n</code>, <code>window_width_frac</code>, or
+<code>window_width_n_frac</code>. Wider windows will be more
+smoothed.</p>
+<p>Fitting using a moving window is subject to a trade off between the
+amount of variance (noise) that remains and the amount of bias added to
+your data. A small window will allow higher variance but add little
+bias, while a wide window will allow less variance but add more
+bias.</p>
+<p>Thus, I recommend using as small a window as possible, like
+<code>window_width_n = 3</code> or <code>window_width_n = 5</code>. The
+best way to figure out what values to use for your data are to try
+different window widths and plot the results, then choose the smallest
+one that is sufficient for your analyses to succeed.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">noise</span><span class="op">)</span>,</span>
@@ -355,8 +368,10 @@ succeed.</p>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_grey.html" class="external-link">scale_color_grey</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">0.8</span>, end <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 13 rows containing missing values (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 13 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>       </span>
@@ -371,8 +386,10 @@ succeed.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_grey.html" class="external-link">scale_color_grey</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">0.8</span>, end <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 14 rows containing missing values (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 14 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-6-2.png" width="700"></p>
 <p>As we can see, increasing the width of the window reduces the effects
 of noise, getting us closer to the noiseless data (red line). However,
@@ -383,8 +400,8 @@ right <code>window_width</code>.</p>
 <div class="section level2">
 <h2 id="Smoothing">Smoothing raw data<a class="anchor" aria-label="anchor" href="#Smoothing"></a>
 </h2>
-<p>Finally, smoothing the raw density data can reduce the effects of
-noise. <code>gcplyr</code> has a <code>smooth_data</code> function that
+<p>The final approach to dealing with noise is to smooth the raw density
+data. <code>gcplyr</code> has a <code>smooth_data</code> function that
 can carry out such smoothing. <code>smooth_data</code> has five
 different smoothing algorithms to choose from:
 <code>moving-average</code>, <code>moving-median</code>,
@@ -402,16 +419,19 @@ produces curves with smoothly changing derivatives, but can in some
 cases create curvature artifacts not present in the original data</li>
 </ul>
 <p>Generally, I recommend sticking to the first two algorithms, alone or
-in combination, since the others tend to add artifacts when used on
-growth curve data.</p>
+in combination, since the others tend to add artifacts to the
+derivatives of growth curve data.</p>
 <p><strong>Regardless of which smoothing algorithm you use, you will
 need to set a tuning parameter</strong> that controls how “smoothed” the
-data are. Smoothing data is a step that alters the values you will
-analyze. Because of that it can be rife with pitfalls. I recommend
-choosing the value that smooths the data as little as necessary for your
-analyses to work. To do so, try smoothing with different tuning
-parameter values, plot the results, then choose the least smoothed one
-you can.</p>
+data are. That choice is subject to a trade off between the amount of
+variance (noise) that remains and the amount of bias added to your data.
+Choosing a value that smooths your data less will allow higher variance
+but will add little bias to your data, while choosing a value that
+smooths your data more will allow less variance but add more bias to
+your data. Because of this, I generally recommend choosing the value
+that smooths your data as little as necessary for your analyses to work.
+For more details, see the <a href="#ChoosingTuningParams">Choosing
+tuning parameter values</a> section.</p>
 <p>Additionally, when sharing your findings, it’s important to be
 transparent by sharing the raw data and smoothing methods, rather than
 presenting the smoothed data as your source.</p>
@@ -421,10 +441,9 @@ will return a vector of your smoothed y values.</p>
 <div class="section level3">
 <h3 id="smoothing-with-moving-median">Smoothing with moving-median<a class="anchor" aria-label="anchor" href="#smoothing-with-moving-median"></a>
 </h3>
-<p>For <code>moving-median</code>, there are two tuning parameters to
-choose between: <code>window_width</code> specifies how wide the window
-used to include points for the fitting is in units of <code>x</code>,
-while <code>window_width_n</code> specifies it in number of data points.
+<p>For <code>moving-median</code>, specify the width of the moving
+window using <code>window_width</code>, <code>window_width_n</code>,
+<code>window_width_frac</code>, or <code>window_width_n_frac</code>.
 Wider windows will be more smoothed. Here, we’ll show moving medians
 with windows that are 5 and 9 data points wide (<code>movemed_1</code>
 is just our raw, unsmoothed data).</p>
@@ -456,8 +475,10 @@ is just our raw, unsmoothed data).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"moving-median"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Transformation introduced infinite values in continuous y-axis</span></span>
-<span><span class="co">#&gt; Warning: Removed 12 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
+<span><span class="co">#&gt; infinite values.</span></span>
+<span><span class="co">#&gt; Warning: Removed 12 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>Here we can see that <code>moving-median</code> has done a great job
 excluding noise without biasing our data very far from the true values
@@ -469,13 +490,12 @@ smoothing methods.</p>
 <div class="section level3">
 <h3 id="smoothing-with-moving-average">Smoothing with moving-average<a class="anchor" aria-label="anchor" href="#smoothing-with-moving-average"></a>
 </h3>
-<p>For <code>moving-average</code>, there are the same two tuning
-parameters: <code>window_width</code> specifies how wide the window used
-to include points for the fitting is in units of <code>x</code>, while
-<code>window_width_n</code> specifies it in number of data points. Here,
-we’ll show moving averages with <code>window_width_n</code> values of 5
-or 9 data points wide (<code>movavg_1</code> is just our raw, unsmoothed
-data).</p>
+<p>For <code>moving-average</code>, specify the width of the moving
+window using <code>window_width</code>, <code>window_width_n</code>,
+<code>window_width_frac</code>, or <code>window_width_n_frac</code>.
+Wider windows will be more smoothed. Here, we’ll show moving averages
+with <code>window_width_n</code> values of 5 or 9 data points wide
+(<code>movavg_1</code> is just our raw, unsmoothed data).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">noise</span><span class="op">)</span>,</span>
@@ -502,13 +522,16 @@ data).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"moving-average"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Transformation introduced infinite values in continuous y-axis</span></span>
-<span><span class="co">#&gt; Warning: Removed 12 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
+<span><span class="co">#&gt; infinite values.</span></span>
+<span><span class="co">#&gt; Warning: Removed 12 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Here we can see that <code>moving-average</code> has helped reduce
 the effects of some of that early noise. However, as the window width
-gets larger, it also starts underrepresenting the maximum density peaks
-relative to the true value (red line).</p>
+gets larger, it starts biasing our data more strongly
+[e.g. underrepresenting the maximum density peaks relative to the true
+value (red line)].</p>
 </div>
 <div class="section level3">
 <h3 id="combining-multiple-smoothing-methods">Combining multiple smoothing methods<a class="anchor" aria-label="anchor" href="#combining-multiple-smoothing-methods"></a>
@@ -550,8 +573,10 @@ followed by <code>moving-average</code>:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"median then average smoothing"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Transformation introduced infinite values in continuous y-axis</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
+<span><span class="co">#&gt; infinite values.</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
 <p><img src="gc07_noise_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Here we can see that the combination of minimal
 <code>moving-median</code> and <code>moving-average</code> smoothing has
@@ -562,10 +587,10 @@ introduction of bias relative to the true values (red line).</p>
 <h3 id="smoothing-with-other-methods">Smoothing with other methods<a class="anchor" aria-label="anchor" href="#smoothing-with-other-methods"></a>
 </h3>
 <p>I typically recommend against using other smoothing algorithms, since
-they have a tendency to add artifacts to growth curve data. However,
-they may work for your analyses, so if you are considering using them
-make sure to plot the smoothed output to check for any introduced
-artifacts.</p>
+they have a tendency to add artifacts to the derivatives of growth curve
+data. However, they may work for your analyses, so if you are
+considering using them make sure to plot the smoothed output to check
+for any introduced artifacts.</p>
 <p>For <code>loess</code>, the tuning parameter is the <code>span</code>
 argument. <code>loess</code> works by doing fits on subset windows of
 the data centered at each data point. <code>span</code> is the width of
@@ -577,16 +602,101 @@ The fits can be linear (<code>degree = 1</code>) or polynomial
 <code>k</code> argument. <code>gam</code> works by doing fits on subsets
 of the data and linking these fits together. <code>k</code> determines
 how many link points (“knots”) it can use. If not specified, the default
-<code>k</code> value for smoothing a time series is 10, with
-<strong>smaller values being more “smoothed”</strong>. However,
-<strong>unlike earlier methods, <code>k</code> values that are too large
-are also problematic</strong>, as they will tend to ‘overfit’ the
-data.</p>
+<code>k</code> value for smoothing a time series is 10, with smaller
+values being more “smoothed”. However, unlike earlier methods,
+<code>k</code> values that are too large are also problematic, as they
+will tend to ‘overfit’ the data.</p>
 <p>For <code>smooth.spline</code>, the primary tuning parameters are
 <code>df</code> and <code>spar</code>. <code>df</code> is the number of
 degrees of freedom, and must be between 1 and the number of unique x
 values. <code>spar</code> is the smoothing parameter, and is typically
 between 0 and 1.</p>
+</div>
+<div class="section level3">
+<h3 id="ChoosingTuningParams">Choosing tuning parameter values<a class="anchor" aria-label="anchor" href="#ChoosingTuningParams"></a>
+</h3>
+<p>Given that smoothing reduces the variance of your data but adds bias,
+how can you know the right value of the tuning ‘smoothness’ parameter
+for your data?</p>
+<p>One way you can choose is by trying smoothing with different tuning
+parameter values, plotting the results, and then choosing the one that
+smooths your data as little as necessary for your analyses to work. This
+approach is especially useful if you’re trying to deal with noise that
+is most strongly affecting your derivatives.</p>
+<p>An alternative way is to use cross-validation to attempt to estimate
+the best smoothing parameter value. Cross-validation works by randomly
+splitting the data into blocks of roughly equal size, leaving out one
+block and smoothing the data, then seeing how close the smoothed values
+are to the left-out data, reporting the average error across all the
+blocks. We can then repeat this whole process at different values of the
+smoothing parameter, testing which smoothing parameter value gives us
+the lowest error. Note, however, that this approach doesn’t quantify how
+well the smoothing improved your derivatives.</p>
+<p>To do cross-validation of smoothing parameters, use
+<code>train_smooth_data</code>. <code>train_smooth_data</code> works
+similar to <code>smooth_data</code>, except that instead of returning
+the smoothed data values, it returns the average accuracy metrics.
+Because of this, we have to use <code>train_smooth_data</code> within
+the <code>dplyr</code> function <code>reframe</code>, which works like
+<code>summarize</code> except that it allows multiple rows to be
+returned.</p>
+<p>By default, <code>train_smooth_data</code> will test an evenly spaced
+grid of three values of the smoothing parameter. Usually, that’s not
+enough values, so you’ll want to set the number of values to test with
+<code>tuneLength</code> (more values will take longer to calculate).</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ex_dat_mrg_fortraining</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">7</span>, example <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
+<span></span>
+<span><span class="va">training_results</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/reframe.html" class="external-link">reframe</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg_fortraining</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="../reference/train_smooth_data.html">train_smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
+<span>                   sm_method <span class="op">=</span> <span class="st">"moving-average"</span>,</span>
+<span>                   tuneLength <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: lattice</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">training_results</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 10</span></span></span>
+<span><span class="co">#&gt;   Bacteria_strain Phage    Well  window_width_n    RMSE Rsquared     MAE  RMSESD</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Strain 1        No Phage A1                 1 0.009<span style="text-decoration: underline;">87</span>    0.999 0.004<span style="text-decoration: underline;">58</span> 0.013<span style="text-decoration: underline;">0</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        No Phage A1                 3 0.007<span style="text-decoration: underline;">90</span>    1.00  0.004<span style="text-decoration: underline;">44</span> 0.007<span style="text-decoration: underline;">77</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 1        No Phage A1                 7 0.009<span style="text-decoration: underline;">44</span>    1.00  0.006<span style="text-decoration: underline;">28</span> 0.006<span style="text-decoration: underline;">47</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 1        No Phage A1                 9 0.011<span style="text-decoration: underline;">9</span>     0.999 0.008<span style="text-decoration: underline;">07</span> 0.005<span style="text-decoration: underline;">83</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 1        No Phage A1                13 0.017<span style="text-decoration: underline;">9</span>     0.999 0.012<span style="text-decoration: underline;">4</span>  0.005<span style="text-decoration: underline;">20</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 1        Phage A… A7                 1 0.017<span style="text-decoration: underline;">7</span>     0.947 0.007<span style="text-decoration: underline;">79</span> 0.012<span style="text-decoration: underline;">1</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: RsquaredSD &lt;dbl&gt;, MAESD &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>We can see that <code>train_smooth_data</code> has given us a number
+of accuracy metrics. The first one is ‘RMSE’, which stands for “root
+mean squared error” and is often a good default value to use (where
+lower values are better) to decide what the best parameter value is.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">training_results</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">window_width_n</span>, y <span class="op">=</span> <span class="va">RMSE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p>Based on this plot, a window_width_n of 1 has the lowest average
+error of all the values we tested.</p>
+<p>However, often you’ll want to test different values from the defaults
+in <code>train_smooth_data</code>. To do so, specify exactly what values
+you want to test with the <code>tuneGrid</code> argument:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">training_results</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/reframe.html" class="external-link">reframe</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg_fortraining</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">Well</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="../reference/train_smooth_data.html">train_smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>, </span>
+<span>                   sm_method <span class="op">=</span> <span class="st">"moving-average"</span>,</span>
+<span>                   tuneGrid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                     <span class="st">"window_width_n"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">9</span>, <span class="fl">13</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">training_results</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">window_width_n</span>, y <span class="op">=</span> <span class="va">RMSE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p>Here we can see for our example data that cross-validation suggests
+little smoothing is necessary. This makes sense, since our example data
+has noise that is most problematic for our derivatives, and
+cross-validation doesn’t consider the derivatives. For your data, I
+suggest combining cross-validation and manual observation of different
+smoothings to decide the best smoothing parameter value to use.</p>
 </div>
 </div>
 <div class="section level2">
@@ -597,7 +707,7 @@ the smoothed data. Combining smoothing of raw data and fitting using
 multiple points for calculating derivatives can be a powerful
 combination for reducing the effects of noise while minimizing the
 introduction of bias.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note here that we're calculating derivatives of the smoothed column generated</span></span>
 <span><span class="co">#  in the previous section by combining moving median and moving average smoothing</span></span>
 <span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> </span>
@@ -626,10 +736,12 @@ introduction of bias.</p>
 <span>                                 <span class="va">noise</span> <span class="op">==</span> <span class="st">"No"</span>, <span class="va">window_width_n</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span>,</span>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 7 rows containing missing values (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; Warning: Removed 7 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Plot per-capita derivative</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg_wide</span>, <span class="va">noise</span> <span class="op">==</span> <span class="st">"Yes"</span><span class="op">)</span>,</span>
@@ -642,9 +754,11 @@ introduction of bias.</p>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 6 rows containing missing values (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-10-2.png" width="700"></p>
+<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span>
+<span><span class="co">#&gt; Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
 <p>Here we can see that calculating derivatives from smoothed raw data
 can be a powerfully useful combination.</p>
 </div>
@@ -674,11 +788,14 @@ for analyzing growth curves.</p>
 <li>Dealing with noise: <code><a href="../articles/gc07_noise.html">vignette("gc07_noise")</a></code>
 </li>
 <li>
-<strong>Statistics, merging other data, and other
-resources:</strong> <code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
+<strong>Best practices and other tips:</strong>
+<code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
 </li>
 <li>Working with multiple plates:
 <code><a href="../articles/gc09_multiple_plates.html">vignette("gc09_multiple_plates")</a></code>
+</li>
+<li>Using make_design to generate experimental designs:
+<code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code>
 </li>
 </ol>
 </div>

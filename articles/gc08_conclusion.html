@@ -6,12 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="gcplyr">
-<title>Statistics, merging other data, and other resources • gcplyr</title>
+<title>Best practices and other tips • gcplyr</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Statistics, merging other data, and other resources">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Best practices and other tips">
 <meta property="og:description" content="gcplyr">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,8 +45,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="nav-item">
@@ -79,7 +80,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Statistics, merging other data, and other resources</h1>
+      <img src="" class="logo" alt=""><h1>Best practices and other tips</h1>
                         <h4 data-toc-skip class="author">Mike
 Blazanin</h4>
             
@@ -112,11 +113,14 @@ Blazanin</h4>
 <li>Dealing with noise: <code><a href="../articles/gc07_noise.html">vignette("gc07_noise")</a></code>
 </li>
 <li>
-<strong>Statistics, merging other data, and other
-resources:</strong> <code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
+<strong>Best practices and other tips:</strong>
+<code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
 </li>
 <li>Working with multiple plates:
 <code><a href="../articles/gc09_multiple_plates.html">vignette("gc09_multiple_plates")</a></code>
+</li>
+<li>Using make_design to generate experimental designs:
+<code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code>
 </li>
 </ol>
 <p>So far, we’ve imported and transformed our measures, combined them
@@ -128,7 +132,7 @@ other data, and additional resources for analyzing growth curves.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.8.0, Build Date: 2024-01-29)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.9.0, Build Date: 2024-03-11)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. gcplyr: an R package for microbial growth</span></span>
@@ -145,28 +149,6 @@ other data, and additional resources for analyzing growth curves.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># This code was previously explained</span></span>
-<span><span class="co"># Here we're re-running it so it's available for us to work with</span></span>
-<span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span>,</span>
-<span>                                       id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span>
-<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">example_tidydata</span>, <span class="va">example_design_tidy</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
-<span><span class="va">ex_dat_mrg</span><span class="op">$</span><span class="va">Well</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span><span class="op">$</span><span class="va">Well</span>,</span>
-<span>         levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span>, each <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>,</span>
-<span>         smoothed_med3 <span class="op">=</span> </span>
-<span>           <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span>,</span>
-<span>                       sm_method <span class="op">=</span> <span class="st">"moving-median"</span>, window_width_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
-<span>         <span class="co"># Note that for the second round, we're using the </span></span>
-<span>         <span class="co"># first smoothing as the input y</span></span>
-<span>         smoothed <span class="op">=</span> </span>
-<span>           <span class="fu"><a href="../reference/smooth_data.html">smooth_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">smoothed_med3</span>,</span>
-<span>                       sm_method <span class="op">=</span> <span class="st">"moving-average"</span>, window_width_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="statistical-analyses-of-growth-curves-data">Statistical analyses of growth curves data<a class="anchor" aria-label="anchor" href="#statistical-analyses-of-growth-curves-data"></a>
@@ -177,33 +159,37 @@ these data?</p>
 <div class="section level3">
 <h3 id="when-should-we-average-replicates">When should we average replicates?<a class="anchor" aria-label="anchor" href="#when-should-we-average-replicates"></a>
 </h3>
-<p>Before we dig into what we to do next, I want to emphasize something
-we did <em>not</em> do in this workflow: averaging different wells
-together <em>before</em> summarization. In my opinion, averaging should
-only occur after summarization, not before. Why? Even wells that have
-the same contents (i.e. are technical replicates) can still differ in
-their growth due to biological variation (e.g. stochastic growth
-dynamics). If we average our density values at the beginning, we may
-introduce bias and we will not have the ability to visualize or assess
-the biological variation present in our data.</p>
+<p>I want to emphasize something we did <em>not</em> do in our workflow:
+averaging different wells together <em>before</em> summarization. In my
+opinion, averaging should only occur after summarization, not before.
+Why? Even wells that have the same contents (i.e. are technical
+replicates) can still differ in their growth due to biological variation
+(e.g. stochastic growth dynamics). If we average our density values at
+the beginning, we may introduce bias, and we will not have the ability
+to visualize or assess the biological variation present in our data.</p>
 <p>Let’s look at a simple example to demonstrate this point. I’m going
-to simulate bacterial growth using the Baranyi-Roberts mathematical
-model of growth, which is logistic growth but with a period of
-acclimation at the beginning:</p>
-<p><span class="math display">\[\frac{dN}{dt} = \frac{q_{0}}{q_{0} +
-e^{-mt}} * r N\left(1-\frac{N}{k}\right)\]</span></p>
+to simulate bacterial growth using logistic growth, which starts after a
+finite ‘lag period’ where the bacteria don’t grow at all.</p>
+<p><span class="math display">\[\begin{equation}
+dN/dt =
+\begin{cases}
+  0 &amp; t &lt; lag \\
+  r N\left(1-\frac{N}{k}\right) &amp; t \ge lag
+\end{cases}
+\end{equation}\]</span></p>
 <p>Where <span class="math inline">\(N\)</span> is the population size,
-<span class="math inline">\(q_{0}\)</span> is a parameter controlling
-the initial acclimatization state of the population, <span class="math inline">\(m\)</span> is the rate of acclimation, <span class="math inline">\(r\)</span> is the rate of growth, and <span class="math inline">\(k\)</span> is the carrying capacity of the
-population.</p>
+<span class="math inline">\(r\)</span> is the rate of growth, <span class="math inline">\(k\)</span> is the carrying capacity of the
+population, and <span class="math inline">\(lag\)</span> is the lag
+time.</p>
 <p>In the code below, I’ve simulated the growth of 96 different wells of
-bacteria. All the bacteria are identical, except that they differ in the
-rate at which they acclimate.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+bacteria. All the bacteria grow at exactly the same rate, except they
+differ in their lag time (how long they wait before starting to
+grow).</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_dat_tdy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">8</span>, example <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p>Now, let’s calculate the growth rate of each well and plot the
 growth:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_dat_tdy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sim_dat_tdy</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>                      percap_deriv <span class="op">=</span> <span class="fu"><a href="../reference/calc_deriv.html">calc_deriv</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">Measurements</span>, x <span class="op">=</span> <span class="va">time</span>,</span>
 <span>                                                percapita <span class="op">=</span> <span class="cn">TRUE</span>, blank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
@@ -214,40 +200,30 @@ growth:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sim_dat_tdy</span>, <span class="va">Well</span> <span class="op">==</span> <span class="st">"averaged"</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gc08_conclusion_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="gc08_conclusion_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 <p>Here we’ve plotted each individual well in black, with the “average
 well” plotted in red. We can clearly see that our different wells are
-varying in how quickly they’re acclimating. Our average well appears to
-reflect the data pretty well, does it give a good measure for our
-average maximum per-capita growth rate?</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+varying in how long their lag time is, but not their growth rate once
+they start. In contrast, our average well has a quite different shape.
+Does that affect its maximum growth rate?</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Summarize our data</span></span>
 <span><span class="va">sim_dat_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">sim_dat_tdy</span>, <span class="va">Well</span><span class="op">)</span>,</span>
 <span>                         max_growth_rate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">percap_deriv</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot the maximum per-capita growth rates of each well</span></span>
-<span><span class="co">#  Add a red line for the max growth rate of the "average well"</span></span>
-<span><span class="co">#  Add a dashed line for the average growth rate of all the wells</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sim_dat_sum</span>, <span class="va">Well</span> <span class="op">!=</span> <span class="st">"averaged"</span><span class="op">)</span>, </span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">max_growth_rate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sim_dat_sum</span>, <span class="va">Well</span> <span class="op">==</span> <span class="st">"averaged"</span><span class="op">)</span>, </span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">max_growth_rate</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> </span>
-<span>               <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sim_dat_sum</span>, <span class="va">Well</span> <span class="op">!=</span> <span class="st">"averaged"</span><span class="op">)</span><span class="op">$</span><span class="va">max_growth_rate</span><span class="op">)</span>,</span>
-<span>             lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
-<p><img src="gc08_conclusion_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-<p>Here we can see that the maximum growth rate of the “average well”
-(red line) is not the same as the true average maximum growth rate of
-all the wells (dashed line). While this bias might seem small, it is in
-fact very consistent: if you ran this simulation many more times, the
-“average well” growth rate would nearly always be lower than the true
-average growth rate. Moreover, this bias extends to many other
-statistics as well.</p>
-<p>Thus, I recommend against averaging wells together before
-summarizing, since it often introduces bias and eliminates our ability
-to visualize variation between replicates.</p>
+<span><span class="co">#  as well as the 'average' well</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim_dat_sum</span>, </span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Well</span> <span class="op">==</span> <span class="st">"averaged"</span>, y <span class="op">=</span> <span class="va">max_growth_rate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span>, position <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_jitter.html" class="external-link">position_jitter</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.03</span><span class="op">)</span></span></code></pre></div>
+<p><img src="gc08_conclusion_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p>Here we can see that the maximum growth rate of the “average well” is
+far from the maximum growth rate of each well.</p>
+<p>Moreover, this bias can show up in other summary metrics as well. An
+‘average curve’ is rarely a good representative of the average of all
+curves, so I recommend against averaging wells together before
+summarizing.</p>
 </div>
 <div class="section level3">
 <h3 id="carrying-out-statistical-testing">Carrying out statistical testing<a class="anchor" aria-label="anchor" href="#carrying-out-statistical-testing"></a>
@@ -299,16 +275,27 @@ data frames together, this can be achieved with
 <code>merge_dfs</code>.</p>
 <p>We’ll focus on the area-under-the-curve metric, and on just the
 bacteria grown in the absence of phages.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Phage</span> <span class="op">==</span> <span class="st">"No Phage"</span><span class="op">)</span>, </span>
-<span>            auc <span class="op">=</span> <span class="fu"><a href="../reference/auc.html">auc</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">smoothed</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># This code was previously explained</span></span>
+<span><span class="co"># Here we're re-running it so it's available for us to work with</span></span>
+<span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span>,</span>
+<span>                                       id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span>
+<span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">example_tidydata</span>, <span class="va">example_design_tidy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
+<span><span class="va">ex_dat_mrg_sum</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Phage</span> <span class="op">==</span> <span class="st">"No Phage"</span><span class="op">)</span>,</span>
+<span>                     <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span><span class="op">)</span>,</span>
+<span>            auc <span class="op">=</span> <span class="fu"><a href="../reference/auc.html">auc</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Time</span>, y <span class="op">=</span> <span class="va">Measurements</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `summarise()` has grouped output by 'Well', 'Bacteria_strain'. You can override</span></span>
 <span><span class="co">#&gt; using the `.groups` argument.</span></span></code></pre></div>
 <p>Imagine that, separately, we’ve measured the resistance of each of
 our example bacteria to antibiotics, and we want to know if there’s any
 relationship between the antibiotic resistance of the bacteria and their
-growth. Here we’ll generate some mock antibiotic resistance data.
+growth. <code>make_example</code> has some mock antibiotic resistance
+data we can use. Importantly, the antibiotic data must have matching
+headers to our growth curve data so that <code>merge_dfs</code> knows
+how to merge them.</p>
+<p>Here we’ll generate some mock antibiotic resistance data.
 Importantly, our data must have matching headers as our growth curve
 data so that <code>merge_dfs</code> knows how to merge the
 <code>data.frame</code>’s. We’ll put whether or not the strain is
@@ -316,15 +303,9 @@ resistant to the antibiotic under the <code>Antibiotic_resis</code>
 column, with a TRUE for resistance, and FALSE for sensitivity.
 <strong>Don’t worry exactly how this code works</strong>, since it’s
 just simulating data that you would have collected in the lab.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">antibiotic_dat</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Bacteria_strain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Strain"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">48</span><span class="op">)</span>,</span>
-<span>             Antibiotic_resis <span class="op">=</span> </span>
-<span>               <span class="va">ex_dat_mrg_sum</span><span class="op">$</span><span class="va">auc</span><span class="op">[</span></span>
-<span>                 <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Strain"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">48</span><span class="op">)</span>, </span>
-<span>                       <span class="va">ex_dat_mrg_sum</span><span class="op">$</span><span class="va">Bacteria_strain</span><span class="op">)</span><span class="op">]</span> <span class="op">*</span> </span>
-<span>               <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">48</span>, <span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">$</span><span class="va">auc</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">antibiotic_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">8</span>, example <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">antibiotic_dat</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Bacteria_strain Antibiotic_resis</span></span>
@@ -336,7 +317,7 @@ just simulating data that you would have collected in the lab.</p>
 <span><span class="co">#&gt; 6        Strain 6             TRUE</span></span></code></pre></div>
 <p>Great, now we merge our two data frames and see if there’s a
 relationship.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">growth_and_antibiotics</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span>, <span class="va">antibiotic_dat</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Bacteria_strain)`</span></span>
@@ -344,18 +325,18 @@ relationship.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain [6]</span></span></span>
 <span><span class="co">#&gt;   Well  Bacteria_strain Phage       auc Antibiotic_resis</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage <span style="text-decoration: underline;">55</span>172. TRUE            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A2    Strain 2        No Phage <span style="text-decoration: underline;">67</span>181. FALSE           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A3    Strain 3        No Phage <span style="text-decoration: underline;">52</span>392  TRUE            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A4    Strain 4        No Phage <span style="text-decoration: underline;">70</span>101. FALSE           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A5    Strain 5        No Phage <span style="text-decoration: underline;">70</span>932. FALSE           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A6    Strain 6        No Phage <span style="text-decoration: underline;">44</span>079. TRUE</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A1    Strain 1        No Phage <span style="text-decoration: underline;">57</span>291. TRUE            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A2    Strain 2        No Phage <span style="text-decoration: underline;">69</span>361. FALSE           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A3    Strain 3        No Phage <span style="text-decoration: underline;">54</span>460. TRUE            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A4    Strain 4        No Phage <span style="text-decoration: underline;">72</span>280. FALSE           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A5    Strain 5        No Phage <span style="text-decoration: underline;">73</span>112. FALSE           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> A6    Strain 6        No Phage <span style="text-decoration: underline;">45</span>970. TRUE</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">growth_and_antibiotics</span>, </span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Antibiotic_resis</span>, y <span class="op">=</span> <span class="va">auc</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gc08_conclusion_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="gc08_conclusion_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>There is! We can see that the antibiotic resistant strains
 (<code>TRUE</code>) have a smaller area-under-the-curve than the
 antibiotic sensitive strains (<code>FALSE</code>) (although, to be fair,
@@ -452,11 +433,14 @@ at once, check out our final vignette:
 </li>
 <li>Dealing with noise: <code><a href="../articles/gc07_noise.html">vignette("gc07_noise")</a></code>
 </li>
-<li>Statistics, merging other data, and other resources:
+<li>Best practices and other tips:
 <code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
 </li>
 <li><strong>Working with multiple plates:
 <code><a href="../articles/gc09_multiple_plates.html">vignette("gc09_multiple_plates")</a></code></strong></li>
+<li>Using make_design to generate experimental designs:
+<code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code>
+</li>
 </ol>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

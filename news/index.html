@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,8 +28,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="nav-item">
@@ -59,7 +60,30 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.8.0" id="gcplyr-180">gcplyr 1.8.0<a class="anchor" aria-label="anchor" href="#gcplyr-180"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.9.0" id="gcplyr-190">gcplyr 1.9.0<a class="anchor" aria-label="anchor" href="#gcplyr-190"></a></h2>
+<ul><li><p>Bug fix to lag_time where it had been incorrectly calculating y0 as the minimum y value where deriv was not NA. It now calculates the minimum y value regardless of the deriv value</p></li>
+<li><p>Bug fix to lag_time where NA was returned when there was only one non-NA data point, it now returns the x value of the single data point</p></li>
+<li><p>When lag_time returns NA, it now always returns a numeric NA</p></li>
+<li><p>Bug fix for import_blockdesigns where it had not been separating designs if they were read from only a single file</p></li>
+<li><p>Bug fix for import_blockdesigns where designs were not being joined as columns if they were read from a single file</p></li>
+<li><p>Bug fix for import_blockdesigns where arguments passed via … were previously not being passed to separate_tidy</p></li>
+<li><p>import_blockdesigns has a new argument join_designs which controls whether multiple imported designs should be handled as referring to the same plate (and so joined as columns), or as different plates (and so joined as rows)</p></li>
+<li><p>import_blockdesigns now has an option to keep the block_names column in the output</p></li>
+<li><p>solve_linear now correctly handles the case where x1 == x2 == x3</p></li>
+<li><p>New arguments window_width_frac and window_width_n_frac in window-using functions (including find_local_extrema and related functions, calc_deriv, moving_average, and moving_median). These arguments allow the width of the window to be specified as a fraction of the total range of data or total number of data points, respectively</p></li>
+<li><p>moving_average and moving_median have new arguments, x and y, that can be used instead of formula and data</p></li>
+<li><p>A new function predict_interpolation works like stats::predict by linearly interpolating from existing data. This function can be used as the predict function for the output of moving_average and moving_median</p></li>
+<li><p>New functions train_smooth_data and makemethod_train_smooth_data enable users to test different tuning parameter values for smooth_data via caret::train</p></li>
+<li><p>Many functions now have warn_* arguments, allowing users to silence specific warnings</p></li>
+<li><p>Bug fix in auc where warning was being incorrectly issued when xlim was inside the range of all x values but not inside the range of x values after NA x and y values had been removed</p></li>
+<li><p>moving_average and moving_median now warn when not all x values are unique</p></li>
+<li><p>Improved warnings in calc_deriv when window is not wide enough</p></li>
+<li><p>lag_time now warns when the estimated lag time is less than the minimum non-NA value of x</p></li>
+<li><p>Some internal functions were renamed for consistent style and more clear error messages</p></li>
+<li><p>Various documentation and vignette improvements</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.8.0" id="gcplyr-180">gcplyr 1.8.0<a class="anchor" aria-label="anchor" href="#gcplyr-180"></a></h2><p class="text-muted">CRAN release: 2024-01-30</p>
 <ul><li><p>read_ and import_ functions can now use any of the utils::read.table file types, including csv, csv2, delim, and delim2</p></li>
 <li><p>The extension argument of read_ and import_ functions has been deprecated, the new argument name is filetype</p></li>
 <li><p>The block_name_header argument in read_blocks has been deprecated, the new argument name is block_names_header</p></li>

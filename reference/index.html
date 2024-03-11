@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,8 +28,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="active nav-item">
@@ -184,14 +185,9 @@
         <dd>Smooth data</dd>
       </dl><dl><dt>
           
-          <code><a href="moving_average.html">moving_average()</a></code> 
+          <code><a href="MovingWindowFunctions.html">moving_average()</a></code> <code><a href="MovingWindowFunctions.html">moving_median()</a></code> 
         </dt>
-        <dd>Moving average smoothing</dd>
-      </dl><dl><dt>
-          
-          <code><a href="moving_median.html">moving_median()</a></code> 
-        </dt>
-        <dd>Moving median smoothing</dd>
+        <dd>Moving window smoothing</dd>
       </dl><dl><dt>
           
           <code><a href="calc_deriv.html">calc_deriv()</a></code> 
@@ -202,6 +198,21 @@
           <code><a href="gc_smooth.spline.html">gc_smooth.spline()</a></code> 
         </dt>
         <dd>Fit a Smoothing Spline</dd>
+      </dl><dl><dt>
+          
+          <code><a href="train_smooth_data.html">train_smooth_data()</a></code> 
+        </dt>
+        <dd>Test efficacy of different smoothing parameters</dd>
+      </dl><dl><dt>
+          
+          <code><a href="makemethod_train_smooth_data.html">makemethod_train_smooth_data()</a></code> 
+        </dt>
+        <dd>Create method argument for <code><a href="https://rdrr.io/pkg/caret/man/train.html" class="external-link">caret::train</a></code> of growth curve smoothers</dd>
+      </dl><dl><dt>
+          
+          <code><a href="predict_interpolation.html">predict_interpolation()</a></code> 
+        </dt>
+        <dd>Predict data by linear interpolation from existing data</dd>
       </dl></div><div class="section level2">
       <h2 id="analyzing-growth-curve-data">Analyzing growth curve data<a class="anchor" aria-label="anchor" href="#analyzing-growth-curve-data"></a></h2>
       

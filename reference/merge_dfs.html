@@ -18,7 +18,7 @@ Merging is done by column names that match between x and y."><!-- mathjax --><sc
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,8 +36,9 @@ Merging is done by column names that match between x and y."><!-- mathjax --><sc
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="active nav-item">
@@ -85,6 +86,7 @@ Merging is done by column names that match between <code>x</code> and <code>y</c
 <span>  collapse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  names_to <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  join <span class="op">=</span> <span class="st">"full"</span>,</span>
+<span>  warn_morerows <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -136,6 +138,11 @@ are 'full' (default), 'inner', 'left', and 'right'.</p>
 </ul><p>See <a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">full_join</a>, <a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a>, 
 <a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">right_join</a>, or <a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a> for 
 more details</p></dd>
+
+
+<dt>warn_morerows</dt>
+<dd><p>logical, should a warning be passed when the output
+has more rows than x and more rows than y?</p></dd>
 
 
 <dt>...</dt>

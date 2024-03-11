@@ -12,7 +12,7 @@ or per-capita difference or derivative between sequential values"><!-- mathjax -
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,8 +30,9 @@ or per-capita difference or derivative between sequential values"><!-- mathjax -
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="active nav-item">
@@ -78,8 +79,14 @@ or per-capita difference or derivative between sequential values</p>
 <span>  subset_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_width_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_frac <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_n_frac <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trans_y <span class="op">=</span> <span class="st">"linear"</span>,</span>
-<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  warn_ungrouped <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  warn_logtransform_warnings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  warn_logtransform_infinite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  warn_window_toosmall <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -128,25 +135,28 @@ independently of the others.</p>
 to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate</a></code></p></dd>
 
 
-<dt>window_width_n, window_width</dt>
+<dt>window_width, window_width_n, window_width_frac, window_width_n_frac</dt>
 <dd><p>Set how many data points are used to determine
 the slope at each point.</p>     
-<p>When both are <code>NULL</code>, <code>calc_deriv</code> 
+<p>When all are <code>NULL</code>, <code>calc_deriv</code> 
 calculates the difference or derivative
 of each point with the next point, appending
 <code>NA</code> at the end.</p>     
-<p>When one or both are specified, a linear regression 
+<p>When one or multiple are specified, a linear regression 
 is fit to all points in the window to determine the 
 slope.</p>     
 <p><code>window_width_n</code> specifies the width of the
 window in number of data points. <code>window_width</code>
-specifies the width of the window in units of <code>x</code>.</p>     
-<p>When using <code>window_width</code> and <code>window_width_n</code> 
-at the same time, windows are conservative. Points 
-included in each window will meet both the 
-<code>window_width</code> and the <code>window_width_n</code>.</p>
+specifies the width of the window in units of <code>x</code>.
+<code>window_width_n_frac</code> specifies the width of the
+window as a fraction of the total number of data points.</p>     
+<p>When using multiple window specifications at the same 
+time, windows are conservative. Points 
+included in each window will meet all of the 
+<code>window_width</code>, <code>window_width_n</code>, and
+<code>window_width_n_frac</code>.</p>
 <p>A value of <code>window_width_n = 3</code> or 
-<code>window_width_n = 5</code> is often the most effective.</p></dd>
+<code>window_width_n = 5</code> is often a good default.</p></dd>
 
 
 <dt>trans_y</dt>
@@ -166,6 +176,31 @@ included in each window will meet both the
 
 <dt>na.rm</dt>
 <dd><p>logical whether NA's should be removed before analyzing</p></dd>
+
+
+<dt>warn_ungrouped</dt>
+<dd><p>logical whether warning should be issued when
+<code>smooth_data</code> is being called on ungrouped data
+and <code>subset_by = NULL</code>.</p></dd>
+
+
+<dt>warn_logtransform_warnings</dt>
+<dd><p>logical whether warning should be issued 
+when log(y) produced warnings.</p></dd>
+
+
+<dt>warn_logtransform_infinite</dt>
+<dd><p>logical whether warning should be issued 
+when log(y) produced infinite values that will
+be treated as <code>NA</code>.</p></dd>
+
+
+<dt>warn_window_toosmall</dt>
+<dd><p>logical whether warning should be issued 
+when only one data point is in the window
+set by <code>window_width_n</code>, 
+<code>window_width</code>, or <code>window_width_n_frac</code>,
+and so <code>NA</code> will be returned.</p></dd>
 
 </dl></div>
     <div class="section level2">

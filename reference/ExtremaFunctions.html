@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,8 +28,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="active nav-item">
@@ -71,6 +72,8 @@
 <span>  window_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_width_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_height <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_frac <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_n_frac <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  return <span class="op">=</span> <span class="st">"index"</span>,</span>
 <span>  return_maxima <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  return_minima <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -88,6 +91,8 @@
 <span>  window_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_width_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_height <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_frac <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_n_frac <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  return <span class="op">=</span> <span class="st">"index"</span>,</span>
 <span>  return_endpoints <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -99,6 +104,8 @@
 <span>  window_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_width_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_height <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_frac <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  window_width_n_frac <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  return <span class="op">=</span> <span class="st">"index"</span>,</span>
 <span>  return_endpoints <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -115,34 +122,23 @@
 <dd><p>Optional numeric vector of corresponding x values</p></dd>
 
 
-<dt>window_width</dt>
-<dd><p>Width of the window (in units of <code>x</code>) used to
-search for local extrema. A narrower width will be more
-sensitive to narrow local maxima/minima, while a wider
-width will be less sensitive to local maxima/minima.</p></dd>
-
-
-<dt>window_width_n</dt>
-<dd><p>The maximum number of data points a single 
-extrema-search step is allowed to take. For example,
-when maxima-finding, the function will not pass
-a valley consisting of more than <code>window_width_n</code>
-data points.</p>
-<p>A smaller <code>window_width_n</code> will be more sensitive 
-to narrow local maxima/minima, while a larger 
-<code>window_width_n</code> will be less sensitive to 
-narrow local maxima/minima.</p></dd>
-
-
-<dt>window_height</dt>
-<dd><p>The maximum change in <code>y</code> a single extrema-search
-step is allowed to take.  For example, when 
-maxima-finding, the function will not pass a
-valley deeper than <code>window_height</code>.</p>
-<p>A smaller <code>window_height</code> will be more sensitive 
-to shallow local maxima/minima, while a larger 
-<code>window_height</code> will be less sensitive to 
-shallow maxima/minima.</p></dd>
+<dt>window_width, window_width_n, window_height, window_width_frac, window_width_n_frac</dt>
+<dd><p>Arguments that set the width/height of the window used to
+search for local extrema.</p>
+<p><code>window_width</code> is in units of <code>x</code>.</p>
+<p><code>window_width_n</code> is in units of number of data points.</p>
+<p><code>window_height</code> is the maximum change in <code>y</code> 
+a single extrema-search step is allowed to take.</p>
+<p><code>window_width_n_frac</code> is as a fraction of the total
+number of data points.</p>
+<p>For example, the function will not pass a peak or valley
+more than <code>window_width_n</code> data points wide, nor
+a peak/valley taller or deeper than <code>window_height</code>.</p>
+<p>A narrower width will be more sensitive to narrow local 
+maxima/minima, while a wider width will be less sensitive 
+to local maxima/minima. A smaller height will be more 
+sensitive to shallow local maxima/minima, while a larger 
+height will be less sensitive to shallow maxima/minima.</p></dd>
 
 
 <dt>return</dt>
@@ -223,15 +219,13 @@ parameters to pass to <code>find_local_extrema</code></p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For <code>find_local_extrema</code>, one of <code>window_width</code>, 
-<code>window_width_n</code>, or <code>window_height</code> must be provided.</p>
-<p>For <code>first_minima</code> and <code>first_maxima</code>, if none of 
-<code>window_width</code>, <code>window_width_n</code>, or <code>window_height</code> are 
-provided, <code>window_width_n</code> is set to 20<!-- % of the data by default. --></p>
-<p>If multiple of <code>window_width</code>, <code>window_width_n</code>, or 
-<code>window_height</code> are provided, steps are limited conservatively 
-(a single step must meet all criteria)</p>
-<p>This function is designed to be compatible for use within
- <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">dplyr::summarize</a></code></p> 
+<code>window_width_n</code>, <code>window_height</code>, or <code>window_width_n_frac</code>
+must be provided.</p>
+<p>For <code>first_minima</code> or <code>first_maxima</code>, set 
+<code>window_width_n_frac = NULL</code> to override default width behavior.</p>
+<p>If multiple of <code>window_width</code>, <code>window_width_n</code>,
+<code>window_height</code>, or <code>window_width_n_frac</code> are provided, steps 
+are limited conservatively (a single step must meet all criteria).</p>
 <p>In the case of exact ties in <code>y</code> values within a window, only the 
 first local extrema is returned.</p>
     </div>

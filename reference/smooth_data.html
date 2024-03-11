@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,8 +28,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="active nav-item">
@@ -71,7 +72,9 @@
 <span>  y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">sm_method</span>,</span>
 <span>  subset_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  return_fitobject <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  return_fitobject <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  warn_ungrouped <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  warn_gam_no_s <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,16 +108,27 @@ and "smooth.spline".</p></dd>
 <dt>subset_by</dt>
 <dd><p>An optional vector as long as <code>y</code>. 
 <code>y</code> will be split by the unique values of this vector 
-and the derivative for each group will be calculated 
+and the smoothed data for each group will be calculated 
 independently of the others.</p>
 <p>This provides an internally-implemented approach similar
 to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate</a></code></p></dd>
 
 
 <dt>return_fitobject</dt>
-<dd><p>logical indicating whether entire object returned
+<dd><p>logical whether entire object returned
 by fitting function should be returned. If FALSE,
 just fitted values are returned.</p></dd>
+
+
+<dt>warn_ungrouped</dt>
+<dd><p>logical whether warning should be issued when
+<code>smooth_data</code> is being called on ungrouped data
+and <code>subset_by = NULL</code>.</p></dd>
+
+
+<dt>warn_gam_no_s</dt>
+<dd><p>logical whether warning should be issued when gam is 
+used without <code>s()</code> in the formula.</p></dd>
 
 </dl></div>
     <div class="section level2">

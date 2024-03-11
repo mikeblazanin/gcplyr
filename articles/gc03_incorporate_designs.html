@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,8 +45,9 @@
     <a class="dropdown-item" href="../articles/gc05_process.html">Processing data</a>
     <a class="dropdown-item" href="../articles/gc06_analyze.html">Analyzing data</a>
     <a class="dropdown-item" href="../articles/gc07_noise.html">Dealing with noise</a>
-    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Statistics, merging other data, and other resources</a>
+    <a class="dropdown-item" href="../articles/gc08_conclusion.html">Best practices and other tips</a>
     <a class="dropdown-item" href="../articles/gc09_multiple_plates.html">Working with multiple plates</a>
+    <a class="dropdown-item" href="../articles/gc10_using_make_design.html"></a>
   </div>
 </li>
 <li class="nav-item">
@@ -112,11 +113,14 @@ Blazanin</h4>
 </li>
 <li>Dealing with noise: <code><a href="../articles/gc07_noise.html">vignette("gc07_noise")</a></code>
 </li>
-<li>Statistics, merging other data, and other resources:
+<li>Best practices and other tips:
 <code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
 </li>
 <li>Working with multiple plates:
 <code><a href="../articles/gc09_multiple_plates.html">vignette("gc09_multiple_plates")</a></code>
+</li>
+<li>Using make_design to generate experimental designs:
+<code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code>
 </li>
 </ol>
 <p>So far, we’ve imported and transformed our measures data into
@@ -126,7 +130,7 @@ experimental design.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.8.0, Build Date: 2024-01-29)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.9.0, Build Date: 2024-03-11)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. 2023. gcplyr: an R package for microbial growth</span></span>
@@ -136,8 +140,8 @@ experimental design.</p>
 <div class="section level2">
 <h2 id="including-design-elements">Including design elements<a class="anchor" aria-label="anchor" href="#including-design-elements"></a>
 </h2>
-<p>We often want to combine information about the experimental design
-with our data. <code>gcplyr</code> enables incorporation of design
+<p>We often want to combine our data with information about the
+experimental design. <code>gcplyr</code> enables incorporation of design
 elements in two ways:</p>
 <ol style="list-style-type: decimal">
 <li>Designs can be imported from files</li>
@@ -145,11 +149,10 @@ elements in two ways:</p>
 <code>make_design</code>
 </li>
 </ol>
-</div>
-<div class="section level2">
-<h2 id="reading-design-elements-from-files">Reading design elements from files<a class="anchor" aria-label="anchor" href="#reading-design-elements-from-files"></a>
-</h2>
-<p>Users can read block-shaped or tidy-shaped design files:</p>
+<p>If you’re interested in generating your designs in <code>R</code>,
+see <code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code></p>
+<p>When reading design elements from files, <code>gcplyr</code> can read
+block-shaped or tidy-shaped design files:</p>
 <ul>
 <li>If design files are block-shaped, they can be read with
 <code>import_blockdesigns</code>
@@ -158,18 +161,19 @@ elements in two ways:</p>
 <code>read_tidys</code>
 </li>
 </ul>
-<div class="section level3">
-<h3 id="importing-block-shaped-design-files">Importing block-shaped design files<a class="anchor" aria-label="anchor" href="#importing-block-shaped-design-files"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="importing-block-shaped-design-files">Importing block-shaped design files<a class="anchor" aria-label="anchor" href="#importing-block-shaped-design-files"></a>
+</h2>
 <p>To import block-shaped design files, use
 <code>import_blockdesigns</code>, which will return a tidy-shaped
 designs data frame (or list of data frames).</p>
 <p><code>import_blockdesigns</code> only requires a list of filenames
 (or relative file paths) and will return a data.frame (or list of data
 frames) in a <strong>tidy format</strong> that you can save in R.</p>
-<div class="section level4">
-<h4 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
-</h4>
+<div class="section level3">
+<h3 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
+</h3>
 <p>Let’s look at an example. First, we need to create an example file
 for the sake of this tutorial (normally you’d create this file in
 Excel)</p>
@@ -220,22 +224,44 @@ with the column name <code>Treatment_numbers</code>.</p>
 <span><span class="co">#&gt; 19   B7               Tr2</span></span>
 <span><span class="co">#&gt; 20   B8               Tr2</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="importing-multiple-block-shaped-design-elements">Importing multiple block-shaped design elements<a class="anchor" aria-label="anchor" href="#importing-multiple-block-shaped-design-elements"></a>
-</h4>
+<div class="section level3">
+<h3 id="importing-multiple-block-shaped-design-elements">Importing multiple block-shaped design elements<a class="anchor" aria-label="anchor" href="#importing-multiple-block-shaped-design-elements"></a>
+</h3>
 <p>What do you do if you have multiple designs? For instance, what if
-you have several strains each in several treatments? In that case,
-simply save each design component as a separate file, and import them
-all in one go with <code>import_blockdesigns</code>.</p>
-<p>First, let’s create another example designs file. Again, just imagine
-that you’ve created this file in Excel.</p>
+you have several strains each in several treatments? In that case, you
+have two options:</p>
+<ol style="list-style-type: decimal">
+<li>Save each design component as a separate file, or in separate blocks
+within a file</li>
+<li>Save the design components pasted together in a single file</li>
+</ol>
+<p>Regardless of which option you use, you can then import them all in
+one go with <code>import_blockdesigns</code>.</p>
+<div class="section level4">
+<h4 id="importing-multiple-block-shaped-designs-in-separate-files">Importing multiple block-shaped designs in separate files<a class="anchor" aria-label="anchor" href="#importing-multiple-block-shaped-designs-in-separate-files"></a>
+</h4>
+<p>First, let’s create both our example designs files. Again, just
+imagine that you’ve created these files in Excel.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">3</span>, example <span class="op">=</span> <span class="fl">2</span>, dir <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">3</span>, example <span class="op">=</span> <span class="fl">1</span>, dir <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Files have been written</span></span>
+<span><span class="co">#&gt; [1] "./mydesign.csv"</span></span>
+<span><span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">3</span>, example <span class="op">=</span> <span class="fl">2</span>, dir <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Files have been written</span></span>
 <span><span class="co">#&gt; [1] "./mydesign2.csv"</span></span></code></pre></div>
-<p>Now let’s take a look at what the file looks like:</p>
+<p>Now let’s take a look at what these files looks like:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"mydesign2.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"mydesign.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     1   2   3   4   5   6   7   8   9  10  11  12</span></span>
+<span><span class="co">#&gt; A Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; B Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; C Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; D Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; E Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; F Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; G Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="co">#&gt; H Tr1 Tr1 Tr1 Tr1 Tr1 Tr1 Tr2 Tr2 Tr2 Tr2 Tr2 Tr2</span></span>
+<span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"mydesign2.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      1    2    3    4    5    6    7    8    9   10   11   12</span></span>
 <span><span class="co">#&gt; A StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA</span></span>
 <span><span class="co">#&gt; B StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA</span></span>
@@ -245,8 +271,9 @@ that you’ve created this file in Excel.</p>
 <span><span class="co">#&gt; F StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC</span></span>
 <span><span class="co">#&gt; G StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD</span></span>
 <span><span class="co">#&gt; H StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD</span></span></code></pre></div>
-<p>Here we can see that our design has Strain A in the first two rows,
-Strain B in the next two rows, and so on.</p>
+<p>As before, we have Treatment 1 on the left-hand side, and Treatment 2
+on the right-hand side. In addition, we now also have Strain A in the
+first two rows, Strain B in the next two rows, and so on.</p>
 <p>Let’s now import both designs using <code>import_blockdesigns</code>,
 saving them to columns named <code>Treatment_numbers</code> and
 <code>Strain_letters</code>.</p>
@@ -277,647 +304,151 @@ saving them to columns named <code>Treatment_numbers</code> and
 <span><span class="co">#&gt; 19   B7               Tr2           StrA</span></span>
 <span><span class="co">#&gt; 20   B8               Tr2           StrA</span></span></code></pre></div>
 </div>
+<div class="section level4">
+<h4 id="importing-multiple-separated-block-shaped-designs-in-one-file">Importing multiple separated block-shaped designs in one file<a class="anchor" aria-label="anchor" href="#importing-multiple-separated-block-shaped-designs-in-one-file"></a>
+</h4>
+<p>If you have your blocks separated but saved in the same file, you
+simply specify the location of each block within the file:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">3</span>, example <span class="op">=</span> <span class="fl">3</span>, dir <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Files have been written</span></span>
+<span><span class="co">#&gt; [1] "./mydesign_sep.csv"</span></span>
+<span></span>
+<span><span class="co">#Print what the file looks like</span></span>
+<span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"mydesign_sep.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      1    2    3    4    5    6    7    8    9   10   11   12</span></span>
+<span><span class="co">#&gt; A  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; B  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; C  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; D  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; E  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; F  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; G  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt; H  Tr1  Tr1  Tr1  Tr1  Tr1  Tr1  Tr2  Tr2  Tr2  Tr2  Tr2  Tr2</span></span>
+<span><span class="co">#&gt;                                                              </span></span>
+<span><span class="co">#&gt;      1    2    3    4    5    6    7    8    9   10   11   12</span></span>
+<span><span class="co">#&gt; A StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA</span></span>
+<span><span class="co">#&gt; B StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA StrA</span></span>
+<span><span class="co">#&gt; C StrB StrB StrB StrB StrB StrB StrB StrB StrB StrB StrB StrB</span></span>
+<span><span class="co">#&gt; D StrB StrB StrB StrB StrB StrB StrB StrB StrB StrB StrB StrB</span></span>
+<span><span class="co">#&gt; E StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC</span></span>
+<span><span class="co">#&gt; F StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC StrC</span></span>
+<span><span class="co">#&gt; G StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD</span></span>
+<span><span class="co">#&gt; H StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD StrD</span></span>
+<span></span>
+<span><span class="co">#Read in the designs</span></span>
+<span><span class="va">my_design</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/import_blockdesigns.html">import_blockdesigns</a></span><span class="op">(</span>files <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mydesign_sep.csv"</span><span class="op">)</span>, </span>
+<span>                      block_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Treatment_numbers"</span>, <span class="st">"Strain_letters"</span><span class="op">)</span>,</span>
+<span>                      startrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">11</span><span class="op">)</span>, endrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">19</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_design</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Well Treatment_numbers Strain_letters</span></span>
+<span><span class="co">#&gt; 1    A1               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 2    A2               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 3    A3               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 4    A4               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 5    A5               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 6    A6               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 7    A7               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 8    A8               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 9    A9               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 10  A10               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 11  A11               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 12  A12               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 13   B1               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 14   B2               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 15   B3               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 16   B4               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 17   B5               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 18   B6               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 19   B7               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 20   B8               Tr2           StrA</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="importing-tidy-shaped-design-files">Importing tidy-shaped design files<a class="anchor" aria-label="anchor" href="#importing-tidy-shaped-design-files"></a>
-</h3>
+<div class="section level4">
+<h4 id="importing-multiple-pasted-block-shaped-designs">Importing multiple pasted block-shaped designs<a class="anchor" aria-label="anchor" href="#importing-multiple-pasted-block-shaped-designs"></a>
+</h4>
+<p>Alternative to saving your designs separated, often it may be easiest
+to save all the design information into a single block, separating the
+distinct components of the design with some character.</p>
+<p>To demonstrate this, first let’s create our example designs file.
+Again, just imagine that you’ve created this file in Excel.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">3</span>, example <span class="op">=</span> <span class="fl">4</span>, dir <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Files have been written</span></span>
+<span><span class="co">#&gt; [1] "./mydesign_pasted.csv"</span></span></code></pre></div>
+<p>Now let’s take a look at what the file looks like:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"mydesign_pasted.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          1        2        3        4        5        6        7        8        9</span></span>
+<span><span class="co">#&gt; A Tr1_StrA Tr1_StrA Tr1_StrA Tr1_StrA Tr1_StrA Tr1_StrA Tr2_StrA Tr2_StrA Tr2_StrA</span></span>
+<span><span class="co">#&gt; B Tr1_StrA Tr1_StrA Tr1_StrA Tr1_StrA Tr1_StrA Tr1_StrA Tr2_StrA Tr2_StrA Tr2_StrA</span></span>
+<span><span class="co">#&gt; C Tr1_StrB Tr1_StrB Tr1_StrB Tr1_StrB Tr1_StrB Tr1_StrB Tr2_StrB Tr2_StrB Tr2_StrB</span></span>
+<span><span class="co">#&gt; D Tr1_StrB Tr1_StrB Tr1_StrB Tr1_StrB Tr1_StrB Tr1_StrB Tr2_StrB Tr2_StrB Tr2_StrB</span></span>
+<span><span class="co">#&gt; E Tr1_StrC Tr1_StrC Tr1_StrC Tr1_StrC Tr1_StrC Tr1_StrC Tr2_StrC Tr2_StrC Tr2_StrC</span></span>
+<span><span class="co">#&gt; F Tr1_StrC Tr1_StrC Tr1_StrC Tr1_StrC Tr1_StrC Tr1_StrC Tr2_StrC Tr2_StrC Tr2_StrC</span></span>
+<span><span class="co">#&gt; G Tr1_StrD Tr1_StrD Tr1_StrD Tr1_StrD Tr1_StrD Tr1_StrD Tr2_StrD Tr2_StrD Tr2_StrD</span></span>
+<span><span class="co">#&gt; H Tr1_StrD Tr1_StrD Tr1_StrD Tr1_StrD Tr1_StrD Tr1_StrD Tr2_StrD Tr2_StrD Tr2_StrD</span></span></code></pre></div>
+<p>As before, we have Treatment 1 on the left-hand side, and Treatment 2
+on the right-hand side, with Strain A in the first two rows, Strain B in
+the next two rows, and so on. However, this information is now pasted
+together, with “_” as the separating string (you can use any string as a
+separator).</p>
+<p>To import this design with <code>import_blockdesigns</code>, we
+simply need to specify the <code>sep</code> string, as well as the
+output column names. Since the designs have been pasted together, the
+column names will result from splitting the designs apart. The easiest
+way to specify these split column names is to use the <code>into</code>
+argument passed to <code>separate_tidy</code> [if <code>into</code> is
+not specified, <code>import_blockdesigns</code> will attempt to split
+the <code>block_names</code> (either specified or inferred) with
+<code>sep</code> to generate the output column names].</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_design</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/import_blockdesigns.html">import_blockdesigns</a></span><span class="op">(</span>files <span class="op">=</span> <span class="st">"mydesign_pasted.csv"</span>, </span>
+<span>                      into <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Treatment_numbers"</span>, <span class="st">"Strain_letters"</span><span class="op">)</span>,</span>
+<span>                      sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_design</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Well Treatment_numbers Strain_letters</span></span>
+<span><span class="co">#&gt; 1    A1               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 2    A2               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 3    A3               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 4    A4               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 5    A5               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 6    A6               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 7    A7               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 8    A8               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 9    A9               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 10  A10               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 11  A11               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 12  A12               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 13   B1               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 14   B2               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 15   B3               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 16   B4               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 17   B5               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 18   B6               Tr1           StrA</span></span>
+<span><span class="co">#&gt; 19   B7               Tr2           StrA</span></span>
+<span><span class="co">#&gt; 20   B8               Tr2           StrA</span></span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="importing-tidy-shaped-design-files">Importing tidy-shaped design files<a class="anchor" aria-label="anchor" href="#importing-tidy-shaped-design-files"></a>
+</h2>
 <p>You can import tidy-shaped designs with <code>read_tidys</code>.</p>
 <p><code>read_tidys</code> only requires a filename (or vector of
 filenames, or relative file paths) and will return a
 <code>data.frame</code> (or list of data.frames) that you can save in
 R.</p>
 <p>Once these design elements have been read into the <code>R</code>
-environment, you won’t need to transform them. So you can skip down to
-learning how to merge them with your data in the <strong>[Merging
-spectrophotometric and design data]</strong> section.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="generating-designs-in-r">Generating designs in R<a class="anchor" aria-label="anchor" href="#generating-designs-in-r"></a>
-</h2>
-<p>If you’d rather make your design data.frames in R,
-<code>make_design</code> can create:</p>
-<ul>
-<li>block-shaped data.frames with your design information (for saving to
-files)</li>
-<li>tidy-shaped data.frames with your design information (for saving to
-files and merging with tidy-shaped data)</li>
-</ul>
-<div class="section level3">
-<h3 id="an-example-with-a-single-design">An example with a single design<a class="anchor" aria-label="anchor" href="#an-example-with-a-single-design"></a>
-</h3>
-<p>Let’s start with a simple design.</p>
-<p>Imagine you have a 96 well plate (12 columns and 8 rows) with a
-different bacterial strain in each row, leaving the first and last rows
-and columns empty.</p>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="16%">
-<col width="15%">
-<col width="15%">
-<col width="15%">
-<col width="5%">
-<col width="16%">
-<col width="15%">
-</colgroup>
-<thead><tr class="header">
-<th>Row names</th>
-<th>Column 1</th>
-<th>Column 2</th>
-<th>Column 3</th>
-<th>…</th>
-<th>Column 11</th>
-<th>Column 12</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Row A</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>…</td>
-<td>Blank</td>
-<td>Blank</td>
-</tr>
-<tr class="even">
-<td>Row B</td>
-<td>Blank</td>
-<td>Strain #1</td>
-<td>Strain #1</td>
-<td>…</td>
-<td>Strain #1</td>
-<td>Blank</td>
-</tr>
-<tr class="odd">
-<td>Row B</td>
-<td>Blank</td>
-<td>Strain #2</td>
-<td>Strain #2</td>
-<td>…</td>
-<td>Strain #2</td>
-<td>Blank</td>
-</tr>
-<tr class="even">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>Row G</td>
-<td>Blank</td>
-<td>Strain #5</td>
-<td>Strain #5</td>
-<td>…</td>
-<td>Strain #5</td>
-<td>Blank</td>
-</tr>
-<tr class="even">
-<td>Row G</td>
-<td>Blank</td>
-<td>Strain #6</td>
-<td>Strain #6</td>
-<td>…</td>
-<td>Strain #6</td>
-<td>Blank</td>
-</tr>
-<tr class="odd">
-<td>Row H</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>…</td>
-<td>Blank</td>
-<td>Blank</td>
-</tr>
-</tbody>
-</table>
-<p>Typing a design like this manually into a spreadsheet can be tedious.
-But generating it with <code>make_design</code> is easier.</p>
-<p><code>make_design</code> first needs some general information, like
-the <code>nrows</code> and <code>ncols</code> in the plate, and the
-<code>output_format</code> you’d like (typically <code>blocks</code> or
-<code>tidy</code>).</p>
-<p>Then, for each different design component, <code>make_design</code>
-needs five different pieces of information:</p>
-<ul>
-<li>a vector containing the possible values</li>
-<li>a vector specifying which rows these values should be applied
-to</li>
-<li>a vector specifying which columns these values should be applied
-to</li>
-<li>a string or vector of the pattern of these values</li>
-<li>a Boolean for whether this pattern should be filled byrow (defaults
-to TRUE)</li>
-</ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, </span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>                  <span class="st">"123456"</span>,</span>
-<span>                  <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>So for our example above, we can see:</p>
-<ul>
-<li>the possible values are
-<code>c("Strain 1", "Strain 2", "Strain 3", "Strain 4", "Strain 5", "Strain 6")</code>
-</li>
-<li>the rows these values should be applied to are <code>2:7</code>
-</li>
-<li>the columns these values should be applied to are
-<code>2:11</code>
-</li>
-<li>the pattern these values should be filled in by is
-<code>"123456"</code>
-</li>
-<li>and these values should <em>not</em> be filled by row (they should
-be filled by column)</li>
-</ul>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11     12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; B NA "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" NA</span></span>
-<span><span class="co">#&gt; C NA "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" NA</span></span>
-<span><span class="co">#&gt; D NA "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" NA</span></span>
-<span><span class="co">#&gt; E NA "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" NA</span></span>
-<span><span class="co">#&gt; F NA "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" NA</span></span>
-<span><span class="co">#&gt; G NA "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt; "Bacteria"</span></span></code></pre></div>
-<p>This produces a <code>data.frame</code> with <code>Bacteria</code> as
-the <code>block_name</code> in the metadata. If we save this design to a
-file or transform it to tidy-shaped, this <code>block_name</code>
-metadata will come in handy.</p>
-</div>
-<div class="section level3">
-<h3 id="a-few-notes-on-the-pattern">A few notes on the pattern<a class="anchor" aria-label="anchor" href="#a-few-notes-on-the-pattern"></a>
-</h3>
-<p>The pattern in <code>make_design</code> is flexible to make it easy
-to input designs.</p>
-<p><strong>The “0” character is reserved for <code>NA</code>
-values</strong>, and can be put into your pattern anywhere you’d like to
-have the value be <code>NA</code></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, </span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, </span>
-<span>                    <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>                  <span class="st">"123056"</span>,</span>
-<span>                  <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">my_design_blk</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11     12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; B NA "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" NA</span></span>
-<span><span class="co">#&gt; C NA "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" NA</span></span>
-<span><span class="co">#&gt; D NA "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" NA</span></span>
-<span><span class="co">#&gt; E NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; F NA "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" NA</span></span>
-<span><span class="co">#&gt; G NA "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt; "Bacteria"</span></span></code></pre></div>
-<p>In the previous examples, I used the numbers 1 through 6 to
-correspond to our values. If you have more than 9 values, you can use
-letters too. By default, the order is numbers first, then uppercase
-letters, then lowercase letters (so “A” is the 10th index). However, if
-you’d like to only use letters, you can simply specify a different
-<code>lookup_tbl_start</code> so that <code>make_design</code> knows
-what letter you’re using as the <code>1</code> index.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, lookup_tbl_start <span class="op">=</span> <span class="st">"A"</span>,</span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>    <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>    <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>    <span class="st">"ABCDEF"</span>,</span>
-<span>    <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>You can also specify the pattern as a vector rather than a
-string.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>,</span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>    <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>    <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">6</span><span class="op">)</span>,</span>
-<span>    <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="continuing-with-the-example-multiple-designs">Continuing with the example: multiple designs<a class="anchor" aria-label="anchor" href="#continuing-with-the-example-multiple-designs"></a>
-</h3>
-<p>Now let’s return to our example growth curve experiment. <em>In
-addition</em> to having a different bacterial strain in each row, we now
-also have a different media in each column of the plate.</p>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="16%">
-<col width="15%">
-<col width="15%">
-<col width="15%">
-<col width="5%">
-<col width="16%">
-<col width="15%">
-</colgroup>
-<thead><tr class="header">
-<th>Row names</th>
-<th>Column 1</th>
-<th>Column 2</th>
-<th>Column 3</th>
-<th>…</th>
-<th>Column 11</th>
-<th>Column 12</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Row A</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>…</td>
-<td>Blank</td>
-<td>Blank</td>
-</tr>
-<tr class="even">
-<td>Row B</td>
-<td>Blank</td>
-<td>Media #1</td>
-<td>Media #2</td>
-<td>…</td>
-<td>Media #10</td>
-<td>Blank</td>
-</tr>
-<tr class="odd">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="even">
-<td>Row G</td>
-<td>Blank</td>
-<td>Media #1</td>
-<td>Media #2</td>
-<td>…</td>
-<td>Media #10</td>
-<td>Blank</td>
-</tr>
-<tr class="odd">
-<td>Row H</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>Blank</td>
-<td>…</td>
-<td>Blank</td>
-<td>Blank</td>
-</tr>
-</tbody>
-</table>
-<p>We can generate both designs with <code>make_design</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, lookup_tbl_start <span class="op">=</span> <span class="st">"a"</span>,</span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, </span>
-<span>                    <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>                  <span class="st">"abcdef"</span>,</span>
-<span>                  <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  Media <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Med1"</span>, <span class="st">"Med2"</span>, <span class="st">"Med3"</span>,</span>
-<span>                 <span class="st">"Med4"</span>, <span class="st">"Med5"</span>, <span class="st">"Med6"</span>,</span>
-<span>                 <span class="st">"Med7"</span>, <span class="st">"Med8"</span>, <span class="st">"Med9"</span>,</span>
-<span>                 <span class="st">"Med10"</span>, <span class="st">"Med11"</span>, <span class="st">"Med12"</span><span class="op">)</span>,</span>
-<span>               <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>               <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>               <span class="st">"abcdefghij"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="va">my_design_blk</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11     12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; B NA "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" NA</span></span>
-<span><span class="co">#&gt; C NA "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" NA</span></span>
-<span><span class="co">#&gt; D NA "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" NA</span></span>
-<span><span class="co">#&gt; E NA "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" "Str4" NA</span></span>
-<span><span class="co">#&gt; F NA "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" NA</span></span>
-<span><span class="co">#&gt; G NA "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt; "Bacteria" </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span>
-<span><span class="co">#&gt; [[2]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11      12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA      NA</span></span>
-<span><span class="co">#&gt; B NA "Med1" "Med2" "Med3" "Med4" "Med5" "Med6" "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; C NA "Med1" "Med2" "Med3" "Med4" "Med5" "Med6" "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; D NA "Med1" "Med2" "Med3" "Med4" "Med5" "Med6" "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; E NA "Med1" "Med2" "Med3" "Med4" "Med5" "Med6" "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; F NA "Med1" "Med2" "Med3" "Med4" "Med5" "Med6" "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; G NA "Med1" "Med2" "Med3" "Med4" "Med5" "Med6" "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA      NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt;    "Media"</span></span></code></pre></div>
-<p>However, the real strength of <code>make_design</code> is that it is
-not limited to simple alternating patterns. <code>make_design</code> can
-use irregular patterns too, replicating them as needed to fill all the
-wells.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, lookup_tbl_start <span class="op">=</span> <span class="st">"a"</span>,</span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span><span class="op">)</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>                  <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>                  <span class="st">"abaaabbbab"</span>,</span>
-<span>                  <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  Media <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Med1"</span>, <span class="st">"Med2"</span>, <span class="st">"Med3"</span><span class="op">)</span>,</span>
-<span>               <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>,</span>
-<span>               <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>,</span>
-<span>               <span class="st">"aabbbc000abc"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">my_design_blk</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11     12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; B NA "Str1" "Str2" "Str1" "Str1" "Str1" "Str1" "Str2" "Str1" "Str1" "Str1" NA</span></span>
-<span><span class="co">#&gt; C NA "Str2" "Str2" "Str1" "Str2" "Str2" "Str2" "Str2" "Str1" "Str2" "Str2" NA</span></span>
-<span><span class="co">#&gt; D NA "Str1" "Str1" "Str1" "Str1" "Str2" "Str1" "Str1" "Str1" "Str1" "Str2" NA</span></span>
-<span><span class="co">#&gt; E NA "Str1" "Str2" "Str2" "Str2" "Str2" "Str1" "Str2" "Str2" "Str2" "Str2" NA</span></span>
-<span><span class="co">#&gt; F NA "Str1" "Str1" "Str2" "Str1" "Str1" "Str1" "Str1" "Str2" "Str1" "Str1" NA</span></span>
-<span><span class="co">#&gt; G NA "Str2" "Str2" "Str2" "Str1" "Str2" "Str2" "Str2" "Str2" "Str1" "Str2" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt; "Bacteria" </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span>
-<span><span class="co">#&gt; [[2]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11     12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; B NA "Med1" "Med1" "Med2" "Med2" "Med2" "Med3" NA     NA     NA     "Med1" NA</span></span>
-<span><span class="co">#&gt; C NA "Med2" "Med3" "Med1" "Med1" "Med2" "Med2" "Med2" "Med3" NA     NA     NA</span></span>
-<span><span class="co">#&gt; D NA NA     "Med1" "Med2" "Med3" "Med1" "Med1" "Med2" "Med2" "Med2" "Med3" NA</span></span>
-<span><span class="co">#&gt; E NA NA     NA     NA     "Med1" "Med2" "Med3" "Med1" "Med1" "Med2" "Med2" NA</span></span>
-<span><span class="co">#&gt; F NA "Med2" "Med3" NA     NA     NA     "Med1" "Med2" "Med3" "Med1" "Med1" NA</span></span>
-<span><span class="co">#&gt; G NA "Med2" "Med2" "Med2" "Med3" NA     NA     NA     "Med1" "Med2" "Med3" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt;    "Media"</span></span></code></pre></div>
-<p>There is also an optional helper function called
-<code>make_designpattern</code>, or <code>mdp</code> for short.
-<code>make_designpattern</code> just reminds us what arguments are
-necessary for each design. For example:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_blk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"blocks"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, lookup_tbl_start <span class="op">=</span> <span class="st">"a"</span>,</span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">mdp</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, </span>
-<span>               <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, cols <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>, pattern <span class="op">=</span> <span class="st">"abc0ef"</span>,</span>
-<span>    byrow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  Media <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">mdp</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Med1"</span>, <span class="st">"Med2"</span>, <span class="st">"Med3"</span>,</span>
-<span>               <span class="st">"Med4"</span>, <span class="st">"Med5"</span>, <span class="st">"Med6"</span>,</span>
-<span>               <span class="st">"Med7"</span>, <span class="st">"Med8"</span>, <span class="st">"Med9"</span>,</span>
-<span>               <span class="st">"Med10"</span>, <span class="st">"Med11"</span>, <span class="st">"Med12"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, cols <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>, pattern <span class="op">=</span> <span class="st">"abcde0ghij"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">my_design_blk</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7      8      9      10     11     12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; B NA "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" "Str1" NA</span></span>
-<span><span class="co">#&gt; C NA "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" "Str2" NA</span></span>
-<span><span class="co">#&gt; D NA "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" "Str3" NA</span></span>
-<span><span class="co">#&gt; E NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; F NA "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" "Str5" NA</span></span>
-<span><span class="co">#&gt; G NA "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" "Str6" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt; "Bacteria" </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span>
-<span><span class="co">#&gt; [[2]]$data</span></span>
-<span><span class="co">#&gt;   1  2      3      4      5      6      7  8      9      10     11      12</span></span>
-<span><span class="co">#&gt; A NA NA     NA     NA     NA     NA     NA NA     NA     NA     NA      NA</span></span>
-<span><span class="co">#&gt; B NA "Med1" "Med2" "Med3" "Med4" "Med5" NA "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; C NA "Med1" "Med2" "Med3" "Med4" "Med5" NA "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; D NA "Med1" "Med2" "Med3" "Med4" "Med5" NA "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; E NA "Med1" "Med2" "Med3" "Med4" "Med5" NA "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; F NA "Med1" "Med2" "Med3" "Med4" "Med5" NA "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; G NA "Med1" "Med2" "Med3" "Med4" "Med5" NA "Med7" "Med8" "Med9" "Med10" NA</span></span>
-<span><span class="co">#&gt; H NA NA     NA     NA     NA     NA     NA NA     NA     NA     NA      NA</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$metadata</span></span>
-<span><span class="co">#&gt; block_name </span></span>
-<span><span class="co">#&gt;    "Media"</span></span></code></pre></div>
-<p><strong>For merging our designs with plate reader data, we need it
-tidy-shaped</strong>, so we just need to change the
-<code>output_format</code> to <code>tidy</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_design_tdy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  output_format <span class="op">=</span> <span class="st">"tidy"</span>,</span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>, lookup_tbl_start <span class="op">=</span> <span class="st">"a"</span>,</span>
-<span>  Bacteria <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">mdp</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Str1"</span>, <span class="st">"Str2"</span>, <span class="st">"Str3"</span>, </span>
-<span>               <span class="st">"Str4"</span>, <span class="st">"Str5"</span>, <span class="st">"Str6"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, cols <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>, pattern <span class="op">=</span> <span class="st">"abc0ef"</span>,</span>
-<span>    byrow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  Media <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">mdp</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Med1"</span>, <span class="st">"Med2"</span>, <span class="st">"Med3"</span>,</span>
-<span>               <span class="st">"Med4"</span>, <span class="st">"Med5"</span>, <span class="st">"Med6"</span>,</span>
-<span>               <span class="st">"Med7"</span>, <span class="st">"Med8"</span>, <span class="st">"Med9"</span>,</span>
-<span>               <span class="st">"Med10"</span>, <span class="st">"Med11"</span>, <span class="st">"Med12"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, cols <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">11</span>, pattern <span class="op">=</span> <span class="st">"abcde0ghij"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_design_tdy</span>, <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    Well Bacteria Media</span></span>
-<span><span class="co">#&gt; 1    A1     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2    A2     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3    A3     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4    A4     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5    A5     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6    A6     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 7    A7     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 8    A8     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 9    A9     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 10  A10     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 11  A11     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 12  A12     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 13   B1     &lt;NA&gt;  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 14   B2     Str1  Med1</span></span>
-<span><span class="co">#&gt; 15   B3     Str1  Med2</span></span>
-<span><span class="co">#&gt; 16   B4     Str1  Med3</span></span>
-<span><span class="co">#&gt; 17   B5     Str1  Med4</span></span>
-<span><span class="co">#&gt; 18   B6     Str1  Med5</span></span>
-<span><span class="co">#&gt; 19   B7     Str1  &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 20   B8     Str1  Med7</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="saving-designs-to-files">Saving designs to files<a class="anchor" aria-label="anchor" href="#saving-designs-to-files"></a>
-</h3>
-<p>If you’d like to save the designs you’ve created with
-<code>make_design</code> to files, you just need to decide if you’d like
-them tidy-shaped or block-shaped. Both formats can easily be read back
-into <code>R</code> by <code>gcplyr</code>.</p>
-<div class="section level4">
-<h4 id="saving-tidy-shaped-designs">Saving tidy-shaped designs<a class="anchor" aria-label="anchor" href="#saving-tidy-shaped-designs"></a>
-</h4>
-<p>These design files will be less human-readable, but easier to import
-and merge. Additionally, tidy-shaped files are often better for data
-repositories, like Dryad. To save tidy-shaped designs, simply use the
-built-in <code>write.csv</code> function.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#See the previous section where we created my_design_tdy</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">my_design_tdy</span>, file <span class="op">=</span> <span class="st">"tidy_design.csv"</span>,</span>
-<span>          row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="saving-block-shaped-designs">Saving block-shaped designs<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs"></a>
-</h4>
-<p>These design files will be more human-readable but slightly more
-computationally involved to import and merge. For these, use the
-<code>gcplyr</code> function <code>write_blocks</code>. Typically,
-you’ll use <code>write_blocks</code> to save files in one of two
-formats:</p>
-<ul>
-<li>
-<code>multiple</code> - each block will be saved to its own
-<code>.csv</code> file</li>
-<li>
-<code>single</code> - all the blocks will be saved to a single
-<code>.csv</code> file, with an empty row in between them</li>
-</ul>
-<div class="section level5">
-<h5 id="saving-block-shaped-designs-to-multiple-files">Saving block-shaped designs to multiple files<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs-to-multiple-files"></a>
-</h5>
-<p>The default setting for <code>write_blocks</code> is
-<code>output_format = 'multiple'</code>. This creates one
-<code>csv</code> file for each block. If we set
-<code>file = NULL</code>, the default is to name the files according to
-the <code>block_names</code> in the metadata.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># See the previous section where we created my_design_blk</span></span>
-<span><span class="fu"><a href="../reference/write_blocks.html">write_blocks</a></span><span class="op">(</span><span class="va">my_design_blk</span>, file <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Let's see what the files look like</span></span>
-<span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Bacteria.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   1    2    3    4    5    6    7    8    9   10   11 12</span></span>
-<span><span class="co">#&gt; A                                                       </span></span>
-<span><span class="co">#&gt; B   Str1 Str1 Str1 Str1 Str1 Str1 Str1 Str1 Str1 Str1   </span></span>
-<span><span class="co">#&gt; C   Str2 Str2 Str2 Str2 Str2 Str2 Str2 Str2 Str2 Str2   </span></span>
-<span><span class="co">#&gt; D   Str3 Str3 Str3 Str3 Str3 Str3 Str3 Str3 Str3 Str3   </span></span>
-<span><span class="co">#&gt; E                                                       </span></span>
-<span><span class="co">#&gt; F   Str5 Str5 Str5 Str5 Str5 Str5 Str5 Str5 Str5 Str5   </span></span>
-<span><span class="co">#&gt; G   Str6 Str6 Str6 Str6 Str6 Str6 Str6 Str6 Str6 Str6   </span></span>
-<span><span class="co">#&gt; H</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Media.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   1    2    3    4    5    6 7    8    9   10    11 12</span></span>
-<span><span class="co">#&gt; A                                                     </span></span>
-<span><span class="co">#&gt; B   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt; C   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt; D   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt; E   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt; F   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt; G   Med1 Med2 Med3 Med4 Med5   Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt; H</span></span></code></pre></div>
-</div>
-<div class="section level5">
-<h5 id="saving-block-shaped-designs-to-a-single-file">Saving block-shaped designs to a single file<a class="anchor" aria-label="anchor" href="#saving-block-shaped-designs-to-a-single-file"></a>
-</h5>
-<p>The other setting for <code>write_blocks</code> is
-<code>output_format = 'single'</code>. This creates a single
-<code>csv</code> file that contains all the blocks, putting metadata
-like <code>block_names</code> in rows that precede each block.</p>
-<p>Let’s take a look what the <code>single</code> output format looks
-like:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># See the previous section where we created my_design_blk</span></span>
-<span><span class="fu"><a href="../reference/write_blocks.html">write_blocks</a></span><span class="op">(</span><span class="va">my_design_blk</span>, file <span class="op">=</span> <span class="st">"Design.csv"</span>, output_format <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Let's see what the file looks like</span></span>
-<span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"Design.csv"</span>, header <span class="op">=</span> <span class="cn">FALSE</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; block_name Bacteria                                                      </span></span>
-<span><span class="co">#&gt;                   1    2    3    4    5    6    7    8    9   10    11 12</span></span>
-<span><span class="co">#&gt;          A                                                               </span></span>
-<span><span class="co">#&gt;          B          Str1 Str1 Str1 Str1 Str1 Str1 Str1 Str1 Str1  Str1   </span></span>
-<span><span class="co">#&gt;          C          Str2 Str2 Str2 Str2 Str2 Str2 Str2 Str2 Str2  Str2   </span></span>
-<span><span class="co">#&gt;          D          Str3 Str3 Str3 Str3 Str3 Str3 Str3 Str3 Str3  Str3   </span></span>
-<span><span class="co">#&gt;          E                                                               </span></span>
-<span><span class="co">#&gt;          F          Str5 Str5 Str5 Str5 Str5 Str5 Str5 Str5 Str5  Str5   </span></span>
-<span><span class="co">#&gt;          G          Str6 Str6 Str6 Str6 Str6 Str6 Str6 Str6 Str6  Str6   </span></span>
-<span><span class="co">#&gt;          H                                                               </span></span>
-<span><span class="co">#&gt;                                                                          </span></span>
-<span><span class="co">#&gt; block_name    Media                                                      </span></span>
-<span><span class="co">#&gt;                   1    2    3    4    5    6    7    8    9   10    11 12</span></span>
-<span><span class="co">#&gt;          A                                                               </span></span>
-<span><span class="co">#&gt;          B          Med1 Med2 Med3 Med4 Med5      Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt;          C          Med1 Med2 Med3 Med4 Med5      Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt;          D          Med1 Med2 Med3 Med4 Med5      Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt;          E          Med1 Med2 Med3 Med4 Med5      Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt;          F          Med1 Med2 Med3 Med4 Med5      Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt;          G          Med1 Med2 Med3 Med4 Med5      Med7 Med8 Med9 Med10   </span></span>
-<span><span class="co">#&gt;          H</span></span></code></pre></div>
-<p>Here we can see all our design information has been saved to a single
-file, and the metadata has been added in rows before each block.</p>
-</div>
-</div>
-</div>
+environment, they are ready to merge.</p>
 </div>
 <div class="section level2">
 <h2 id="merging-growth-curve-data-with-designs">Merging growth curve data with designs<a class="anchor" aria-label="anchor" href="#merging-growth-curve-data-with-designs"></a>
 </h2>
 <p>Once we have both our design and data in <code>R</code> and
 tidy-shaped, we can merge them using <code>merge_dfs</code>.</p>
-<p>For this, we’ll use the data in the
+<p>To demonstrate this, we’ll use the data in the
 <code>example_widedata_noiseless</code> dataset that is included with
 <code>gcplyr</code>, and which was the source for our previous examples
 with <code>import_blockmeasures</code> and <code>read_wides</code>.</p>
@@ -1063,59 +594,14 @@ all 48 strains in a single well each:</p>
 </table>
 <p>Let’s transform the <code>example_widedata_noiseless</code> to
 tidy-shaped.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example_tidydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trans_wide_to_tidy.html">trans_wide_to_tidy</a></span><span class="op">(</span><span class="va">example_widedata_noiseless</span>,</span>
 <span>                                       id_cols <span class="op">=</span> <span class="st">"Time"</span><span class="op">)</span></span></code></pre></div>
-<p>Now let’s generate our design:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_design</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_design.html">make_design</a></span><span class="op">(</span></span>
-<span>  nrows <span class="op">=</span> <span class="fl">8</span>, ncols <span class="op">=</span> <span class="fl">12</span>,</span>
-<span>  <span class="st">"Bacteria_strain"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Strain"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">48</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>,</span>
-<span>    byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  <span class="st">"Bacteria_strain"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Strain"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">48</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">12</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>,</span>
-<span>    byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  <span class="st">"Phage"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No Phage"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span>,</span>
-<span>  <span class="st">"Phage"</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_designpattern.html">make_designpattern</a></span><span class="op">(</span></span>
-<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Phage Added"</span><span class="op">)</span>,</span>
-<span>    rows <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, cols <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">12</span>,</span>
-<span>    pattern <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Here’s what the resulting data.frame looks like:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_design</span>, <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    Well Bacteria_strain       Phage</span></span>
-<span><span class="co">#&gt; 1    A1        Strain 1    No Phage</span></span>
-<span><span class="co">#&gt; 2    A2        Strain 2    No Phage</span></span>
-<span><span class="co">#&gt; 3    A3        Strain 3    No Phage</span></span>
-<span><span class="co">#&gt; 4    A4        Strain 4    No Phage</span></span>
-<span><span class="co">#&gt; 5    A5        Strain 5    No Phage</span></span>
-<span><span class="co">#&gt; 6    A6        Strain 6    No Phage</span></span>
-<span><span class="co">#&gt; 7    A7        Strain 1 Phage Added</span></span>
-<span><span class="co">#&gt; 8    A8        Strain 2 Phage Added</span></span>
-<span><span class="co">#&gt; 9    A9        Strain 3 Phage Added</span></span>
-<span><span class="co">#&gt; 10  A10        Strain 4 Phage Added</span></span>
-<span><span class="co">#&gt; 11  A11        Strain 5 Phage Added</span></span>
-<span><span class="co">#&gt; 12  A12        Strain 6 Phage Added</span></span>
-<span><span class="co">#&gt; 13   B1        Strain 7    No Phage</span></span>
-<span><span class="co">#&gt; 14   B2        Strain 8    No Phage</span></span>
-<span><span class="co">#&gt; 15   B3        Strain 9    No Phage</span></span>
-<span><span class="co">#&gt; 16   B4       Strain 10    No Phage</span></span>
-<span><span class="co">#&gt; 17   B5       Strain 11    No Phage</span></span>
-<span><span class="co">#&gt; 18   B6       Strain 12    No Phage</span></span>
-<span><span class="co">#&gt; 19   B7        Strain 7 Phage Added</span></span>
-<span><span class="co">#&gt; 20   B8        Strain 8 Phage Added</span></span></code></pre></div>
-<p>Note for future use, this design is actually included with
-<code>gcplyr</code> for easy reference:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_design_tidy</span><span class="op">)</span></span>
+<p><code>gcplyr</code> also includes the design for this data for easy
+use:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">example_design</span> <span class="op">&lt;-</span> <span class="va">example_design_tidy</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_design_tidy</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Well Bacteria_strain    Phage</span></span>
 <span><span class="co">#&gt; 1   A1        Strain 1 No Phage</span></span>
 <span><span class="co">#&gt; 2   A2        Strain 2 No Phage</span></span>
@@ -1123,11 +609,12 @@ tidy-shaped.</p>
 <span><span class="co">#&gt; 4   A4        Strain 4 No Phage</span></span>
 <span><span class="co">#&gt; 5   A5        Strain 5 No Phage</span></span>
 <span><span class="co">#&gt; 6   A6        Strain 6 No Phage</span></span></code></pre></div>
-<p>And finally, we merge the two using <code>merge_dfs</code>, saving
-the result to <code>ex_dat_mrg</code>, short for example_data_merged.
+<p>Now that we have our data and designs tidy-shaped, we merge the two
+using <code>merge_dfs</code>, saving the result to
+<code>ex_dat_mrg</code>, short for example_data_merged.
 <code>merge_dfs</code> merges using columns with the same name between
 the two data.frames.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ex_dat_mrg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_dfs.html">merge_dfs</a></span><span class="op">(</span><span class="va">example_tidydata</span>, <span class="va">example_design</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
 <span></span>
@@ -1162,11 +649,14 @@ plot your data</p>
 </li>
 <li>Dealing with noise: <code><a href="../articles/gc07_noise.html">vignette("gc07_noise")</a></code>
 </li>
-<li>Statistics, merging other data, and other resources:
+<li>Best practices and other tips:
 <code><a href="../articles/gc08_conclusion.html">vignette("gc08_conclusion")</a></code>
 </li>
 <li>Working with multiple plates:
 <code><a href="../articles/gc09_multiple_plates.html">vignette("gc09_multiple_plates")</a></code>
+</li>
+<li>Using make_design to generate experimental designs:
+<code><a href="../articles/gc10_using_make_design.html">vignette("gc10_using_make_design")</a></code>
 </li>
 </ol>
 </div>

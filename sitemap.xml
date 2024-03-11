@@ -37,6 +37,9 @@
     <loc>https://mikeblazanin.github.io/gcplyr/articles/gc09_multiple_plates.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc10_using_make_design.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/articles/index.html</loc>
   </url>
   <url>
@@ -53,6 +56,9 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/MinMaxGC.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/MovingWindowFunctions.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.html</loc>
@@ -118,16 +124,16 @@
     <loc>https://mikeblazanin.github.io/gcplyr/reference/make_tidydesign.html</loc>
   </url>
   <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/makemethod_train_smooth_data.html</loc>
+  </url>
+  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/merge_dfs.html</loc>
   </url>
   <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/moving_average.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/moving_median.html</loc>
-  </url>
-  <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/paste_blocks.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/predict_interpolation.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/print_df.html</loc>
@@ -152,6 +158,9 @@
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/to_excel.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeblazanin.github.io/gcplyr/reference/train_smooth_data.html</loc>
   </url>
   <url>
     <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_block_to_wide.html</loc>

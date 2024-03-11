@@ -1,3 +1,7 @@
+# gcplyr 1.9.0.9000
+
+* stuff here
+
 # gcplyr 1.9.0
 
 * Bug fix to lag_time where it had been incorrectly calculating y0 as the minimum y value where deriv was not NA. It now calculates the minimum y value regardless of the deriv value

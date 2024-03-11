@@ -27,10 +27,12 @@ navbar:
         href: articles/gc06_analyze.html
       - text: Dealing with noise
         href: articles/gc07_noise.html
-      - text: Statistics, merging other data, and other resources
+      - text: Best practices and other tips
         href: articles/gc08_conclusion.html
       - text: Working with multiple plates
         href: articles/gc09_multiple_plates.html
+      - test: Using make_design to generate experimental designs
+        href: articles/gc10_using_make_design.html
   
 reference:
 - title: Reading files
@@ -67,6 +69,9 @@ reference:
   - moving_median
   - calc_deriv
   - gc_smooth.spline
+  - train_smooth_data
+  - makemethod_train_smooth_data
+  - predict_interpolation
 - title: Analyzing growth curve data
   desc: "Functions to analyze growth curve data by summarizing into metrics"
   contents:

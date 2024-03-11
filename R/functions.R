@@ -2996,6 +2996,8 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #'
 #' @return A vector of response values for each predictor value in 
 #'         \code{newdata}
+#'         
+#' @export
 predict_interpolation <- function(
     x, y, newdata, extrapolate_predictions = TRUE, na.rm = TRUE) {
   x <- make.numeric(x, "x")

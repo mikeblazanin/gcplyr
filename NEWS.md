@@ -1,6 +1,44 @@
-# gcplyr 1.8.0.9000
+# gcplyr 1.9.0
 
-* stuff here
+* Bug fix to lag_time where it had been incorrectly calculating y0 as the minimum y value where deriv was not NA. It now calculates the minimum y value regardless of the deriv value
+
+* Bug fix to lag_time where NA was returned when there was only one non-NA data point, it now returns the x value of the single data point
+
+* When lag_time returns NA, it now always returns a numeric NA
+
+* Bug fix for import_blockdesigns where it had not been separating designs if they were read from only a single file
+
+* Bug fix for import_blockdesigns where designs were not being joined as columns if they were read from a single file
+
+* Bug fix for import_blockdesigns where arguments passed via ... were previously not being passed to separate_tidy
+
+* import_blockdesigns has a new argument join_designs which controls whether multiple imported designs should be handled as referring to the same plate (and so joined as columns), or as different plates (and so joined as rows)
+
+* import_blockdesigns now has an option to keep the block_names column in the output
+
+* solve_linear now correctly handles the case where x1 == x2 == x3
+
+* New arguments window_width_frac and window_width_n_frac in window-using functions (including find_local_extrema and related functions, calc_deriv, moving_average, and moving_median). These arguments allow the width of the window to be specified as a fraction of the total range of data or total number of data points, respectively
+
+* moving_average and moving_median have new arguments, x and y, that can be used instead of formula and data
+
+* A new function predict_interpolation works like stats::predict by linearly interpolating from existing data. This function can be used as the predict function for the output of moving_average and moving_median
+
+* New functions train_smooth_data and makemethod_train_smooth_data enable users to test different tuning parameter values for smooth_data via caret::train
+
+* Many functions now have warn_* arguments, allowing users to silence specific warnings
+
+* Bug fix in auc where warning was being incorrectly issued when xlim was inside the range of all x values but not inside the range of x values after NA x and y values had been removed
+
+* moving_average and moving_median now warn when not all x values are unique
+
+* Improved warnings in calc_deriv when window is not wide enough
+
+* lag_time now warns when the estimated lag time is less than the minimum non-NA value of x
+
+* Some internal functions were renamed for consistent style and more clear error messages
+
+* Various documentation and vignette improvements
 
 # gcplyr 1.8.0
 

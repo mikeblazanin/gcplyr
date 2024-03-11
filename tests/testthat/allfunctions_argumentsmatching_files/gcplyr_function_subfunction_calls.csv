@@ -33,6 +33,7 @@ min_gc,NA
 moving_average,NA
 moving_median,NA
 paste_blocks,NA
+predict_interpolation,NA
 print_df,NA
 read_blocks,readxl::read_xls
 read_blocks,readxl::read_xlsx

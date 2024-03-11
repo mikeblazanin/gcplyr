@@ -289,8 +289,9 @@ make_example <- function(vignette, example, dir = ".") {
                                              id_cols = "Time")
       ex_dat_mrg <- merge_dfs(example_tidydata, example_design_tidy)
       ex_dat_mrg_sum <-
-        summarize(dplyr::filter(ex_dat_mrg, Phage == "No Phage"), 
-                  auc = auc(x = Time, y = smoothed))
+        summarize(group_by(dplyr::filter(ex_dat_mrg, Phage == "No Phage"),
+                           Well, Bacteria_strain, Phage),
+                  auc = auc(x = Time, y = Measurements))
       
       set.seed(123)
       antibiotic_dat <- 

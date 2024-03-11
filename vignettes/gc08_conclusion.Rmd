@@ -136,8 +136,9 @@ example_tidydata <- trans_wide_to_tidy(example_widedata_noiseless,
                                        id_cols = "Time")
 ex_dat_mrg <- merge_dfs(example_tidydata, example_design_tidy)
 ex_dat_mrg_sum <-
-  summarize(dplyr::filter(ex_dat_mrg, Phage == "No Phage"), 
-            auc = auc(x = Time, y = smoothed))
+  summarize(group_by(dplyr::filter(ex_dat_mrg, Phage == "No Phage"),
+                     Well, Bacteria_strain, Phage),
+            auc = auc(x = Time, y = Measurements))
 ```
 
 Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. `make_example` has some mock antibiotic resistance data we can use. Importantly, the antibiotic data must have matching headers to our growth curve data so that `merge_dfs` knows how to merge them.

@@ -141,10 +141,7 @@ ex_dat_mrg_sum <-
             auc = auc(x = Time, y = Measurements))
 ```
 
-Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. `make_example` has some mock antibiotic resistance data we can use. Importantly, the antibiotic data must have matching headers to our growth curve data so that `merge_dfs` knows how to merge them.
-
-
-Here we'll generate some mock antibiotic resistance data. Importantly, our data must have matching headers as our growth curve data so that `merge_dfs` knows how to merge the `data.frame`'s. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
+Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. Normally this is data you would have collected in the lab, but `make_example` has some mock antibiotic resistance data we can use, where each strain's resistance is saved under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. Importantly, the antibiotic data must also have matching headers to our growth curve data so that `merge_dfs` knows how to merge them, here `Bacteria_strain`.
 
 ```{r}
 antibiotic_dat <- make_example(vignette = 8, example = 2)

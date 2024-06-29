@@ -86,6 +86,7 @@ When working with multiple plates, you'll often be dealing with lists of `data.f
 # Reading files for multiple block-shaped plates
 
 If you're reading files for multiple block-shaped plates, your approach depends on how the files themselves are arranged:
+
 * Each plate's worth of block-shaped files is easily separable (e.g. saved in different folders)
 * The files from separate plates are interleaved such that they are alternating (as is common when multiple plates are read by a plate-reader robot in a single run)
 

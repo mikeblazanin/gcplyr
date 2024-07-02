@@ -4227,6 +4227,188 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 }
 
 
+#' Calculate centroid
+#' 
+#' This function takes a vector of \code{x} and \code{y} values
+#' and returns the x and/or y position of the centroid of mass of the
+#' area under the curve
+#'  
+#' @param x Numeric vector of x values
+#' @param y Numeric vector of y values
+#' @param return One of c("x", "y", "both"), determining whether the function
+#'               will return the x value of the centroid, the y value
+#'               of the centroid, or a vector containing x then y
+#' @param xlim Vector, of length 2, delimiting the x range over which the
+#'             centroid should be calculated (where NA can be
+#'             provided for the area to be calculated from the start or to
+#'             the end of the data)
+#' @param blank Value to be subtracted from \code{y} values before calculating
+#'              the centroid
+#' @param subset A vector of logical values indicating which x and y values
+#'               should be included (TRUE) or excluded (FALSE).
+#' @param na.rm a logical indicating whether missing values should be removed
+#' @param neg.rm a logical indicating whether \code{y} values below zero should 
+#'               be treated as zeros. If \code{FALSE}, the centroid
+#'               for negative \code{y} values will be calculated normally,
+#'               effectively pulling the centroid towards 0.
+#' @param warn_xlim_out_of_range logical whether warning should be issued when 
+#'                             xlim is lower than the lowest x value or higher
+#'                             than the highest x value.
+#' @param warn_negative_y logical whether warning should be issued when 
+#'                        \code{neg.rm == FALSE} but some y values are below 0.
+#' 
+#' @return A scalar for the x value (if \code{return = 'x'}) or
+#'         y value (if \code{return = 'y'}) of the centroid of the data
+#'         
+#' @details
+#' This function uses \code{sf::st_centroid} to calculate the centroid of mass
+#'         
+#' @name CentroidFunctions
+NULL  
+
+#' @rdname CentroidFunctions
+#' @export
+centroid <- function(x, y, return, xlim = NULL, blank = 0, subset = NULL,
+                na.rm = TRUE, neg.rm = FALSE,
+                warn_xlim_out_of_range = TRUE, warn_negative_y = TRUE) {
+  if(!requireNamespace("sf", quietly = TRUE)) {
+    stop("Package \"sf\" must be installed to calculate centroids",
+         call. = FALSE)
+  }
+  
+  if(!is.vector(x)) {stop(paste("x is not a vector, it is class:", class(x)))}
+  if(!is.vector(y)) {stop(paste("y is not a vector, it is class:", class(y)))}
+  
+  x <- make.numeric(x)
+  y <- make.numeric(y)
+  
+  #take subset
+  subset_temp <- take_subset(x = x, y = y, subset = subset)
+  
+  #Save original min and max x values so we don't warn when xlim is larger
+  #than range of x after NA's have been removed
+  x_orig <- c("min" = min(x, na.rm = TRUE), "max" = max(x, na.rm = TRUE))
+  
+  #remove nas
+  dat <- rm_nas(x = subset_temp$x, y = subset_temp$y, 
+                na.rm = na.rm, stopifNA = TRUE)
+  
+  if(length(dat$y) <= 1) {return(NA)}
+  
+  #reorder
+  dat <- reorder_xy(x = dat[["x"]], y = dat[["y"]])
+  
+  x <- dat[["x"]]
+  y <- dat[["y"]]
+  
+  y <- y - blank
+  
+  #Check if xlim has been specified
+  if(!is.null(xlim)) {
+    stopifnot(is.vector(xlim), length(xlim) == 2, any(!is.na(xlim)))
+    if(is.na(xlim[1])) {xlim[1] <- x[1]}
+    if(is.na(xlim[2])) {xlim[2] <- x[length(x)]}
+    if(xlim[1] < x[1]) {
+      if(warn_xlim_out_of_range && xlim[1] < x_orig[1]) {
+        warning("xlim specifies lower limit below the range of x\n")} 
+      xlim[1] <- x[1]
+    } else { #add lower xlim to the x vector and the interpolated y to y vector
+      if (!(xlim[1] %in% x)) {
+        x <- c(x, xlim[1])
+        xndx <- max(which(x < xlim[1]))
+        y <- c(y, solve_linear(x1 = x[xndx], y1 = y[xndx],
+                               x2 = x[xndx+1], y2 = y[xndx+1],
+                               x3 = xlim[1], named = FALSE))
+        
+        #reorder
+        dat <- reorder_xy(x = x, y = y)
+        
+        x <- dat[["x"]]
+        y <- dat[["y"]]
+      }
+    }
+    
+    if(xlim[2] > x[length(x)]) {
+      if(warn_xlim_out_of_range && xlim[2] > x_orig[2]) {
+        warning("xlim specifies upper limit above the range of x\n")}
+      xlim[2] <- x[length(x)]
+    } else { #add upper xlim to the x vector and the interpolated y to y vector
+      if (!(xlim[2] %in% x)) {
+        x <- c(x, xlim[2])
+        xndx <- max(which(x < xlim[2]))
+        y <- c(y, solve_linear(x1 = x[xndx], y1 = y[xndx],
+                               x2 = x[xndx+1], y2 = y[xndx+1],
+                               x3 = xlim[2], named = FALSE))
+        
+        #reorder
+        dat <- reorder_xy(x = x, y = y)
+        
+        x <- dat[["x"]]
+        y <- dat[["y"]]
+      }
+    }
+    y <- y[(x >= xlim[1]) & (x <= xlim[2])]
+    x <- x[(x >= xlim[1]) & (x <= xlim[2])]
+  }
+  
+  if(any(y < 0)) {
+    if(neg.rm == TRUE) {y[y < 0] <- 0
+    } else if(warn_negative_y) {warning("some y values are below 0")}
+  }
+  
+  #Calculate centroid
+  # note that st_centroid must circle back to the original point
+  # to close the centroid
+  centroid_vals <- 
+    as.vector(sf::st_centroid(sf::st_polygon(
+      x = list(matrix(
+        ncol = 2,
+        data = c(
+          #xvals
+          x[c(1, 1:length(x), length(x), 1)],
+          #yvals
+          c(0, y[1:length(y)], 0, 0)))))))
+  
+  #Add blank value back
+  centroid_vals[2] <- centroid_vals[2] + blank
+  
+  if(return == "x") {return(centroid_vals[1])
+  } else if (return == "y") {return(centroid_vals[2])
+  } else if (return == "both") {return(centroid_vals)
+  } else {stop("return must be 'x', 'y', or 'both'")}
+}
+
+#' @rdname CentroidFunctions
+#' @export
+centroid_x <- function(x, y, return = "x", ...) {
+  if ("return" %in% names(list(...))) {
+    stop("return cannot be changed in centroid_x, use centroid for more flexibility")
+  }
+  
+  return(centroid(x = x, y = y, return = return, ...))
+}
+
+#' @rdname CentroidFunctions
+#' @export
+centroid_y <- function(x, y, return = "y", ...) {
+  if ("return" %in% names(list(...))) {
+    stop("return cannot be changed in centroid_y, use centroid for more flexibility")
+  }
+  
+  return(centroid(x = x, y = y, return = return, ...))
+}
+
+#' @rdname CentroidFunctions
+#' @export
+centroid_both <- function(x, y, return = "both", ...) {
+  if ("return" %in% names(list(...))) {
+    stop("return cannot be changed in centroid_both, use centroid for more flexibility")
+  }
+  
+  return(centroid(x = x, y = y, return = return, ...))
+}
+
+
 #' Calculate lag time
 #' 
 #' Lag time is calculated by projecting a tangent line at the point

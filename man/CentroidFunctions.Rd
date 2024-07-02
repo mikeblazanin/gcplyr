@@ -52,7 +52,7 @@ should be included (TRUE) or excluded (FALSE).}
 \item{neg.rm}{a logical indicating whether \code{y} values below zero should 
 be treated as zeros. If \code{FALSE}, the centroid
 for negative \code{y} values will be calculated normally,
-effectively pulling the centroid towards 0.}
+effectively pulling the centroid towards the x axis.}
 
 \item{warn_xlim_out_of_range}{logical whether warning should be issued when 
 xlim is lower than the lowest x value or higher
@@ -60,6 +60,8 @@ than the highest x value.}
 
 \item{warn_negative_y}{logical whether warning should be issued when 
 \code{neg.rm == FALSE} but some y values are below 0.}
+
+\item{...}{Other arguments to pass to \code{centroid}}
 }
 \value{
 A scalar for the x value (if \code{return = 'x'}) or

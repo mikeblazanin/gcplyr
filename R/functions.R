@@ -2652,8 +2652,8 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            will produce more more "smoothed" data
 #'            
 #'            For \code{gam}, both arguments to \link[mgcv]{gam} and 
-#'            \code[mgcv]{s} can be provided via \code{...}. Most frequently, 
-#'            the \code{k} argument to \code{mgcv::s} sets the number of 
+#'            \link[mgcv]{s} can be provided via \code{...}. Most frequently, 
+#'            the \code{k} argument to \link[mgcv]{s} sets the number of 
 #'            "knots" the spline-fitting can use. Smaller values will be more 
 #'            "smoothed".
 #'            

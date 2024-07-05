@@ -7,7 +7,7 @@ first_peak,gcplyr::find_local_extrema,"y, x, window_width, window_width_n, windo
 gc_smooth.spline,stats::smooth.spline,"x, y",x
 import_blockdesigns,gcplyr::paste_blocks,sep,x
 import_blockdesigns,gcplyr::read_blocks,"files, block_names, block_name_header",x
-import_blockdesigns,gcplyr::separate_tidy,sep,x
+import_blockdesigns,gcplyr::separate_tidy,"sep, into",x
 import_blockdesigns,gcplyr::trans_block_to_wide,,NA
 import_blockdesigns,gcplyr::trans_wide_to_tidy,,NA
 import_blockmeasures,gcplyr::read_blocks,files,x

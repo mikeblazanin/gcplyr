@@ -47,7 +47,7 @@ test_that("import_blockdesigns works correctly", {
                rep = rep(LETTERS[1:4], each = 12)))
   #If you want them as separate plates (rows)
   expect_equal(
-    import_blockdesigns(c("strain.csv", "rep.csv"), join_designs = FALSE),
+    import_blockdesigns(c("strain.csv", "rep.csv"), join_as_cols = FALSE),
     data.frame(block_name = rep(c("strain", "rep"), each = 96),
                Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
                Designs = c(rep(paste0("str", 1:8), each = 12),
@@ -71,7 +71,7 @@ test_that("import_blockdesigns works correctly", {
   expect_equal(
     import_blockdesigns("strain_and_rep.csv",
                         startrow = c(1, 11), endrow = c(9, 19),
-                        join_designs = FALSE),
+                        join_as_cols = FALSE),
     data.frame(block_name = "strain_and_rep",
                Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
                Designs = c(rep(paste0("str", 1:8), each = 12),
@@ -106,7 +106,7 @@ test_that("import_blockdesigns works correctly", {
   #If you don't want them as one plate (rows), but don't specify sep
   expect_equal(
     import_blockdesigns(c("strain_rep.csv", "bact_rep2.csv"), 
-                        join_designs = FALSE),
+                        join_as_cols = FALSE),
     data.frame(block_name = rep(c("strain_rep", "bact_rep2"), each = 96),
                Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
                Designs = c(t(dat5), t(dat6))))

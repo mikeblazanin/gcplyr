@@ -11,6 +11,7 @@ separate_tidy(
   sep = "_",
   coerce_NA = TRUE,
   na.strings = "NA",
+  message_inferred_into = TRUE,
   ...
 )
 }
@@ -22,8 +23,8 @@ separate_tidy(
 \item{into}{A character vector of the new column names. Use \code{NA} to
 omit the variable in the output.
 
-If NULL, \code{separate_gc} will attempt to infer the new
-column names from the column name of \code{col}}
+If NULL, \code{separate_tidy} will attempt to infer the new
+column names by splitting the column name of \code{col}}
 
 \item{sep}{Separator between columns passed to \code{tidyr::separate}:
 
@@ -41,6 +42,9 @@ after separating.}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values if \code{coerce_NA == TRUE}}
+
+\item{message_inferred_into}{logical whether column names for \code{into}
+should be printed in a message when inferred}
 
 \item{...}{Other arguments passed to \code{tidyr::separate}}
 }

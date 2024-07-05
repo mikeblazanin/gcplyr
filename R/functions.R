@@ -2558,8 +2558,8 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #' @param into A character vector of the new column names. Use \code{NA} to
 #'             omit the variable in the output.
 #'             
-#'             If NULL, \code{separate_gc} will attempt to infer the new
-#'             column names from the column name of \code{col}
+#'             If NULL, \code{separate_tidy} will attempt to infer the new
+#'             column names by splitting the column name of \code{col}
 #' @param sep Separator between columns passed to \code{tidyr::separate}:
 #' 
 #'            If character, \code{sep} is interpreted as a regular expression.
@@ -2574,13 +2574,16 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #'                   after separating.
 #' @param na.strings A character vector of strings which are to be interpreted
 #'                   as \code{NA} values if \code{coerce_NA == TRUE}
+#' @param message_inferred_into logical whether column names for \code{into}
+#'                              should be printed in a message when inferred
 #' @param ... Other arguments passed to \code{tidyr::separate}
 #' 
 #' @return A data frame containing new columns in the place of \code{col}
 #' 
 #' @export
 separate_tidy <- function(data, col, into = NULL, sep = "_",
-                          coerce_NA = TRUE, na.strings = "NA", ...) {
+                          coerce_NA = TRUE, na.strings = "NA",
+                          message_inferred_into = TRUE, ...) {
   if(is.null(into)) {
     if(col %in% colnames(data)) {
       into <- strsplit(col, split = sep)[[1]]
@@ -2588,6 +2591,9 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
       into <- strsplit(colnames(data)[col], split = sep)[[1]]
     } else {
       stop("into is NULL, but col is neither numeric nor a column name in data")
+    }
+    if(message_inferred_into) {
+      message(paste("Inferred 'into' column names as:", paste(into, collapse = ", ")))
     }
   }
   

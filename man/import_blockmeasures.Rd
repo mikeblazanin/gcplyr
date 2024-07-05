@@ -26,7 +26,7 @@ used to separate blockmeasures into those plates accordingly}
 rowname and column name}
 
 \item{...}{Other arguments to pass to \link{read_blocks}, \link{uninterleave},
-or \link{widen_blocks}}
+or \link{trans_block_to_wide}}
 }
 \value{
 If \code{num_plates = 1}, a wide-shaped \code{data.frame}

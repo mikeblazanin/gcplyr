@@ -91,7 +91,7 @@ For \link{moving_average} and \link{moving_median},
            other parameters of \code{s()}, including the smoothing basis 
            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
            the default), cubic regressions (\code{bs = "cr"}), or many other 
-           options (see \link[mcgv]{s}). I recommend leaving the default 
+           options (see \link[mgcv]{s}). I recommend leaving the default 
            thin plate regressions, whose main drawback is that they are 
            computationally intensive to calculate. For growth curves data, 
            this is unlikely to be relevant.

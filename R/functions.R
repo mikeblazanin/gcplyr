@@ -1113,7 +1113,7 @@ read_tidys <- function(files, filetype = NULL,
 #' @param wellnames_sep String to use as separator for well names between 
 #'                      rowname and column name
 #' @param ... Other arguments to pass to \link{read_blocks}, \link{uninterleave},
-#'            or \link{widen_blocks}
+#'            or \link{trans_block_to_wide}
 #' @details     Common arguments that you may want to provide via \code{...}
 #'              include:
 #' 
@@ -1168,7 +1168,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' Function to import block-shaped designs from files and return tidy designs.
 #' This function acts as a wrapper that calls \link{read_blocks}, 
 #' \link{paste_blocks}, \link{trans_block_to_wide}, \link{trans_wide_to_tidy}, 
-#' and \link{separate_tidys}
+#' and \link{separate_tidy}
 #'
 #' @param files A vector of filepaths relative to the current working directory
 #'              where each filepath is a single plate read to be read by
@@ -1239,7 +1239,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              pasting as needed with \link{paste_blocks}, 
 #'              transforming to tidy with \link{trans_block_to_wide} and
 #'              \link{trans_wide_to_tidy}, and separating as needed with
-#'              \link{separate_tidys}.
+#'              \link{separate_tidy}.
 #'              
 #' @return A tidy-shaped \code{data.frame} containing the design information
 #'         from \code{files}. This always includes a "Well" column. 
@@ -2661,7 +2661,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            other parameters of \code{s()}, including the smoothing basis 
 #'            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
 #'            the default), cubic regressions (\code{bs = "cr"}), or many other 
-#'            options (see \link[mcgv]{s}). I recommend leaving the default 
+#'            options (see \link[mgcv]{s}). I recommend leaving the default 
 #'            thin plate regressions, whose main drawback is that they are 
 #'            computationally intensive to calculate. For growth curves data, 
 #'            this is unlikely to be relevant.

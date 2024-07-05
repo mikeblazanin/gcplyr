@@ -100,7 +100,7 @@ A tidy-shaped \code{data.frame} containing the design information
 Function to import block-shaped designs from files and return tidy designs.
 This function acts as a wrapper that calls \link{read_blocks}, 
 \link{paste_blocks}, \link{trans_block_to_wide}, \link{trans_wide_to_tidy}, 
-and \link{separate_tidys}
+and \link{separate_tidy}
 }
 \details{
 Other common arguments that you may want to provide via 
@@ -127,5 +127,5 @@ Other common arguments that you may want to provide via
              pasting as needed with \link{paste_blocks}, 
              transforming to tidy with \link{trans_block_to_wide} and
              \link{trans_wide_to_tidy}, and separating as needed with
-             \link{separate_tidys}.
+             \link{separate_tidy}.
 }

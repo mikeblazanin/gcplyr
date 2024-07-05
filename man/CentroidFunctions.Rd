@@ -73,5 +73,5 @@ and returns the x and/or y position of the centroid of mass of the
 area under the curve
 }
 \details{
-This function uses \code{sf::st_centroid} to calculate the centroid of mass
+This function uses \link[sf]{st_centroid} to calculate the centroid of mass
 }

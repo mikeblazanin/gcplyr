@@ -14,7 +14,7 @@ data.frames}
 
 \item{nested_metadata}{A logical indicating the existence of nested metadata
 in the \code{blockmeasures} list, e.g. as is typically
-output by \code{read_blocks}. If NULL, will attempt to
+output by \link{read_blocks}. If NULL, will attempt to
 infer existence of nested metadata}
 }
 \value{
@@ -28,7 +28,7 @@ If nested_metadata = TRUE (or is inferred to be TRUE), a list
         \code{blocks}
 }
 \description{
-This function uses \code{paste} to concatenate the same-location entries
+This function uses \link{paste} to concatenate the same-location entries
 of a list of data.frames together (i.e. all the first row-first column
 values are pasted together, all the second row-first column values are
 pasted together, etc.)

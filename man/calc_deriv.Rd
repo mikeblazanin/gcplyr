@@ -55,7 +55,7 @@ and the derivative for each group will be calculated
 independently of the others.
 
 This provides an internally-implemented approach similar
-to \code{dplyr::group_by} and \code{dplyr::mutate}}
+to \link[dplyr]{group_by} and \link[dplyr]{mutate}}
 
 \item{window_width, window_width_n, window_width_frac, window_width_n_frac}{Set how many data points are used to determine
 the slope at each point.
@@ -102,7 +102,7 @@ A value of \code{window_width_n = 3} or
 \item{na.rm}{logical whether NA's should be removed before analyzing}
 
 \item{warn_ungrouped}{logical whether warning should be issued when
-\code{smooth_data} is being called on ungrouped data
+\code{calc_deriv} is being called on ungrouped data
 and \code{subset_by = NULL}.}
 
 \item{warn_logtransform_warnings}{logical whether warning should be issued 

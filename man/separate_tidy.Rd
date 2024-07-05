@@ -26,7 +26,7 @@ omit the variable in the output.
 If NULL, \code{separate_tidy} will attempt to infer the new
 column names by splitting the column name of \code{col}}
 
-\item{sep}{Separator between columns passed to \code{tidyr::separate}:
+\item{sep}{Separator between columns passed to \link[tidyr]{separate}:
 
            If character, \code{sep} is interpreted as a regular expression.
            
@@ -46,12 +46,12 @@ as \code{NA} values if \code{coerce_NA == TRUE}}
 \item{message_inferred_into}{logical whether column names for \code{into}
 should be printed in a message when inferred}
 
-\item{...}{Other arguments passed to \code{tidyr::separate}}
+\item{...}{Other arguments passed to \link[tidyr]{separate}}
 }
 \value{
 A data frame containing new columns in the place of \code{col}
 }
 \description{
-This function is primarily a wrapper for \code{tidyr::separate}, which
+This function is primarily a wrapper for \link[tidyr]{separate}, which
 turns a single character column into multiple columns
 }

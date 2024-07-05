@@ -21,10 +21,10 @@ rowname and column name (ordered according to
 
 \item{nested_metadata}{A logical indicating the existence of nested metadata
 in the \code{blockmeasures} list, e.g. as is typically
-output by \code{read_blocks}. If NULL, will attempt to
+output by \link{read_blocks}. If NULL, will attempt to
 infer existence of nested metadata}
 
-\item{colnames_first}{In the wellnames created by \code{paste}-ing the
+\item{colnames_first}{In the wellnames created by \link{paste}-ing the
 rownames and column names, should the column names
 come first}
 }

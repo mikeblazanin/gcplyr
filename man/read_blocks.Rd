@@ -118,19 +118,17 @@ If \code{wellnames_numeric} is FALSE, rows will be
 lettered A through Z, while columns will be numbered}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
-as \code{NA} values by \link{utils::read.csv},
-\link{readxl::read_xls}, \link{readxl::read_xlsx},
-or \link{utils::read.table}}
+as \code{NA} values by \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+or \link{read.table}}
 
-\item{extension}{Allowed for backward compatibility; \code{filetype} is
-now the preferred argument name.}
+\item{extension}{Deprecated, use \code{filetype} instead}
 
-\item{block_name_header}{Allowed for backward compatibility; 
-\code{block_names_header} is now the preferred argument name.}
+\item{block_name_header}{Deprecated, use \code{block_names_header} instead}
 
-\item{...}{Other arguments passed to \link{utils::read.csv},
-\link{readxl::read_xls}, \link{readxl::read_xlsx},
-or \link{utils::read.table}}
+\item{...}{Other arguments passed to \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+or \link{read.table}}
 }
 \value{
 A list where each entry is a list containing the block data frame

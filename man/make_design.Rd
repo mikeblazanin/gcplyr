@@ -61,7 +61,7 @@ well names, when \code{output_format = "tidy"}}
 
 \item{colnames_first}{When wellnames are created for 
 \code{output_format = "wide"} or 
-\code{output_format = "tidy"} by \code{paste}-ing the
+\code{output_format = "tidy"} by \link{paste}-ing the
 rownames and column names, should the column names
 come first.}
 
@@ -104,7 +104,7 @@ Depends on \code{output_format}:
         information for a single design element
         
         If \code{output_format = "blocks_pasted"}, a single 
-        \code{data.frame} containing the \code{paste}-ed information
+        \code{data.frame} containing the \link{paste}-ed information
         for all design elements
         
         If \code{output_format = "wide"}, a wide-shaped \code{data.frame}

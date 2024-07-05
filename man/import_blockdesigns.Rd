@@ -21,7 +21,7 @@ import_blockdesigns(
 \arguments{
 \item{files}{A vector of filepaths relative to the current working directory
 where each filepath is a single plate read to be read by
-\code{read_blocks}.}
+\link{read_blocks}.}
 
 \item{block_names}{Vector of names corresponding to each design element (each
 block). Inferred from filenames, if not specified.
@@ -43,7 +43,7 @@ the tidy output. If \code{FALSE}, blocks are joined as rows
 (i.e. describe different plates) in the tidy output.}
 
 \item{sep}{If designs have been pasted together, this specifies the
-string they should be split apart by via \code{separate_tidy}.}
+string they should be split apart by via \link{separate_tidy}.}
 
 \item{values_colname}{When \code{join_as_cols = FALSE} and \code{sep} is
 not specified, all the design values will be in a column
@@ -60,15 +60,15 @@ be retained in the output. By default, blocknames are retained
 only if \code{join_as_cols = FALSE}.}
 
 \item{warn_joinrows_nointo}{logical indicating whether warning should
-be raised when multiple blocks are joined as rows (
-\code{join_as_cols = FALSE}) and \code{sep} is specified,
+be raised when multiple blocks are joined as rows 
+(\code{join_as_cols = FALSE}) and \code{sep} is specified,
 but \code{into} is not specified.}
 
 \item{join_designs}{Deprecated, use \code{join_as_cols} instead}
 
-\item{...}{Other arguments to pass to \code{read_blocks}, 
-\code{paste_blocks}, \code{trans_block_to_wide},
-\code{trans_wide_to_tidy}, or \code{separate_tidy}.
+\item{...}{Other arguments to pass to \link{read_blocks}, 
+\link{paste_blocks}, \link{trans_block_to_wide},
+\link{trans_wide_to_tidy}, or \link{separate_tidy}.
 
 See Details for more information}
 }
@@ -98,9 +98,9 @@ A tidy-shaped \code{data.frame} containing the design information
 }
 \description{
 Function to import block-shaped designs from files and return tidy designs.
-This function acts as a wrapper that calls \code{read_blocks}, 
-\code{paste_blocks}, \code{trans_block_to_wide}, \code{trans_wide_to_tidy}, 
-and \code{separate_tidys}
+This function acts as a wrapper that calls \link{read_blocks}, 
+\link{paste_blocks}, \link{trans_block_to_wide}, \link{trans_wide_to_tidy}, 
+and \link{separate_tidys}
 }
 \details{
 Other common arguments that you may want to provide via 
@@ -108,7 +108,7 @@ Other common arguments that you may want to provide via
 
              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
              \code{sheet} - specifying the location of design information 
-             inside \code{files} to \code{read_blocks}.
+             inside \code{files} to \link{read_blocks}.
              
              \code{wellnames_sep} - specifying what character (or "" for 
              none) should be used when pasting together the rownames and
@@ -116,16 +116,16 @@ Other common arguments that you may want to provide via
              the well names in your measures.
              
              \code{into} - specifying the column names resulting from
-             using \code{separate_tidy} on the values_colname column.
+             using \link{separate_tidy} on the values_colname column.
              
              Note that \code{import_blockdesigns} cannot currently handle
              metadata specified via the \code{metadata} argument of
-             \code{read_blocks}.
+             \link{read_blocks}.
              
              If you find yourself needing more control, you can run the 
-             steps manually, first reading with \code{read_blocks},
-             pasting as needed with \code{paste_blocks}, 
-             transforming to tidy with \code{trans_block_to_wide} and
-             \code{trans_wide_to_tidy}, and separating as needed with
-             \code{separate_tidys}.
+             steps manually, first reading with \link{read_blocks},
+             pasting as needed with \link{paste_blocks}, 
+             transforming to tidy with \link{trans_block_to_wide} and
+             \link{trans_wide_to_tidy}, and separating as needed with
+             \link{separate_tidys}.
 }

@@ -116,7 +116,7 @@ parameters to pass to \code{find_local_extrema}}
    \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 
    \code{first_minima} returns only the first minima, so is a shortcut for
-   \code{find_local_extrema(return_maxima = FALSE, return_minima = TRUE)[1]}
+   \code{find_local_extrema(return_maxima = FALSE, return_maxima = FALSE)[1]}
 
    If \code{return = "index"}, the returned value(s) are the indices
    corresponding to local extrema in the data

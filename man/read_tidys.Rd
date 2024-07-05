@@ -31,9 +31,9 @@ where each one is a tidy-shaped data file}
 
                  "csv", "xls", or "xlsx".
                  
-                 "tbl" or "table" to use \code{read.table} to read the file,
-                 "csv2" to use \code{read.csv2}, "delim" to 
-                 use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+                 "tbl" or "table" to use \link{read.table} to read the file,
+                 "csv2" to use \link{read.csv2}, "delim" to 
+                 use \link{read.delim}, or "delim2" to use \link{read.delim2}.
                  
                  If none provided, \code{read_tidys} will infer filetype(s) 
                  from the extension(s) in \code{files}. When extension is 
@@ -45,7 +45,7 @@ the data are located in \code{files}.
 Can be a vector or list the same length as \code{files}, or
 a single value that applies to all \code{files}. Values
 can be numeric or a string that will be automatically
-converted to numeric by \code{from_excel}.
+converted to numeric by \link{from_excel}.
 
 If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
@@ -86,19 +86,17 @@ the path (if any) be retained}
 the file extension (if any) be retained}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
-as \code{NA} values by \code{utils::read.csv},
-\code{readxl::read_xls}, \code{readxl::read_xlsx},
-or \code{utils::read.table}}
+as \code{NA} values by \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+or \link{read.table}}
 
-\item{extension}{Allowed for backward compatibility; \code{filetype} is
-now the preferred argument name.}
+\item{extension}{Deprecated, use \code{filetype} instead}
 
-\item{names_to_col}{Allowed for backward compatibility; 
-\code{run_names_header} is now the preferred argument name.}
+\item{names_to_col}{Deprecated, use \code{run_names_header} instead}
 
-\item{...}{Other arguments passed to \code{utils::read.csv},
-\code{readxl::read_xls}, \code{readxl::read_xlsx}, or
-\code{utils::read.table}
+\item{...}{Other arguments passed to \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
+\link{read.table}
 sheet}
 }
 \value{
@@ -107,8 +105,8 @@ A dataframe containing a single tidy data.frame, or
 }
 \description{
 A function that imports tidy-shaped files into R. Largely acts as a
-wrapper for \code{utils::read.csv}, \code{readxl::read_xls},
-\code{readxl::read_xls}, or \code{readxl::read_xlsx}, but can handle
+wrapper for \link{read.csv}, \link[readxl]{read_xls},
+\link[readxl]{read_xls}, or \link[readxl]{read_xlsx}, but can handle
 multiple files at once and has additional options for taking subsets 
 of rows/columns rather than the entire file and for adding filename 
 or run names as an added column in the output.

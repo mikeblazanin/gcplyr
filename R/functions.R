@@ -389,16 +389,14 @@ get_metadata <- function(df, row, col) {
 #'                        If \code{wellnames_numeric} is FALSE, rows will be
 #'                        lettered A through Z, while columns will be numbered
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values by \link{utils::read.csv},
-#'                   \link{readxl::read_xls}, \link{readxl::read_xlsx},
-#'                   or \link{utils::read.table}
-#' @param extension Allowed for backward compatibility; \code{filetype} is
-#'                  now the preferred argument name.
-#' @param block_name_header Allowed for backward compatibility; 
-#'               \code{block_names_header} is now the preferred argument name.
-#' @param ...   Other arguments passed to \link{utils::read.csv},
-#'              \link{readxl::read_xls}, \link{readxl::read_xlsx},
-#'              or \link{utils::read.table}
+#'                   as \code{NA} values by \link{read.csv},
+#'                   \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+#'                   or \link{read.table}
+#' @param extension Deprecated, use \code{filetype} instead
+#' @param block_name_header Deprecated, use \code{block_names_header} instead
+#' @param ...   Other arguments passed to \link{read.csv},
+#'              \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+#'              or \link{read.table}
 #'
 #' @details 
 #'  For metadata, \code{read_blocks} can handle an arbitrary number of additional
@@ -708,16 +706,14 @@ read_blocks <- function(files, filetype = NULL,
 #'                 corresponding input files. (This case is typically used 
 #'                 when reading multiple blocks from a single file.)
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values by \link{utils::read.csv},
-#'                   \link{readxl::read_xls}, \link{readxl::read_xlsx},
-#'                   or \link{utils::read.table}
-#' @param extension Allowed for backward compatibility; \code{filetype} is
-#'                  now the preferred argument name.
-#' @param names_to_col Allowed for backward compatibility; 
-#'               \code{run_names_header} is now the preferred argument name.
-#' @param ...   Other arguments passed to \link{utils::read.csv},
-#'              \link{readxl::read_xls}, \link{readxl::read_xlsx}, or
-#'              \link{utils::read.table}
+#'                   as \code{NA} values by \link{read.csv},
+#'                   \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+#'                   or \link{read.table}
+#' @param extension Deprecated, use \code{filetype} instead
+#' @param names_to_col Deprecated, use \code{run_names_header} instead
+#' @param ...   Other arguments passed to \link{read.csv},
+#'              \link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
+#'              \link{read.table}
 #'              
 #' @return A dataframe containing a single widemeasures, or
 #'         A list of widemeasures named by filename
@@ -904,8 +900,8 @@ read_wides <- function(files, filetype = NULL,
 #' Read tidy-shaped files
 #' 
 #' A function that imports tidy-shaped files into R. Largely acts as a
-#' wrapper for \link{utils::read.csv}, \link{readxl::read_xls},
-#' \link{readxl::read_xls}, or \link{readxl::read_xlsx}, but can handle
+#' wrapper for \link{read.csv}, \link[readxl]{read_xls},
+#' \link[readxl]{read_xls}, or \link[readxl]{read_xlsx}, but can handle
 #' multiple files at once and has additional options for taking subsets 
 #' of rows/columns rather than the entire file and for adding filename 
 #' or run names as an added column in the output.
@@ -963,16 +959,14 @@ read_wides <- function(files, filetype = NULL,
 #' @param run_names_ext If run_names are inferred from filenames, should 
 #'                        the file extension (if any) be retained
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values by \link{utils::read.csv},
-#'                   \link{readxl::read_xls}, \link{readxl::read_xlsx},
-#'                   or \link{utils::read.table}
-#' @param extension Allowed for backward compatibility; \code{filetype} is
-#'                  now the preferred argument name.
-#' @param names_to_col Allowed for backward compatibility; 
-#'               \code{run_names_header} is now the preferred argument name.
-#' @param ...   Other arguments passed to \link{utils::read.csv},
-#'              \link{readxl::read_xls}, \link{readxl::read_xlsx}, or
-#'              \link{utils::read.table}
+#'                   as \code{NA} values by \link{read.csv},
+#'                   \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+#'                   or \link{read.table}
+#' @param extension Deprecated, use \code{filetype} instead
+#' @param names_to_col Deprecated, use \code{run_names_header} instead
+#' @param ...   Other arguments passed to \link{read.csv},
+#'              \link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
+#'              \link{read.table}
 #'              sheet
 #'               
 #' @details
@@ -2211,7 +2205,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #' @param wides A single widemeasures data.frame, or a list of widemeasures
 #'                   data.frame's
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
-#'                          (in \link{tidyr::pivot_longer} parlance). Each can be
+#'                          (in \link[tidyr]{pivot_longer} parlance). Each can be
 #'                          a single vector (which will be applied for all
 #'                          widemeasures) or a list of vectors, with each
 #'                          vector corresponding to the same-index widemeasure
@@ -2231,7 +2225,7 @@ trans_wide_to_block <- function(wides, collapse = NULL,
 #' @param values_to_numeric logical indicating whether values will be coerced
 #'                          to numeric. See below for when this may be
 #'                          overridden by arguments passed in \code{...}
-#' @param ... Other functions to be passed to \link{tidyr::pivot_longer}
+#' @param ... Other functions to be passed to \link[tidyr]{pivot_longer}
 #'            Note that including values_transform here will override the
 #'            behavior of values_to_numeric
 #' @return Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)
@@ -2550,7 +2544,7 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 
 #' Separate a column into multiple columns
 #' 
-#' This function is primarily a wrapper for \link{tidyr::separate}, which
+#' This function is primarily a wrapper for \link[tidyr]{separate}, which
 #' turns a single character column into multiple columns
 #' 
 #' @param data A data frame
@@ -2560,7 +2554,7 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #'             
 #'             If NULL, \code{separate_tidy} will attempt to infer the new
 #'             column names by splitting the column name of \code{col}
-#' @param sep Separator between columns passed to \link{tidyr::separate}:
+#' @param sep Separator between columns passed to \link[tidyr]{separate}:
 #' 
 #'            If character, \code{sep} is interpreted as a regular expression.
 #'            
@@ -2576,7 +2570,7 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #'                   as \code{NA} values if \code{coerce_NA == TRUE}
 #' @param message_inferred_into logical whether column names for \code{into}
 #'                              should be printed in a message when inferred
-#' @param ... Other arguments passed to \link{tidyr::separate}
+#' @param ... Other arguments passed to \link[tidyr]{separate}
 #' 
 #' @return A data frame containing new columns in the place of \code{col}
 #' 
@@ -2613,9 +2607,9 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' 
 #' This function calls other functions to smooth growth curve data
 #' 
-#' @param ... Arguments passed to \link{stats::loess}, \link{mgcv::gam},
+#' @param ... Arguments passed to \link{loess}, \link[mgcv]{gam},
 #'            \link{moving_average}, \link{moving_median}, or 
-#'            \link{stats::smooth.spline}. Typically includes tuning 
+#'            \link{smooth.spline}. Typically includes tuning 
 #'            parameter(s), which in some cases are required.
 #'            See Details for more information.
 #' @param x An (often optional) vector of predictor values to smooth along 
@@ -2632,7 +2626,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'                  independently of the others.
 #'                  
 #'                  This provides an internally-implemented approach similar
-#'                  to \link{dplyr::group_by} and \link{dplyr::mutate}
+#'                  to \link[dplyr]{group_by} and \link[dplyr]{mutate}
 #' @param return_fitobject logical whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
@@ -2657,29 +2651,30 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            too large for growth curves data. Larger values of \code{span} 
 #'            will produce more more "smoothed" data
 #'            
-#'            For \code{gam}, both arguments to \link{mgcv::gam} and \code{mgcv::s} can
-#'            be provided via \code{...}. Most frequently, the \code{k} 
-#'            argument to \code{mgcv::s} sets the number of "knots" the
-#'            spline-fitting can use. Smaller values will be more "smoothed".
+#'            For \code{gam}, both arguments to \link[mgcv]{gam} and 
+#'            \code[mgcv]{s} can be provided via \code{...}. Most frequently, 
+#'            the \code{k} argument to \code{mgcv::s} sets the number of 
+#'            "knots" the spline-fitting can use. Smaller values will be more 
+#'            "smoothed".
 #'            
 #'            When using \code{sm_method = "gam"}, advanced users may also modify 
 #'            other parameters of \code{s()}, including the smoothing basis 
 #'            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
 #'            the default), cubic regressions (\code{bs = "cr"}), or many other 
-#'            options (see \link{mcgv::s}). I recommend leaving the default 
+#'            options (see \link[mcgv]{s}). I recommend leaving the default 
 #'            thin plate regressions, whose main drawback is that they are 
 #'            computationally intensive to calculate. For growth curves data, 
 #'            this is unlikely to be relevant.
 #'            
 #'            As an alternative to passing \code{y}, for more advanced needs 
-#'            with \link{loess} or \link{mgcv::gam}, \code{formula} and \code{data} 
+#'            with \link{loess} or \link[mgcv]{gam}, \code{formula} and \code{data} 
 #'            can be passed to \code{smooth_data} via the \code{...} argument 
 #'            (in lieu of \code{y}).
 #'          
 #'            In this case, the formula should specify the response (e.g. density) 
 #'            and predictors. For \code{gam} smoothing, the formula should
 #'            typically be of the format: y ~ s(x), which uses 
-#'            \link{mgcv::s} to smooth the data. The data argument should be a 
+#'            \link[mgcv]{s} to smooth the data. The data argument should be a 
 #'            \code{data.frame} containing the variables in the formula.
 #'            In such cases, \code{subset_by} can still be specified as a vector
 #'            with length \code{nrow(data)}
@@ -3098,7 +3093,7 @@ predict_interpolation <- function(
 
 #' Fit a Smoothing Spline
 #' 
-#' This function is a wrapper for \link{stats::smooth.spline}, which fits 
+#' This function is a wrapper for \link{smooth.spline}, which fits 
 #' a cubic smoothing spline to the supplied data, but includes the option
 #' to remove \code{NA} values, and returns values in the original order.
 #' 
@@ -3106,14 +3101,14 @@ predict_interpolation <- function(
 #' @param y A vector giving the values of the response variable. If \code{y} is
 #'          missing or \code{NULL}, the responses are assumed to be specified
 #'          by \code{x}, with \code{x} the index vector.
-#' @param ... Additional arguments passed to \link{stats::smooth.spline}.
+#' @param ... Additional arguments passed to \link{smooth.spline}.
 #' @param na.rm logical whether NA's should be removed before analyzing.
 #'              Required to be TRUE if any \code{x} or \code{y} values are NA.
 #'              
-#' @details See \link{stats::smooth.spline}              
+#' @details See \link{smooth.spline}              
 #' 
-#' @return Similar to \link{stats::smooth.spline}, an object of class 
-#'         "\link{smooth.spline}" with many components. Differs in that
+#' @return Similar to \link{smooth.spline}, an object of class 
+#'         "\code{smooth.spline}" with many components. Differs in that
 #'         x, y, and w have NA's at any indices where \code{x} or \code{y} were 
 #'         NA in the inputs, and x, y, and w are returned to match the input 
 #'         \code{x} in order and length
@@ -3157,11 +3152,11 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 
 # Processing: Cross-validation ----
 
-#' Create method argument for \link{caret::train} of growth curve smoothers
+#' Create method argument for \link[caret]{train} of growth curve smoothers
 #' 
 #' This function generates a list which is compatible to be used as the
-#' \code{method} argument to \link{caret::train}. This enables users to
-#' call \link{caret::train} directly themselves with \code{smooth_data}
+#' \code{method} argument to \link[caret]{train}. This enables users to
+#' call \link[caret]{train} directly themselves with \code{smooth_data}
 #' smoothing functions.
 #' 
 #' @param sm_method Argument specifying which smoothing method should
@@ -3170,17 +3165,17 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' @param tuneGrid A data frame with possible tuning value. The columns should 
 #'                 be named the same as the tuning parameters.
 #'                 
-#'                 Note that, when using \link{caret::train}, the tuneGrid
+#'                 Note that, when using \link[caret]{train}, the tuneGrid
 #'                 must be passed both to this function as well as directly
-#'                 to \link{caret::train}.
+#'                 to \link[caret]{train}.
 #' 
 #' @return A list that can be used as the method argument to
-#'         \link{caret::train}. Contains elements:
+#'         \link[caret]{train}. Contains elements:
 #'         \code{library}, \code{type}, \code{prob}, \code{fit},
 #'         \code{parameters}, \code{grid}, \code{fit}, and \code{predict}.
 #'         
 #'         See documentation on using a custom model model in 
-#'         \link{caret::train} for more details.
+#'         \link[caret]{train} for more details.
 #'
 #' @export
 makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
@@ -3290,7 +3285,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 
 #' Test efficacy of different smoothing parameters
 #' 
-#' This function is based on \link{caret::train}, which runs models
+#' This function is based on \link[caret]{train}, which runs models
 #' (in our case different smoothing algorithms) on data across different 
 #' parameter values (in our case different smoothness parameters).
 #' 
@@ -3303,16 +3298,16 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'                  "loess", "gam", and "smooth.spline".
 #' @param preProcess A string vector that defines a pre-processing of the
 #'                   predictor data. The default is no pre-processing.
-#'                   See \link{caret::train} for more details.
+#'                   See \link[caret]{train} for more details.
 #' @param weights    A numeric vector of case weights. This argument currently
 #'                   does not affect any \code{train_smooth_data} models.
 #' @param metric     A string that specifies what summary metric will be
 #'                   used to select the optimal model. By default, possible
 #'                   values are "RMSE" and "Rsquared" for regression.
-#'                   See \link{caret::train} for more details.
+#'                   See \link[caret]{train} for more details.
 #' @param maximize   A logical: should the metric be maximized or minimized?
 #' @param trControl  A list of values that define how this function acts.
-#'                   See \link{caret::train} and \link{caret::trainControl}
+#'                   See \link[caret]{train} and \link[caret]{trainControl}
 #'                   for more details.
 #' @param tuneGrid A data frame with possible tuning values, or a named list
 #'                 containing vectors with possible tuning values. If a data 
@@ -3330,10 +3325,10 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'                   by the random search. (NOTE: If given, this argument
 #'                   must be named.)
 #' @param return_trainobject A logical indicating whether the entire result
-#'                           of \link{caret::train} should be returned, or
+#'                           of \link[caret]{train} should be returned, or
 #'                           only the \code{results} element.
 #'                           
-#' @details See \link{caret::train} for more information.
+#' @details See \link[caret]{train} for more information.
 #' 
 #'          The default method is k-fold cross-validation 
 #'          (\code{trControl = caret::trainControl(method = "cv")}). 
@@ -3341,7 +3336,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'          For less variable, but more computationally costly, cross-validation,
 #'          users may choose to increase the number of folds. This can be
 #'          done by altering the \code{number} argument in 
-#'          \link{caret::trainControl}, or by setting \code{method = "LOOCV"} 
+#'          \link[caret]{trainControl}, or by setting \code{method = "LOOCV"} 
 #'          for leave one out cross-validation where the number of folds is 
 #'          equal to the number of data points. 
 #'          
@@ -3350,15 +3345,16 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'          repeated k-fold cross-validation.
 #' 
 #'          For more control, advanced users may wish to call 
-#'          \link{caret::train} directly, using \link{makemethod_train_smooth_data} to 
-#'          specify the \code{method} argument.
+#'          \link[caret]{train} directly, using 
+#'          \link{makemethod_train_smooth_data} to specify the \code{method} 
+#'          argument.
 #' 
 #' @return If \code{return_trainobject = FALSE} (the default), a data frame
 #'         with the values of all tuning parameter combinations and the
 #'         training error rate for each combination (i.e. the \code{results}
-#'         element of the output of \link{caret::train}).
+#'         element of the output of \link[caret]{train}).
 #'         
-#'         If \code{return_trainobject = TRUE}, the output of \link{caret::train}
+#'         If \code{return_trainobject = TRUE}, the output of \link[caret]{train}
 #' 
 #' @export   
 train_smooth_data <- function(..., x = NULL, y = NULL, sm_method,
@@ -3433,7 +3429,7 @@ and dplyr::reframe instead")}
 #'                  independently of the others.
 #'                  
 #'                  This provides an internally-implemented approach similar
-#'                  to \link{dplyr::group_by} and \link{dplyr::mutate}
+#'                  to \link[dplyr]{group_by} and \link[dplyr]{mutate}
 #' @param window_width,window_width_n,window_width_frac,window_width_n_frac
 #'                  Set how many data points are used to determine
 #'                  the slope at each point.
@@ -4296,7 +4292,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 #'         y value (if \code{return = 'y'}) of the centroid of the data
 #'         
 #' @details
-#' This function uses \link{sf::st_centroid} to calculate the centroid of mass
+#' This function uses \link[sf]{st_centroid} to calculate the centroid of mass
 #'         
 #' @name CentroidFunctions
 NULL  
@@ -4606,7 +4602,7 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
 #' 
 #' This function takes a vector of \code{y} values and returns the index
 #' (by default) of the first local maxima. It serves as a shortcut
-#' for \link{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
+#' for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 #' 
 #' @seealso [first_maxima()]
 #' 

@@ -1268,7 +1268,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'         \code{values_colname}. In this case, if \code{sep} was specified,
 #'         that single design column was split by \code{sep} into columns
 #'         named by splitting \code{values_colname} (post-split column names
-#'         can alternatively be specified directly via \code{into})
+#'         can alternatively be specified directly via \code{into}).
 #' 
 #' @export
 import_blockdesigns <- function(

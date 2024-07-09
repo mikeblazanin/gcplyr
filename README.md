@@ -9,7 +9,7 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.9.0-blue.svg?style=flat&logo=github)](https://github.com/mikeblazanin/gcplyr/commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.10.0-blue.svg?style=flat&logo=github)](https://github.com/mikeblazanin/gcplyr/commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:
@@ -93,5 +93,6 @@ This documentation is also available as a series of pdf vignette files:
 
 Please cite software as:
 
-Blazanin, Michael. 2023. gcplyr: an R package for microbial growth curve
-data analysis. bioRxiv doi: 10.1101/2023.04.30.538883.
+Blazanin, M. gcplyr: an R package for microbial growth curve data
+analysis. BMC Bioinformatics 25, 232 (2024).
+<https://doi.org/10.1186/s12859-024-05817-3>

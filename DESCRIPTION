@@ -1,7 +1,7 @@
 Type: Package
 Package: gcplyr
 Title: Wrangle and Analyze Growth Curve Data
-Version: 1.10.0
+Version: 1.10.0.9000
 Date: 2024-07-09
 Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 

@@ -1,177 +1,61 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/404.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc01_gcplyr.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc02_import_reshape.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc03_incorporate_designs.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc04_preprocess_plot.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc05_process.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc08_conclusion.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc09_multiple_plates.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/gc10_using_make_design.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/ExtremaFunctions.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/MinMaxGC.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/MovingWindowFunctions.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/WhichMinMaxGC.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/auc.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/block_tidydesign.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/calc_deriv.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/doubling_time.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/example_design_tidy.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata_noiseless.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/extr_val.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/first_peak.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/from_excel.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/gc_smooth.spline.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/import_blockdesigns.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/import_blockmeasures.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/lag_time.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/make_design.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/make_designpattern.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/make_example.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/make_tidydesign.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/makemethod_train_smooth_data.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/merge_dfs.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/paste_blocks.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/predict_interpolation.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/print_df.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/read_blocks.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/read_tidys.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/read_wides.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/separate_tidy.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/smooth_data.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/solve_linear.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/to_excel.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/train_smooth_data.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_block_to_wide.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/trans_wide_to_tidy.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/uninterleave.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeblazanin.github.io/gcplyr/reference/write_blocks.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://mikeblazanin.github.io/gcplyr/404.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/LICENSE-text.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/LICENSE.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc01_gcplyr.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc02_import_reshape.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc03_incorporate_designs.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc04_preprocess_plot.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc05_process.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc08_conclusion.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc09_multiple_plates.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/gc10_using_make_design.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/articles/index.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/authors.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/index.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/news/index.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/ExtremaFunctions.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/MinMaxGC.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/MovingWindowFunctions.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/WhichMinMaxGC.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/auc.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/block_tidydesign.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/calc_deriv.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/doubling_time.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/example_design_tidy.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/example_widedata_noiseless.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/extr_val.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/first_peak.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/from_excel.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/gc_smooth.spline.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/import_blockdesigns.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/import_blockmeasures.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/index.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/lag_time.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/make_design.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/make_designpattern.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/make_example.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/make_tidydesign.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/makemethod_train_smooth_data.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/merge_dfs.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/paste_blocks.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/predict_interpolation.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/print_df.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/read_blocks.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/read_tidys.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/read_wides.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/separate_tidy.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/smooth_data.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/solve_linear.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/to_excel.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/train_smooth_data.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/trans_block_to_wide.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/trans_wide_to_tidy.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/uninterleave.html</loc></url>
+<url><loc>https://mikeblazanin.github.io/gcplyr/reference/write_blocks.html</loc></url>
 </urlset>
+

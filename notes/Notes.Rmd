@@ -42,9 +42,8 @@ R CMD INSTALL gcplyr_X.X.X.tar.gz
 
 #Releasing to CRAN
 1. run process above, make sure you're back on master branch
-2. run rhub::check_for_cran and devtools::check_win_devel()
-3. edit cran-comments.md
-4. devtools::release(args = "--compact-vignettes=gs+qpdf")
+2. edit cran-comments.md
+3. devtools::release(args = "--compact-vignettes=gs+qpdf")
 
 #Managing master & develop branches:
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github

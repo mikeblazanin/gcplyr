@@ -9,7 +9,7 @@ for later merging with read data"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,7 +126,7 @@ well names, when <code>output_format = "tidy"</code></p></dd>
 <dt id="arg-colnames-first">colnames_first<a class="anchor" aria-label="anchor" href="#arg-colnames-first"></a></dt>
 <dd><p>When wellnames are created for
 <code>output_format = "wide"</code> or
-<code>output_format = "tidy"</code> by <code>paste</code>-ing the
+<code>output_format = "tidy"</code> by <a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a>-ing the
 rownames and column names, should the column names
 come first.</p></dd>
 
@@ -167,7 +167,7 @@ table will now be c(A,B,...Y,Z,a,b,...,y,z)</p></dd>
         where each <code>data.frame</code> is block-shaped containing the
         information for a single design element</p>
 <p>If <code>output_format = "blocks_pasted"</code>, a single
-        <code>data.frame</code> containing the <code>paste</code>-ed information
+        <code>data.frame</code> containing the <a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a>-ed information
         for all design elements</p>
 <p>If <code>output_format = "wide"</code>, a wide-shaped <code>data.frame</code>
         containing all the design elements</p>

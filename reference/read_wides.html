@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,9 +86,9 @@ where each one is a widemeasures set of data</p></dd>
 <dt id="arg-filetype">filetype<a class="anchor" aria-label="anchor" href="#arg-filetype"></a></dt>
 <dd><p>(optional) the type(s) of the files. Options include:</p>
 <p>"csv", "xls", or "xlsx".</p>
-<p>"tbl" or "table" to use <code>read.table</code> to read the file,
-                 "csv2" to use <code>read.csv2</code>, "delim" to
-                 use <code>read.delim</code>, or "delim2" to use <code>read.delim2</code>.</p>
+<p>"tbl" or "table" to use <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a> to read the file,
+                 "csv2" to use <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv2</a>, "delim" to
+                 use <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a>, or "delim2" to use <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim2</a>.</p>
 <p>If none provided, <code>read_wides</code> will infer filetype(s)
                  from the extension(s) in <code>files</code>. When extension is
                  not "csv", "xls", or "xlsx", will use "table".</p></dd>
@@ -100,7 +100,7 @@ the data are located in <code>files</code>.</p>
 <p>Can be a vector or list the same length as <code>files</code>, or
 a single value that applies to all <code>files</code>. Values
 can be numeric or a string that will be automatically
-converted to numeric by <code>from_excel</code>.</p>
+converted to numeric by <a href="from_excel.html">from_excel</a>.</p>
 <p>If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
 column of the file(s).</p></dd>
@@ -166,25 +166,23 @@ when reading multiple blocks from a single file.)</p></dd>
 
 <dt id="arg-na-strings">na.strings<a class="anchor" aria-label="anchor" href="#arg-na-strings"></a></dt>
 <dd><p>A character vector of strings which are to be interpreted
-as <code>NA</code> values by <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.csv</a></code>,
-<code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_xls</a></code>, <code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_xlsx</a></code>,
-or <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.table</a></code></p></dd>
+as <code>NA</code> values by <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a>,
+<a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xls</a>, <a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a>,
+or <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></p></dd>
 
 
 <dt id="arg-extension">extension<a class="anchor" aria-label="anchor" href="#arg-extension"></a></dt>
-<dd><p>Allowed for backward compatibility; <code>filetype</code> is
-now the preferred argument name.</p></dd>
+<dd><p>Deprecated, use <code>filetype</code> instead</p></dd>
 
 
 <dt id="arg-names-to-col">names_to_col<a class="anchor" aria-label="anchor" href="#arg-names-to-col"></a></dt>
-<dd><p>Allowed for backward compatibility;
-<code>run_names_header</code> is now the preferred argument name.</p></dd>
+<dd><p>Deprecated, use <code>run_names_header</code> instead</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other arguments passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.csv</a></code>,
-<code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_xls</a></code>, <code><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">readxl::read_xlsx</a></code>, or
-<code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.table</a></code></p></dd>
+<dd><p>Other arguments passed to <a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a>,
+<a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xls</a>, <a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a>, or
+<a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></p></dd>
 
 </dl></div>
     <div class="section level2">

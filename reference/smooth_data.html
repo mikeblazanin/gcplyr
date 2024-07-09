@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,9 +69,9 @@
 
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed to <code><a href="https://rdrr.io/r/stats/loess.html" class="external-link">stats::loess</a></code>, <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam</a></code>,
-<code>moving_average</code>, <code>moving_median</code>, or
-<code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">stats::smooth.spline</a></code>. Typically includes tuning
+<dd><p>Arguments passed to <a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a>, <a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a>,
+<a href="MovingWindowFunctions.html">moving_average</a>, <a href="MovingWindowFunctions.html">moving_median</a>, or
+<a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">smooth.spline</a>. Typically includes tuning
 parameter(s), which in some cases are required.
 See Details for more information.</p></dd>
 
@@ -99,7 +99,7 @@ and "smooth.spline".</p></dd>
 and the smoothed data for each group will be calculated
 independently of the others.</p>
 <p>This provides an internally-implemented approach similar
-to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate</a></code></p></dd>
+to <a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a> and <a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></p></dd>
 
 
 <dt id="arg-return-fitobject">return_fitobject<a class="anchor" aria-label="anchor" href="#arg-return-fitobject"></a></dt>
@@ -130,38 +130,39 @@ used without <code>s()</code> in the formula.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For <code>moving_average</code> and <code>moving_median</code>,
+    <p>For <a href="MovingWindowFunctions.html">moving_average</a> and <a href="MovingWindowFunctions.html">moving_median</a>,
            passing <code>window_width</code> or <code>window_width_n</code> via
            <code>...</code> is required. <code>window_width</code> sets the width
            of the moving window in units of <code>x</code>, while
            <code>window_width_n</code> sets the width in units of number
            of data points. Larger values for either will produce more
            "smoothed" data.</p>
-<p>For <code>loess</code>, the <code>span</code> argument sets the fraction of
+<p>For <a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a>, the <code>span</code> argument sets the fraction of
            data points that should be included in each calculation. It's
            typically best to specify, since the default of 0.75 is often
            too large for growth curves data. Larger values of <code>span</code>
            will produce more more "smoothed" data</p>
-<p>For <code>gam</code>, both arguments to <code>gam</code> and <code>s</code> can
-           be provided via <code>...</code>. Most frequently, the <code>k</code>
-           argument to <code>s</code> sets the number of "knots" the
-           spline-fitting can use. Smaller values will be more "smoothed".</p>
+<p>For <code>gam</code>, both arguments to <a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a> and
+           <a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a> can be provided via <code>...</code>. Most frequently,
+           the <code>k</code> argument to <a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a> sets the number of
+           "knots" the spline-fitting can use. Smaller values will be more
+           "smoothed".</p>
 <p>When using <code>sm_method = "gam"</code>, advanced users may also modify
            other parameters of <code>s()</code>, including the smoothing basis
            <code>bs</code>. These bases can be thin plate (<code>bs = "tp"</code>,
            the default), cubic regressions (<code>bs = "cr"</code>), or many other
-           options (see <code>?mcgv::s</code>). I recommend leaving the default
+           options (see <a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a>). I recommend leaving the default
            thin plate regressions, whose main drawback is that they are
            computationally intensive to calculate. For growth curves data,
            this is unlikely to be relevant.</p>
 <p>As an alternative to passing <code>y</code>, for more advanced needs
-           with <code>loess</code> or <code>gam</code>, <code>formula</code> and <code>data</code>
+           with <a href="https://rdrr.io/r/stats/loess.html" class="external-link">loess</a> or <a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">gam</a>, <code>formula</code> and <code>data</code>
            can be passed to <code>smooth_data</code> via the <code>...</code> argument
            (in lieu of <code>y</code>).</p>
 <p>In this case, the formula should specify the response (e.g. density)
            and predictors. For <code>gam</code> smoothing, the formula should
            typically be of the format: y ~ s(x), which uses
-           <code><a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">mgcv::s</a></code> to smooth the data. The data argument should be a
+           <a href="https://rdrr.io/pkg/mgcv/man/s.html" class="external-link">s</a> to smooth the data. The data argument should be a
            <code>data.frame</code> containing the variables in the formula.
            In such cases, <code>subset_by</code> can still be specified as a vector
            with length <code>nrow(data)</code></p>

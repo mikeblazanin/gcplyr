@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,11 +117,12 @@ other data, and additional resources for analyzing growth curves.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.9.0, Build Date: 2024-03-11)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.10.0, Build Date: 2024-07-09)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
-<span><span class="co">#&gt; ##   Blazanin, Michael. 2023. gcplyr: an R package for microbial growth</span></span>
-<span><span class="co">#&gt; ##   curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883</span></span>
+<span><span class="co">#&gt; ##   Blazanin, Michael. gcplyr: an R package for microbial growth</span></span>
+<span><span class="co">#&gt; ##   curve data analysis. BMC Bioinformatics 25, 232 (2024).</span></span>
+<span><span class="co">#&gt; ##   https://doi.org/10.1186/s12859-024-05817-3</span></span>
 <span><span class="co">#&gt; ##</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -281,18 +282,13 @@ bacteria grown in the absence of phages.</p>
 <p>Imagine that, separately, we’ve measured the resistance of each of
 our example bacteria to antibiotics, and we want to know if there’s any
 relationship between the antibiotic resistance of the bacteria and their
-growth. <code>make_example</code> has some mock antibiotic resistance
-data we can use. Importantly, the antibiotic data must have matching
-headers to our growth curve data so that <code>merge_dfs</code> knows
-how to merge them.</p>
-<p>Here we’ll generate some mock antibiotic resistance data.
-Importantly, our data must have matching headers as our growth curve
-data so that <code>merge_dfs</code> knows how to merge the
-<code>data.frame</code>’s. We’ll put whether or not the strain is
-resistant to the antibiotic under the <code>Antibiotic_resis</code>
-column, with a TRUE for resistance, and FALSE for sensitivity.
-<strong>Don’t worry exactly how this code works</strong>, since it’s
-just simulating data that you would have collected in the lab.</p>
+growth. Normally this is data you would have collected in the lab, but
+<code>make_example</code> has some mock antibiotic resistance data we
+can use, where each strain’s resistance is saved under the
+<code>Antibiotic_resis</code> column, with a TRUE for resistance, and
+FALSE for sensitivity. Importantly, the antibiotic data must also have
+matching headers to our growth curve data so that <code>merge_dfs</code>
+knows how to merge them, here <code>Bacteria_strain</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">antibiotic_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_example.html">make_example</a></span><span class="op">(</span>vignette <span class="op">=</span> <span class="fl">8</span>, example <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Well)`</span></span>
@@ -338,9 +334,10 @@ I did simulate the data so we’d get that result).</p>
 <p>A number of other software tools besides <code>gcplyr</code>
 facilitate analysis of growth curves data or data wrangling of plate
 reader data. Here I’ll provide some brief notes on how gcplyr compares
-to these other tools, for a more detailed comparison please see: <a href="https://doi.org/10.1101/2023.04.30.538883" class="external-link">Blazanin, M. “gcplyr:
-an R package for microbial growth curve data analysis.” bioRxiv
-(2023)</a></p>
+to these other tools, for a more detailed comparison please see: <a href="https://doi.org/10.1186/s12859-024-05817-3" class="external-link">Blazanin, M. “gcplyr:
+an R package for microbial growth curve data analysis.” BMC
+Bioinformatics 25, 232 (2024).
+https://doi.org/10.1186/s12859-024-05817-3</a></p>
 <p>There are, broadly speaking, two ways to analyze growth curves
 data:</p>
 <ol style="list-style-type: decimal">
@@ -359,12 +356,12 @@ carefully choose a model whose assumptions your data meet. You also have
 to evaluate the fits to ensure that the optimization algorithms arrived
 on reasonable solutions.</p>
 <p>Here are some other software tools for growth curve data analysis,
-for you to explore. I’ve italicized several tools which might be
-particularly compatible with <code>gcplyr</code> because they can import
-the tidy-shaped data that <code>gcplyr</code> generates.</p>
+for you to explore. I’ve <em>italicized</em> several tools which might
+be particularly compatible with <code>gcplyr</code> because they can
+import the tidy-shaped data that <code>gcplyr</code> generates.</p>
 <ul>
 <li><a href="https://github.com/sprouffske/growthcurver" class="external-link"><code>growthcurver</code></a></li>
-<li><em><code>growthrates</code></em></li>
+<li><a href="https://github.com/tpetzoldt/growthrates" class="external-link"><em><code>growthrates</code></em></a></li>
 <li><code>biogrowth</code></li>
 <li><code>opm</code></li>
 <li><em><a href="https://nicwir.github.io/QurvE/" class="external-link"><code>QurvE</code></a></em></li>

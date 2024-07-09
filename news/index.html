@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,15 @@
       <small>Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.10.0" id="gcplyr-1100">gcplyr 1.10.0<a class="anchor" aria-label="anchor" href="#gcplyr-1100"></a></h2>
+<ul><li><p>The join_designs argument in import_blockdesigns has been renamed to join_as_cols for clarity</p></li>
+<li><p>Citation and load message now point to the BMC Bioinformatics paper for the package: Blazanin, M. gcplyr: an R package for microbial growth curve data analysis. BMC Bioinformatics 25, 232 (2024). <a href="https://doi.org/10.1186/s12859-024-05817-3" class="external-link uri">https://doi.org/10.1186/s12859-024-05817-3</a></p></li>
+<li><p>New functions centroid, centroid_x, centroid_y, and centroid_both calculate the center-of-mass centroid of the area under the curve, which can be used as a metric of microbial growth</p></li>
+<li><p>import_blockdesigns now separates designs that were joined as rows when the sep argument is specified</p></li>
+<li><p>separate_tidy now prints a message with inferred column names</p></li>
+<li><p>Various documentation and vignette improvements</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.0" id="gcplyr-190">gcplyr 1.9.0<a class="anchor" aria-label="anchor" href="#gcplyr-190"></a></h2><p class="text-muted">CRAN release: 2024-03-11</p>
 <ul><li><p>Bug fix to lag_time where it had been incorrectly calculating y0 as the minimum y value where deriv was not NA. It now calculates the minimum y value regardless of the deriv value</p></li>

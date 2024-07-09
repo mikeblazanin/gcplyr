@@ -81,13 +81,13 @@ filenames when block_name_location = 'filename'.}
 \code{dir = NULL}, writes to the current working directory.
 (Can only be used when \code{file = NULL})}
 
-\item{...}{Other arguments passed to \code{write.table}}
+\item{...}{Other arguments passed to \link{write.table}}
 }
 \value{
 Nothing, but R objects are written to files
 }
 \description{
 This function writes block-shaped lists (as created by
-\code{read_blocks} or \code{make_design}) to csv files, including
+\link{read_blocks} or \link{make_design}) to csv files, including
 both \code{data} and \code{metadata} in a variety of output formats
 }

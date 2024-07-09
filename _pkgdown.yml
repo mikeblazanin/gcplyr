@@ -84,6 +84,10 @@ reference:
   - auc
   - doubling_time
   - lag_time
+  - centroid
+  - centroid_x
+  - centroid_y
+  - centroid_both
 - title: Utility functions
   desc: "Various functions providing simple utilities"
   contents:

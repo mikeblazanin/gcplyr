@@ -141,10 +141,7 @@ ex_dat_mrg_sum <-
             auc = auc(x = Time, y = Measurements))
 ```
 
-Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. `make_example` has some mock antibiotic resistance data we can use. Importantly, the antibiotic data must have matching headers to our growth curve data so that `merge_dfs` knows how to merge them.
-
-
-Here we'll generate some mock antibiotic resistance data. Importantly, our data must have matching headers as our growth curve data so that `merge_dfs` knows how to merge the `data.frame`'s. We'll put whether or not the strain is resistant to the antibiotic under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. **Don't worry exactly how this code works**, since it's just simulating data that you would have collected in the lab.
+Imagine that, separately, we've measured the resistance of each of our example bacteria to antibiotics, and we want to know if there's any relationship between the antibiotic resistance of the bacteria and their growth. Normally this is data you would have collected in the lab, but `make_example` has some mock antibiotic resistance data we can use, where each strain's resistance is saved under the `Antibiotic_resis` column, with a TRUE for resistance, and FALSE for sensitivity. Importantly, the antibiotic data must also have matching headers to our growth curve data so that `merge_dfs` knows how to merge them, here `Bacteria_strain`.
 
 ```{r}
 antibiotic_dat <- make_example(vignette = 8, example = 2)
@@ -167,7 +164,8 @@ ggplot(data = growth_and_antibiotics,
 There is! We can see that the antibiotic resistant strains (`TRUE`) have a smaller area-under-the-curve than the antibiotic sensitive strains (`FALSE`) (although, to be fair, I did simulate the data so we'd get that result).
 
 # Other growth curve analysis packages
-A number of other software tools besides `gcplyr` facilitate analysis of growth curves data or data wrangling of plate reader data. Here I'll provide some brief notes on how gcplyr compares to these other tools, for a more detailed comparison please see: [Blazanin, M. "gcplyr: an R package for microbial growth curve data analysis." bioRxiv (2023)](https://doi.org/10.1101/2023.04.30.538883)
+A number of other software tools besides `gcplyr` facilitate analysis of growth curves data or data wrangling of plate reader data. Here I'll provide some brief notes on how gcplyr compares to these other tools, for a more detailed comparison please see: [Blazanin, M. "gcplyr: an R package for microbial growth curve data analysis." BMC Bioinformatics 25, 232 (2024). https://doi.org/10.1186/s12859-024-05817-3](https://doi.org/10.1186/s12859-024-05817-3)
+
 
 There are, broadly speaking, two ways to analyze growth curves data:
 
@@ -178,10 +176,10 @@ While `gcplyr` and some other `R` packages focus on the first analysis approach 
 
 Generally, fitting growth dynamics with a model has greater power to accurately quantify the underlying traits. However, it also takes much more effort to be rigorous when fitting data with a model. You have to carefully choose a model whose assumptions your data meet. You also have to evaluate the fits to ensure that the optimization algorithms arrived on reasonable solutions. 
 
-Here are some other software tools for growth curve data analysis, for you to explore. I've italicized several tools which might be particularly compatible with `gcplyr` because they can import the tidy-shaped data that `gcplyr` generates.
+Here are some other software tools for growth curve data analysis, for you to explore. I've *italicized* several tools which might be particularly compatible with `gcplyr` because they can import the tidy-shaped data that `gcplyr` generates.
 
 * [`growthcurver`](https://github.com/sprouffske/growthcurver)
-* *`growthrates`*
+* [*`growthrates`*](https://github.com/tpetzoldt/growthrates)
 * `biogrowth`
 * `opm`
 * *[`QurvE`](https://nicwir.github.io/QurvE/)*

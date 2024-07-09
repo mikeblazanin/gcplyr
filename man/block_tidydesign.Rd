@@ -16,7 +16,7 @@ block_tidydesign(
 
 \item{collapse}{NULL or a string to use for concatenating design elements
 together. If NULL each design column will be put into its
-own block. If a string, that string will be used to \code{paste}
+own block. If a string, that string will be used to \link{paste}
 together all design elements and all design elements will
 be returned in a single block}
 

@@ -31,7 +31,7 @@ in \code{values}}
 \code{list(values, rows, cols, pattern, byrow)}
 }
 \description{
-A helper function for use with \code{make_design}
+A helper function for use with \link{make_design}
 }
 \examples{
 make_design(nrows = 8, ncols = 12,

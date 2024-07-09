@@ -1,8 +1,8 @@
 Type: Package
 Package: gcplyr
 Title: Wrangle and Analyze Growth Curve Data
-Version: 1.9.0
-Date: 2024-03-11
+Version: 1.10.0
+Date: 2024-07-09
 Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 
                comment = c(ORCID = "0000-0003-4630-6235"))
@@ -34,6 +34,7 @@ Suggests:
     mgcv,
     readxl,
     rmarkdown,
+    sf,
     testthat (>= 3.0.0),
     xlsx
 VignetteBuilder: 

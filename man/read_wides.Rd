@@ -33,9 +33,9 @@ where each one is a widemeasures set of data}
 
                  "csv", "xls", or "xlsx".
                  
-                 "tbl" or "table" to use \code{read.table} to read the file,
-                 "csv2" to use \code{read.csv2}, "delim" to 
-                 use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+                 "tbl" or "table" to use \link{read.table} to read the file,
+                 "csv2" to use \link{read.csv2}, "delim" to 
+                 use \link{read.delim}, or "delim2" to use \link{read.delim2}.
                  
                  If none provided, \code{read_wides} will infer filetype(s) 
                  from the extension(s) in \code{files}. When extension is 
@@ -47,7 +47,7 @@ the data are located in \code{files}.
 Can be a vector or list the same length as \code{files}, or
 a single value that applies to all \code{files}. Values
 can be numeric or a string that will be automatically
-converted to numeric by \code{from_excel}.
+converted to numeric by \link{from_excel}.
 
 If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
@@ -98,19 +98,17 @@ corresponding input files. (This case is typically used
 when reading multiple blocks from a single file.)}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
-as \code{NA} values by \code{utils::read.csv},
-\code{readxl::read_xls}, \code{readxl::read_xlsx},
-or \code{utils::read.table}}
+as \code{NA} values by \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+or \link{read.table}}
 
-\item{extension}{Allowed for backward compatibility; \code{filetype} is
-now the preferred argument name.}
+\item{extension}{Deprecated, use \code{filetype} instead}
 
-\item{names_to_col}{Allowed for backward compatibility; 
-\code{run_names_header} is now the preferred argument name.}
+\item{names_to_col}{Deprecated, use \code{run_names_header} instead}
 
-\item{...}{Other arguments passed to \code{utils::read.csv},
-\code{readxl::read_xls}, \code{readxl::read_xlsx}, or
-\code{utils::read.table}}
+\item{...}{Other arguments passed to \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
+\link{read.table}}
 }
 \value{
 A dataframe containing a single widemeasures, or

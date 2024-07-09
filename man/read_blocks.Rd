@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{read_blocks}
 \alias{read_blocks}
-\title{Read blockmeasures}
+\title{Read blocks}
 \usage{
 read_blocks(
   files,
@@ -35,9 +35,9 @@ where each filepath is a single plate read}
 
                  "csv", "xls", or "xlsx".
                  
-                 "tbl" or "table" to use \code{read.table} to read the file,
-                 "csv2" to use \code{read.csv2}, "delim" to 
-                 use \code{read.delim}, or "delim2" to use \code{read.delim2}.
+                 "tbl" or "table" to use \link{read.table} to read the file,
+                 "csv2" to use \link{read.csv2}, "delim" to 
+                 use \link{read.delim}, or "delim2" to use \link{read.delim2}.
                  
                  If none provided, \code{read_blocks} will infer filetype(s) 
                  from the extension(s) in \code{files}. When extension is 
@@ -49,7 +49,7 @@ the measures data are located in \code{files}.
 Can be a vector or list the same length as \code{files}, or
 a single value that applies to all \code{files}. Values
 can be numeric or a string that will be automatically
-converted to numeric by \code{from_excel}.
+converted to numeric by \link{from_excel}.
 
 If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
@@ -118,19 +118,17 @@ If \code{wellnames_numeric} is FALSE, rows will be
 lettered A through Z, while columns will be numbered}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
-as \code{NA} values by \code{utils::read.csv},
-\code{readxl::read_xls}, \code{readxl::read_xlsx},
-or \code{utils::read.table}}
+as \code{NA} values by \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+or \link{read.table}}
 
-\item{extension}{Allowed for backward compatibility; \code{filetype} is
-now the preferred argument name.}
+\item{extension}{Deprecated, use \code{filetype} instead}
 
-\item{block_name_header}{Allowed for backward compatibility; 
-\code{block_names_header} is now the preferred argument name.}
+\item{block_name_header}{Deprecated, use \code{block_names_header} instead}
 
-\item{...}{Other arguments passed to \code{utils::read.csv},
-\code{readxl::read_xls}, \code{readxl::read_xlsx},
-or \code{utils::read.table}}
+\item{...}{Other arguments passed to \link{read.csv},
+\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+or \link{read.table}}
 }
 \value{
 A list where each entry is a list containing the block data frame
@@ -138,7 +136,7 @@ A list where each entry is a list containing the block data frame
         provided) and any specified metadata.
 }
 \description{
-A function that reads block measures into the R environment
+A function that reads blocks into the R environment
 }
 \details{
 For metadata, \code{read_blocks} can handle an arbitrary number of additional
@@ -164,11 +162,11 @@ For metadata, \code{read_blocks} can handle an arbitrary number of additional
   
   ...
 
- Calling \code{uninterleave} on the output of read_blocks works on block data
+ Calling \link{uninterleave} on the output of read_blocks works on block data
  and the associated metadata because uninterleave operates on the highest 
  level entries of the list (the [[1]] [[2]] level items), 
  leaving the meta-data associated with the block data
 
- \code{trans_block_to_wide} integrates this metadata into the
+ \link{trans_block_to_wide} integrates this metadata into the
  wide-shaped dataframe it produces
 }

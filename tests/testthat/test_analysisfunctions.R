@@ -397,3 +397,51 @@ test_that("find_threshold_crosses works correctly", {
     y = c(5:1, 1:5), subset = c(rep(F, 3), rep(T, 7)), threshold = 3.5), c(4, 9))
 })
 
+test_that("centroid works correctly", {
+  # #Code to plot centroids
+  # x <- 2:4
+  # y <- (2:4)*2
+  # mypoly <- sf::st_polygon(
+  #   x = list(matrix(
+  #     ncol = 2,
+  #     data = c(
+  #       #xvals
+  #       x[c(1, 1:length(x), length(x), 1)],
+  #       #yvals
+  #       c(0, y[1:length(y)], 0, 0)))))
+  # 
+  # centroid_vals <-
+  #   as.vector(sf::st_centroid(mypoly))
+  # 
+  # ggplot(data = mypoly) +
+  #   geom_sf(fill = "red") +
+  #   geom_point(aes(x = centroid_vals[1], y = centroid_vals[2]))
+  
+  expect_equal(centroid_both(x = 0:9, y = (0:9)*2),
+               c((0+9+9)/3, (0+18+0)/3))
+  
+  set.seed(1)
+  x <- 1:50
+  y <- 1 + rnorm(n = 50)
+  expect_equal(centroid_both(x = x, y = y, warn_negative_y = FALSE),
+               c(25.031003, 0.75910186),
+               tolerance = 0.0001)
+  
+  #with xlim specified
+  expect_equal(centroid_both(x = x, y = y, warn_negative_y = FALSE,
+                             xlim = c(25, 35)),
+               c(30.1640277, 0.6943426),
+               tolerance = 0.0001)
+  
+  #with blank specified
+  expect_equal(centroid_both(x = x, y = y, warn_negative_y = FALSE,
+                             blank = 0.1),
+               c(24.9840982, 0.8300192),
+               tolerance = 0.0001)
+  
+  #with neg.rm = TRUE
+  expect_equal(centroid_both(x = x, y = y, neg.rm = TRUE),
+               c(24.8683458, 0.7221994),
+               tolerance = 0.0001)
+})
+

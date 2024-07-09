@@ -39,15 +39,15 @@ test_that("import_blockdesigns works correctly", {
   row.names(dat4) <- LETTERS[1:8]
   write.csv(dat3, "strain.csv")
   write.csv(dat4, "rep.csv")
-  #If you want them together as one plate
+  #If you want them as one plate (columns)
   expect_equal(
     import_blockdesigns(c("strain.csv", "rep.csv")),
     data.frame(Well = paste0(rep(LETTERS[1:8], each = 12), 1:12),
                strain = rep(paste0("str", 1:8), each = 12),
                rep = rep(LETTERS[1:4], each = 12)))
-  #If you want them as separate plates
+  #If you want them as separate plates (rows)
   expect_equal(
-    import_blockdesigns(c("strain.csv", "rep.csv"), join_designs = FALSE),
+    import_blockdesigns(c("strain.csv", "rep.csv"), join_as_cols = FALSE),
     data.frame(block_name = rep(c("strain", "rep"), each = 96),
                Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
                Designs = c(rep(paste0("str", 1:8), each = 12),
@@ -59,7 +59,7 @@ test_that("import_blockdesigns works correctly", {
   dat_3_4 <- rbind(dat3, matrix("", nrow = 1, ncol = 13), dat4)
   write.table(dat_3_4, "strain_and_rep.csv", row.names = FALSE,
             col.names = FALSE, sep = ",")
-  #If you want them together as one plate
+  #If you want them together as one plate (columns)
   expect_equal(
     import_blockdesigns("strain_and_rep.csv",
                         startrow = c(1, 11), endrow = c(9, 19),
@@ -67,11 +67,11 @@ test_that("import_blockdesigns works correctly", {
     data.frame(Well = paste0(rep(LETTERS[1:8], each = 12), 1:12),
                strain = rep(paste0("str", 1:8), each = 12),
                rep = rep(LETTERS[1:4], each = 12)))
-  #If you want them as separate plates
+  #If you want them as separate plates (rows)
   expect_equal(
     import_blockdesigns("strain_and_rep.csv",
                         startrow = c(1, 11), endrow = c(9, 19),
-                        join_designs = FALSE),
+                        join_as_cols = FALSE),
     data.frame(block_name = "strain_and_rep",
                Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
                Designs = c(rep(paste0("str", 1:8), each = 12),
@@ -89,13 +89,13 @@ test_that("import_blockdesigns works correctly", {
   row.names(dat6) <- LETTERS[1:8]
   write.csv(dat6, "bact_rep2.csv")
   
-  #If you want them together, but don't specify sep
+  #If you want them as one plate (columns), but don't specify sep
   expect_equal(
     import_blockdesigns(c("strain_rep.csv", "bact_rep2.csv")),
     data.frame(Well = paste0(rep(LETTERS[1:8], each = 12), 1:12),
                strain_rep = rep(paste0("str", 1:8, "_", LETTERS[1:4]), each = 12),
                bact_rep2 = rep(paste0("bact", 1:8, "_", LETTERS[5:8]), each = 12)))
-  #If you want them together and specify sep
+  #If you want them as one plate (columns) and specify sep
   expect_equal(
     import_blockdesigns(c("strain_rep.csv", "bact_rep2.csv"), sep = "_"),
     data.frame(Well = paste0(rep(LETTERS[1:8], each = 12), 1:12),
@@ -103,11 +103,21 @@ test_that("import_blockdesigns works correctly", {
                rep = rep(LETTERS[1:4], each = 12),
                bact = rep(paste0("bact", 1:8), each = 12),
                rep2 = rep(LETTERS[5:8], each = 12)))
-  #If you don't want them together
+  #If you don't want them as one plate (rows), but don't specify sep
   expect_equal(
     import_blockdesigns(c("strain_rep.csv", "bact_rep2.csv"), 
-                        join_designs = FALSE),
+                        join_as_cols = FALSE),
     data.frame(block_name = rep(c("strain_rep", "bact_rep2"), each = 96),
                Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
                Designs = c(t(dat5), t(dat6))))
+  #If you don't want them as one plate (rows), but specify sep
+  expect_equal(
+    import_blockdesigns(c("strain_rep.csv", "bact_rep2.csv"),
+                      join_as_cols = FALSE, sep = "_", into = c("A", "B")),
+    data.frame(block_name = rep(c("strain_rep", "bact_rep2"), each = 96),
+               Well = rep(paste0(rep(LETTERS[1:8], each = 12), 1:12), 2),
+               A = c(rep(paste0("str", 1:8), each = 12),
+                     rep(paste0("bact", 1:8), each = 12)),
+               B = c(rep(LETTERS[1:4], each = 12, times = 2),
+                     rep(LETTERS[5:8], each = 12, times = 2))))
 })

@@ -9,8 +9,9 @@
       "## gcplyr (Version ", ver, ", Build Date: ", build_date, ")\n",
       "## See http://github.com/mikeblazanin/gcplyr for additional documentation\n",
       "## Please cite software as:\n",
-      "##   Blazanin, Michael. 2023. gcplyr: an R package for microbial growth\n",
-      "##   curve data analysis. bioRxiv doi: 10.1101/2023.04.30.538883\n",
+      "##   Blazanin, Michael. gcplyr: an R package for microbial growth\n",
+      "##   curve data analysis. BMC Bioinformatics 25, 232 (2024).\n",
+      "##   https://doi.org/10.1186/s12859-024-05817-3\n",
       "## \n",
       sep = ""))
 }

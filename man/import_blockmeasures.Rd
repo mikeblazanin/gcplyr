@@ -25,8 +25,8 @@ used to separate blockmeasures into those plates accordingly}
 \item{wellnames_sep}{String to use as separator for well names between 
 rowname and column name}
 
-\item{...}{Other arguments to pass to \code{read_blocks}, \code{uninterleave},
-or \code{widen_blocks}}
+\item{...}{Other arguments to pass to \link{read_blocks}, \link{uninterleave},
+or \link{trans_block_to_wide}}
 }
 \value{
 If \code{num_plates = 1}, a wide-shaped \code{data.frame}
@@ -37,8 +37,8 @@ If \code{num_plates = 1}, a wide-shaped \code{data.frame}
 }
 \description{
 Function to import blockmeasures from files and return widemeasures
-This function acts as a wrapper to call \code{read_blocks}, 
-\code{uninterleave}, then \code{trans_block_to_wide} in one go
+This function acts as a wrapper to call \link{read_blocks}, 
+\link{uninterleave}, then \link{trans_block_to_wide} in one go
 }
 \details{
 Common arguments that you may want to provide via \code{...}
@@ -46,14 +46,14 @@ Common arguments that you may want to provide via \code{...}
 
              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
              \code{sheet} - specifying the location of design information 
-             inside \code{files} to \code{read_blocks}
+             inside \code{files} to \link{read_blocks}
              
-             \code{metadata} - specifying metadata to \code{read_blocks}
+             \code{metadata} - specifying metadata to \link{read_blocks}
              
-             See help for \code{read_blocks} for more details
+             See \link{read_blocks} for more details
              
              If you find yourself needing more control, you can run the 
-             steps manually, first reading with \code{read_blocks}, 
-             separating plates as needed with \code{uninterleave}, 
-             then transforming to wide with \code{trans_block_to_wide}.
+             steps manually, first reading with \link{read_blocks}, 
+             separating plates as needed with \link{uninterleave}, 
+             then transforming to wide with \link{trans_block_to_wide}.
 }

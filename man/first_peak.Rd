@@ -55,7 +55,7 @@ first maxima in y values}
 \item{return_endpoints}{Should the first or last value in \code{y}
 be allowed to be returned?}
 
-\item{...}{Other parameters to pass to \code{find_local_extrema}}
+\item{...}{Other parameters to pass to \link{find_local_extrema}}
 }
 \value{
 If \code{return = "index"}, a vector of indices corresponding 
@@ -69,7 +69,7 @@ If \code{return = "index"}, a vector of indices corresponding
 }
 \description{
 This function has been deprecated in favor of the identical new 
-function \code{first_maxima}
+function \link{first_maxima}
 }
 \details{
 This function takes a vector of \code{y} values and returns the index

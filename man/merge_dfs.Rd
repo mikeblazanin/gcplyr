@@ -67,9 +67,10 @@ Data.frame containing merged output of \code{x} and
         \code{y}
 }
 \description{
-This function is essentially a wrapper for a \code{dplyr} mutate join
-(by default, a \link[dplyr]{full_join}). The most typical use of this 
-function is to merge designs with measures data, or to use the collapse 
-functionality to merge a list of dataframes into a single dataframe.
-Merging is done by column names that match between \code{x} and \code{y}.
+This function is essentially a wrapper for any of \code{dplyr}'s
+\link[dplyr]{mutate-joins} (by default, a \link[dplyr]{full_join}). 
+The most typical use of this function is to merge designs with measures 
+data, or to use the collapse functionality to merge a list of dataframes 
+into a single dataframe. Merging is done by column names that match 
+between \code{x} and \code{y}.
 }

@@ -19,7 +19,7 @@ trans_wide_to_tidy(
 data.frame's}
 
 \item{data_cols, id_cols}{Specifies which columns have data vs are ID's
-(in \code{tidyr::pivot_longer} parlance). Each can be
+(in \link[tidyr]{pivot_longer} parlance). Each can be
 a single vector (which will be applied for all
 widemeasures) or a list of vectors, with each
 vector corresponding to the same-index widemeasure
@@ -42,7 +42,7 @@ Note that if neither data_cols nor id_cols}
 to numeric. See below for when this may be
 overridden by arguments passed in \code{...}}
 
-\item{...}{Other functions to be passed to \code{tidyr::pivot_longer}
+\item{...}{Other functions to be passed to \link[tidyr]{pivot_longer}
 Note that including values_transform here will override the
 behavior of values_to_numeric}
 }

@@ -2,6 +2,10 @@ gcplyr_func,other_func
 auc,NA
 block_tidydesign,NA
 calc_deriv,NA
+centroid,NA
+centroid_both,NA
+centroid_x,NA
+centroid_y,NA
 doubling_time,NA
 extr_val,NA
 find_local_extrema,NA

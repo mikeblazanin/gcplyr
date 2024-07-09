@@ -1,22 +1,10 @@
-#Target journals
-mSystems?
-mBio?
-mSphere - explicitly has a Resource Reports article type, maybe if I have to write a bunch for dissertation anyways?
-Spectrum - ASM's Plos One
-MRA - articles are super short like 1 page very easy to write very fast reviews
-JOSS - out, not on pubmed
-R Journal - out, not on pubmed
-Journal of Statistical Software - out, not on pubmed
-BMC Bioinformatics
-Bioinformatics
-
 #Testing
 micro:  devtools::load_all() and interactively running tests
 mezzo:  testthat::test_file("tests/testthat/mytest.R")
 macro:  devtools::test() 
 macro+: devtools::check()
 
-rhub::check_for_cran()
+rhub::rhub_check(branch = "develop") [choose 1,2,3,4]
 
 #Force-installing new version to re-build vignette & check tests
 R CMD build --no-build-vignettes
@@ -25,33 +13,37 @@ R CMD check --no-build-vignettes --no-tests
 Alternatively:
   install current version with devtools::install() or Ctrl+Shift+B
   OR devtools::build_rmd("vignettes/my-vignette.Rmd")
+  
+#Old approach
+R CMD build gcplyr
+R CMD check gcplyr_X.X.X.tar.gz
+R CMD INSTALL gcplyr_X.X.X.tar.gz
 
 #Every new version
 1. Save & commit all changes to code
-2. Re-build vignettes (see code in vignette to re-build all formats at once)
-3. Commit new vignettes
+2. Run checks:
+      devtools::check()
+      rhub::rhub_check(branch = "develop") [choose 1,2,3,4]
+      devtools::check_win_devel()
+3. Organize, edit, and proofread NEWS.md. Commit.
 4. Decide new version number, update DESCRIPTION version (dropping .9000) and date, commit
-5. R CMD build gcplyr
-6. R CMD check gcplyr_X.X.X.tar.gz
-7. R CMD INSTALL gcplyr_X.X.X.tar.gz
-8. Organize, edit, and proofread NEWS.md. Commit.
-9. Re-knit README.Rmd and index.Rmd
-10. Save & commit newly generated README.md file
+5. devtools::install()
+6. Re-build vignettes (see code in vignette to re-build all formats at once). Commit
+7. Re-knit README.Rmd and index.Rmd. Save & commit newly generated README.md files
       in bash: git commit -m "commit msg here" --no-verify
-11. Push everything
-12. git checkout master
-13. git merge develop
-14. git push
-15. git checkout develop
-16. Update DESCRIPTION to development version number (add .9000 at end of previous version)
-17. Add header to NEWS.md for development version number
-18. Add release on GitHub
+8. Push
+9. git checkout master
+10. git merge develop
+11. git push
+12. git checkout develop
+13. Update DESCRIPTION to development version number (add .9000 at end of previous version)
+14. Add header to NEWS.md for development version number
+15. Add release on GitHub
 
 #Releasing to CRAN
 1. run process above, make sure you're back on master branch
-2. run rhub::check_for_cran and devtools::check_win_devel()
-3. edit cran-comments.md
-4. devtools::release(args = "--compact-vignettes=gs+qpdf")
+2. edit cran-comments.md
+3. devtools::release(args = "--compact-vignettes=gs+qpdf")
 
 #Managing master & develop branches:
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github

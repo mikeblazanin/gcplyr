@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{makemethod_train_smooth_data}
 \alias{makemethod_train_smooth_data}
-\title{Create method argument for \code{caret::train} of growth curve smoothers}
+\title{Create method argument for \link[caret]{train} of growth curve smoothers}
 \usage{
 makemethod_train_smooth_data(sm_method, tuneGrid = NULL)
 }
@@ -14,22 +14,22 @@ be used. Options include "moving-average", "moving-median",
 \item{tuneGrid}{A data frame with possible tuning value. The columns should 
 be named the same as the tuning parameters.
 
-Note that, when using \code{caret::train}, the tuneGrid
+Note that, when using \link[caret]{train}, the tuneGrid
 must be passed both to this function as well as directly
-to \code{caret::train}.}
+to \link[caret]{train}.}
 }
 \value{
 A list that can be used as the method argument to
-        \code{caret::train}. Contains elements:
+        \link[caret]{train}. Contains elements:
         \code{library}, \code{type}, \code{prob}, \code{fit},
         \code{parameters}, \code{grid}, \code{fit}, and \code{predict}.
         
         See documentation on using a custom model model in 
-        \code{caret::train} for more details.
+        \link[caret]{train} for more details.
 }
 \description{
 This function generates a list which is compatible to be used as the
-\code{method} argument to \code{caret::train}. This enables users to
-call \code{caret::train} directly themselves with \code{smooth_data}
+\code{method} argument to \link[caret]{train}. This enables users to
+call \link[caret]{train} directly themselves with \code{smooth_data}
 smoothing functions.
 }

@@ -1,3 +1,17 @@
+# gcplyr 1.10.0
+
+* The join_designs argument in import_blockdesigns has been renamed to join_as_cols for clarity
+
+* Citation and load message now point to the BMC Bioinformatics paper for the package: Blazanin, M. gcplyr: an R package for microbial growth curve data analysis. BMC Bioinformatics 25, 232 (2024). https://doi.org/10.1186/s12859-024-05817-3
+
+* New functions centroid, centroid_x, centroid_y, and centroid_both calculate the center-of-mass centroid of the area under the curve, which can be used as a metric of microbial growth
+
+* import_blockdesigns now separates designs that were joined as rows when the sep argument is specified
+
+* separate_tidy now prints a message with inferred column names
+
+* Various documentation and vignette improvements
+
 # gcplyr 1.9.0
 
 * Bug fix to lag_time where it had been incorrectly calculating y0 as the minimum y value where deriv was not NA. It now calculates the minimum y value regardless of the deriv value

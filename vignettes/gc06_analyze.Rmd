@@ -104,6 +104,7 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 ### Total growth
 
 * [the area under the curve](#auc)
+* [the centroid of area under the curve](#centroid)
 
 ### Diauxic growth
 
@@ -114,6 +115,8 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 
 * [the peak bacterial density before a decline (e.g. from phage predation)](#peak_dens)
 * [the extinction time (e.g. from phage predation)](#extin_time)
+* [the area under the curve](#auc)
+* [the centroid of area under the curve](#centroid)
 
 The following sections show how you can use `gcplyr` functions to calculate these metrics.
 
@@ -396,6 +399,25 @@ See [the maximum density section in the Most Common Metrics section](#maxdens)
 
 See [the area under the curve section in the Most Common Metrics section](#auc)
 
+## Centroid of area under the curve {#centroid}
+
+The centroid, or center of mass, of the area under the curve can function as a metric of total microbial growth. If the area under the curve were a solid object, the centroid is the point where that object would balance perfectly. The centroid has both an x coordinate and a y coordinate. To calculate the centroid coordinates, you can use the `gcplyr` function `centroid_x` and `centroid_y`. Simply specify Time as the x and Measurements as the y data whose centroid you want to calculate.
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+            centr_x = centroid_x(x = Time, y = Measurements),
+            centr_y = centroid_y(x = Time, y = Measurements))
+head(ex_dat_mrg_sum)
+
+ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% sample_wells),
+       aes(x = Time, y = Measurements)) +
+  geom_line() +
+  facet_wrap(~Well) +
+  geom_point(data = dplyr::filter(ex_dat_mrg_sum, Well %in% sample_wells), 
+             aes(x = centr_x, y = centr_y))
+```
+
 # Diauxic growth metrics
 
 ## Diauxic shifts {#diauxie}
@@ -528,6 +550,14 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% phage_wells),
   geom_vline(data = dplyr::filter(ex_dat_mrg_sum, Well %in% phage_wells),
              aes(xintercept = extin_time), lty = 2)
 ```
+
+## Area under the curve
+
+See [the area under the curve section in the Most Common Metrics section](#auc)
+
+## Centroid of area under the curve
+
+See [the centroid section in the Total Growth Metrics section](#centroid)
 
 # What's next?
 

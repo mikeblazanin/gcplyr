@@ -20,7 +20,7 @@ train_smooth_data(
 )
 }
 \arguments{
-\item{...}{Arguments passed to \code{smooth_data}. These arguments cannot
+\item{...}{Arguments passed to \link{smooth_data}. These arguments cannot
 overlap with any of those to be tuned.}
 
 \item{x}{A vector of predictor values to smooth along (e.g. time)}
@@ -33,7 +33,7 @@ be used. Options include "moving-average", "moving-median",
 
 \item{preProcess}{A string vector that defines a pre-processing of the
 predictor data. The default is no pre-processing.
-See \code{caret::train} for more details.}
+See \link[caret]{train} for more details.}
 
 \item{weights}{A numeric vector of case weights. This argument currently
 does not affect any \code{train_smooth_data} models.}
@@ -41,12 +41,12 @@ does not affect any \code{train_smooth_data} models.}
 \item{metric}{A string that specifies what summary metric will be
 used to select the optimal model. By default, possible
 values are "RMSE" and "Rsquared" for regression.
-See \code{caret::train} for more details.}
+See \link[caret]{train} for more details.}
 
 \item{maximize}{A logical: should the metric be maximized or minimized?}
 
 \item{trControl}{A list of values that define how this function acts.
-See \code{caret::train} and \code{caret::trainControl}
+See \link[caret]{train} and \link[caret]{trainControl}
 for more details.}
 
 \item{tuneGrid}{A data frame with possible tuning values, or a named list
@@ -54,7 +54,7 @@ containing vectors with possible tuning values. If a data
 frame, the columns should be named the same as the tuning 
 parameters. If a list, the elements of the list should be
 named the same as the tuning parameters. If a list,
-\code{expand.grid} will be used to make all possible
+\link{expand.grid} will be used to make all possible
 combinations of tuning parameter values.}
 
 \item{tuneLength}{An integer denoting the amount of granularity in
@@ -67,24 +67,24 @@ by the random search. (NOTE: If given, this argument
 must be named.)}
 
 \item{return_trainobject}{A logical indicating whether the entire result
-of \code{caret::train} should be returned, or
+of \link[caret]{train} should be returned, or
 only the \code{results} element.}
 }
 \value{
 If \code{return_trainobject = FALSE} (the default), a data frame
         with the values of all tuning parameter combinations and the
         training error rate for each combination (i.e. the \code{results}
-        element of the output of \code{caret::train}).
+        element of the output of \link[caret]{train}).
         
-        If \code{return_trainobject = TRUE}, the output of \code{caret::train}
+        If \code{return_trainobject = TRUE}, the output of \link[caret]{train}
 }
 \description{
-This function is based on \code{caret::train}, which runs models
+This function is based on \link[caret]{train}, which runs models
 (in our case different smoothing algorithms) on data across different 
 parameter values (in our case different smoothness parameters).
 }
 \details{
-See \code{caret::train} for more information.
+See \link[caret]{train} for more information.
 
          The default method is k-fold cross-validation 
          (\code{trControl = caret::trainControl(method = "cv")}). 
@@ -92,7 +92,7 @@ See \code{caret::train} for more information.
          For less variable, but more computationally costly, cross-validation,
          users may choose to increase the number of folds. This can be
          done by altering the \code{number} argument in 
-         \code{caret::trainControl}, or by setting \code{method = "LOOCV"} 
+         \link[caret]{trainControl}, or by setting \code{method = "LOOCV"} 
          for leave one out cross-validation where the number of folds is 
          equal to the number of data points. 
          
@@ -101,6 +101,7 @@ See \code{caret::train} for more information.
          repeated k-fold cross-validation.
 
          For more control, advanced users may wish to call 
-         \code{caret::train} directly, using \code{makemethod_train_smooth_data} to 
-         specify the \code{method} argument.
+         \link[caret]{train} directly, using 
+         \link{makemethod_train_smooth_data} to specify the \code{method} 
+         argument.
 }

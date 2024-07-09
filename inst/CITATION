@@ -8,8 +8,8 @@ bibentry(
   year        = "2024",
   doi         = "10.1186/s12859-024-05817-3",
   journal     = "BMC Bioinformatics",
-  volume      = "25"
-  number      = "232"
+  volume      = "25",
+  number      = "232",
   note        = note,
   textVersion = "Blazanin, M. gcplyr: an R package for microbial growth curve data analysis. BMC Bioinformatics 25, 232 (2024). https://doi.org/10.1186/s12859-024-05817-3"
   )

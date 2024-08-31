@@ -4250,6 +4250,8 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
     } else if(warn_negative_y) {warning("some y values are below 0")}
   }
   
+  if(length(unique(x)) < length(x)) {warning("Not all x values are unique")}
+  
   #Calculate auc
   # area = 0.5 * (y1 + y2) * (x2 - x1)
   return(sum(0.5 * 

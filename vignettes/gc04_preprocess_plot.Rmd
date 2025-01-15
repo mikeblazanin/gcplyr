@@ -54,7 +54,7 @@ ex_dat_mrg <- merge_dfs(example_tidydata, example_design_tidy)
 
 
 # Pre-processing
-Now that we have our data and designs merged, we're almost ready to start processing and analyzing them. However, first we need to carry out any necessary pre-processing steps, like excluding wells that were contaminated or empty, and converting time formats to numeric.
+Now that we have our data and designs merged, we're almost ready to start processing and analyzing them. However, first we need to carry out any necessary pre-processing steps, like excluding wells that were contaminated or empty, converting time formats to numeric, and subtracting blanks.
 
 ## Pre-processing: excluding data
 In some cases, we want to remove some of the wells from our growth curves data before we carry on with downstream analyses. For instance, they may have been left empty, contained negative controls, or were contaminated. We can use `dplyr`'s `filter` function to remove those wells that meet criteria we want to exclude.
@@ -63,7 +63,7 @@ For instance, let's imagine that we realized that we put the wrong media into We
 
 ```{r}
 example_data_and_designs_filtered <- 
-  filter(ex_dat_mrg, 
+  dplyr::filter(ex_dat_mrg, 
          Well != "B1", Bacteria_strain != "Strain 13")
 head(example_data_and_designs_filtered)
 ```
@@ -95,7 +95,48 @@ ex_dat_mrg$Time <- time_length(hms(ex_dat_mrg$Time), unit = "hour")
 head(ex_dat_mrg)
 ```
 
-And now we can see that we've gotten nice numeric `Time` values! So we can proceed with the next steps of the analysis.
+And now we can see that we've gotten nice numeric `Time` values!
+
+## Pre-processing: subtracting blanks
+
+Many growth curves are collected by measuring the absorbance or optical density of a culture. However, with such data an absorbance value of 0 is not equal to a cell density of 0, since components of the media often absorb some light. It's best practice to have a 'blank' well in your plate containing only media and no cells, so that you can subtract out this difference from your data so that the values you are working with are scaled correctly.
+
+Here we have some data where the blank well has an absorbance of 0.2:
+
+```{r}
+ex_dat_mrg <- make_example(vignette = 4, example = 2)
+ggplot(data = ex_dat_mrg,
+       aes(x = Time, y = Measurements, color = Well_type)) +
+  geom_point()
+```
+
+We can simply subtract the blank value from our `Measurements`:
+
+```{r}
+ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - 0.2
+```
+
+However, sometimes you'll have different blank values for different plates or wells in a plate (e.g. because you have different medias):
+
+```{r}
+ex_dat_mrg <- make_example(vignette = 4, example = 3)
+ggplot(data = ex_dat_mrg,
+       aes(x = Time, y = Measurements, color = Well_type)) +
+  geom_point() +
+  facet_grid(~Media)
+```
+
+In that case, you can use the `ifelse` function to subtract different blanks depending on the criteria. `ifelse` takes 3 vectors as inputs: a vector of `TRUE`/`FALSE` values, and then two vectors containing the values to return if each element of the first vector is `TRUE` or `FALSE`, respectively.
+
+```{r}
+ex_dat_mrg$Meas_norm <- ifelse(ex_dat_mrg$Media == "Media_1",
+                               ex_dat_mrg$Measurements - 0.2,
+                               ex_dat_mrg$Measurements - 0.3)
+ggplot(data = ex_dat_mrg,
+       aes(x = Time, y = Meas_norm, color = Well_type)) +
+  geom_point() +
+  facet_grid(~Media)
+```
 
 # Plotting your data
 

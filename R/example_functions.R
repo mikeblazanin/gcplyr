@@ -207,8 +207,36 @@ make_example <- function(vignette, example, dir = ".") {
               sep = ":")
       
       return(ex_dat_mrg)
+    } else if (example == 2) {
+      ## Example 2 ----
+      example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
+                                             id_cols = "Time")
+      ex_dat_mrg <- mutate(
+        example_tidydata,
+        Measurements = Measurements + 0.2,
+        Measurements = ifelse(Well == "A1", 0.2, Measurements),
+        Well_type = ifelse(Well == "A1", "Blank", "Non-blank"))
+      ex_dat_mrg <- ex_dat_mrg[order(ex_dat_mrg$Well, decreasing = TRUE), ]
+      return(ex_dat_mrg)
+    } else if (example == 3) {
+      ## Example 3 ----
+      example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
+                                             id_cols = "Time")
+      ex_dat_mrg <- merge_dfs(example_tidydata,
+                              make_design(nrows = 8, ncols = 12,
+                                          Media = list("Media_1", 1:4, 1:12, "1"),
+                                          Media = list("Media_2", 5:8, 1:12, "1")))
+      ex_dat_mrg <- mutate(
+        ex_dat_mrg,
+        Measurements = ifelse(Well %in% c("A1", "E1"), 0, Measurements),
+        Well_type = ifelse(Well %in% c("A1", "E1"), "Blank", "Non-blank"),
+        Measurements = ifelse(Media == "Media_1", 
+                              Measurements + 0.2,
+                              Measurements + 0.3))
+      ex_dat_mrg <- ex_dat_mrg[order(ex_dat_mrg$Well, decreasing = TRUE), ]
+      return(ex_dat_mrg)
     }
-  
+    
   } else if (vignette == 7) {
     # Vignette 7 ----
     

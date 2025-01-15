@@ -3553,7 +3553,7 @@ window_width_n_frac are used")}
   
   #Set up blank values
   if(is.null(blank)) {
-    if(percapita == TRUE) {stop("percapita == TRUE but blank is NULL")}
+    if(percapita == TRUE) {stop("blank must be provided when percapita = TRUE")}
   } else { #blank is not NULL
     blank <- check_input_dimensions(
       blank, "blank", needed_len = length(unique(subset_by)),
@@ -4452,6 +4452,12 @@ centroid_both <- function(x, y, return = "both", ...) {
 #' @param x Vector of x values (typically time)
 #' @param y Vector of y values (typically density)
 #' @param deriv Vector of derivative values (typically per-capita derivative)
+#' @param blank   y-value associated with a "blank" where the density is 0.
+#'                Is required when \code{trans_y = TRUE}.
+#'                
+#'                A vector of blank values may be specified only when all of 
+#'                \code{slope}, \code{x1}, \code{y1}, and \code{y0} are provided
+#'                as vectors
 #' @param trans_y  One of \code{c("linear", "log")} specifying the
 #'                 transformation of y-values.
 #' 
@@ -4486,31 +4492,35 @@ centroid_both <- function(x, y, return = "both", ...) {
 #'                     some, but not all, inputs are vectorized, and
 #'                     only one lag time value will be returned.
 #' @param warn_no_lag logical whether warning should be issued when calculated
-#'                    lag time is less than the minimum value of x
+#'                    lag time is less than the minimum value of x.
+#' @param warn_blank_length logical whether warning should be issued when an
+#'                          unexpected number of \code{blank} values was 
+#'                          provided and only the first will be used
 #'                            
 #' @details 
 #' For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
 #' (using the per-capita derivative and \code{trans_y = 'log'}).
 #' 
-#' Advanced users may wish to use alternate values for the slope, origination
-#' point, or minimum y-value. In that case, values can be supplied to
-#' \code{slope}, \code{x1}, \code{y1}, and/or \code{y0}, which will override
-#' the default calculations. If and only if all of \code{slope}, \code{x1}, 
-#' \code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on
-#' their inputs and will return a vector of lag time values.
+#' Advanced users may wish to use alternate values for the slope of the tangent
+#' line (\code{slope}), origination point of the tangent line (\code{x1}, 
+#' \code{y1}), or minimum y-value \code{y0}. If specified, these values will 
+#' override the default calculations. If and only if all of \code{slope}, 
+#' \code{x1}, \code{y1}, and \code{y0} are provided, \code{lag_time} is 
+#' vectorized on their inputs and will return a vector of lag time values.
 #'
 #' @return Typically a scalar of the lag time in units of x. See Details for
 #' cases when value will be a vector.
 #'             
 #' @export
-lag_time <- function(x = NULL, y = NULL, deriv = NULL, 
+lag_time <- function(x = NULL, y = NULL, deriv = NULL, blank = NULL, 
                      trans_y = "log", na.rm = TRUE,
                      slope = NULL, x1 = NULL, y1 = NULL, y0 = NULL,
                      warn_logtransform_warnings = TRUE,
                      warn_logtransform_infinite = TRUE,
                      warn_min_y_mismatch = TRUE,
                      warn_multiple_maxderiv = TRUE,
-                     warn_one_lag = TRUE, warn_no_lag = TRUE) {
+                     warn_one_lag = TRUE, warn_no_lag = TRUE,
+                     warn_blank_length = TRUE) {
   x <- make.numeric(x, "x")
   y <- make.numeric(y, "y")
   deriv <- make.numeric(deriv, "deriv")
@@ -4518,6 +4528,37 @@ lag_time <- function(x = NULL, y = NULL, deriv = NULL,
   y0 <- make.numeric(y0, "y0")
   y1 <- make.numeric(y1, "y1")
   x1 <- make.numeric(x1, "x1")
+  blank <- make.numeric(blank, "blank")
+  
+  #Subtract blank values
+  if(is.null(blank)) {
+    if(trans_y == "log") {stop("blank must be provided when trans_y = 'log'")}
+  } else {
+    if(!is.null(y1)) {
+      if(length(blank) != 1 && length(blank) != length(y1)) {
+        if(warn_blank_length) {
+          warning("Number of blank values not the same as number of y1 values,
+only using the first for normalizing 'y1'")
+        }
+        y1 <- y1 - blank[1]
+      } else {y1 <- y1 - blank}
+    }
+    if(!is.null(y0)) {
+      if(length(blank) != 1 && length(blank) != length(y0)) {
+        if(warn_blank_length) {
+          warning("Number of blank values not the same as number of y0 values,
+only using the first for normalizing 'y0'")
+        }
+        y0 <- y0 - blank[1]
+      } else {y0 <- y0 - blank}
+    }
+    if(!is.null(y)) {
+      if(length(blank) > 1 && warn_blank_length) {
+        warning("Multiple blank values provided, only using the first for normalizing 'y'")
+      }
+      y <- y - blank[1]
+    }
+  }
   
   #Log-transform y values, as requested
   if(trans_y == "log") {

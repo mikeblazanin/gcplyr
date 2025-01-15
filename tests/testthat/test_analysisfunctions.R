@@ -51,8 +51,10 @@ test_that("lag_time returns correctly", {
   y1 <- dat$y[which.max(dat$deriv)]
   x1 <- dat$x[which.max(dat$deriv)]
   m <- max(dat$deriv, na.rm = TRUE)
-  lag <- lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1)
-  expect_equal(log(y1) - m*x1 + m*lag, log(y0))
+  lag <- lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1, blank = 0)
+  expect_equal(lag, (log(y0) - log(y1))/m + x1)
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0),
+               (log(y0) - log(y1))/m + x1)
   if(F) {
     plot(dat$x, log(dat$y))
     points(x1, log(y1), col = "red")
@@ -63,12 +65,41 @@ test_that("lag_time returns correctly", {
     abline(h = m)
   }
   
+  #blank is non-zero
+  dat <- mutate(group_by(dat, grp),
+                y2 = y + 0.2,
+                deriv = calc_deriv(y = y2, x = x, percapita = TRUE, 
+                                   blank = 0.2, trans_y = "log", 
+                                   window_width_n = 5))
+  y0 <- min(dat$y2, na.rm = TRUE)
+  y1 <- dat$y2[which.max(dat$deriv)]
+  x1 <- dat$x[which.max(dat$deriv)]
+  m <- max(dat$deriv, na.rm = TRUE)
+  lag <- lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1, blank = 0.2)
+  expect_equal(lag, (log(y0 - 0.2) - log(y1 - 0.2))/m + x1)
+  expect_equal(lag_time(x = dat$x, y = dat$y2, deriv = dat$deriv, blank = 0.2),
+               (log(y0 - 0.2) - log(y1 - 0.2))/m + x1)
+  
+  #blank is not provided
+  expect_error(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+               "blank must be provided when trans_y = 'log'")
+               
+  #blank is provided but is the wrong length
+  expect_warning(
+    lag_time(x = dat$x, y = dat$y2, deriv = dat$deriv, blank = c(0.2, 0.1)),
+    "Multiple blank values provided, only using the first for normalizing 'y'")
+  expect_warning(
+    expect_warning(
+      lag_time(slope = m, y0 = y0, x1 = x1, y1 = y1, blank = c(0.2, 0.1)),
+      "Number of blank values not the same as number of"),
+    "Number of blank values not the same as number of")
+                 
   #y data has lots of NA's
   dat <- data.frame(x = 1:100, y = (-10):89, grp = rep("A", 100))
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
   expect_warning(expect_warning(
-    lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+    lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0),
     "NaNs produced"),
     "infinite values")
   expect_equal(lag, 12)
@@ -77,63 +108,69 @@ test_that("lag_time returns correctly", {
   dat <- data.frame(x = 1:10, y = c(1, rep(NA, 8), 100), grp = rep("A", 10))
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
-  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0),
                1)
   dat <- data.frame(x = 1:10, y = c(1, rep(NA, 7), 81, 100), grp = rep("A", 10))
   dat <- mutate(group_by(dat, grp), 
                 deriv = calc_deriv(x = x, y = y, percapita = TRUE, blank = 0))
-  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0),
                1)
   
   #y data is all NAs
   dat <- data.frame(x = 1:10, y = rep(NA, 10), deriv = 1:10)
-  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0),
                as.numeric(NA))
   
   #All y values are 0
   dat <- data.frame(x = 1:10, y = rep(0, 10), deriv = 1:10)
-  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, 
+                                 blank = 0),
                  "infinite values created")
   expect_equal(lag, as.numeric(NA))
   
   #All deriv are 0
   dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(0, 10))
-  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, 
+                                 blank = 0),
                  "multiple timepoints have")
   expect_equal(lag, NaN)
   
   #All deriv are the same (so matches the first one with warning)
   dat <- data.frame(x = 1:10, y = 1:10, deriv = rep(5, 10))
-  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, 
+                                 blank = 0),
                  "multiple timepoints have")
   expect_equal(lag, 1)
   
   #Deriv has NA values where min(y) is
   dat <- data.frame(x = 1:10, y = exp(1:10), deriv = c(NA, 1, rep(0.9, 8)))
-  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv), 1)
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0), 1)
   
   #min(y) occurs where x is NA
   dat <- data.frame(x = c(NA, 2:10), y = exp(1:10), deriv = 1:10)
-  expect_warning(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_warning(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, blank = 0),
                  regexp = "min\\(y\\) does not equal min")
   
   #lag time is less than min(x)
   dat <- data.frame(x = 1:10, y = exp(1:10), deriv = c(NA, 0.5, rep(0.1, 8)))
-  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, 
+                                 blank = 0),
                  regexp = "indicating no identifiable lag phase")
   expect_equal(lag, 0)
   
   #lag time is less than min(x[!is.na(y)])
   dat <- data.frame(x = 1:10, y = c(NA, exp(2:10)), 
                     deriv = c(NA, NA, 0.8, rep(0.1, 7)))
-  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),
+  expect_warning(lag <- lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, 
+                                 blank = 0),
                  regexp = "indicating no identifiable lag phase")
   expect_equal(lag, 1.75)
   
   #na.rm = FALSE
   dat <- data.frame(x = 1:10, y = c(NA, exp(2:10)), 
                     deriv = c(NA, NA, 0.8, rep(0.1, 7)))
-  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, na.rm = FALSE),
+  expect_equal(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv, na.rm = FALSE, 
+                        blank = 0),
                as.numeric(NA))
 })
 

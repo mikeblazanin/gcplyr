@@ -79,6 +79,15 @@ test_that("lag_time returns correctly", {
   expect_equal(lag, (log(y0 - 0.2) - log(y1 - 0.2))/m + x1)
   expect_equal(lag_time(x = dat$x, y = dat$y2, deriv = dat$deriv, blank = 0.2),
                (log(y0 - 0.2) - log(y1 - 0.2))/m + x1)
+  if(F) {
+    plot(dat$x, log(dat$y2 - 0.2))
+    points(x1, log(y1 - 0.2), col = "red")
+    abline(a = log(y1 - 0.2) - m*x1, b = m)
+    abline(h = log(y0 - 0.2), lty = 2)
+    abline(v = lag, lty = 2)
+    plot(dat$x, dat$deriv)
+    abline(h = m)
+  }
   
   #blank is not provided
   expect_error(lag_time(x = dat$x, y = dat$y, deriv = dat$deriv),

@@ -107,7 +107,8 @@ Here we have some data where the blank well has an absorbance of 0.2:
 ex_dat_mrg <- make_example(vignette = 4, example = 2)
 ggplot(data = ex_dat_mrg,
        aes(x = Time, y = Measurements, color = Well_type)) +
-  geom_point()
+  geom_point() +
+  ylim(0, NA)
 ```
 
 We can simply subtract the blank value from our `Measurements`:
@@ -123,7 +124,8 @@ ex_dat_mrg <- make_example(vignette = 4, example = 3)
 ggplot(data = ex_dat_mrg,
        aes(x = Time, y = Measurements, color = Well_type)) +
   geom_point() +
-  facet_grid(~Media)
+  facet_grid(~Media)  +
+  ylim(0, NA)
 ```
 
 In that case, you can use the `ifelse` function to subtract different blanks depending on the criteria. `ifelse` takes 3 vectors as inputs: a vector of `TRUE`/`FALSE` values, and then two vectors containing the values to return if each element of the first vector is `TRUE` or `FALSE`, respectively.

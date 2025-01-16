@@ -119,7 +119,7 @@ mean_blank <- mean(dplyr::filter(ex_dat_mrg, Well_type == "Blank")$Measurements)
 ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - mean_blank
 ```
 
-Note that if you have different blanks for different wells (e.g. you have multiple medias), you'll have to calculate different blank values for each:
+Note that if you have different blanks for different wells (e.g. you have multiple medias), you'll have to calculate different blank values for each [`vignette("gc06_analyze")` has a primer on the `summarize` function used here, if you'd like to learn more]:
 
 ```{r}
 ex_dat_mrg <- make_example(vignette = 4, example = 3)

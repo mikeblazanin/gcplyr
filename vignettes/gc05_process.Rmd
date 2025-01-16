@@ -63,7 +63,7 @@ With your data and design information pre-processed, **your dataset is now organ
 Broadly speaking, there are two main approaches to analyzing growth curves data:
 
 1. directly quantify attributes of the growth dynamics (what **gcplyr** does)
-2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model (what **other packages** do, see vignette("08_conclusion"))
+2. fit the growth dynamics with a mathematical model, then extract parameters from the fitted model (what **other packages** do, see `vignette("08_conclusion")`)
 
 At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
 

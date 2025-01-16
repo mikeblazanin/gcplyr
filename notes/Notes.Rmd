@@ -24,6 +24,8 @@ R CMD INSTALL gcplyr_X.X.X.tar.gz
 2. Run checks:
       devtools::check()
       rhub::rhub_check(branch = "develop") [choose 1,2,3,4]
+           Note that 2 and 3 usually fail because they fail to install
+           rjava dependency
       devtools::check_win_devel()
 3. Organize, edit, and proofread NEWS.md. Commit.
 4. Decide new version number, update DESCRIPTION version (dropping .9000) and date, commit
@@ -147,22 +149,3 @@ git branch -d develop
 ```
 
 The -d means delete.
-
-# Name options:
-gcplyr
-growthcurvalyzer
-gcanalyzer
-gcer
-
-
-#General pipeline:
- 1.  import_blockmeasures OR
-       (read_blocks -> uninterleave (optional) -> widen_blocks)
-     import_widemeasures
- 2.  pivot_wide_longer
- 3.  make_tidydesign OR
-     import_blockdesign OR
-     use plater::read_plate with ONLY the design elements
- 4.  merge_tidydesign_tidymeasures
- 5.  [pre-process: smoothing, normalization]
- 6.  [process: derivs, peak-finding, curve fitting]

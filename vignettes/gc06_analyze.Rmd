@@ -156,7 +156,7 @@ You'll see examples of these plots throughout this article.
 
 ## Lag time {#lag}
 
-Bacteria often have a period of time before they reach their maximum growth rate. If you would like to quantify this lag time, you can use the `lag_time` function. `lag_time` needs the x and y values, as well as the (per-capita) derivative. It will find the maximum derivative, then project the tangent line with that slope back until it crosses the starting density. 
+Bacteria often have a period of time before they reach their maximum growth rate. If you would like to quantify this lag time, you can use the `lag_time` function. `lag_time` needs the x and y values, as well as the (per-capita) derivative and the blank value (the value of your `Measurements` that corresponds to a population density of 0; if your data have already been normalized, simply add `blank = 0`). It will find the maximum derivative, then project the tangent line with that slope back until it crosses the starting density. 
 
 Below, I calculate lag time. So that you can see a visualization of what this tangent-line calculation does, I also calculate the `max_percap`, `max_percap_time`, `max_percap_dens`, and `min_dens`, but you don't have to do that.
 
@@ -164,7 +164,7 @@ Below, I calculate lag time. So that you can see a visualization of what this ta
 ex_dat_mrg_sum <- 
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             lag_time = lag_time(y = Measurements, x = Time, 
-                                deriv = deriv_percap5),
+                                deriv = deriv_percap5, blank = 0),
             max_percap = max_gc(deriv_percap5),
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             max_percap_dens = Measurements[which_max_gc(deriv_percap5)],
@@ -193,7 +193,8 @@ ex_dat_mrg_sum <-
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
             min_dens = first_minima(Measurements, return = "y"),
             lag_time = lag_time(y = Measurements, x = Time, 
-                                deriv = deriv_percap5, y0 = min_dens),
+                                deriv = deriv_percap5, blank = 0, 
+                                y0 = min_dens),
             max_percap = max_gc(deriv_percap5),
             max_percap_time = Time[which_max_gc(deriv_percap5)],
             max_percap_dens = Measurements[which_max_gc(deriv_percap5)])

@@ -196,7 +196,8 @@ make_example <- function(vignette, example, dir = ".") {
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
       ex_dat_mrg <- merge_dfs(example_tidydata,
-                              gcplyr::example_design_tidy)
+                              gcplyr::example_design_tidy,
+                              by = "Well")
       
       ex_dat_mrg$Time <-
         paste(ex_dat_mrg$Time %/% 3600,
@@ -224,12 +225,14 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 3 ----
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
-      ex_dat_mrg <- merge_dfs(example_tidydata,
-                              make_design(nrows = 8, ncols = 12,
-                                          Media = mdp("Media_1", 1:2, 1:12),
-                                          Media = mdp("Media_2", 3:4, 1:12),
-                                          Media = mdp("Media_3", 5:6, 1:12),
-                                          Media = mdp("Media_4", 7:8, 1:12)))
+      suppressMessages(
+        ex_dat_mrg <- merge_dfs(example_tidydata,
+                                make_design(nrows = 8, ncols = 12,
+                                            Media = mdp("Media_1", 1:2, 1:12),
+                                            Media = mdp("Media_2", 3:4, 1:12),
+                                            Media = mdp("Media_3", 5:6, 1:12),
+                                            Media = mdp("Media_4", 7:8, 1:12)),
+                                by = "Well"))
       set.seed(1)
       ex_dat_mrg <- mutate(
         ex_dat_mrg,
@@ -261,8 +264,10 @@ make_example <- function(vignette, example, dir = ".") {
       noiseless_data <- dplyr::mutate(noiseless_data, noise = "No")
       noisy_data <- dplyr::mutate(noisy_data, noise = "Yes")
       ex_dat_mrg <- merge_dfs(noisy_data, noiseless_data,
-                              warn_morerows = FALSE)
-      ex_dat_mrg <- merge_dfs(ex_dat_mrg, gcplyr::example_design_tidy)
+                              warn_morerows = FALSE,
+                              by = c("Time", "Well", "Measurements", "noise"))
+      ex_dat_mrg <- merge_dfs(ex_dat_mrg, gcplyr::example_design_tidy,
+                              by = "Well")
       
       ex_dat_mrg$Well <- 
         factor(ex_dat_mrg$Well,
@@ -279,7 +284,8 @@ make_example <- function(vignette, example, dir = ".") {
     } else if (example == 2) {
       ## Example 2 ----
       noisy_data <- trans_wide_to_tidy(gcplyr::example_widedata, id_cols = "Time")
-      ex_dat_mrg <- merge_dfs(noisy_data, gcplyr::example_design_tidy)
+      ex_dat_mrg <- merge_dfs(noisy_data, gcplyr::example_design_tidy,
+                              by = "Well")
       
       ex_dat_mrg$Well <- 
         factor(ex_dat_mrg$Well,
@@ -327,13 +333,16 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 2 ----
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
-      ex_dat_mrg <- merge_dfs(example_tidydata, gcplyr::example_design_tidy)
-      ex_dat_mrg_sum <-
-        dplyr::summarize(
-          dplyr::group_by(
-            dplyr::filter(ex_dat_mrg, .data$Phage == "No Phage"),
-            .data$Well, .data$Bacteria_strain, .data$Phage),
-          auc = auc(x = .data$Time, y = .data$Measurements))
+      ex_dat_mrg <- merge_dfs(example_tidydata, gcplyr::example_design_tidy,
+                              by = "Well")
+      suppressMessages(
+        ex_dat_mrg_sum <-
+          dplyr::summarize(
+            dplyr::group_by(
+              dplyr::filter(ex_dat_mrg, .data$Phage == "No Phage"),
+              .data$Well, .data$Bacteria_strain, .data$Phage),
+            auc = auc(x = .data$Time, y = .data$Measurements))
+      )
       
       set.seed(123)
       antibiotic_dat <- 

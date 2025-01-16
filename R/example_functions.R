@@ -211,10 +211,12 @@ make_example <- function(vignette, example, dir = ".") {
       ## Example 2 ----
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
+      set.seed(1)
       ex_dat_mrg <- mutate(
         example_tidydata,
-        Measurements = Measurements + 0.2,
-        Measurements = ifelse(Well == "A1", 0.2, Measurements),
+        Measurements = ifelse(Well == "A1",
+                              round(runif(length(Measurements), 0.198, 0.202), 3), 
+                              Measurements + 0.2),
         Well_type = ifelse(Well == "A1", "Blank", "Non-blank"))
       ex_dat_mrg <- ex_dat_mrg[order(ex_dat_mrg$Well, decreasing = TRUE), ]
       return(ex_dat_mrg)
@@ -224,15 +226,23 @@ make_example <- function(vignette, example, dir = ".") {
                                              id_cols = "Time")
       ex_dat_mrg <- merge_dfs(example_tidydata,
                               make_design(nrows = 8, ncols = 12,
-                                          Media = list("Media_1", 1:4, 1:12, "1"),
-                                          Media = list("Media_2", 5:8, 1:12, "1")))
+                                          Media = mdp("Media_1", 1:2, 1:12),
+                                          Media = mdp("Media_2", 3:4, 1:12),
+                                          Media = mdp("Media_3", 5:6, 1:12),
+                                          Media = mdp("Media_4", 7:8, 1:12)))
+      set.seed(1)
       ex_dat_mrg <- mutate(
         ex_dat_mrg,
-        Measurements = ifelse(Well %in% c("A1", "E1"), 0, Measurements),
-        Well_type = ifelse(Well %in% c("A1", "E1"), "Blank", "Non-blank"),
-        Measurements = ifelse(Media == "Media_1", 
-                              Measurements + 0.2,
-                              Measurements + 0.3))
+        Measurements = ifelse(Well %in% c("A1", "C1", "E1", "G1"), 
+                              round(runif(length(Measurements), -0.002, 0.002), 3),
+                              Measurements),
+        Measurements = case_when(Media == "Media_1" ~ Measurements + 0.2,
+                                 Media == "Media_2" ~ Measurements + 0.25,
+                                 Media == "Media_3" ~ Measurements + 0.1,
+                                 Media == "Media_4" ~ Measurements + 0.15,
+                                 .default = Measurements),
+        Well_type = ifelse(Well %in% c("A1", "C1", "E1", "G1"), 
+                           "Blank", "Non-blank"))
       ex_dat_mrg <- ex_dat_mrg[order(ex_dat_mrg$Well, decreasing = TRUE), ]
       return(ex_dat_mrg)
     }

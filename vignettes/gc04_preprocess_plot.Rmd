@@ -99,9 +99,9 @@ And now we can see that we've gotten nice numeric `Time` values!
 
 ## Pre-processing: subtracting blanks
 
-Many growth curves are collected by measuring the absorbance or optical density of a culture. However, with such data an absorbance value of 0 is not equal to a cell density of 0, since components of the media often absorb some light. It's best practice to have a 'blank' well in your plate containing only media and no cells, so that you can subtract out this difference from your data so that the values you are working with are scaled correctly.
+Many growth curves are collected by measuring the absorbance or optical density of a culture. However, with such data an absorbance value of 0 is not equal to a cell density of 0, since components of the media often absorb some light. It's best practice to have at least one 'blank' well in your plate containing only media and no cells, so that you can subtract out this difference from your data so that the values you are working with are scaled correctly.
 
-Here we have some data where the blank well has an absorbance of 0.2:
+Here we have some data including a blank well. The first thing you should always do is plot your blank wells data to ensure they look correct:
 
 ```{r}
 ex_dat_mrg <- make_example(vignette = 4, example = 2)
@@ -111,13 +111,15 @@ ggplot(data = ex_dat_mrg,
   ylim(0, NA)
 ```
 
-We can simply subtract the blank value from our `Measurements`:
+Once you've confirmed your blank wells weren't contaminated, one simple way to subtract blanks is to calculate the average value of your blank well(s) across all timepoints and subtract that from your `Measurements`:
 
 ```{r}
-ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - 0.2
+mean_blank <- mean(dplyr::filter(ex_dat_mrg, Well_type == "Blank"))
+
+ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - mean_blank
 ```
 
-However, sometimes you'll have different blank values for different plates or wells in a plate (e.g. because you have different medias):
+Note that if you have different blanks for different wells (e.g. you have multiple medias), you'll have to calculate different blank values for each:
 
 ```{r}
 ex_dat_mrg <- make_example(vignette = 4, example = 3)
@@ -126,18 +128,14 @@ ggplot(data = ex_dat_mrg,
   geom_point() +
   facet_grid(~Media)  +
   ylim(0, NA)
-```
 
-In that case, you can use the `ifelse` function to subtract different blanks depending on the criteria. `ifelse` takes 3 vectors as inputs: a vector of `TRUE`/`FALSE` values, and then two vectors containing the values to return if each element of the first vector is `TRUE` or `FALSE`, respectively.
-
-```{r}
-ex_dat_mrg$Meas_norm <- ifelse(ex_dat_mrg$Media == "Media_1",
-                               ex_dat_mrg$Measurements - 0.2,
-                               ex_dat_mrg$Measurements - 0.3)
-ggplot(data = ex_dat_mrg,
-       aes(x = Time, y = Meas_norm, color = Well_type)) +
-  geom_point() +
-  facet_grid(~Media)
+blank_data <- dplyr::filter(ex_dat_mrg, Well_type == "Blank")
+blank_data <- group_by(blank_data, Media)
+ex_dat_sum <- summarize(blank_data,
+                        mean_blank = mean(Measurements))
+head(ex_dat_sum)
+ex_dat_mrg <- merge_dfs(ex_dat_mrg, ex_dat_sum)
+ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - ex_dat_mrg$mean_blank
 ```
 
 # Plotting your data

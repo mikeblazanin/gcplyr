@@ -115,7 +115,7 @@ Once you've confirmed your blank wells weren't contaminated, one simple way to s
 
 ```{r}
 mean_blank <- mean(dplyr::filter(ex_dat_mrg, Well_type == "Blank")$Measurements)
-
+mean_blank
 ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - mean_blank
 ```
 

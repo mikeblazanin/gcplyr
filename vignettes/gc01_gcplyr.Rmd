@@ -112,7 +112,8 @@ data_merged <- mutate(
 #  the area-under-the-curve, saving it to a column named 'auc'
 data_sum <- summarize(
   group_by(data_merged, Well, Bacteria_strain, Phage),
-  lag_time = lag_time(x = Time, y = Measurements, deriv = percap_deriv),
+  lag_time = lag_time(x = Time, y = Measurements, deriv = percap_deriv,
+                      blank = 0),
   max_percap = max(percap_deriv, na.rm = TRUE),
   max_dens = max(Measurements),
   auc = auc(y = Measurements, x = as.numeric(Time)))

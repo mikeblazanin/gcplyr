@@ -8,6 +8,7 @@ lag_time(
   x = NULL,
   y = NULL,
   deriv = NULL,
+  blank = NULL,
   trans_y = "log",
   na.rm = TRUE,
   slope = NULL,
@@ -19,7 +20,8 @@ lag_time(
   warn_min_y_mismatch = TRUE,
   warn_multiple_maxderiv = TRUE,
   warn_one_lag = TRUE,
-  warn_no_lag = TRUE
+  warn_no_lag = TRUE,
+  warn_blank_length = TRUE
 )
 }
 \arguments{
@@ -28,6 +30,13 @@ lag_time(
 \item{y}{Vector of y values (typically density)}
 
 \item{deriv}{Vector of derivative values (typically per-capita derivative)}
+
+\item{blank}{y-value associated with a "blank" where the density is 0.
+Is required when \code{trans_y = TRUE}.
+
+A vector of blank values may be specified only when all of 
+\code{slope}, \code{x1}, \code{y1}, and \code{y0} are provided
+as vectors}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
                 transformation of y-values.
@@ -74,7 +83,11 @@ some, but not all, inputs are vectorized, and
 only one lag time value will be returned.}
 
 \item{warn_no_lag}{logical whether warning should be issued when calculated
-lag time is less than the minimum value of x}
+lag time is less than the minimum value of x.}
+
+\item{warn_blank_length}{logical whether warning should be issued when an
+unexpected number of \code{blank} values was 
+provided and only the first will be used}
 }
 \value{
 Typically a scalar of the lag time in units of x. See Details for
@@ -89,10 +102,10 @@ intersects with the minimum y-value
 For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
 (using the per-capita derivative and \code{trans_y = 'log'}).
 
-Advanced users may wish to use alternate values for the slope, origination
-point, or minimum y-value. In that case, values can be supplied to
-\code{slope}, \code{x1}, \code{y1}, and/or \code{y0}, which will override
-the default calculations. If and only if all of \code{slope}, \code{x1}, 
-\code{y1}, and \code{y0} are provided, \code{lag_time} is vectorized on
-their inputs and will return a vector of lag time values.
+Advanced users may wish to use alternate values for the slope of the tangent
+line (\code{slope}), origination point of the tangent line (\code{x1}, 
+\code{y1}), or minimum y-value \code{y0}. If specified, these values will 
+override the default calculations. If and only if all of \code{slope}, 
+\code{x1}, \code{y1}, and \code{y0} are provided, \code{lag_time} is 
+vectorized on their inputs and will return a vector of lag time values.
 }

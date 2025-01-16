@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.0
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   gc01_gcplyr: gc01_gcplyr.html
@@ -12,7 +12,7 @@ articles:
   gc08_conclusion: gc08_conclusion.html
   gc09_multiple_plates: gc09_multiple_plates.html
   gc10_using_make_design: gc10_using_make_design.html
-last_built: 2024-07-09T19:13Z
+last_built: 2025-01-16T23:25Z
 urls:
   reference: https://mikeblazanin.github.io/gcplyr/reference
   article: https://mikeblazanin.github.io/gcplyr/articles

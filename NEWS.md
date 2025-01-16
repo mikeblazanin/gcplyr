@@ -1,3 +1,7 @@
+# gcplyr 1.11.0.9000
+
+* Stuff here
+
 # gcplyr 1.11.0
 
 * Bug fix to lag_time where it had been returning incorrect values if trans_y = "log" and the y values provided were not already normalized (i.e. did not have the blank value subtracted). lag_time now takes a blank argument, which is required when trans_y = "log"

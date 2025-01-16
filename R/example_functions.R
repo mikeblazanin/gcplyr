@@ -213,13 +213,14 @@ make_example <- function(vignette, example, dir = ".") {
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
       set.seed(1)
-      ex_dat_mrg <- mutate(
+      ex_dat_mrg <- dplyr::mutate(
         example_tidydata,
-        Measurements = ifelse(Well == "A1",
-                              round(runif(length(Measurements), 0.198, 0.202), 3), 
-                              Measurements + 0.2),
-        Well_type = ifelse(Well == "A1", "Blank", "Non-blank"))
-      ex_dat_mrg <- ex_dat_mrg[order(ex_dat_mrg$Well, decreasing = TRUE), ]
+        Measurements = ifelse(
+          .data$Well == "A1",
+          base::round(stats::runif(length(.data$Measurements), 0.198, 0.202), 3), 
+          .data$Measurements + 0.2),
+        Well_type = base::ifelse(.data$Well == "A1", "Blank", "Non-blank"))
+      ex_dat_mrg <- ex_dat_mrg[base::order(ex_dat_mrg$Well, decreasing = TRUE), ]
       return(ex_dat_mrg)
     } else if (example == 3) {
       ## Example 3 ----
@@ -234,19 +235,21 @@ make_example <- function(vignette, example, dir = ".") {
                                             Media = mdp("Media_4", 7:8, 1:12)),
                                 by = "Well"))
       set.seed(1)
-      ex_dat_mrg <- mutate(
+      ex_dat_mrg <- dplyr::mutate(
         ex_dat_mrg,
-        Measurements = ifelse(Well %in% c("A1", "C1", "E1", "G1"), 
-                              round(runif(length(Measurements), -0.002, 0.002), 3),
-                              Measurements),
-        Measurements = case_when(Media == "Media_1" ~ Measurements + 0.2,
-                                 Media == "Media_2" ~ Measurements + 0.25,
-                                 Media == "Media_3" ~ Measurements + 0.1,
-                                 Media == "Media_4" ~ Measurements + 0.15,
-                                 .default = Measurements),
-        Well_type = ifelse(Well %in% c("A1", "C1", "E1", "G1"), 
+        Measurements = base::ifelse(
+          .data$Well %in% c("A1", "C1", "E1", "G1"), 
+          base::round(stats::runif(length(.data$Measurements), -0.002, 0.002), 3),
+          .data$Measurements),
+        Measurements = dplyr::case_when(
+          .data$Media == "Media_1" ~ .data$Measurements + 0.2,
+          .data$Media == "Media_2" ~ .data$Measurements + 0.25,
+          .data$Media == "Media_3" ~ .data$Measurements + 0.1,
+          .data$Media == "Media_4" ~ .data$Measurements + 0.15,
+          .default = .data$Measurements),
+        Well_type = base::ifelse(.data$Well %in% c("A1", "C1", "E1", "G1"), 
                            "Blank", "Non-blank"))
-      ex_dat_mrg <- ex_dat_mrg[order(ex_dat_mrg$Well, decreasing = TRUE), ]
+      ex_dat_mrg <- ex_dat_mrg[base::order(ex_dat_mrg$Well, decreasing = TRUE), ]
       return(ex_dat_mrg)
     }
     

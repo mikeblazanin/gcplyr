@@ -114,7 +114,7 @@ ggplot(data = ex_dat_mrg,
 Once you've confirmed your blank wells weren't contaminated, one simple way to subtract blanks is to calculate the average value of your blank well(s) across all timepoints and subtract that from your `Measurements`:
 
 ```{r}
-mean_blank <- mean(dplyr::filter(ex_dat_mrg, Well_type == "Blank"))
+mean_blank <- mean(dplyr::filter(ex_dat_mrg, Well_type == "Blank")$Measurements)
 
 ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - mean_blank
 ```

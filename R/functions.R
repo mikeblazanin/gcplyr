@@ -2702,6 +2702,9 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   if(warn_ungrouped) {
     check_grouped(name_for_error = "smooth_data", subset_by = subset_by)}
   
+  if (sm_method == "gam" && !requireNamespace("mgcv", quietly = TRUE)) {
+      stop("Package \"mgcv\" must be installed to use gam", call. = FALSE)}
+  
   #Parse x and y, and/or ... args, into formula and data
   if(!is.null(y)) {
     if (any(c("formula", "data") %in% names(list(...)))) {
@@ -2733,10 +2736,8 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
     data <- list(...)$data
   }
   
-  if (sm_method == "gam") {
-    if(!requireNamespace("mgcv", quietly = TRUE)) {
-      stop("Package \"mgcv\" must be installed to use gam", call. = FALSE)}
-    if(warn_gam_no_s && substr(as.character(formula[3]), 1, 2) != "s(") {
+  if (sm_method == "gam" && warn_gam_no_s && 
+      substr(as.character(formula[3]), 1, 2) != "s(") {
       warning("gam method is called without 's()' to smooth\n")}
   }
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))

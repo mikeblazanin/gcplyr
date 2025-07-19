@@ -2749,7 +2749,7 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   
   if (sm_method == "gam" && warn_gam_no_s && 
       substr(as.character(formula[3]), 1, 2) != "s(") {
-      warning("gam method is called without 's()' to smooth\n")}
+      warning("gam method is called without 's()' to smooth\n")
   }
   if(is.null(subset_by)) {subset_by <- rep("A", nrow(data))
   } else if (length(subset_by) != nrow(data)) {

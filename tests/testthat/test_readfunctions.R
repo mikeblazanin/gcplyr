@@ -100,6 +100,35 @@ test_that("parse_filestrings works correctly", {
     "test3")
 })
 
+test_that("read_gcfile reads xlsx files correctly", {
+  setwd(tempdir())
+  #Only run the Excel tests if xlsx loads successfully
+  run_xlsx <- tryCatch(
+    {library(xlsx)
+      TRUE},
+    error = function(e) {return(FALSE)},
+    warning = function(w) {return(TRUE)}
+  )
+  if(run_xlsx) {
+    testdf <- data.frame(matrix(LETTERS[1:25], nrow = 5, ncol = 5))
+    testdf[1, ] <- as.character(NA)
+    testdf[, 1] <- as.character(NA)
+    testdf[1:4, 5] <- as.character(NA)
+    testdf[5, 1:4] <- as.character(NA)
+    colnames(testdf) <- paste0("...", 1:5)
+    row.names(testdf) <- 1:5
+    xlsx::write.xlsx(testdf,
+                     file = "testdf.xlsx",
+                     sheetName = "Sheet1",
+                     showNA = FALSE, append = FALSE,
+                     col.names = FALSE, row.names = FALSE)
+    
+    expect_equal(read_gcfile(file = "testdf.xlsx", filetype = "xlsx",
+                             na.strings = c("NA", "")), 
+                 testdf)
+  }
+})
+
 
 test_that("read_blocks reads data correctly", {
   #Make test blockcurves data

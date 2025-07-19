@@ -23,8 +23,8 @@ R CMD INSTALL gcplyr_X.X.X.tar.gz
 1. Save & commit all changes to code
 2. Run checks:
       devtools::check()
-      rhub::rhub_check(branch = "develop") [choose 1,2,3,4]
-           Note that 2 and 3 usually fail because they fail to install
+      rhub::rhub_check(branch = "develop") [choose 1,2,3,4,5]
+           Note that 2 - 4 usually fail because they fail to install
            rjava dependency
       devtools::check_win_devel()
 3. Organize, edit, and proofread NEWS.md. Commit.

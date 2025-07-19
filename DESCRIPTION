@@ -27,6 +27,7 @@ Imports:
     utils
 Suggests: 
     caret,
+    cellranger,
     ggplot2,
     knitr,
     lubridate,

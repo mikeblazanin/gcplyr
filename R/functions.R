@@ -191,10 +191,17 @@ parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
 #' 
 #' @noRd
 read_gcfile <- function(file, filetype, na.strings, sheet = NULL, ...) {
-  if(any(filetype %in% c("xls", "xlsx")) && 
-     !requireNamespace("readxl", quietly = TRUE)) {
-    stop("Package \"readxl\" must be installed to read xls or xlsx files",
-         call. = FALSE)
+  if(any(filetype %in% c("xls", "xlsx"))) {
+    if(!requireNamespace("readxl", quietly = TRUE)) {
+      stop("Package \"readxl\" must be installed to read xls or xlsx files",
+           call. = FALSE)
+    }
+    if(!requireNamespace("cellranger", quietly = TRUE)) {
+      stop("Package \"cellranger\" must be installed to read xls or xlsx files",
+           call. = FALSE)
+      #readxl imports cellranger, so cellranger should usually be installed
+      # if readxl is
+    }
   }
   
   if(filetype %in% c("tbl", "table", "csv", "csv2", "delim", "delim2")) {
@@ -270,15 +277,19 @@ read_gcfile <- function(file, filetype, na.strings, sheet = NULL, ...) {
       readgcfile_temp <- 
         as.data.frame(
           parse_dots(readxl::read_xls, path = file, 
-                      col_names = FALSE, col_types = "text", 
-                      sheet = sheet, na = na.strings, ...)))
+                     col_names = FALSE, col_types = "text", 
+                     sheet = sheet, na = na.strings,
+                     range = cellranger::cell_limits(ul = c(1, 1)),
+                     ...)))
   } else if (filetype == "xlsx") {
     suppressMessages(
       readgcfile_temp <- 
         as.data.frame(
           parse_dots(readxl::read_xlsx, path = file, 
-                      col_names = FALSE, col_types = "text", 
-                      sheet = sheet, na = na.strings, ...)))
+                     col_names = FALSE, col_types = "text", 
+                     sheet = sheet, na = na.strings,
+                     range = cellranger::cell_limits(ul = c(1, 1)),
+                     ...)))
   } else {stop("read_gcfile was passed an invalid filetype")}
   return(readgcfile_temp)
 }

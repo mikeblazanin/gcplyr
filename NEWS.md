@@ -1,6 +1,8 @@
-# gcplyr 1.11.0.9000
+# gcplyr 1.12.0
 
-* Stuff here
+* Bug fix to all read_ and import_ functions where leading empty rows in xlsx or xls files were being dropped automatically, so that startrow and endrow argument values were incorrect
+
+* Bug fix to smooth_data where error could arise if sm_method is 'gam' and mgcv wasn't installed 
 
 # gcplyr 1.11.0
 

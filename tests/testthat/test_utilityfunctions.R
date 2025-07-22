@@ -79,6 +79,8 @@ test_that("add_nas returns correctly", {
                list(x = c(5, 6, NA, 7, 8), y = NULL))
   expect_equal(add_nas(x = c(5, 6, 7, 8), y = 1:4, nas_indices_removed = 3), 
                list(x = c(5, 6, NA, 7, 8), y = c(1, 2, NA, 3, 4)))
+  expect_equal(add_nas(x = c(), nas_indices_removed = 1:5),
+               list(x = rep(NA, 5), y = NULL))
 })
 
 test_that("reorder_xy returns correctly", {
@@ -109,6 +111,9 @@ test_that("get_windows returns correctly", {
     get_windows(x = c(1:5, 7:11), y = 1:10, window_width = 2, edge_NA = TRUE),
     list(NA, c(1, 2, 3), c(2, 3, 4), c(3, 4, 5), c(4, 5),
          c(6, 7), c(6, 7, 8), c(7, 8, 9), c(8, 9, 10), NA))
+  expect_equal(
+    get_windows(x = 3, y = 1, window_width_n = 3, edge_NA = TRUE),
+    list(NA))
 })
 
 test_that("solve_linear returns correctly", {

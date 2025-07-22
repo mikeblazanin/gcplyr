@@ -2955,6 +2955,7 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                            window_width_n_frac = NULL,
                            window_width_frac = NULL,
                            na.rm = TRUE, warn_nonnumeric_sort = TRUE) {
+
   #Run all setup steps and checks
   setup <- setup_moving_smooth(formula = formula, data = data, x = x, y = y,
                             window_width_n = window_width_n,
@@ -2964,19 +2965,24 @@ moving_average <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                             na.rm = na.rm, 
                             warn_nonnumeric_sort = warn_nonnumeric_sort)
   
-  #Get windows
-  windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
-                         window_width_n = setup[["window_width_n"]],
-                         window_width = setup[["window_width"]],
-                         window_width_n_frac = setup[["window_width_n_frac"]], 
-                         window_width_frac = setup[["window_width_frac"]],
-                         edge_NA = TRUE)
+  if(length(setup[["x"]]) == 0) { #All values were removed NA
+    return(rep(as.numeric(NA), length(setup[["nas_indices_removed"]])))
+  } else {
+    #Get windows
+    windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
+                           window_width_n = setup[["window_width_n"]],
+                           window_width = setup[["window_width"]],
+                           window_width_n_frac = setup[["window_width_n_frac"]], 
+                           window_width_frac = setup[["window_width_frac"]],
+                           edge_NA = TRUE)
+    
+    #Calculate average
+    results <- sapply(windows, y = setup[["y"]], 
+                      FUN = function(x, y) {mean(y[x])})
+    #Put back in original order
+    results <- results[order(setup[["order"]])]
+  }
   
-  #Calculate average
-  results <- sapply(windows, y = setup[["y"]], 
-                    FUN = function(x, y) {mean(y[x])})
-  #Put back in original order
-  results <- results[order(setup[["order"]])]
   #Add NA's
   results <- add_nas(x = results, 
                      nas_indices_removed = setup[["nas_indices_removed"]])[["x"]]
@@ -3002,19 +3008,24 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
                             na.rm = na.rm, 
                             warn_nonnumeric_sort = warn_nonnumeric_sort)
   
-  #Get windows
-  windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
-                         window_width_n = setup[["window_width_n"]],
-                         window_width = setup[["window_width"]],
-                         window_width_n_frac = setup[["window_width_n_frac"]], 
-                         window_width_frac = setup[["window_width_frac"]],
-                         edge_NA = TRUE)
+  if(length(setup[["x"]]) == 0) { #All values were removed NA
+    return(rep(as.numeric(NA), length(setup[["nas_indices_removed"]])))
+  } else {
+    #Get windows
+    windows <- get_windows(x = setup[["x"]], y = setup[["y"]], 
+                           window_width_n = setup[["window_width_n"]],
+                           window_width = setup[["window_width"]],
+                           window_width_n_frac = setup[["window_width_n_frac"]], 
+                           window_width_frac = setup[["window_width_frac"]],
+                           edge_NA = TRUE)
+    
+    #Calculate median
+    results <- sapply(windows, y = setup[["y"]], 
+                      FUN = function(x, y) {stats::median(y[x])})
+    #Put back in original order
+    results <- results[order(setup[["order"]])]
+  }
   
-  #Calculate median
-  results <- sapply(windows, y = setup[["y"]], 
-                    FUN = function(x, y) {stats::median(y[x])})
-  #Put back in original order
-  results <- results[order(setup[["order"]])]
   #Add NA's
   results <- 
     add_nas(x = results, 

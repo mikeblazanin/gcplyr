@@ -363,6 +363,12 @@ rm_nas <- function(..., na.rm, stopifNA = FALSE) {
 #' NA's will be added to x and y at indices specified where they had 
 #' been previously removed
 #' 
+#' Note: if x vector is empty (because all values were removed), this function
+#' will return a vector of all \code{NA}'s for x. However, if y vector is
+#' empty (because all values were removed), this function will not return
+#' anything for y (because it's seen as NULL, the default value for y, which
+#' is an optional argument). See Github Issue #231
+#' 
 #' @param x Vector to add NA's to
 #' @param y Optional second vector to add NA's to
 #' @param nas_indices_removed Indices where NA's had previously been removed
@@ -387,11 +393,11 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
     
     out <- list("x" = rep(NA, length(x) + length(nas_indices_removed)),
                 "y" = NULL)
-    out[["x"]][return_indices] <- x
+    if(!is.null(x)) {out[["x"]][return_indices] <- x}
     
     if(!is.null(y)) {
       out[["y"]] <- rep(NA, length(x) + length(nas_indices_removed))
-      out[["y"]][return_indices] <- y
+      if(!is.null(y)) {out[["y"]][return_indices] <- y}
     }
     
     return(out)

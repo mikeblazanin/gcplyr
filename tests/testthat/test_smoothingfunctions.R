@@ -44,6 +44,22 @@ test_that("Moving average returns correctly", {
                expected = c(NA, (25+49+64)/3, (49+64+81)/3,
                             NA, NA, NA, (1+4+9)/3,
                             (4+9+16)/3, (9+16+25)/3, (16+25+49)/3))
+  
+  #Now with all NA's
+  data4a <- data.frame(x = rep(NA, 10), y = 1:10)
+  expect_equal(moving_average(y ~ x, data = data4a, window_width_n = 3),
+               rep(as.numeric(NA), 10))
+  data4b <- data.frame(x = 1:10, y = rep(NA, 10))
+  expect_equal(moving_average(y ~ x, data = data4b, window_width_n = 3),
+               rep(as.numeric(NA), 10))
+  
+  #Now with nearly all NA's
+  data5a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
+  expect_equal(moving_average(y ~ x, data = data5a, window_width_n = 3),
+               rep(as.numeric(NA), 10))
+  data5b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
+  expect_equal(moving_average(y ~ x, data = data5b, window_width_n = 3),
+               rep(as.numeric(NA), 10))
 })
 
 test_that("Moving median returns correctly", {
@@ -82,6 +98,22 @@ test_that("Moving median returns correctly", {
                       y = c(NA, c(7:9)**2, 50, c(1:5)**2))
   expect_equal(moving_median(y ~ x, data3, window_width_n = 3),
                expected = c(NA, 49, 64, NA, NA, NA, 4, 9, 16, 25))
+  
+  #Now with all NA's
+  data4a <- data.frame(x = rep(NA, 10), y = 1:10)
+  expect_equal(moving_median(y ~ x, data = data4a, window_width_n = 3),
+               rep(as.numeric(NA), 10))
+  data4b <- data.frame(x = 1:10, y = rep(NA, 10))
+  expect_equal(moving_median(y ~ x, data = data4b, window_width_n = 3),
+               rep(as.numeric(NA), 10))
+  
+  #Now with nearly all NA's
+  data5a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
+  expect_equal(moving_median(y ~ x, data = data5a, window_width_n = 3),
+               rep(as.numeric(NA), 10))
+  data5b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
+  expect_equal(moving_median(y ~ x, data = data5b, window_width_n = 3),
+               rep(as.numeric(NA), 10))
 })
 
 test_that("smooth_data returns properly for moving-average", {
@@ -143,6 +175,28 @@ test_that("smooth_data returns properly for loess", {
                  sm = smooth_data(x = data3$x, y = data3$y,
                                   sm_method = "loess", span = 0.5))
   expect_equal(temp$sm, expected = expected3)
+  
+  # #Now with all NA's
+  # data4a <- data.frame(x = rep(NA, 10), y = 1:10, grp = "A")
+  # data4a <- mutate(group_by(data4a, grp),
+  #                  sm = smooth_data(x = x, y = y,
+  #                                   sm_method = "loess", span = 0.3))
+  # 
+  # data4b <- data.frame(x = 1:10, y = rep(NA, 10))
+  # data4b <- mutate(group_by(data4b, "A"),
+  #                  sm = smooth_data(x = x, y = y,
+  #                                   sm_method = "loess", span = 0.3))
+  # expect_equal(moving_median(y ~ x, data = data4b, window_width_n = 3),
+  #              rep(as.numeric(NA), 10))
+  # 
+  # #Now with nearly all NA's
+  # data5a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
+  # expect_equal(moving_median(y ~ x, data = data5a, window_width_n = 3),
+  #              rep(as.numeric(NA), 10))
+  # data5b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
+  # expect_equal(moving_median(y ~ x, data = data5b, window_width_n = 3),
+  #              rep(as.numeric(NA), 10))
+  
 })
 
 test_that("smooth_data returns properly for gam", {

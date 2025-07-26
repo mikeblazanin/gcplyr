@@ -2708,7 +2708,8 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
       smoothed_object <- 
         parse_dots(
           FUN = mgcv::gam,
-          formula = formula, data = data[subset_by == unique(subset_by)[i], ],
+          formula = formula, 
+          data = data[subset_by == unique(subset_by)[i], ],
           na.action = "na.exclude", ...)
     } else if (sm_method == "smooth.spline") {
       smoothed_object <-

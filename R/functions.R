@@ -2326,13 +2326,6 @@ trans_wide_to_tidy <- function(wides,
   }
 }
 
-#' Transform tidy dfs into wide (in progress)
-#' 
-#' @noRd
-trans_tidy_to_wide <- function() {
-  
-}
-
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 
 #' This function is essentially a wrapper for any of \code{dplyr}'s

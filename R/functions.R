@@ -2011,20 +2011,20 @@ Putting block_names in filename and writing remaining metadata into file\n")
 #' 
 #' Takes blocks and returns them in a wide format
 #' 
-#' @param blocks Blocks, either a single data.frame or a list of
-#'                      data.frames
+#' @param blocks Blocks, either a single dataframe or a list of
+#'                      dataframes
 #' @param wellnames_sep String to use as separator for well names between 
-#'                      rowname and column name (ordered according to
+#'                      row name and column name (ordered according to
 #'                      \code{colnames_first}
 #' @param nested_metadata A logical indicating the existence of nested metadata
 #'                        in the \code{blockmeasures} list, e.g. as is typically
-#'                        output by \link{read_blocks}. If NULL, will attempt to
-#'                        infer existence of nested metadata
+#'                        output by \link{read_blocks}. If \code{NULL}, will 
+#'                        attempt to infer existence of nested metadata
 #' @param colnames_first  In the wellnames created by \link{paste}-ing the
 #'                        rownames and column names, should the column names
-#'                        come first
+#'                        come first?
 #'
-#' @return A single widemeasures data.frame
+#' @return A single wide-shaped dataframe
 #' 
 #' @export
 trans_block_to_wide <- function(blocks, wellnames_sep = "", 
@@ -2134,40 +2134,40 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "",
   return(output)
 }
 
-#' Pivot widemeasures longer
+#' Pivot wide-shaped into tidy
 #' 
-#' Essentially a wrapper for tidyr::pivot_longer that works on both a single
-#' widemeasures as well as a list of widemeasures
+#' Essentially a wrapper for \link[tidyr]{pivot_longer} that works on both a 
+#' single wide-shaped dataframe as well as a list of wide-shaped dataframe's
 #' 
-#' @param wides A single widemeasures data.frame, or a list of widemeasures
-#'                   data.frame's
+#' @param wides A single wide-shaped dataframe, or a list of wide-shaped
+#'                   dataframe's
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
 #'                          (in \link[tidyr]{pivot_longer} parlance). Each can be
 #'                          a single vector (which will be applied for all
-#'                          widemeasures) or a list of vectors, with each
-#'                          vector corresponding to the same-index widemeasure
-#'                          in \code{widemeasures}
+#'                          dataframes) or a list of vectors, with each
+#'                          vector corresponding to the same-index dataframe
+#'                          in \code{wides}
 #'                          
 #'                          Entries that are NA in the list will not be used
 #'                          
-#'                          If neither data_cols nor id_cols are specified,
-#'                          user must provide arguments to tidyr::pivot_longer
-#'                          via \code{...} for at least the \code{cols} argument
-#'                          and these arguments provided via \code{...} will
-#'                          be used for all \code{widemeasures} data.frame's
+#'                          If neither \code{data_cols} nor \code{id_cols} are 
+#'                          specified, user must provide arguments to 
+#'                          \link[tidyr]{pivot_longer} via \code{...} for at 
+#'                          least the \code{cols} argument and these arguments 
+#'                          provided via \code{...} will be used for all 
+#'                          \code{wides} dataframe's
 #' @param names_to,values_to Specifies the output column names created by
-#'                           tidyr::pivot_longer. Each can be provided as vectors
-#'                           the same length as \code{widemeasures}
-#'                           Note that if neither data_cols nor id_cols
+#'                           \link[tidyr]{pivot_longer}. Each can be provided 
+#'                           as vectors the same length as \code{wides}
 #' @param values_to_numeric logical indicating whether values will be coerced
 #'                          to numeric. See below for when this may be
 #'                          overridden by arguments passed in \code{...}
-#' @param ... Other functions to be passed to \link[tidyr]{pivot_longer}
-#'            Note that including values_transform here will override the
-#'            behavior of values_to_numeric
-#' @return Pivoted longer data.frame (if \code{widemeasures} is a single data.frame)
-#'         or list of pivoted longer data.frame's (if \code{widemeasures} is
-#'         a list of data.frame's)
+#' @param ... Other arguments to be passed to \link[tidyr]{pivot_longer}
+#'            Note that including \code{values_transform} here will override the
+#'            behavior of \code{values_to_numeric}
+#' @return Pivoted longer dataframe (if \code{wides} is a single dataframe)
+#'         or list of pivoted longer dataframes (if \code{wides} is
+#'         a list of dataframes)
 #' 
 #' @export  
 trans_wide_to_tidy <- function(wides, 
@@ -2257,8 +2257,8 @@ trans_wide_to_tidy <- function(wides,
 #' This function is essentially a wrapper for any of \code{dplyr}'s
 #' \link[dplyr]{mutate-joins} (by default, a \link[dplyr]{full_join}). 
 #' The most typical use of this function is to merge designs with measures 
-#' data, or to use the collapse functionality to merge a list of dataframes 
-#' into a single dataframe. Merging is done by column names that match 
+#' data, or to use the collapse functionality to merge a list of data.frames 
+#' into a single data.frame. Merging is done by column names that match 
 #' between \code{x} and \code{y}.
 #'  
 #' @param x First data.frame, or list of data frames, to be joined

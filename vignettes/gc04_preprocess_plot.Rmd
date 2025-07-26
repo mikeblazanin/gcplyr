@@ -69,12 +69,29 @@ head(example_data_and_designs_filtered)
 ```
 
 ## Pre-processing: converting dates & times into numeric
-Growth curve data produced by a plate reader often encodes the timestamp information as a string (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds), while downstream analyses need timestamp information as a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
+Growth curve data produced by a plate reader encodes timestamp information in a variety of ways.
+
+**If your timestamp data is already a nicely-formatted number** (e.g. number of seconds since the growth curve began), you just need to make it's stored in R as a `numeric` type:
+
+```{r}
+ex_dat_mrg <- make_example(vignette = 4, example = 1)
+head(ex_dat_mrg$Time)
+class(ex_dat_mrg$Time)
+```
+
+Our `Time` column is currently stored as a `character`. That could be a problem later when we're analyzing and plotting our data, so let's convert it to `numeric`:
+
+```{r}
+ex_dat_mrg$Time <- as.numeric(ex_dat_mrg$Time)
+head(ex_dat_mrg$Time)
+```
+
+**Alternatively, timestamp information produced by a plate reader is often encoded as a string** (e.g. "2:45:11" for 2 hours, 45 minutes, and 11 seconds). For downstream analyses, we need to convert this timestamp information into a numeric (e.g. number of seconds elapsed). Luckily, others have written great packages that make it easy to convert from common date-time text formats into plain numeric formats. Here, we'll see how to use `lubridate` to do so:
 
 First we have to create a data frame with time saved as it might be by a plate reader.
 
 ```{r}
-ex_dat_mrg <- make_example(vignette = 4, example = 1)
+ex_dat_mrg <- make_example(vignette = 4, example = 2)
 
 head(ex_dat_mrg)
 ```
@@ -104,7 +121,7 @@ Many growth curves are collected by measuring the absorbance or optical density 
 Here we have some data including a blank well. The first thing you should always do is plot your blank wells data to ensure they look correct:
 
 ```{r}
-ex_dat_mrg <- make_example(vignette = 4, example = 2)
+ex_dat_mrg <- make_example(vignette = 4, example = 3)
 ggplot(data = ex_dat_mrg,
        aes(x = Time, y = Measurements, color = Well_type)) +
   geom_point() +
@@ -122,7 +139,7 @@ ex_dat_mrg$Meas_norm <- ex_dat_mrg$Measurements - mean_blank
 Note that if you have different blanks for different wells (e.g. you have multiple medias), you'll have to calculate different blank values for each [`vignette("gc06_analyze")` has a primer on the `summarize` function used here, if you'd like to learn more]:
 
 ```{r}
-ex_dat_mrg <- make_example(vignette = 4, example = 3)
+ex_dat_mrg <- make_example(vignette = 4, example = 4)
 ggplot(data = ex_dat_mrg,
        aes(x = Time, y = Measurements, color = Well_type)) +
   geom_point() +

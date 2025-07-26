@@ -198,6 +198,15 @@ make_example <- function(vignette, example, dir = ".") {
       ex_dat_mrg <- merge_dfs(example_tidydata,
                               gcplyr::example_design_tidy,
                               by = "Well")
+      ex_dat_mrg$Time <- as.character(ex_dat_mrg$Time)
+      return(ex_dat_mrg)
+    } else if (example == 2) {
+      ## Example 2 ----
+      example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
+                                             id_cols = "Time")
+      ex_dat_mrg <- merge_dfs(example_tidydata,
+                              gcplyr::example_design_tidy,
+                              by = "Well")
       
       ex_dat_mrg$Time <-
         paste(ex_dat_mrg$Time %/% 3600,
@@ -208,8 +217,8 @@ make_example <- function(vignette, example, dir = ".") {
               sep = ":")
       
       return(ex_dat_mrg)
-    } else if (example == 2) {
-      ## Example 2 ----
+    } else if (example == 3) {
+      ## Example 3 ----
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
       set.seed(1)
@@ -222,8 +231,8 @@ make_example <- function(vignette, example, dir = ".") {
         Well_type = base::ifelse(.data$Well == "A1", "Blank", "Non-blank"))
       ex_dat_mrg <- ex_dat_mrg[base::order(ex_dat_mrg$Well, decreasing = TRUE), ]
       return(ex_dat_mrg)
-    } else if (example == 3) {
-      ## Example 3 ----
+    } else if (example == 4) {
+      ## Example 4 ----
       example_tidydata <- trans_wide_to_tidy(gcplyr::example_widedata_noiseless,
                                              id_cols = "Time")
       suppressMessages(

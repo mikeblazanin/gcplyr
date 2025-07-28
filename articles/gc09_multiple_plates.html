@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.12.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,7 +118,7 @@ now is a good time to go back and do that!</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.11.0, Build Date: 2025-01-16)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.12.0, Build Date: 2025-07-28)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. gcplyr: an R package for microbial growth</span></span>
@@ -321,12 +321,12 @@ into a single <code>data.frame</code> with <code>merge_dfs</code>:</p>
 <span></span>
 <span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tidy_plates_collapsed</span><span class="op">)</span>, col.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; file Experiment Start_date Time Well Measurements</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 A1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 B1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 C1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 D1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 E1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 F1 0.002</span></span></code></pre></div>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 A1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 B1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 C1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 D1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 E1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 F1 0.002</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="merging-designs-with-multiple-plates">Merging designs with multiple plates<a class="anchor" aria-label="anchor" href="#merging-designs-with-multiple-plates"></a>
@@ -366,12 +366,12 @@ merge them with each plate separately using brackets:</p>
 <span><span class="co">#&gt; Joining with `by = join_by(file, Experiment, Start_date, Time, Well,</span></span>
 <span><span class="co">#&gt; Measurements, Bacteria_strain)`</span></span>
 <span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_and_designs</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 A1 0.002  Strain 1</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 B1 0.002  Strain 7</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 C1 0.002 Strain 13</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 D1 0.002 Strain 19</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 E1 0.002 Strain 25</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 F1 0.002 Strain 31</span></span></code></pre></div>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 A1 0.002  Strain 1</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 B1 0.002  Strain 7</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 C1 0.002 Strain 13</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 D1 0.002 Strain 19</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 E1 0.002 Strain 25</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 F1 0.002 Strain 31</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="plates-with-a-shared-design">Plates with a shared design<a class="anchor" aria-label="anchor" href="#plates-with-a-shared-design"></a>
@@ -397,12 +397,12 @@ differentiate the separate plates you read in.</p>
 <span><span class="co">#&gt; Measurements, Bacteria_strain)`</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Well, Bacteria_strain)`</span></span>
 <span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_and_designs</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 A1 0.002  Strain 1</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 B1 0.002  Strain 7</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 C1 0.002 Strain 13</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 D1 0.002 Strain 19</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 E1 0.002 Strain 25</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-01-16 0 F1 0.002 Strain 31</span></span></code></pre></div>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 A1 0.002  Strain 1</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 B1 0.002  Strain 7</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 C1 0.002 Strain 13</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 D1 0.002 Strain 19</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 E1 0.002 Strain 25</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 F1 0.002 Strain 31</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -416,7 +416,7 @@ differentiate the separate plates you read in.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

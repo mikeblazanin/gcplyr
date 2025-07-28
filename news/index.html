@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.12.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,15 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.11.0" id="gcplyr-1110">gcplyr 1.11.0<a class="anchor" aria-label="anchor" href="#gcplyr-1110"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.12.0" id="gcplyr-1120">gcplyr 1.12.0<a class="anchor" aria-label="anchor" href="#gcplyr-1120"></a></h2>
+<ul><li><p>Bug fix to all read_ and import_ functions where leading empty rows in xlsx or xls files were being dropped automatically, so that startrow and endrow argument values were incorrect</p></li>
+<li><p>Bug fix to smooth_data, moving_average, and moving_median where they were failing when any group of data had all NA x- or y-values</p></li>
+<li><p>Bug fix to read_ functions where they were failing when attempting to read a single column of data</p></li>
+<li><p>Bug fix to smooth_data where an error could arise if sm_method was ‘gam’ and mgcv wasn’t installed</p></li>
+<li><p>Documentation and vignette improvements</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.11.0" id="gcplyr-1110">gcplyr 1.11.0<a class="anchor" aria-label="anchor" href="#gcplyr-1110"></a></h2><p class="text-muted">CRAN release: 2025-01-16</p>
 <ul><li><p>Bug fix to lag_time where it had been returning incorrect values if trans_y = “log” and the y values provided were not already normalized (i.e. did not have the blank value subtracted). lag_time now takes a blank argument, which is required when trans_y = “log”</p></li>
 <li><p>New vignette section on subtracting blanks</p></li>
 </ul></div>
@@ -247,7 +255,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

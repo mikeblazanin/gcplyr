@@ -2,9 +2,13 @@
 
 * Bug fix to all read_ and import_ functions where leading empty rows in xlsx or xls files were being dropped automatically, so that startrow and endrow argument values were incorrect
 
-* Bug fix to smooth_data where error could arise if sm_method is 'gam' and mgcv wasn't installed 
+* Bug fix to smooth_data, moving_average, and moving_median where they were failing when any group of data had all NA x- or y-values
 
-* Minor documentation and vignette improvements
+* Bug fix to read_ functions where they were failing when attempting to read a single column of data
+
+* Bug fix to smooth_data where an error could arise if sm_method was 'gam' and mgcv wasn't installed 
+
+* Documentation and vignette improvements
 
 # gcplyr 1.11.0
 

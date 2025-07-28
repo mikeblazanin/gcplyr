@@ -909,14 +909,21 @@ take_subset <- function(x = NULL, y = NULL, subset = NULL) {
 #'                          predictor variable name, response variable name
 #' 
 #' @noRd
-parse_formula_data <- function(formula, data) {
+parse_formula_data <- function(formula, data, s_term = FALSE) {
   #Check formula formatting
   if (length(formula) < 3) {stop("No response variable specified")}
-  if (length(formula[[3]]) > 1) {stop("Multiple predictors in formula")}
   
-  #Parse formula
+  #Parse formula and check for multiple predictors error
   response_var <- as.character(formula[[2]])
-  predictor_var <- as.character(formula[[3]])
+  if (length(formula[[3]]) == 1) {
+    predictor_var <- as.character(formula[[3]])
+  } else { #length(formula[[3]] > 1)
+    if (formula[[3]][[1]] != "s") {stop("Multiple predictors in formula")
+    } else {
+      if(length(formula[[3]][[2]]) > 1) {stop("Multiple predictors in formula")
+      } else {predictor_var <- as.character(formula[[3]][[2]])}
+    }
+  }
   
   #Check for vars in data
   stopifnot(response_var %in% colnames(data),

@@ -173,3 +173,15 @@ test_that("NA_to_NULL returns correctly", {
   expect_equal(NA_to_NULL(x = NA), NULL)
   expect_equal(NA_to_NULL(x = c(NA, NA)), c(NA, NA))
 })
+
+test_that("parse_formula_data returns correctly", {
+  df <- data.frame(x = 1:10, y = 21:30)
+  expect_error(parse_formula_data(y ~ x+z, data = df),
+               "Multiple predictors in formula")
+  expect_error(parse_formula_data(y ~ s(x+z), data = df),
+               "Multiple predictors in formula")
+  expect_equal(parse_formula_data(y ~ x, data = df),
+               list(x = 1:10, y = 21:30, predictor = "x", response = "y"))
+  expect_equal(parse_formula_data(y ~ s(x), data = df),
+               list(x = 1:10, y = 21:30, predictor = "x", response = "y"))
+})

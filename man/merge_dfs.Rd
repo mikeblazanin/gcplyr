@@ -70,7 +70,7 @@ Data.frame containing merged output of \code{x} and
 This function is essentially a wrapper for any of \code{dplyr}'s
 \link[dplyr]{mutate-joins} (by default, a \link[dplyr]{full_join}). 
 The most typical use of this function is to merge designs with measures 
-data, or to use the collapse functionality to merge a list of dataframes 
-into a single dataframe. Merging is done by column names that match 
+data, or to use the collapse functionality to merge a list of data.frames 
+into a single data.frame. Merging is done by column names that match 
 between \code{x} and \code{y}.
 }

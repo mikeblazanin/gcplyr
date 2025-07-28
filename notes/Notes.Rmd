@@ -4,7 +4,7 @@ mezzo:  testthat::test_file("tests/testthat/mytest.R")
 macro:  devtools::test() 
 macro+: devtools::check()
 
-rhub::rhub_check(branch = "develop") [choose 1,2,3,4]
+rhub::rhub_check(branch = "develop") [choose 1,2,3,4,5]
 
 #Force-installing new version to re-build vignette & check tests
 R CMD build --no-build-vignettes

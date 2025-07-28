@@ -9,7 +9,7 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.11.0-blue.svg?style=flat&logo=github)](commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.12.0-blue.svg?style=flat&logo=github)](commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:

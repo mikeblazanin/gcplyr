@@ -176,27 +176,31 @@ test_that("smooth_data returns properly for loess", {
                                   sm_method = "loess", span = 0.5))
   expect_equal(temp$sm, expected = expected3)
   
-  # #Now with all NA's
-  # data4a <- data.frame(x = rep(NA, 10), y = 1:10, grp = "A")
-  # data4a <- mutate(group_by(data4a, grp),
-  #                  sm = smooth_data(x = x, y = y,
-  #                                   sm_method = "loess", span = 0.3))
-  # 
-  # data4b <- data.frame(x = 1:10, y = rep(NA, 10))
-  # data4b <- mutate(group_by(data4b, "A"),
-  #                  sm = smooth_data(x = x, y = y,
-  #                                   sm_method = "loess", span = 0.3))
-  # expect_equal(moving_median(y ~ x, data = data4b, window_width_n = 3),
-  #              rep(as.numeric(NA), 10))
-  # 
-  # #Now with nearly all NA's
-  # data5a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
-  # expect_equal(moving_median(y ~ x, data = data5a, window_width_n = 3),
-  #              rep(as.numeric(NA), 10))
-  # data5b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
-  # expect_equal(moving_median(y ~ x, data = data5b, window_width_n = 3),
-  #              rep(as.numeric(NA), 10))
+  #Now with all NA's
+  data4a <- data.frame(x = rep(NA, 10), y = 1:10)
+  data4a <- mutate(group_by(data4a, "A"),
+                   sm = smooth_data(x = x, y = y,
+                                    sm_method = "loess", span = 0.3))
+  expect_equal(data4a$sm, rep(as.numeric(NA), 10))
+
+  data4b <- data.frame(x = 1:10, y = rep(NA, 10))
+  data4b <- mutate(group_by(data4b, "A"),
+                   sm = smooth_data(x = x, y = y,
+                                    sm_method = "loess", span = 0.3))
+  expect_equal(data4b$sm, rep(as.numeric(NA), 10))
   
+  #Now with nearly all NA's
+  data5a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
+  data5a <- mutate(group_by(data5a, "A"),
+                   sm = smooth_data(x = x, y = y,
+                                    sm_method = "loess", span = 0.3))
+  expect_equal(data5a$sm, rep(as.numeric(NA), 10))
+  
+  data5b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
+  data5b <- mutate(group_by(data5b, "A"),
+                   sm = smooth_data(x = x, y = y,
+                                    sm_method = "loess", span = 0.3))
+  expect_equal(data5b$sm, rep(as.numeric(NA), 10))
 })
 
 test_that("smooth_data returns properly for gam", {
@@ -270,6 +274,28 @@ test_that("smooth_data returns properly for gam", {
                  sm = smooth_data(x = time, y = dens, sm_method = "gam",
                                   k = 5, bs = "cr", subset = 1:90))
   expect_equal(temp$sm, expected = expect6)
+  
+  #Now with all NA's
+  data7a <- data.frame(x = rep(NA, 10), y = 1:10)
+  data7a <- mutate(group_by(data7a, "A"),
+                   sm = smooth_data(x = x, y = y, sm_method = "gam"))
+  expect_equal(data7a$sm, rep(as.numeric(NA), 10))
+  
+  data7b <- data.frame(x = 1:10, y = rep(NA, 10))
+  data7b <- mutate(group_by(data7b, "A"),
+                   sm = smooth_data(x = x, y = y, sm_method = "gam"))
+  expect_equal(data7b$sm, rep(as.numeric(NA), 10))
+  
+  #Now with nearly all NA's
+  data8a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
+  data8a <- mutate(group_by(data8a, "A"),
+                   sm = smooth_data(x = x, y = y, sm_method = "gam"))
+  expect_equal(data8a$sm, rep(as.numeric(NA), 10))
+  
+  data8b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
+  data8b <- mutate(group_by(data8b, "A"),
+                   sm = smooth_data(x = x, y = y, sm_method = "gam"))
+  expect_equal(data8b$sm, rep(as.numeric(NA), 10))
 })
 
 test_that("smooth_data returns properly for smooth.spline", {
@@ -336,11 +362,37 @@ test_that("smooth_data returns properly for smooth.spline", {
                                   sm_method = "smooth.spline", df = 7))
   expect_equal(temp$sm, expected = expect5)
   
-  expect5 <- stats::smooth.spline(x = data$x, y = data$y, spar = 0.5)$y
+  expect6 <- stats::smooth.spline(x = data$x, y = data$y, spar = 0.5)$y
   temp <- mutate(group_by(data, grp),
                  sm = smooth_data(x = x, y = y, 
                                   sm_method = "smooth.spline", spar = 0.5))
-  expect_equal(temp$sm, expected = expect5)
+  expect_equal(temp$sm, expected = expect6)
+  
+  #Now with all NA's
+  data7a <- data.frame(x = rep(NA, 10), y = 1:10)
+  data7a <- mutate(group_by(data7a, "A"),
+                   sm = smooth_data(x = x, y = y, 
+                                    sm_method = "smooth.spline", spar = 0.5))
+  expect_equal(data7a$sm, rep(as.numeric(NA), 10))
+  
+  data7b <- data.frame(x = 1:10, y = rep(NA, 10))
+  data7b <- mutate(group_by(data7b, "A"),
+                   sm = smooth_data(x = x, y = y, 
+                                    sm_method = "smooth.spline", spar = 0.5))
+  expect_equal(data7b$sm, rep(as.numeric(NA), 10))
+  
+  #Now with nearly all NA's
+  data8a <- data.frame(x = c(5, rep(NA, 9)), y = 1:10)
+  data8a <- mutate(group_by(data8a, "A"),
+                   sm = smooth_data(x = x, y = y, 
+                                    sm_method = "smooth.spline", spar = 0.5))
+  expect_equal(data8a$sm, rep(as.numeric(NA), 10))
+  
+  data8b <- data.frame(x = 1:10, y = c(5, rep(NA, 9)))
+  data8b <- mutate(group_by(data8b, "A"),
+                   sm = smooth_data(x = x, y = y, 
+                                    sm_method = "smooth.spline", spar = 0.5))
+  expect_equal(data8b$sm, rep(as.numeric(NA), 10))
 })
 
 

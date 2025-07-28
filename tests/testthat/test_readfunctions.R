@@ -192,6 +192,24 @@ test_that("read_blocks reads data correctly", {
     metadata = list("type1" = c(9, "I"), "type2" = c("E", 8)))
   expect_equal(my_blockcurves1_excelnumbers, my_blockcurves1_expected)
   
+  #Reading only one column of data
+  my_blockcurves1_narrow <- read_blocks(
+    files = paste("./test_blockcurves_data_csv/",
+                  list.files("./test_blockcurves_data_csv/"), sep = ""),
+    startrow = 1, startcol = 1, endrow = 9, endcol = 2)
+  
+  my_blockcurves1_narrow_expected <- rep(list(NA), length(example_dfs_list))
+  for (i in 1:length(my_blockcurves1_narrow_expected)) {
+    my_blockcurves1_narrow_expected[[i]] <- 
+      list(data = example_dfs_list[[i]][1:8, 1, drop = FALSE],
+           metadata = c(block_name = paste("test_blockcurves_data_csv/",
+                                           formatC(i, width = 3, flag = "0"),
+                                           sep = "")))
+    row.names(my_blockcurves1_narrow_expected[[i]]$data) <-
+      as.character(row.names(my_blockcurves1_narrow_expected[[i]]$data))
+  }
+  expect_equal(my_blockcurves1_narrow, my_blockcurves1_narrow_expected)
+  
   #Read xlsx with all rows/cols specified, metadata included
   if(run_xlsx) {
     my_blockcurves2 <- read_blocks(
@@ -219,6 +237,23 @@ test_that("read_blocks reads data correctly", {
       startrow = 1, startcol = 1, endrow = 9, endcol = 13,
       metadata = list("type1" = c("I", 9), "type2" = c(5, "H")))
     expect_equal(my_blockcurves2_excel, my_blockcurves2_expected)
+    
+    #Reading only one column of data
+    my_blockcurves2_narrow <- read_blocks(
+      files = paste("./test_blockcurves_data_xlsx/",
+                    list.files("./test_blockcurves_data_xlsx/"), sep = ""),
+      startrow = 1, startcol = 1, endrow = 9, endcol = 2)
+    my_blockcurves2_narrow_expected <- rep(list(NA), length(example_dfs_list))
+    for (i in 1:length(my_blockcurves2_narrow_expected)) {
+      my_blockcurves2_narrow_expected[[i]] <- 
+        list(data = example_dfs_list[[i]][1:8, 1, drop = FALSE],
+             metadata = c(block_name = paste("test_blockcurves_data_xlsx/",
+                                             formatC(i, width = 3, flag = "0"),
+                                             sep = "")))
+      row.names(my_blockcurves2_narrow_expected[[i]]$data) <-
+        as.character(row.names(my_blockcurves2_narrow_expected[[i]]$data))
+    }
+    expect_equal(my_blockcurves2_narrow, my_blockcurves2_narrow_expected)
     
     unlink("./test_blockcurves_data_xlsx", recursive = TRUE)
   }

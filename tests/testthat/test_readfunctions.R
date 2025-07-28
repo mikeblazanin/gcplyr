@@ -361,6 +361,23 @@ test_that("read_wides works correctly", {
                       "test_widecurves_data/test" = data))
   }
   
+  #Only reading one column of data
+  if(!run_xlsx) {
+    data_in_narrow <- read_wides(
+      files = c("./test_widecurves_data/test.csv"),
+      endcol = 1, run_names_header = NULL)
+    expect_equal(data_in_narrow,
+                 data[, 1, drop = FALSE])
+  } else {
+    data_in_narrow <- read_wides(
+      files = c("./test_widecurves_data/test.csv",
+                "./test_widecurves_data/test.xlsx"),
+      endcol = 1, run_names_header = NULL)
+    expect_equal(data_in_narrow,
+                 list("test_widecurves_data/test" = data[, 1, drop = FALSE],
+                      "test_widecurves_data/test" = data[, 1, drop = FALSE]))
+  }
+  
   data2 <- cbind(data.frame(file = rep("test_widecurves_data/test", nrow(data))),
                  data)
   if(!run_xlsx) {

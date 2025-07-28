@@ -2684,6 +2684,8 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
   
   #Run smoothing methods
   for (i in 1:length(unique(subset_by))) {
+    return_NA <- FALSE #reset placeholder when too many NA vals for gam, loess
+    
     #Calculate fitted values
     if (sm_method == "moving-average") {
       smoothed_object <- 
@@ -2699,18 +2701,27 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
                         data = data[subset_by == unique(subset_by)[i], ],
                         ...))
       names(smoothed_object) <- "fitted"
-    } else if (sm_method == "loess") {
-      smoothed_object <- 
-        stats::loess(formula = formula, 
-                     data = data[subset_by == unique(subset_by)[i], ],
-                     na.action = "na.exclude", ...)
-    } else if (sm_method == "gam") {
-      smoothed_object <- 
-        parse_dots(
-          FUN = mgcv::gam,
-          formula = formula, 
-          data = data[subset_by == unique(subset_by)[i], ],
-          na.action = "na.exclude", ...)
+    } else if (sm_method %in% c("loess", "gam")) {
+      parsed <- 
+        parse_formula_data(formula = formula, 
+                           data = data[subset_by == unique(subset_by)[i], ])
+      parsed_noNA <- rm_nas(x = parsed[["x"]], y = parsed[["y"]], na.rm = TRUE)
+      if(length(parsed_noNA[["x"]]) < 2) {return_NA <- TRUE
+      } else {
+        if(sm_method == "loess") {
+          smoothed_object <- 
+            stats::loess(formula = formula, 
+                         data = data[subset_by == unique(subset_by)[i], ],
+                         na.action = "na.exclude", ...)
+        } else if (sm_method == "gam") {
+          smoothed_object <- 
+            parse_dots(
+              FUN = mgcv::gam,
+              formula = formula, 
+              data = data[subset_by == unique(subset_by)[i], ],
+              na.action = "na.exclude", ...)
+        }
+      }
     } else if (sm_method == "smooth.spline") {
       smoothed_object <-
         parse_dots(
@@ -2722,12 +2733,18 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
     
     #Store results as requested
     if (return_fitobject) {
-      fits_list[[i]] <- smoothed_object
+      if(return_NA) {fits_list[[i]] <- list(NA)
+      } else {fits_list[[i]] <- smoothed_object}
     } else {
       #Fill in output if needed
       if(sm_method %in% c("gam", "loess")) {
-        out[subset_by == unique(subset_by)[i]] <-
-          stats::predict(smoothed_object, newdata = data[subset_by == unique(subset_by)[i], ])
+        if(return_NA) {
+          out[subset_by == unique(subset_by)[i]] <- as.numeric(NA)
+        } else {
+          out[subset_by == unique(subset_by)[i]] <-
+            stats::predict(smoothed_object, 
+                           newdata = data[subset_by == unique(subset_by)[i], ])
+        }
       } else if (sm_method == "smooth.spline") {
         out[subset_by == unique(subset_by)[i]] <- smoothed_object$y
       } else {
@@ -3063,7 +3080,8 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   xy_nas_removed <- rm_nas(x = x, y = y, 
                            na.rm = na.rm, stopifNA = TRUE)
   if(length(xy_nas_removed[["y"]]) <= 1) {
-    return(list(x = rep(NA, length(x)), y = rep(NA, length(x))))}
+    return(list(x = rep(as.numeric(NA), length(x)), 
+                y = rep(as.numeric(NA), length(x))))}
   
   #Reorder as needed
   xy_reordered <- reorder_xy(x = xy_nas_removed[["x"]], y = xy_nas_removed[["y"]])
@@ -3093,6 +3111,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
   
   return(ans)
 }
+
 
 # Processing: Cross-validation ----
 

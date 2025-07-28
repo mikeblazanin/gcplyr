@@ -459,7 +459,7 @@ read_blocks <- function(files, filetype = NULL,
                         na.strings = c("NA", ""),
                         extension, block_name_header,
                         ...) {
-  
+
   if(!base::missing(extension)) {
     if(!base::missing(filetype)) {
       warning("Ignoring extension, using filetype")
@@ -580,7 +580,8 @@ read_blocks <- function(files, filetype = NULL,
     
     #Save information to outputs
     outputs[[i]]$data <- rawfile[inferred_rc$startrow:inferred_rc$endrow,
-                              inferred_rc$startcol:inferred_rc$endcol]
+                                 inferred_rc$startcol:inferred_rc$endcol,
+                                 drop = FALSE]
     
     #If temp_colnames or temp_rownames haven't been inferred, number them
     if (is.na(inferred_rc$colnames_row)) {
@@ -857,10 +858,14 @@ read_wides <- function(files, filetype = NULL,
        startcol[i] < 1 || endcol[i] > ncol(rawfile)) {
       stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     if (header == TRUE) { #so colnames taken from file
-      outputs[[i]] <- rawfile[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
+      outputs[[i]] <- rawfile[(startrow[i]+1):endrow[i], 
+                              startcol[i]:endcol[i],
+                              drop = FALSE]
       colnames(outputs[[i]]) <- rawfile[(startrow[i]), startcol[i]:endcol[i]]
     } else { #so colnames should be numbered
-      outputs[[i]] <- rawfile[startrow[i]:endrow[i], startcol[i]:endcol[i]]
+      outputs[[i]] <- rawfile[startrow[i]:endrow[i], 
+                              startcol[i]:endcol[i],
+                              drop = FALSE]
       colnames(outputs[[i]]) <- paste0("V", 1:ncol(outputs[[i]]))
     }
     
@@ -1071,7 +1076,9 @@ read_tidys <- function(files, filetype = NULL,
       stop("Startrow, startcol, endrow, or endcol are out of range for the file")}
     
     #Get header
-    outputs[[i]] <- rawfile[(startrow[i]+1):endrow[i], startcol[i]:endcol[i]]
+    outputs[[i]] <- rawfile[(startrow[i]+1):endrow[i], 
+                            startcol[i]:endcol[i],
+                            drop = FALSE]
     colnames(outputs[[i]]) <- rawfile[(startrow[i]), startcol[i]:endcol[i]]
     
     #Add run name if needed

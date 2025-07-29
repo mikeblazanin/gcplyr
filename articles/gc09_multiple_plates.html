@@ -70,7 +70,7 @@
 Blazanin</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc09_multiple_plates.Rmd" class="external-link"><code>vignettes/gc09_multiple_plates.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/v1.12.0/vignettes/gc09_multiple_plates.Rmd" class="external-link"><code>vignettes/gc09_multiple_plates.Rmd</code></a></small>
       <div class="d-none name"><code>gc09_multiple_plates.Rmd</code></div>
     </div>
 
@@ -321,12 +321,12 @@ into a single <code>data.frame</code> with <code>merge_dfs</code>:</p>
 <span></span>
 <span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tidy_plates_collapsed</span><span class="op">)</span>, col.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; file Experiment Start_date Time Well Measurements</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 A1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 B1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 C1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 D1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 E1 0.002</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 F1 0.002</span></span></code></pre></div>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 A1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 B1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 C1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 D1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 E1 0.002</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 F1 0.002</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="merging-designs-with-multiple-plates">Merging designs with multiple plates<a class="anchor" aria-label="anchor" href="#merging-designs-with-multiple-plates"></a>
@@ -366,12 +366,12 @@ merge them with each plate separately using brackets:</p>
 <span><span class="co">#&gt; Joining with `by = join_by(file, Experiment, Start_date, Time, Well,</span></span>
 <span><span class="co">#&gt; Measurements, Bacteria_strain)`</span></span>
 <span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_and_designs</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 A1 0.002  Strain 1</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 B1 0.002  Strain 7</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 C1 0.002 Strain 13</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 D1 0.002 Strain 19</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 E1 0.002 Strain 25</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 F1 0.002 Strain 31</span></span></code></pre></div>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 A1 0.002  Strain 1</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 B1 0.002  Strain 7</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 C1 0.002 Strain 13</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 D1 0.002 Strain 19</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 E1 0.002 Strain 25</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 F1 0.002 Strain 31</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="plates-with-a-shared-design">Plates with a shared design<a class="anchor" aria-label="anchor" href="#plates-with-a-shared-design"></a>
@@ -397,12 +397,12 @@ differentiate the separate plates you read in.</p>
 <span><span class="co">#&gt; Measurements, Bacteria_strain)`</span></span>
 <span><span class="co">#&gt; Joining with `by = join_by(Well, Bacteria_strain)`</span></span>
 <span><span class="fu"><a href="../reference/print_df.html">print_df</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_and_designs</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 A1 0.002  Strain 1</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 B1 0.002  Strain 7</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 C1 0.002 Strain 13</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 D1 0.002 Strain 19</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 E1 0.002 Strain 25</span></span>
-<span><span class="co">#&gt; widedata Experiment_1 2025-07-28 0 F1 0.002 Strain 31</span></span></code></pre></div>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 A1 0.002  Strain 1</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 B1 0.002  Strain 7</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 C1 0.002 Strain 13</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 D1 0.002 Strain 19</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 E1 0.002 Strain 25</span></span>
+<span><span class="co">#&gt; widedata Experiment_1 2025-07-29 0 F1 0.002 Strain 31</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

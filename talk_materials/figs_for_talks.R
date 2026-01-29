@@ -32,7 +32,7 @@ dev.off()
 ## no-diaux data
 dat <-
   read_wides(
-    files = "./manuscript/2021-10-15_Emma_Growth_Curve.csv",
+    files = "./talk_materials/2021-10-15_Emma_Growth_Curve.csv",
     startrow = 29, startcol = "B")
 
 dat <- trans_wide_to_tidy(dat, id_cols = c("file", "Time", "T 600"))
@@ -41,7 +41,7 @@ dat <- mutate(dat,
 dat <- dplyr::filter(dat, Well %in% c("C2", "C7"))
 
 ## diaux data
-dat_diaux <- read.csv("./manuscript/Isolate_growth_curves.csv")
+dat_diaux <- read.csv("./talk_materials/Isolate_growth_curves.csv")
 dat_diaux$Well <- "Z1"
 dat_diaux <- mutate(dat_diaux, 
                     Time = Time_s/3600,

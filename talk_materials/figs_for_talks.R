@@ -170,10 +170,28 @@ ggplot(dat_cut_lng, aes(x = Time, y = Measurements, color = ex_case)) +
   geom_line(aes(y = pred_val, lty = pred_func)) +
   facet_wrap(~ ex_case)
 
+mylims <- 
+  summarize(ungroup(filter(dat_cut, ex_case == "nolag")),
+            min = min(Measurements, pred_logis, pred_logisv, pred_baranyi, na.rm = TRUE),
+            max = max(Measurements, pred_logis, pred_logisv, pred_baranyi, na.rm = TRUE))
+
+png("./talk_materials/nolag_lineary.png", width = 5, height = 4,
+    units = "in", res = 150)
+ggplot(filter(dat_cut, ex_case == "nolag"),
+             aes(x = Time, y = Measurements)) +
+  geom_point() +
+  scale_y_continuous(limits = c(mylims$min, mylims$max)) +
+  guides(lty = "none") +
+  theme_bw() +
+  labs(x = "Time (hr)") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+dev.off()
+  
 p1 <- ggplot(filter(dat_cut, ex_case == "nolag"),
              aes(x = Time, y = Measurements)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(limits = c(mylims$min, mylims$max)) +
   guides(lty = "none") +
   theme_bw() +
   labs(x = "Time (hr)") +
@@ -195,10 +213,15 @@ png("./talk_materials/nolag_logisv.png", width = 5, height = 4,
 p1 + geom_line(aes(y = pred_logisv), lty = 2, lwd = 2, color = "red")
 dev.off()
 
+mylims <- 
+  summarize(ungroup(filter(dat_cut, ex_case == "lag")),
+            min = min(Measurements, pred_logis, pred_logisv, pred_baranyi, na.rm = TRUE),
+            max = max(Measurements, pred_logis, pred_logisv, pred_baranyi, na.rm = TRUE))
+
 p1 <- ggplot(filter(dat_cut, ex_case == "lag"),
              aes(x = Time, y = Measurements)) +
   geom_point() +
-  scale_y_log10() +
+  scale_y_log10(limits = c(mylims$min, mylims$max)) +
   guides(lty = "none") +
   theme_bw() +
   labs(x = "Time (hr)") +

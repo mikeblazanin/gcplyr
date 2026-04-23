@@ -69,9 +69,9 @@ At this point, since the data is now well-organized, advanced users may also dec
 
 So, how do we directly quantify attributes of growth curves? Generally, we find features of the density data and its derivatives. Different projects may desire different analyses, so this article and the [Analyzing Data](vignette("06_analyze")) and [Dealing with Noise](vignette("07_noise")) articles are written to highlight common analyses, rather than prescribing what everyone should do.
 
-Below I list common metrics that require derivatives to be calculated. If you intend to calculate any of those metrics, or just want to calculate or plot the derivatives, continue reading. Otherwise, feel free to skip right to the [Analyzing Data](vignette("06_analyze")) article.
+A number of common metrics (listed below) can't be quantified from the density data alone, but instead are calculated involving a derivative of the density data. If you intend to calculate any of those metrics, or just want to calculate or plot the derivatives, continue reading. Otherwise, feel free to skip right to the [Analyzing Data](vignette("06_analyze")) article.
 
-**Metrics requiring derivatives:**
+**Metrics requiring a derivative:**
 
 * the lag time
 * the time to reach some growth rate
@@ -106,16 +106,30 @@ As you'll see throughout the rest of this article, we'll be using `group_by` and
 
 # Processing data: calculating derivatives {#CalculatingDerivatives}
 
-There are two derivatives we are primarily interested in calculating:
+There are two derivatives we might calculate:
 
-* the plain derivative - the slope of the original density data
-* the per-capita derivative - the growth rate of the cells
+* the population growth rate - this is a 'plain' derivative, and is simply the slope of the original density data at each point in time
+* the cellular growth rate - this is a 'per-capita' derivative, and is a per-cell rate of change of the density at each point in time
 
-`gcplyr` includes a `calc_deriv` to calculate both of these.
+Depending on the metrics you're interested in calculating, you may need one or both of these derivatives
+
+**If you're interested in these metrics, you should calculate the plain derivative:**
+
+* the inflection point
+* the density and time when a diauxic shift occurs
+* the maximum per-capita growth rate during diauxie
+
+**If you're interested in these metrics, you should calculate the per-capita derivative:**
+
+* the lag time
+* the time to reach some growth rate
+* the maximum per-capita growth rate (i.e. minimum doubling time)
+
+`gcplyr` includes a `calc_deriv` to calculate both the 'plain' and 'per-capita' derivative.
 
 ## A simple derivative
 
-To calculate a simple derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was growing at each time point.
+To calculate a plain derivative (the slope of our original data) using `calc_deriv`, we simply have to provide the x and y values. Note that this is **not** the growth rate of the cells, but rather is a measure of how quickly the whole population was changing at each point in time.
 
 ```{r}
 ex_dat_mrg <- mutate(group_by(ex_dat_mrg, Well, Bacteria_strain, Phage),
@@ -143,6 +157,8 @@ ex_dat_mrg <- dplyr::filter(ex_dat_mrg, Well %in% sample_wells)
 You might notice that these lines aren't super smooth. Why? The plate reader data has a limited resolution, only to the nearest 0.001, causing the derivative to "jump" when the reading increases.
 
 ## Per-capita derivative
+The per-capita derivative is the slope of our original data divided by the density at that time. This is a direct measure of how quickly **each** cell is growing, on average, at each point in time.
+
 To calculate the per-capita derivative, we simply modify our use of `calc_deriv` with the argument `percapita = TRUE`. Note that in this case, you are required to specify a blank value, i.e. the value of your `Measurements` that corresponds to a population density of 0. If your data have already been normalized, simply add `blank = 0`.
 
 ```{r}

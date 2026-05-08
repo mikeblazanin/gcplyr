@@ -136,14 +136,34 @@ get_super_fit <- function(x, y,
   return(temp)
 }
 
-#Fit and plot ----
+#Fit/analyze ----
+dat_cut <- mutate(group_by(dat_cut, ex_case),
+                  Meas_norm = Measurements - min(dat_cut$Measurements) + 0.001,
+                  deriv_percap5 = calc_deriv(x = Time, y = Meas_norm,
+                                            percapita = TRUE, trans_y = "log",
+                                            blank = 0, window_width_n = 5))
+ggplot(dat_cut, aes(x = Time, y = Meas_norm)) +
+  geom_line(aes(color = ex_case))
+ggplot(dat_cut, aes(x = Time, y = deriv_percap5)) +
+  geom_line(aes(color = ex_case))
+
 dat_cut_sum <- summarize(
   group_by(dat_cut, ex_case),
   get_super_fit(x = Time, y = Measurements, prefix = "logis_"),
   get_super_fit(x = Time, y = Measurements, v_fixed = FALSE, prefix = "logisv_"),
   get_super_fit(x = Time, y = Measurements, v_fixed = FALSE, 
                 q0_fixed = FALSE, m_fixed = FALSE,
-                q0 = 0.5, m = 0.2, prefix = "baranyi_"))
+                q0 = 0.5, m = 0.2, prefix = "baranyi_"),
+  #For lag time plot
+  lag_time = lag_time(y = Meas_norm, x = Time, 
+                      deriv = deriv_percap5, blank = 0,
+                      warn_no_lag = FALSE),
+  max_percap = max_gc(deriv_percap5),
+  max_percap_time = Time[which_max_gc(deriv_percap5)],
+  max_percap_dens = Meas_norm[which_max_gc(deriv_percap5)],
+  min_dens = min_gc(Meas_norm),
+  max_dens = max_gc(Meas_norm),
+  max_dens_time = Time[which_max_gc(Meas_norm)])
 
 dat_cut <- left_join(dat_cut, dat_cut_sum)
 dat_cut <- mutate(group_by(dat_cut, ex_case),
@@ -163,7 +183,7 @@ dat_cut_lng <- pivot_longer(data = dat_cut,
                     cols = starts_with("pred_"),
                     names_to = "pred_func", values_to = "pred_val")
 
-#Plot with fitted curves
+#Plot with fitted curves ----
 ggplot(dat_cut_lng, aes(x = Time, y = Measurements, color = ex_case)) +
   geom_point(alpha = 0.1) +
   scale_y_log10() +
@@ -268,6 +288,56 @@ png("./talk_materials/diaux_baranyi.png", width = 5, height = 4,
     units = "in", res = 150)
 p1 + geom_line(aes(y = pred_baranyi), lty = 2, lwd = 2, color = "red")
 dev.off()
+
+# Plot with gcplyr metrics ----
+png("./talk_materials/lag_gclag.png", width = 5, height = 4,
+    units = "in", res = 150)
+ggplot(data = filter(dat_cut, ex_case == "lag"),
+       aes(x = Time, y = log(Meas_norm))) +
+  geom_point() +
+  geom_abline(data = filter(dat_cut_sum, ex_case == "lag"),
+              color = "red",
+              aes(slope = max_percap,
+                  intercept = log(max_percap_dens) - max_percap*max_percap_time)) +
+  geom_vline(data = filter(dat_cut_sum, ex_case == "lag"),
+             aes(xintercept = lag_time), lty = 2) +
+  geom_hline(data = filter(dat_cut_sum, ex_case == "lag"),
+             aes(yintercept = log(min_dens))) +
+  theme_bw() +
+  labs(x = "Time (hr)", y = "log(Density)") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+dev.off()
+
+png("./talk_materials/lag_gcmax_gcauc.png", width = 5, height = 4,
+    units = "in", res = 150)
+ggplot(data = filter(dat_cut, ex_case == "lag"),
+       aes(x = Time, y = Meas_norm)) +
+  geom_point() +
+  geom_hline(data = filter(dat_cut_sum, ex_case == "lag"),
+             aes(yintercept = max_dens),
+             color = "red", lty = 2, lwd = 2, alpha = 0.8) +
+  geom_area(fill = "red", alpha = 0.5) +
+  theme_bw() +
+  labs(x = "Time (hr)", y = "Density") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+dev.off()
+
+png("./talk_materials/lag_gcmaxpercap.png", width = 5, height = 4,
+    units = "in", res = 150)
+ggplot(data = filter(dat_cut, ex_case == "lag"),
+       aes(x = Time, y = deriv_percap5)) +
+  geom_line() +
+  geom_point(data = filter(dat_cut_sum, ex_case == "lag"),
+             aes(x = max_percap_time, y = max_percap),
+             color = "red", size = 5, alpha = 0.6) +
+  theme_bw() +
+  labs(x = "Time (hr)", y = "Cellular growth rate (/hr)") +
+  theme(axis.title = element_text(size = 20),
+        axis.text = element_text(size = 16))
+dev.off()
+
 
 # Create noisy data ----
 datnoisy <- filter(dat, Well == "C2")

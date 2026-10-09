@@ -116,7 +116,7 @@ data_sum <- summarize(
                       blank = 0),
   max_percap = max(percap_deriv, na.rm = TRUE),
   max_dens = max(Measurements),
-  auc = auc(y = Measurements, x = as.numeric(Time)))
+  auc = auc(y = Measurements, x = Time))
 
 # Print some of the values
 head(data_sum)

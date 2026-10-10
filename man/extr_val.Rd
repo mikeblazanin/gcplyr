@@ -14,20 +14,50 @@ extr_val(x, i, allNA_NA = TRUE, na.rm = TRUE)
 \item{allNA_NA}{logical indicating whether \code{NA} should be returned
 when \code{all(is.na(i)) == TRUE}.}
 
-\item{na.rm}{a logical indicating whether missing index values should be 
+\item{na.rm}{a logical indicating whether missing values should be 
 removed.}
 }
 \value{
-If \code{all_NA = FALSE} and \code{na.rm = FALSE}, identical to 
+If \code{allNA_NA = FALSE} and \code{na.rm = FALSE}, identical to 
    \code{x[i]}.
    
-   If \code{all_NA = FALSE} and \code{na.rm = TRUE}, identical to
+   If \code{allNA_NA = FALSE} and \code{na.rm = TRUE}, identical to
    \code{x[i[!is.na(i)]]}.
    
-   If \code{all_NA = TRUE}, identical to \code{x[i]} unless 
+   If \code{allNA_NA = TRUE}, identical to \code{x[i]} unless 
    \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
 }
 \description{
-A wrapper for \code{[} with handling of NA's for use in
+A wrapper for \code{[} with better handling of NA's for use inside
 \code{dplyr::summarize()}
+}
+\details{
+This function was created to make it easier to handle common situations
+that arise when using \code{dplyr::summarize} on data containing \code{NA}
+values in the data or in the indices of interest. 
+
+The main use case arises because the \code{which.max} and \code{which.min}
+functions and their wrappers \code{which_max_gc} and \code{which_min_gc}
+take a vector of values, remove \code{NA} values by default, then return an 
+index of interest within the vector *after* \code{NA} values were removed. 
+\code{extr_val} makes it easy to use that index value on the vector with 
+\code{NA} values removed automatically.
+
+The other use case arises when the indices of interest are all \code{NA}.
+Often this arises when using a function to find indices of interest might
+fail to find any, as can sometimes happen when using
+\code{find_local_extrema} and its wrappers \code{first_maxima} and
+\code{first_minima}, or \code{find_threshold_crosses} and its wrappers
+\code{first_below} and \code{first_above}. When all indices are \code{NA},
+\code{[} returns a vector of all \code{NA} of length \code{length(x)}.
+Since this typically raises an undesirable warning or error from 
+\code{dplyr::summarize}, \code{extr_val} instead returns a single \code{NA} 
+value.
+
+Note that you should use extr_val with \code{na.rm = FALSE} when 
+using with these \code{gcplyr} functions because they return index values 
+for the *original* vector:
+\code{find_local_extrema} and its wrappers \code{first_maxima} and
+\code{first_minima}, or \code{find_threshold_crosses} and its wrappers
+\code{first_below} and \code{first_above}
 }

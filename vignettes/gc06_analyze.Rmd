@@ -111,12 +111,14 @@ Ultimately, analyzing growth curves requires summarizing the entire time series 
 * [the density and time when a diauxic shift occurs](#diauxie)
 * [the maximum per-capita growth rate during diauxie](#diauxic_percap)
 
-### Growth with antagonists (e.g. phages)
+### Death or growth with antagonists (e.g. phages)
 
 * [the peak bacterial density before a decline (e.g. from phage predation)](#peak_dens)
 * [the extinction time (e.g. from phage predation)](#extin_time)
 * [the area under the curve](#auc)
 * [the centroid of area under the curve](#centroid)
+* [maximum death rate](#deathrate)
+* [total death](#death)
 
 The following sections show how you can use `gcplyr` functions to calculate these metrics.
 
@@ -503,7 +505,7 @@ ggplot(data = dplyr::filter(ex_dat_mrg, Well %in% nophage_wells),
              size = 2, color = "red")
 ```
 
-# Metrics of growth with antagonists
+# Metrics of death or growth with antagonists
 
 ## Peak bacterial density {#peak_dens}
 
@@ -559,6 +561,37 @@ See [the area under the curve section in the Most Common Metrics section](#auc)
 ## Centroid of area under the curve
 
 See [the centroid section in the Total Growth Metrics section](#centroid)
+
+## Maximum death rate {#deathrate}
+
+The maximum rate that population density decreases after reaching maximum density can be of interest. If you're interested in finding this rate, you can use `which_max_gc` and `which_min_gc` to calculate it. Note that we're using `which_max_gc` and `which_min_gc`, which work just like `R`'s built-in `which.max` and `which.min`, but with better default settings for growth curve analyses with `summarize`.
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(
+    group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+    max_dens_time = extr_val(Time, which_max_gc(Measurements)),
+    max_death_rate = min_gc(deriv_percap5[Time > max_dens_time]))
+
+head(ex_dat_mrg_sum)
+```
+
+## Total death {#death}
+
+The total decrease in population density after reaching maximum density can be of interest. To do so, we'll calculate the maximum density, then the minimum density following the point of maximum density. To do so you can use `which_max_gc` and `which_min_gc` to calculate it. Note that we're using `which_max_gc`, which work just like `R`'s built-in `which.max`, but with better default settings for growth curve analyses with `summarize`.
+
+```{r}
+ex_dat_mrg_sum <-
+  summarize(
+    group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
+    max_dens_idx = which_max_gc(Measurements),
+    max_dens_time = extr_val(Time, max_dens_idx),
+    max_dens_density = extr_val(Measurements, max_dens_idx),
+    death = Measurements[max_dens_idx] - 
+      min_gc(Measurements[Time > max_dens_time]))
+
+head(ex_dat_mrg_sum)
+```
 
 # What's next?
 

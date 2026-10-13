@@ -327,24 +327,24 @@ get_metadata <- function(df, row, col) {
 #'              where each filepath is a single plate read
 #' @param filetype (optional) the type(s) of the files. Options include:
 #' 
-#'                  "csv", "xls", or "xlsx".
+#' "csv", "xls", or "xlsx".
 #'                  
-#'                  "tbl" or "table" to use [read.table] to read the file,
+#' "tbl" or "table" to use [read.table] to read the file,
 #'                  "csv2" to use [read.csv2], "delim" to 
 #'                  use [read.delim], or "delim2" to use [read.delim2].
 #'                  
-#'                  If none provided, `read_blocks` will infer filetype(s) 
+#' If none provided, `read_blocks` will infer filetype(s) 
 #'                  from the extension(s) in `files`. When extension is 
 #'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the measures data are located in `files`.
 #'                 
-#'                 Can be a vector or list the same length as `files`, or
+#' Can be a vector or list the same length as `files`, or
 #'                 a single value that applies to all `files`. Values
 #'                 can be numeric or a string that will be automatically
 #'                 converted to numeric by [from_excel].
 #'                 
-#'                 If not provided, data is presumed to begin on the first
+#' If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
 #' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
@@ -354,11 +354,11 @@ get_metadata <- function(df, row, col) {
 #'                 each item in the list is either: a vector of length 2, or
 #'                 a list containing two vectors. 
 #'                 
-#'                 In the former case, each vector should provide the row and 
+#' In the former case, each vector should provide the row and 
 #'                 column where the metadata is located in all of the
 #'                 blockmeasures input files.
 #'                 
-#'                 In the latter case, the first vector should provide the rows
+#' In the latter case, the first vector should provide the rows
 #'                 where the metadata is located in each of the corresponding
 #'                 input files, and the second vector should provide the 
 #'                 columns where the metadata is located in each of the
@@ -394,10 +394,10 @@ get_metadata <- function(df, row, col) {
 #'                        and `sider`, then names will be generated
 #'                        automatically according to `wellnames_numeric`.
 #'                        
-#'                        If `wellnames_numeric` is `TRUE`, rows and columns
+#' If `wellnames_numeric` is `TRUE`, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
 #'                        
-#'                        If `wellnames_numeric` is `FALSE`, rows will be
+#' If `wellnames_numeric` is `FALSE`, rows will be
 #'                        lettered A through Z, while columns will be numbered
 #' @param na.strings A character vector of strings which are to be interpreted
 #'                   as `NA` values by [read.csv],
@@ -653,7 +653,7 @@ read_blocks <- function(files, filetype = NULL,
 #' A function that imports widemeasures in files into the R environment
 #' 
 #' @details
-#' `startrow`, `endrow`, `startcol`, `endcol`, `sheet` and `filetype` 
+#' `startrow`, `endrow`, `startcol`, `endcol`, `timecol`, `sheet` and `filetype` 
 #' can either be a single value that applies for all files or
 #' vectors or lists the same length as `files`, 
 #' 
@@ -661,24 +661,24 @@ read_blocks <- function(files, filetype = NULL,
 #'              where each one is a widemeasures set of data
 #' @param filetype (optional) the type(s) of the files. Options include:
 #' 
-#'                  "csv", "xls", or "xlsx".
+#' "csv", "xls", or "xlsx".
 #'                  
-#'                  "tbl" or "table" to use [read.table] to read the file,
+#' "tbl" or "table" to use [read.table] to read the file,
 #'                  "csv2" to use [read.csv2], "delim" to 
 #'                  use [read.delim], or "delim2" to use [read.delim2].
 #'                  
-#'                  If none provided, `read_wides` will infer filetype(s) 
+#' If none provided, `read_wides` will infer filetype(s) 
 #'                  from the extension(s) in `files`. When extension is 
 #'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in `files`.
 #'                 
-#'                 Can be a vector or list the same length as `files`, or
+#' Can be a vector or list the same length as `files`, or
 #'                 a single value that applies to all `files`. Values
 #'                 can be numeric or a string that will be automatically
 #'                 converted to numeric by [from_excel].
 #'                 
-#'                 If not provided, data is presumed to begin on the first
+#' If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
 #' @param header logical for whether there is a header in the data. If `FALSE`
@@ -707,11 +707,11 @@ read_blocks <- function(files, filetype = NULL,
 #'                 each item in the list is either: a vector of length 2, or
 #'                 a list containing two vectors. 
 #'                 
-#'                 In the former case, each vector should provide the row and 
+#' In the former case, each vector should provide the row and 
 #'                 column where the metadata is located in all of the
 #'                 blockmeasures input files.
 #'                 
-#'                 In the latter case, the first vector should provide the rows
+#' In the latter case, the first vector should provide the rows
 #'                 where the metadata is located in each of the corresponding
 #'                 input files, and the second vector should provide the 
 #'                 columns where the metadata is located in each of the
@@ -926,24 +926,24 @@ read_wides <- function(files, filetype = NULL,
 #'              where each one is a tidy-shaped data file
 #' @param filetype (optional) the type(s) of the files. Options include:
 #' 
-#'                  "csv", "xls", or "xlsx".
+#' "csv", "xls", or "xlsx".
 #'                  
-#'                  "tbl" or "table" to use [read.table] to read the file,
+#' "tbl" or "table" to use [read.table] to read the file,
 #'                  "csv2" to use [read.csv2], "delim" to 
 #'                  use [read.delim], or "delim2" to use [read.delim2].
 #'                  
-#'                  If none provided, `read_tidys` will infer filetype(s) 
+#' If none provided, `read_tidys` will infer filetype(s) 
 #'                  from the extension(s) in `files`. When extension is 
 #'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in `files`.
 #'                 
-#'                 Can be a vector or list the same length as `files`, or
+#' Can be a vector or list the same length as `files`, or
 #'                 a single value that applies to all `files`. Values
 #'                 can be numeric or a string that will be automatically
 #'                 converted to numeric by [from_excel].
 #'                 
-#'                 If not provided, data is presumed to begin on the first
+#' If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
 #' @param sheet The sheet of the input files where data is located (if input
@@ -956,16 +956,16 @@ read_wides <- function(files, filetype = NULL,
 #'                     or inferred from `files`) be added as a column to the
 #'                     output? 
 #'                     
-#'                     If `run_names_header` is `TRUE`, they will be added with
+#' If `run_names_header` is `TRUE`, they will be added with
 #'                     the column name "run_name"
 #'                     
-#'                     If `run_names_header` is `FALSE`, they will not be added.
+#' If `run_names_header` is `FALSE`, they will not be added.
 #'                     
-#'                     If `run_names_header` is a string, they will be added
+#' If `run_names_header` is a string, they will be added
 #'                     and the column name will be the string specified
 #'                     for `run_names_header`.
 #'                     
-#'                     If `run_names_header` is `NULL`, they only will be 
+#' If `run_names_header` is `NULL`, they only will be 
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
 #' @param run_names_dot If `run_names` are inferred from filenames, should 
@@ -1135,15 +1135,15 @@ read_tidys <- function(files, filetype = NULL,
 #' @details     Common arguments that you may want to provide via `...`
 #'              include:
 #' 
-#'              `startrow`, `endrow`, `startcol`, `endcol`, 
+#' `startrow`, `endrow`, `startcol`, `endcol`, 
 #'              `sheet` - specifying the location of design information 
 #'              inside `files` to [read_blocks]
 #'              
-#'              `metadata` - specifying metadata to [read_blocks]
+#' `metadata` - specifying metadata to [read_blocks]
 #'              
-#'              See [read_blocks] for more details
+#' See [read_blocks] for more details
 #'              
-#'              If you find yourself needing more control, you can run the 
+#' If you find yourself needing more control, you can run the 
 #'              steps manually, first reading with [read_blocks], 
 #'              separating plates as needed with [uninterleave], 
 #'              then transforming to wide with [trans_block_to_wide].
@@ -1151,7 +1151,7 @@ read_tidys <- function(files, filetype = NULL,
 #' @return If `num_plates = 1`, a wide-shaped `data.frame`
 #'         containing the measures data.
 #'         
-#'         if `num_plates` is greater than one, a list of 
+#' if `num_plates` is greater than one, a list of 
 #'         `data.frame`'s, where each `data.frame` is wide-shaped.
 #'              
 #' @export       
@@ -1195,11 +1195,11 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              Vector of names corresponding to each design element (each
 #'              block). Inferred from filenames, if not specified.
 #'              
-#'              When `keep_blocknames = TRUE`, the output will have
+#' When `keep_blocknames = TRUE`, the output will have
 #'              a column containing these values, with the column name
 #'              specified by `block_name_header`.
 #'              
-#'              When `join_as_cols = TRUE`, the `block_names` are
+#' When `join_as_cols = TRUE`, the `block_names` are
 #'              also used as the output column names for each separated
 #'              design column.
 #' @param block_name_header 
@@ -1231,28 +1231,28 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              [paste_blocks], [trans_block_to_wide],
 #'              [trans_wide_to_tidy], or [separate_tidy].
 #'              
-#'              See Details for more information
+#' See Details for more information
 #'              
 #' @details     Other common arguments that you may want to provide via 
 #'              `...` include:
 #' 
-#'              `startrow`, `endrow`, `startcol`, `endcol`, 
+#' `startrow`, `endrow`, `startcol`, `endcol`, 
 #'              `sheet` - specifying the location of design information 
 #'              inside `files` to [read_blocks].
 #'              
-#'              `wellnames_sep` - specifying what character (or "" for 
+#' `wellnames_sep` - specifying what character (or "" for 
 #'              none) should be used when pasting together the rownames and
 #'              column names. Note that this should be chosen to match
 #'              the well names in your measures.
 #'              
-#'              `into` - specifying the column names resulting from
+#' `into` - specifying the column names resulting from
 #'              using [separate_tidy] on the `values_colname` column.
 #'              
-#'              Note that `import_blockdesigns` cannot currently handle
+#' Note that `import_blockdesigns` cannot currently handle
 #'              metadata specified via the `metadata` argument of
 #'              [read_blocks].
 #'              
-#'              If you find yourself needing more control, you can run the 
+#' If you find yourself needing more control, you can run the 
 #'              steps manually, first reading with [read_blocks],
 #'              pasting as needed with [paste_blocks], 
 #'              transforming to tidy with [trans_block_to_wide] and
@@ -1262,20 +1262,20 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' @return A tidy-shaped `data.frame` containing the design information
 #'         from `files`. This always includes a "Well" column. 
 #'         
-#'         If `keep_blocknames = TRUE`, this includes a column with the
+#' If `keep_blocknames = TRUE`, this includes a column with the
 #'         column name specified by `block_name_header` and containing
 #'         `block_names` (or block names inferred from file names).
 #'         
-#'         The layout of the design values varies depending on the inputs:
+#' The layout of the design values varies depending on the inputs:
 #'         
-#'         If `join_as_cols = TRUE`, each block was joined as a column,
+#' If `join_as_cols = TRUE`, each block was joined as a column,
 #'         with the columns named according to `block_names` (or block
 #'         names inferred from file names). In this case, if `sep` was 
 #'         specified, each column was split by `sep` into columns named by 
 #'         splitting the corresponding block name by `sep` (post-split 
 #'         column names can alternatively be specified directly via `into`).
 #'         
-#'         Otherwise, when `join_as_cols = FALSE`, each block was joined
+#' Otherwise, when `join_as_cols = FALSE`, each block was joined
 #'         as rows, with the column containing all design values named by
 #'         `values_colname`. In this case, if `sep` was specified,
 #'         that single design column was split by `sep` into columns
@@ -1355,22 +1355,22 @@ import_blockdesigns <- function(
 #' @param output_format One of `c("blocks", "blocks_pasted", "wide", "tidy")`
 #'                      denoting the format of the resulting data.frame
 #'                      
-#'                      For easy merging with tidymeasures, leave as default
+#' For easy merging with tidymeasures, leave as default
 #'                      of 'tidy'. 
 #'                      
-#'                      For human-readability to confirm design
+#' For human-readability to confirm design
 #'                      is correct, choose 'blocks' or 'blocks_pasted'. 
 #'                      
-#'                      For writing to block-shaped file(s), choose 'blocks' or
+#' For writing to block-shaped file(s), choose 'blocks' or
 #'                      'blocks_pasted'.
 #' @param wellnames_numeric If `block_row_names` or `block_col_names`
 #'                        are not specified, then names will be generated
 #'                        automatically according to `wellnames_numeric`.
 #'                        
-#'                        If `wellnames_numeric` is `TRUE`, rows and columns
+#' If `wellnames_numeric` is `TRUE`, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
 #'                        
-#'                        If `wellnames_numeric` is `FALSE`, rows will be
+#' If `wellnames_numeric` is `FALSE`, rows will be
 #'                        lettered A through Z, while columns will be numbered
 #' @param wellnames_sep A string used when concatenating rownames and column
 #'                      names to create well names, when 
@@ -1386,7 +1386,7 @@ import_blockdesigns <- function(
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
 #'                         that corresponds to the first value in the vector.
 #'                         
-#'                         Lookup table by default is 
+#' Lookup table by default is 
 #'                         `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`. If,
 #'                         for example, `lookup_tbl_start = "A"`, then the lookup
 #'                         table will now be `c(A,B,...Y,Z,a,b,...,y,z)`
@@ -1395,37 +1395,37 @@ import_blockdesigns <- function(
 #' @param ... Each `...` argument must be named, and must be a list with 
 #'            five elements:
 #' 
-#'              1. a vector of the values
+#' 1. a vector of the values
 #'              
-#'              2. a vector of the rows the pattern should be applied to
+#' 2. a vector of the rows the pattern should be applied to
 #'              
-#'              3. a vector of the columns the pattern should be applied to
+#' 3. a vector of the columns the pattern should be applied to
 #'              
-#'              4. a string or vector denoting the pattern in which the
+#' 4. a string or vector denoting the pattern in which the
 #'                 values should be filled into the rows and columns specified.
 #'                 
-#'                 If it's a string, will be split by `pattern_split`.
+#'    If it's a string, will be split by `pattern_split`.
 #'                 Pattern will be used as the indices of the values vector.
 #'               
-#'                 0's refer to `NA`. The pattern will be recycled as necessary
+#'    0's refer to `NA`. The pattern will be recycled as necessary
 #'                 to fill all the wells of the rows and columns specified.
 #'               
-#'              5. a logical for whether this pattern should be filled byrow
+#' 5. a logical for whether this pattern should be filled byrow
 #'
 #' @return Depends on `output_format`:
 #' 
-#'         If `output_format = "blocks"`, a list of `data.frame`'s
+#' If `output_format = "blocks"`, a list of `data.frame`'s
 #'         where each `data.frame` is block-shaped containing the
 #'         information for a single design element
 #'         
-#'         If `output_format = "blocks_pasted"`, a single 
+#' If `output_format = "blocks_pasted"`, a single 
 #'         `data.frame` containing the [paste]-ed information
 #'         for all design elements
 #'         
-#'         If `output_format = "wide"`, a wide-shaped `data.frame`
+#' If `output_format = "wide"`, a wide-shaped `data.frame`
 #'         containing all the design elements
 #'         
-#'         If `output_format = "tidy"`, a tidy-shaped `data.frame`
+#' If `output_format = "tidy"`, a tidy-shaped `data.frame`
 #'         containing all the design elements
 #'         
 #' @examples
@@ -1647,12 +1647,12 @@ mdp <- make_designpattern
 #'           start being filled in
 #' @param metadata_include Indices of which metadata items should be included
 #'                         
-#'                         Use `NULL` for no metadata inclusion
+#' Use `NULL` for no metadata inclusion
 #'                         
 #' @return A list, where `[[1]]` is `output` containing the data and
 #'         metadata from `input` but properly formatted for writing.
 #'         
-#'         And `[[2]]` is the updated `rs` to be used for subsequent
+#' And `[[2]]` is the updated `rs` to be used for subsequent
 #'         calls to `fill_data_metadata`
 #' 
 #' @noRd
@@ -1696,32 +1696,32 @@ fill_data_metadata <- function(output, input, rs,
 #' @param file `NULL`, a character string naming a file to write to, or a 
 #'             vector of character strings naming files to write to. 
 #' 
-#'             A file name is required when `output_format = "single"`
+#' A file name is required when `output_format = "single"`
 #'             
-#'             A file name can be specified when `output_format = "pasted"`,
+#' A file name can be specified when `output_format = "pasted"`,
 #'             or `file` can be set to `NULL` as long as 
 #'             `block_name_location = "filename"` (where pasted 
 #'             `block_name` metadata will be used for the file name)
 #'             
-#'             File names can be specified when `output_format = "multiple"`,
+#' File names can be specified when `output_format = "multiple"`,
 #'             or `file` can be set to `NULL` as long as 
 #'             `block_name_location = "filename"` (where the 
 #'             `block_name` metadata will be used for the file names)
 #'             
 #' @param output_format One of "single", "pasted", "multiple".
 #' 
-#'                      "single" will write all blocks into a single
+#' "single" will write all blocks into a single
 #'                      csv file, with an empty row between successive
 #'                      blocks.
 #'                      
-#'                      "pasted" will paste all blocks together using a
+#' "pasted" will paste all blocks together using a
 #'                      `paste_sep`, and then write that now-pasted
 #'                      block to a single csv file.
 #'                      
-#'                      "multiple" will write each block to its own csv file.
+#' "multiple" will write each block to its own csv file.
 #' @param block_name_location Either `NULL`, 'filename' or 'file'.
 #' 
-#'                           If `NULL`, `block_name_location` will 
+#' If `NULL`, `block_name_location` will 
 #'                           be automatically selected based on 
 #'                           `output_format`. For 
 #'                           `output_format = 'single'` and 
@@ -1730,12 +1730,12 @@ fill_data_metadata <- function(output, input, rs,
 #'                           For `output_format = 'multiple'`, 
 #'                           `block_name_location` defaults to 'filename'
 #' 
-#'                           If 'filename', the `block_name` metadata 
+#' If 'filename', the `block_name` metadata 
 #'                           will be used as the output file name(s) when
 #'                           no file name(s) are provided, or appended to
 #'                           file name(s) when they have been provided.
 #'                           
-#'                           If 'file', the `block_name` metadata will be
+#' If 'file', the `block_name` metadata will be
 #'                           included as a row in the output file.
 #' @param block_name_header The name of the field containing the
 #'                          `block_names`
@@ -2155,9 +2155,9 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "",
 #'                          vector corresponding to the same-index dataframe
 #'                          in `wides`
 #'                          
-#'                          Entries that are `NA` in the list will not be used
+#' Entries that are `NA` in the list will not be used
 #'                          
-#'                          If neither `data_cols` nor `id_cols` are 
+#' If neither `data_cols` nor `id_cols` are 
 #'                          specified, user must provide arguments to 
 #'                          [pivot_longer][tidyr::pivot_longer] via `...` for at 
 #'                          least the `cols` argument and these arguments 
@@ -2280,23 +2280,23 @@ trans_wide_to_tidy <- function(wides,
 #' @param names_to Column name for where `names(x)` or `names(y)` 
 #'                 will be entered in if `collapse = TRUE`.
 #'                 
-#'                 If a value of `NA` then `names(x)` or 
+#' If a value of `NA` then `names(x)` or 
 #'                 `names(y)` will not be put into a column in the
 #'                 returned data.frame
 #' @param join     Type of join used to merge `x` and `y`. Options
 #'                 are 'full' (default), 'inner', 'left', and 'right'.
 #'                 
 #'                 
-#'                  - A `full` join keeps all observations in `x` and 
-#'                   `y`
-#'                  - A `left` join keeps all observations in `x`
-#'                  - A `right` join keeps all observations in `y`
-#'                  - An `inner` join only keeps observations found in
-#'                   both `x` and `y` (inner joins are not appropriate
-#'                   in most cases because observations are frequently dropped).
+#' - A `full` join keeps all observations in `x` and 
+#'   `y`
+#' - A `left` join keeps all observations in `x`
+#' - A `right` join keeps all observations in `y`
+#' - An `inner` join only keeps observations found in
+#'   both `x` and `y` (inner joins are not appropriate
+#'   in most cases because observations are frequently dropped).
 #'                 
 #'                 
-#'                 See [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
+#' See [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
 #'                 [right_join][dplyr::right_join], or [inner_join][dplyr::inner_join] for 
 #'                 more details
 #' @param warn_morerows logical, should a warning be passed when the output
@@ -2396,7 +2396,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'         pasted data values from `blocks`, and 2. a vector with the 
 #'         pasted metadata values from `blocks`
 #'         
-#'         If `nested_metadata = FALSE` (or is inferred to be `FALSE`), a list
+#' If `nested_metadata = FALSE` (or is inferred to be `FALSE`), a list
 #'         containing `data.frame`'s with the pasted values from
 #'         `blocks`
 #' 
@@ -2490,13 +2490,13 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #' @param into A character vector of the new column names. Use `NA` to
 #'             omit the variable in the output.
 #'             
-#'             If `NULL`, `separate_tidy` will attempt to infer the new
+#' If `NULL`, `separate_tidy` will attempt to infer the new
 #'             column names by splitting the column name of `col`
 #' @param sep Separator between columns passed to [separate][tidyr::separate]:
 #' 
-#'            If character, `sep` is interpreted as a regular expression.
+#' If character, `sep` is interpreted as a regular expression.
 #'            
-#'            If numeric, `sep` is interpreted as character positions
+#' If numeric, `sep` is interpreted as character positions
 #'            to split at. Positive values start at 1 at the far-left of the
 #'            string; negative values start at -1 at the far-right of the
 #'            string. The length of `sep` should be one less than 
@@ -2563,7 +2563,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'                  and the smoothed data for each group will be calculated 
 #'                  independently of the others.
 #'                  
-#'                  This provides an internally-implemented approach similar
+#' This provides an internally-implemented approach similar
 #'                  to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
 #' @param return_fitobject logical whether entire object returned
 #'                         by fitting function should be returned. If `FALSE`,
@@ -2583,19 +2583,19 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            of data points. Larger values for either will produce more 
 #'            "smoothed" data.
 #'            
-#'            For [loess], the `span` argument sets the fraction of
+#' For [loess], the `span` argument sets the fraction of
 #'            data points that should be included in each calculation. It's
 #'            typically best to specify, since the default of 0.75 is often
 #'            too large for growth curves data. Larger values of `span` 
 #'            will produce more more "smoothed" data
 #'            
-#'            For [gam][mgcv::gam], both arguments to [gam][mgcv::gam] and 
+#' For [gam][mgcv::gam], both arguments to [gam][mgcv::gam] and 
 #'            [s][mgcv::s] can be provided via `...`. Most frequently, 
 #'            the `k` argument to [s][mgcv::s] sets the number of 
 #'            "knots" the spline-fitting can use. Smaller values will be more 
 #'            "smoothed".
 #'            
-#'            When using `sm_method = "gam"`, advanced users may also modify 
+#' When using `sm_method = "gam"`, advanced users may also modify 
 #'            other parameters of [s][mgcv::s], including the smoothing basis 
 #'            `bs`. These bases can be thin plate (`bs = "tp"`, 
 #'            the default), cubic regressions (`bs = "cr"`), or many other 
@@ -2604,12 +2604,12 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            computationally intensive to calculate. For growth curves data, 
 #'            this is unlikely to be relevant.
 #'            
-#'            As an alternative to passing `y`, for more advanced needs 
+#' As an alternative to passing `y`, for more advanced needs 
 #'            with [loess] or [gam][mgcv::gam], `formula` and `data` 
 #'            can be passed to `smooth_data` via the `...` argument 
 #'            (in lieu of `y`).
 #'          
-#'            In this case, the formula should specify the response (e.g. density) 
+#' In this case, the formula should specify the response (e.g. density) 
 #'            and predictors. For [gam][mgcv::gam] smoothing, the formula should
 #'            typically be of the format: y ~ s(x), which uses 
 #'            [s][mgcv::s] to smooth the data. The data argument should be a 
@@ -2619,11 +2619,11 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' 
 #' @return If `return_fitobject == FALSE:`
 #' 
-#'         A vector, the same length as `y`, with the now-smoothed `y` values
+#' A vector, the same length as `y`, with the now-smoothed `y` values
 #'         
-#'         If `return_fitobject == TRUE:`
+#' If `return_fitobject == TRUE:`
 #'         
-#'         A list the same length as `unique(subset_by)` where each element is
+#' A list the same length as `unique(subset_by)` where each element is
 #'         an object of the same class as returned by the smoothing method
 #'         (typically a named list-like object)
 #' 
@@ -2882,7 +2882,7 @@ setup_moving_smooth <- function(formula, data, x, y,
 #' @details Either `x` and `y` or `formula` and `data`
 #'          must be provided.
 #'          
-#'          Values of `NULL` or `NA` will be ignored for any of
+#' Values of `NULL` or `NA` will be ignored for any of
 #'          `window_width_n`, `window_width`,
 #'          `window_width_n_frac`, or `window_width_frac`
 #'          
@@ -3135,7 +3135,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' @param tuneGrid A data frame with possible tuning value. The columns should 
 #'                 be named the same as the tuning parameters.
 #'                 
-#'                 Note that, when using [train][caret::train], the `tuneGrid`
+#' Note that, when using [train][caret::train], the `tuneGrid`
 #'                 must be passed both to this function as well as directly
 #'                 to [train][caret::train].
 #' 
@@ -3144,7 +3144,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #'         `library`, `type`, `prob`, `fit`,
 #'         `parameters`, `grid`, `fit`, and `predict`.
 #'         
-#'         See documentation on using a custom model model in 
+#' See documentation on using a custom model model in 
 #'         [train][caret::train] for more details.
 #'
 #' @export
@@ -3300,21 +3300,21 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'                           
 #' @details See [train][caret::train] for more information.
 #' 
-#'          The default method is k-fold cross-validation 
+#' The default method is k-fold cross-validation 
 #'          (`trControl = caret::trainControl(method = "cv")`). 
 #'          
-#'          For less variable, but more computationally costly, cross-validation,
+#' For less variable, but more computationally costly, cross-validation,
 #'          users may choose to increase the number of folds. This can be
 #'          done by altering the `number` argument in 
 #'          [trainControl][caret::trainControl], or by setting `method = "LOOCV"` 
 #'          for leave one out cross-validation where the number of folds is 
 #'          equal to the number of data points. 
 #'          
-#'          For less variable, but more computationally costly, cross-validation,
+#' For less variable, but more computationally costly, cross-validation,
 #'          users may alternatively choose `method = "repeatedcv"` for 
 #'          repeated k-fold cross-validation.
 #' 
-#'          For more control, advanced users may wish to call 
+#' For more control, advanced users may wish to call 
 #'          [train][caret::train] directly, using 
 #'          [makemethod_train_smooth_data] to specify the `method` 
 #'          argument.
@@ -3324,7 +3324,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'         training error rate for each combination (i.e. the `results`
 #'         element of the output of [train][caret::train]).
 #'         
-#'         If `return_trainobject = TRUE`, the output of [train][caret::train]
+#' If `return_trainobject = TRUE`, the output of [train][caret::train]
 #' 
 #' @export   
 train_smooth_data <- function(..., x = NULL, y = NULL, sm_method,
@@ -3384,58 +3384,58 @@ and dplyr::reframe instead")}
 #'                  derivative is returned
 #' @param x_scale Numeric to scale `x` by in derivative calculation
 #'                
-#'                Set `x_scale` to the ratio of the units of 
+#' Set `x_scale` to the ratio of the units of 
 #'                `x` to the desired units. E.g. if `x` is in seconds, but the 
 #'                desired derivative is in units of /minute, set 
 #'                `x_scale = 60` (since there are 60 seconds in 1 minute).
 #' @param blank   y-value associated with a "blank" where the density is 0.
 #'                Is required when `percapita = TRUE`.
 #'                
-#'                If a vector of `blank` values is specified, `blank` values are
+#' If a vector of `blank` values is specified, `blank` values are
 #'                assumed to be in the same order as `unique(subset_by)`  
 #' @param subset_by An optional vector as long as `y`. 
 #'                  `y` will be split by the unique values of this vector 
 #'                  and the derivative for each group will be calculated 
 #'                  independently of the others.
 #'                  
-#'                  This provides an internally-implemented approach similar
+#' This provides an internally-implemented approach similar
 #'                  to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
 #' @param window_width,window_width_n,window_width_frac,window_width_n_frac
 #'                  Set how many data points are used to determine
 #'                  the slope at each point.
 #'                       
-#'                  When all are `NULL`, `calc_deriv` 
+#' When all are `NULL`, `calc_deriv` 
 #'                  calculates the difference or derivative
 #'                  of each point with the next point, appending
 #'                  `NA` at the end.
 #'                       
-#'                  When one or multiple are specified, a linear regression 
+#' When one or multiple are specified, a linear regression 
 #'                  is fit to all points in the window to determine the 
 #'                  slope.
 #'                       
-#'                  `window_width_n` specifies the width of the
+#' `window_width_n` specifies the width of the
 #'                  window in number of data points. `window_width`
 #'                  specifies the width of the window in units of `x`.
 #'                  `window_width_n_frac` specifies the width of the
 #'                  window as a fraction of the total number of data points.
 #'                       
-#'                  When using multiple window specifications at the same 
+#' When using multiple window specifications at the same 
 #'                  time, windows are conservative. Points 
 #'                  included in each window will meet all of the 
 #'                  `window_width`, `window_width_n`, and
 #'                  `window_width_n_frac`.
 #'                  
-#'                  A value of `window_width_n = 3` or 
+#' A value of `window_width_n = 3` or 
 #'                  `window_width_n = 5` is often a good default.
 #' @param trans_y  One of `c("linear", "log")` specifying the
 #'                 transformation of y-values.
 #' 
-#'                 `'log'` is only available when calculating per-capita
+#' `'log'` is only available when calculating per-capita
 #'                 derivatives using a fitting approach (when non-default 
 #'                 values are specified for `window_width` or 
 #'                 `window_width_n`).
 #' 
-#'                 For per-capita growth expected to be exponential or 
+#' For per-capita growth expected to be exponential or 
 #'                 nearly-exponential, `"log"` is recommended, since 
 #'                 exponential growth is linear when log-transformed. However, 
 #'                 log-transformations must be used with care, since y-values 
@@ -3460,13 +3460,13 @@ and dplyr::reframe instead")}
 #'          `trans_y = 'log'` approach the same value as time resolution
 #'          increases. 
 #'          
-#'          For instance, let's assume exponential growth $N = e^rt$ with 
+#' For instance, let's assume exponential growth $N = e^rt$ with 
 #'          per-capita growth rate $r$.
 #'          
-#'          With `trans_y = 'linear'`, note that $dN/dt = r e^rt = r N$. 
+#' With `trans_y = 'linear'`, note that $dN/dt = r e^rt = r N$. 
 #'          So we can calculate per-capita growth rate as $r = dN/dt * 1/N$. 
 #'          
-#'          With `trans_y = 'log'`, note that $log(N) = log(e^rt) = rt$.
+#' With `trans_y = 'log'`, note that $log(N) = log(e^rt) = rt$.
 #'          So we can calculate per-capita growth rate as the slope of a linear
 #'          fit of $log(N)$ against time, $r = log(N)/t$.
 #' 
@@ -3641,7 +3641,7 @@ window_width_n_frac are used")}
 #'                equivalent doubling time of
 #' @param x_scale Numeric to scale per-capita derivative values by
 #'                
-#'                Set `x_scale` to the ratio of the the units of 
+#' Set `x_scale` to the ratio of the the units of 
 #'                `y` to the desired units. E.g. if `y` is in per-second, but the 
 #'                desired doubling time is in minutes, `x_scale = 60` 
 #'                (since there are 60 seconds in 1 minute).
@@ -3670,21 +3670,21 @@ doubling_time <- function(y, x_scale = 1) {
 #'                   Arguments that set the width/height of the window used to
 #'                   search for local extrema.
 #'                   
-#'                   `window_width` is in units of `x`.
+#' `window_width` is in units of `x`.
 #'                   
-#'                   `window_width_n` is in units of number of data points.
+#' `window_width_n` is in units of number of data points.
 #'                   
-#'                   `window_height` is the maximum change in `y` 
+#' `window_height` is the maximum change in `y` 
 #'                   a single extrema-search step is allowed to take.
 #'                   
-#'                   `window_width_n_frac` is as a fraction of the total
+#' `window_width_n_frac` is as a fraction of the total
 #'                   number of data points.
 #'                   
-#'                   For example, the function will not pass a peak or valley
+#' For example, the function will not pass a peak or valley
 #'                   more than `window_width_n` data points wide, nor
 #'                   a peak/valley taller or deeper than `window_height`.
 #'                   
-#'                   A narrower width will be more sensitive to narrow local 
+#' A narrower width will be more sensitive to narrow local 
 #'                   maxima/minima, while a wider width will be less sensitive 
 #'                   to local maxima/minima. A smaller height will be more 
 #'                   sensitive to shallow local maxima/minima, while a larger 
@@ -3700,7 +3700,7 @@ doubling_time <- function(y, x_scale = 1) {
 #' @param subset A vector of logical values indicating which `x` and `y` values
 #'               should be included (`TRUE`) or excluded (`FALSE`).
 #'               
-#'               If `return = "index"`, index will be for the whole 
+#' If `return = "index"`, index will be for the whole 
 #'               vector and not the subset of the vector
 #' @param na.rm logical whether `NA`'s should be removed before analyzing
 #' @param width_limit Deprecated, use `window_width` instead
@@ -3938,17 +3938,17 @@ use find_local_extrema for more flexibility")
 #'               will return the `index` or `x` value associated with the
 #'               threshold-crossing event.
 #'               
-#'               If `index`, it will refer to the data point immediately after
+#' If `index`, it will refer to the data point immediately after
 #'               the crossing event.
 #'               
-#'               If `x`, it will use linear interpolation and the data
+#' If `x`, it will use linear interpolation and the data
 #'               points immediately before and after the threshold-crossing
 #'               to return the exact `x` value when the threshold crossing
 #'               occurred
 #' @param subset A vector of logical values indicating which `x` and `y` values
 #'               should be included (`TRUE`) or excluded (`FALSE`).
 #'               
-#'               If `return = "index"`, index will be for the whole 
+#' If `return = "index"`, index will be for the whole 
 #'               vector and not the subset of the vector
 #' @param return_rising logical for whether crossing events where `y`
 #'                      rises above `threshold` should be returned
@@ -4424,16 +4424,16 @@ centroid_both <- function(x, y, return = "both", ...) {
 #' @param blank   y-value associated with a "blank" where the density is 0.
 #'                Is required when `trans_y = TRUE`.
 #'                
-#'                A vector of `blank` values may be specified only when all of 
+#' A vector of `blank` values may be specified only when all of 
 #'                `slope`, `x1`, `y1`, and `y0` are provided
 #'                as vectors
 #' @param trans_y  One of `c("linear", "log")` specifying the
 #'                 transformation of y-values.
 #' 
-#'                 `'log'` is the default, producing calculations of
+#' `'log'` is the default, producing calculations of
 #'                 lag time assuming a transition to exponential growth
 #'                 
-#'                 `'linear'` is available for alternate uses
+#' `'linear'` is available for alternate uses
 #' @param na.rm a logical indicating whether missing values or values that
 #'              become `NA` or infinite during log-transformation should 
 #'              be removed
@@ -4634,18 +4634,18 @@ only using the first for normalizing 'y0'")
 #'                      a valley consisting of more than `window_width_n`
 #'                      data points.
 #'                      
-#'                      A smaller `window_width_n` will be more sensitive 
+#' A smaller `window_width_n` will be more sensitive 
 #'                      to narrow local maxima/minima, while a larger 
 #'                      `window_width_n` will be less sensitive to 
 #'                      narrow local maxima/minima.
 #'                      
-#'                      If not provided, defaults to `~0.2*length(y)`
+#' If not provided, defaults to `~0.2*length(y)`
 #' @param window_height The maximum change in `y` a single extrema-search
 #'                     step is allowed to take.  For example, when 
 #'                     maxima-finding, the function will not pass a
 #'                     valley deeper than `window_height`.
 #'                     
-#'                     A smaller `window_height` will be more sensitive 
+#' A smaller `window_height` will be more sensitive 
 #'                     to shallow local maxima/minima, while a larger 
 #'                     `window_height` will be less sensitive to 
 #'                     shallow maxima/minima.
@@ -4656,10 +4656,10 @@ only using the first for normalizing 'y0'")
 #' @return If `return = "index"`, a vector of indices corresponding 
 #'           to local extrema in the data
 #'           
-#'         If `return = "x"`, a vector of x values corresponding
+#' If `return = "x"`, a vector of x values corresponding
 #'           to local extrema in the data
 #'          
-#'         If `return = "y"`, a vector of y values corresponding
+#' If `return = "y"`, a vector of y values corresponding
 #'           to local extrema in the data
 #' 
 #' @details 
@@ -4722,7 +4722,7 @@ first_peak <- function(y, x = NULL,
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
 #'                         that corresponds to the first value in the vector.
 #'                         
-#'                         Lookup table by default is 
+#' Lookup table by default is 
 #'                         `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`. If,
 #'                         for example, `lookup_tbl_start = "A"`, then the lookup
 #'                         table will now be `c(A,B,...Y,Z,a,b,...,y,z)`
@@ -4731,21 +4731,21 @@ first_peak <- function(y, x = NULL,
 #'                        come first
 #' @param ... Each `...` argument must be a list with five elements:
 #' 
-#'              1. a vector of the values
+#' 1. a vector of the values
 #'              
-#'              2. a vector of the rows the pattern should be applied to
+#' 2. a vector of the rows the pattern should be applied to
 #'              
-#'              3. a vector of the columns the pattern should be applied to
+#' 3. a vector of the columns the pattern should be applied to
 #'              
-#'              4. a string of the pattern itself, where numbers refer to
+#' 4. a string of the pattern itself, where numbers refer to
 #'               the indices in the values vector
 #'               
-#'               0's refer to `NA`
+#'    0's refer to `NA`
 #'               
-#'               This pattern will be split using `pattern_split`, which
+#'    This pattern will be split using `pattern_split`, which
 #'               defaults to every character
 #'               
-#'              5. a logical for whether this pattern should be filled byrow
+#' 5. a logical for whether this pattern should be filled byrow
 #'              
 #' @return a tidy-shaped `data.frame` containing all the design elements
 #' 

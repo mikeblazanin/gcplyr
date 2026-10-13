@@ -326,7 +326,7 @@ make.numeric <- function(x, varname) {
 #'                 and there are `NA`'s in x or y?
 #' @return A list containing: each input ... vector with `NA`'s removed
 #'                          
-#'                            vector of indices where `NA`'s were removed
+#' vector of indices where `NA`'s were removed
 #'                            (`NULL` when none were removed)
 #' 
 #' @noRd
@@ -376,7 +376,7 @@ rm_nas <- function(..., na.rm, stopifNA = FALSE) {
 #'                            *output* vector)
 #' @return A list containing: `x` with `NA`'s added
 #' 
-#'                            `y` with `NA`'s added
+#' `y` with `NA`'s added
 #' 
 #' @noRd
 add_nas <- function(x, y = NULL, nas_indices_removed) {
@@ -411,17 +411,17 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
 #' @param y Vector to reorder based on `x`
 #' @return A list containing: 
 #' 
-#'     `[1]` "x" = the reordered `x`
+#' `[1]` "x" = the reordered `x`
 #' 
-#'     `[2]` "y" = the reordered `y`
+#' `[2]` "y" = the reordered `y`
 #'                            
-#'     `[3]` "order" = the original order, such that:
+#' `[3]` "order" = the original order, such that:
 #'                            
-#'     `return[["x"]][order(return[["order"]])] == x`
+#' `return[["x"]][order(return[["order"]])] == x`
 #'                            
-#'     and
+#' and
 #'                            
-#'     `return[["y"]][order(return[["order"]])] == y`
+#' `return[["y"]][order(return[["order"]])] == y`
 #' 
 #' @noRd
 reorder_xy <- function(x = NULL, y) {
@@ -452,18 +452,18 @@ reorder_xy <- function(x = NULL, y) {
 #'                should be returned as `NA` or simply truncated at the edge
 #'                of the data.
 #'                
-#'                For instance, moving average-like functions typically want
+#' For instance, moving average-like functions typically want
 #'                `edge_NA = TRUE` so as not to calculate a moving-average
 #'                on points near the edge of the domain with smaller n
 #'                
-#'                In contrast, extrema-finding typically want `edge_NA = FALSE`
+#' In contrast, extrema-finding typically want `edge_NA = FALSE`
 #'                so that searching simply stops at the edge of the data
 #' @param force_height_multi_n 
 #'                logical for whether windows limits set by `window_height`
 #'                should always have at least 3 data points in them (or 2 
 #'                data points for windows located at the edge of the domain)
 #'                         
-#'                This is necessary for window-finding with `window_height` 
+#' This is necessary for window-finding with `window_height` 
 #'                because otherwise you can end up with windows that contain 
 #'                only a single data-point, counting as both a max and a min
 #' @return A list of vectors, where each vector contains the indices
@@ -609,11 +609,11 @@ check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
 #' @param expr The expression to run
 #' @return Returns list with $value $warning $error
 #'         
-#'         If successful, $warning and $error will be `NULL`
+#' If successful, $warning and $error will be `NULL`
 #'         
-#'         If warning, $error will be `NULL` ($value will be present)
+#' If warning, $error will be `NULL` ($value will be present)
 #'         
-#'         If error, $warning and $value will be `NULL`
+#' If error, $warning and $value will be `NULL`
 #'         
 #' @details 
 #' I didn't write this, see: https://stackoverflow.com/a/24569739/14805829
@@ -650,7 +650,7 @@ gcTryCatch <- function(expr) {
 #'          `x1` < `x2` < `x3`: the points can be in any order 
 #'          along the line.
 #'          
-#'          `solve_linear` works with vectors of all inputs to solve
+#' `solve_linear` works with vectors of all inputs to solve
 #'          multiple lines at once, where the `i`th element of each 
 #'          argument corresponds to the `i`th output. Note that all
 #'          lines must be missing the same information. Input vectors
@@ -658,14 +658,14 @@ gcTryCatch <- function(expr) {
 #' 
 #' @return A named vector with the missing information from the line:
 #' 
-#'         If `m` and `x2` are provided, `y2` will be returned
+#' If `m` and `x2` are provided, `y2` will be returned
 #'         
-#'         If `m` and `y2` are provided, `x2` will be returned
+#' If `m` and `y2` are provided, `x2` will be returned
 #'         
-#'         If `x2` and `y2` are provided, but neither `x3` nor 
+#' If `x2` and `y2` are provided, but neither `x3` nor 
 #'         `y3` are provided, `m` will be returned
 #'         
-#'         If `x2` and `y2` are provided and one of `x3` or 
+#' If `x2` and `y2` are provided and one of `x3` or 
 #'         `y3` are provided, the other (`y3` or `x3`) will be 
 #'         returned
 #' 

@@ -653,7 +653,7 @@ read_blocks <- function(files, filetype = NULL,
 #' A function that imports widemeasures in files into the R environment
 #' 
 #' @details
-#' `startrow`, `endrow`, `startcol`, `endcol`, `timecol`, `sheet` and `filetype` 
+#' `startrow`, `endrow`, `startcol`, `endcol`, `sheet` and `filetype` 
 #' can either be a single value that applies for all files or
 #' vectors or lists the same length as `files`, 
 #' 

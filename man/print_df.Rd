@@ -14,6 +14,6 @@ print_df(x, col.names = FALSE, row.names = FALSE)
 \item{row.names}{Boolean for whether row names should be printed}
 }
 \description{
-This function uses \code{write.table} to print the input \code{data.frame}
+This function uses \link{write.table} to print the input \code{data.frame}
 in a nicely-formatted manner that is easy to read
 }

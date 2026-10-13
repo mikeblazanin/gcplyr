@@ -25,32 +25,34 @@ search for local extrema. A narrower width will be more
 sensitive to narrow local maxima/minima, while a wider
 width will be less sensitive to local maxima/minima.}
 
-\item{window_width_n}{The maximum number of data points a single 
+\item{window_width_n}{The maximum number of data points a single
 extrema-search step is allowed to take. For example,
 when maxima-finding, the function will not pass
 a valley consisting of more than \code{window_width_n}
 data points.
 
-A smaller \code{window_width_n} will be more sensitive 
-to narrow local maxima/minima, while a larger 
-\code{window_width_n} will be less sensitive to 
-narrow local maxima/minima.
-
-If not provided, defaults to ~0.2*length(y)}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{                 A smaller `window_width_n` will be more sensitive 
+                 to narrow local maxima/minima, while a larger 
+                 `window_width_n` will be less sensitive to 
+                 narrow local maxima/minima.
+                 
+                 If not provided, defaults to `~0.2*length(y)`
+}\if{html}{\out{</div>}}}
 
 \item{window_height}{The maximum change in \code{y} a single extrema-search
-step is allowed to take.  For example, when 
+step is allowed to take.  For example, when
 maxima-finding, the function will not pass a
 valley deeper than \code{window_height}.
 
-A smaller \code{window_height} will be more sensitive 
-to shallow local maxima/minima, while a larger 
-\code{window_height} will be less sensitive to 
-shallow maxima/minima.}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{                A smaller `window_height` will be more sensitive 
+                to shallow local maxima/minima, while a larger 
+                `window_height` will be less sensitive to 
+                shallow maxima/minima.
+}\if{html}{\out{</div>}}}
 
-\item{return}{One of c("index", "x", "y"), determining whether the function
+\item{return}{One of \code{c("index", "x", "y")}, determining whether the function
 will return the index, x value, or y value associated with the
-first maxima in y values}
+first maxima in \code{y} values}
 
 \item{return_endpoints}{Should the first or last value in \code{y}
 be allowed to be returned?}
@@ -58,17 +60,18 @@ be allowed to be returned?}
 \item{...}{Other parameters to pass to \link{find_local_extrema}}
 }
 \value{
-If \code{return = "index"}, a vector of indices corresponding 
-          to local extrema in the data
-          
-        If \code{return = "x"}, a vector of x values corresponding
-          to local extrema in the data
-         
-        If \code{return = "y"}, a vector of y values corresponding
-          to local extrema in the data
+If \code{return = "index"}, a vector of indices corresponding
+to local extrema in the data
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `return = "x"`, a vector of x values corresponding
+      to local extrema in the data
+     
+    If `return = "y"`, a vector of y values corresponding
+      to local extrema in the data
+}\if{html}{\out{</div>}}
 }
 \description{
-This function has been deprecated in favor of the identical new 
+This function has been deprecated in favor of the identical new
 function \link{first_maxima}
 }
 \details{
@@ -76,11 +79,10 @@ This function takes a vector of \code{y} values and returns the index
 (by default) of the first local maxima. It serves as a shortcut
 for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 
-
-If none of \code{window_width}, \code{window_width_n}, or 
+If none of \code{window_width}, \code{window_width_n}, or
 \code{window_height} are provided, default value of \code{window_width_n}
 will be used.
 }
 \seealso{
-[first_maxima()]
+\link{first_maxima}
 }

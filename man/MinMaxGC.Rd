@@ -17,23 +17,23 @@ min_gc(..., na.rm = TRUE, allmissing_NA = TRUE)
 
 \item{allmissing_NA}{a logical indicating whether \code{NA} should be
 returned when there are no non-missing arguments
-passed to \code{min} or \code{max} (often because
+passed to \link{min} or \link{max} (often because
 \code{na.rm = TRUE} but all values are \code{NA})}
 }
 \value{
-If \code{allmissing_NA = FALSE}, identical to \code{min} or 
-   \code{max}.
-   
-   If \code{allmissing_NA = TRUE}, identical to \code{min} or 
-   \code{max} except that, in cases where \code{min} or 
-   \code{max} would return an infinite value and raise a warning because
-   there are no non-missing arguments, \code{min_gc} and
-   \code{max_gc} return \code{NA}
+If \code{allmissing_NA = FALSE}, identical to \link{min} or
+\link{max}.
+
+If \code{allmissing_NA = TRUE}, identical to \link{min} or
+\link{max} except that, in cases where \link{min} or
+\link{max} would return an infinite value and raise a warning because
+there are no non-missing arguments, \code{min_gc} and
+\code{max_gc} return \code{NA}
 }
 \description{
 Returns the maxima and minima of the input values.
 }
 \details{
-These functions are wrappers for \code{min} and \code{max},
+These functions are wrappers for \link{min} and \link{max},
 with the additional argument \code{allmissing_NA}.
 }

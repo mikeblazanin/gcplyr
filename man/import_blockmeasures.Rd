@@ -13,16 +13,16 @@ import_blockmeasures(
 )
 }
 \arguments{
-\item{files}{Vector of filenames (as strings), each of which is a 
+\item{files}{Vector of filenames (as strings), each of which is a
 block-shaped file containing measures data. File formats
 can be .csv, .xls, or .xlsx}
 
-\item{num_plates}{Number of plates. If multiple plates uninterleave will be
+\item{num_plates}{Number of plates. If multiple plates \link{uninterleave} will be
 used to separate blockmeasures into those plates accordingly}
 
 \item{plate_names}{(optional) Names to put onto the plates when output}
 
-\item{wellnames_sep}{String to use as separator for well names between 
+\item{wellnames_sep}{String to use as separator for well names between
 rowname and column name}
 
 \item{...}{Other arguments to pass to \link{read_blocks}, \link{uninterleave},
@@ -30,30 +30,32 @@ or \link{trans_block_to_wide}}
 }
 \value{
 If \code{num_plates = 1}, a wide-shaped \code{data.frame}
-        containing the measures data.
-        
-        if \code{num_plates} is greater than one, a list of 
-        \code{data.frame}'s, where each \code{data.frame} is wide-shaped.
+containing the measures data.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{    if `num_plates` is greater than one, a list of 
+    `data.frame`'s, where each `data.frame` is wide-shaped.
+}\if{html}{\out{</div>}}
 }
 \description{
 Function to import blockmeasures from files and return widemeasures
-This function acts as a wrapper to call \link{read_blocks}, 
+This function acts as a wrapper to call \link{read_blocks},
 \link{uninterleave}, then \link{trans_block_to_wide} in one go
 }
 \details{
-Common arguments that you may want to provide via \code{...}
-             include:
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Common arguments that you may want to provide via `...`
+         include:
 
-             \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-             \code{sheet} - specifying the location of design information 
-             inside \code{files} to \link{read_blocks}
-             
-             \code{metadata} - specifying metadata to \link{read_blocks}
-             
-             See \link{read_blocks} for more details
-             
-             If you find yourself needing more control, you can run the 
-             steps manually, first reading with \link{read_blocks}, 
-             separating plates as needed with \link{uninterleave}, 
-             then transforming to wide with \link{trans_block_to_wide}.
+         `startrow`, `endrow`, `startcol`, `endcol`, 
+         `sheet` - specifying the location of design information 
+         inside `files` to [read_blocks]
+         
+         `metadata` - specifying metadata to [read_blocks]
+         
+         See [read_blocks] for more details
+         
+         If you find yourself needing more control, you can run the 
+         steps manually, first reading with [read_blocks], 
+         separating plates as needed with [uninterleave], 
+         then transforming to wide with [trans_block_to_wide].
+}\if{html}{\out{</div>}}
 }

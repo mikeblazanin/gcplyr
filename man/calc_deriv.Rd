@@ -29,119 +29,125 @@ calc_deriv(
 
 \item{x}{Vector of x values provided as a simple numeric.}
 
-\item{return}{One of c("difference", "derivative") for whether the
+\item{return}{One of \code{c("difference", "derivative")} for whether the
 differences in \code{y} should be returned, or the
 derivative of \code{y} with respect to \code{x}}
 
-\item{percapita}{When percapita = TRUE, the per-capita difference or
+\item{percapita}{When \code{percapita = TRUE}, the per-capita difference or
 derivative is returned}
 
-\item{x_scale}{Numeric to scale x by in derivative calculation
+\item{x_scale}{Numeric to scale \code{x} by in derivative calculation
 
-Set x_scale to the ratio of the units of 
-x to the desired units. E.g. if x is in seconds, but the 
-desired derivative is in units of /minute, set 
-\code{x_scale = 60} (since there are 60 seconds in 1 minute).}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{           Set `x_scale` to the ratio of the units of 
+           `x` to the desired units. E.g. if `x` is in seconds, but the 
+           desired derivative is in units of /minute, set 
+           `x_scale = 60` (since there are 60 seconds in 1 minute).
+}\if{html}{\out{</div>}}}
 
 \item{blank}{y-value associated with a "blank" where the density is 0.
 Is required when \code{percapita = TRUE}.
 
-If a vector of blank values is specified, blank values are
-assumed to be in the same order as unique(subset_by)}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{           If a vector of `blank` values is specified, `blank` values are
+           assumed to be in the same order as `unique(subset_by)`
+}\if{html}{\out{</div>}}}
 
-\item{subset_by}{An optional vector as long as \code{y}. 
-\code{y} will be split by the unique values of this vector 
-and the derivative for each group will be calculated 
+\item{subset_by}{An optional vector as long as \code{y}.
+\code{y} will be split by the unique values of this vector
+and the derivative for each group will be calculated
 independently of the others.
 
-This provides an internally-implemented approach similar
-to \link[dplyr]{group_by} and \link[dplyr]{mutate}}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             This provides an internally-implemented approach similar
+             to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
+}\if{html}{\out{</div>}}}
 
 \item{window_width, window_width_n, window_width_frac, window_width_n_frac}{Set how many data points are used to determine
 the slope at each point.
-     
-When all are \code{NULL}, \code{calc_deriv} 
-calculates the difference or derivative
-of each point with the next point, appending
-\code{NA} at the end.
-     
-When one or multiple are specified, a linear regression 
-is fit to all points in the window to determine the 
-slope.
-     
-\code{window_width_n} specifies the width of the
-window in number of data points. \code{window_width}
-specifies the width of the window in units of \code{x}.
-\code{window_width_n_frac} specifies the width of the
-window as a fraction of the total number of data points.
-     
-When using multiple window specifications at the same 
-time, windows are conservative. Points 
-included in each window will meet all of the 
-\code{window_width}, \code{window_width_n}, and
-\code{window_width_n_frac}.
 
-A value of \code{window_width_n = 3} or 
-\code{window_width_n = 5} is often a good default.}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             When all are `NULL`, `calc_deriv` 
+             calculates the difference or derivative
+             of each point with the next point, appending
+             `NA` at the end.
+                  
+             When one or multiple are specified, a linear regression 
+             is fit to all points in the window to determine the 
+             slope.
+                  
+             `window_width_n` specifies the width of the
+             window in number of data points. `window_width`
+             specifies the width of the window in units of `x`.
+             `window_width_n_frac` specifies the width of the
+             window as a fraction of the total number of data points.
+                  
+             When using multiple window specifications at the same 
+             time, windows are conservative. Points 
+             included in each window will meet all of the 
+             `window_width`, `window_width_n`, and
+             `window_width_n_frac`.
+             
+             A value of `window_width_n = 3` or 
+             `window_width_n = 5` is often a good default.
+}\if{html}{\out{</div>}}}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
-                transformation of y-values.
+transformation of y-values.
 
-                \code{'log'} is only available when calculating per-capita
-                derivatives using a fitting approach (when non-default 
-                values are specified for \code{window_width} or 
-                \code{window_width_n}).
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            `'log'` is only available when calculating per-capita
+            derivatives using a fitting approach (when non-default 
+            values are specified for `window_width` or 
+            `window_width_n`).
 
-                For per-capita growth expected to be exponential or 
-                nearly-exponential, \code{"log"} is recommended, since 
-                exponential growth is linear when log-transformed. However, 
-                log-transformations must be used with care, since y-values 
-                at or below 0 will become undefined and results will be 
-                more sensitive to incorrect values of \code{blank}.}
+            For per-capita growth expected to be exponential or 
+            nearly-exponential, `"log"` is recommended, since 
+            exponential growth is linear when log-transformed. However, 
+            log-transformations must be used with care, since y-values 
+            at or below 0 will become undefined and results will be 
+            more sensitive to incorrect values of `blank`.
+}\if{html}{\out{</div>}}}
 
-\item{na.rm}{logical whether NA's should be removed before analyzing}
+\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
 
 \item{warn_ungrouped}{logical whether warning should be issued when
 \code{calc_deriv} is being called on ungrouped data
 and \code{subset_by = NULL}.}
 
-\item{warn_logtransform_warnings}{logical whether warning should be issued 
-when log(y) produced warnings.}
+\item{warn_logtransform_warnings}{logical whether warning should be issued
+when \code{log(y)} produced warnings.}
 
-\item{warn_logtransform_infinite}{logical whether warning should be issued 
-when log(y) produced infinite values that will
+\item{warn_logtransform_infinite}{logical whether warning should be issued
+when \code{log(y)} produced infinite values that will
 be treated as \code{NA}.}
 
-\item{warn_window_toosmall}{logical whether warning should be issued 
+\item{warn_window_toosmall}{logical whether warning should be issued
 when only one data point is in the window
-set by \code{window_width_n}, 
+set by \code{window_width_n},
 \code{window_width}, or \code{window_width_n_frac},
 and so \code{NA} will be returned.}
 }
 \value{
 A vector of values for the plain (if \code{percapita = FALSE})
-        or per-capita (if \code{percapita = TRUE}) difference 
-        (if \code{return = "difference"}) or derivative 
-        (if \code{return = "derivative"}) between \code{y} values. Vector
-        will be the same length as \code{y},  with \code{NA} values 
-        at the ends
+or per-capita (if \code{percapita = TRUE}) difference
+(if \code{return = "difference"}) or derivative
+(if \code{return = "derivative"}) between \code{y} values. Vector
+will be the same length as \code{y},  with \code{NA} values
+at the ends
 }
 \description{
-Provided a vector of y values, this function returns either the plain
+Provided a vector of \code{y} values, this function returns either the plain
 or per-capita difference or derivative between sequential values
 }
 \details{
 For per-capita derivatives, \code{trans_y = 'linear'} and
-         \code{trans_y = 'log'} approach the same value as time resolution
-         increases. 
-         
-         For instance, let's assume exponential growth \eqn{N = e^rt} with 
-         per-capita growth rate \eqn{r}.
-         
-         With \code{trans_y = 'linear'}, note that \eqn{dN/dt = r e^rt = r N}. 
-         So we can calculate per-capita growth rate as \eqn{r = dN/dt * 1/N}. 
-         
-         With \code{trans_y = 'log'}, note that \eqn{log(N) = log(e^rt) = rt}.
-         So we can calculate per-capita growth rate as the slope of a linear
-         fit of \eqn{log(N)} against time, \eqn{r = log(N)/t}.
+\code{trans_y = 'log'} approach the same value as time resolution
+increases.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     For instance, let's assume exponential growth $N = e^rt$ with 
+     per-capita growth rate $r$.
+     
+     With `trans_y = 'linear'`, note that $dN/dt = r e^rt = r N$. 
+     So we can calculate per-capita growth rate as $r = dN/dt * 1/N$. 
+     
+     With `trans_y = 'log'`, note that $log(N) = log(e^rt) = rt$.
+     So we can calculate per-capita growth rate as the slope of a linear
+     fit of $log(N)$ against time, $r = log(N)/t$.
+}\if{html}{\out{</div>}}
 }

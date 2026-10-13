@@ -4,7 +4,7 @@
 \alias{WhichMinMaxGC}
 \alias{which_min_gc}
 \alias{which_max_gc}
-\title{Where is the Min() or Max() or first TRUE or FALSE?}
+\title{Where is the Min() or Max() or first \code{TRUE} or \code{FALSE}?}
 \usage{
 which_min_gc(x, empty_NA = TRUE)
 
@@ -16,23 +16,23 @@ for which the internal coercion to double works whose min or max
 is searched for.}
 
 \item{empty_NA}{logical, indicating if an empty value should be returned
-as \code{NA} (the default) or as \code{integer(0}) (the
-same as \code{which.min} and \code{which.max}).}
+as \code{NA} (the default) or as \verb{integer(0}) (the
+same as \link{which.min} and \link{which.max}).}
 }
 \value{
-If \code{empty_NA = FALSE}, identical to \code{which.min} or 
-   \code{which.max}
-   
-   If \code{empty_NA = TRUE}, identical to \code{which.min} or 
-   \code{which.max} except that, in cases where \code{which.min} or 
-   \code{which.max} would return \code{integer(0)}, \code{which_min_gc} and
-   \code{which_max_gc} return \code{NA}
+If \code{empty_NA = FALSE}, identical to \link{which.min} or
+\link{which.max}
+
+If \code{empty_NA = TRUE}, identical to \link{which.min} or
+\link{which.max} except that, in cases where \link{which.min} or
+\link{which.max} would return \code{integer(0)}, \code{which_min_gc} and
+\code{which_max_gc} return \code{NA}
 }
 \description{
 Determines the location, i.e. index, of the (first) minimum or maximum of
 a numeric (or logical) vector.
 }
 \details{
-These functions are wrappers for \code{which.min} and \code{which.max},
+These functions are wrappers for \link{which.min} and \link{which.max},
 with the additional argument \code{empty_NA}.
 }

@@ -20,16 +20,16 @@ predict_interpolation(
 \item{newdata}{A vector of new predictor values for which the response
 value will be predicted}
 
-\item{extrapolate_predictions}{Boolean indicating whether values of \code{newdata} that are 
-out of the domain of \code{x} should be predicted (by 
+\item{extrapolate_predictions}{Boolean indicating whether values of \code{newdata} that are
+out of the domain of \code{x} should be predicted (by
 extrapolating the slope from the endpoints of \code{x}). If
 \code{FALSE}, such values will be returned as \code{NA}.}
 
-\item{na.rm}{logical whether NA's should be removed before making predictions}
+\item{na.rm}{logical whether \code{NA}'s should be removed before making predictions}
 }
 \value{
-A vector of response values for each predictor value in 
-        \code{newdata}
+A vector of response values for each predictor value in
+\code{newdata}
 }
 \description{
 Predict data by linear interpolation from existing data

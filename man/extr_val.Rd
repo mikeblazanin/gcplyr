@@ -14,41 +14,41 @@ extr_val(x, i, allNA_NA = TRUE, na.rm = FALSE)
 \item{allNA_NA}{logical indicating whether \code{NA} should be returned
 when \code{all(is.na(i)) == TRUE}.}
 
-\item{na.rm}{a logical indicating whether missing values should be 
+\item{na.rm}{a logical indicating whether missing values should be
 removed.}
 }
 \value{
-If \code{allNA_NA = FALSE} and \code{na.rm = FALSE}, identical to 
-   \code{x[i]}.
-   
-   If \code{allNA_NA = FALSE} and \code{na.rm = TRUE}, identical to
-   \code{x[i[!is.na(i)]]}.
-   
-   If \code{allNA_NA = TRUE}, identical to \code{x[i]} unless 
-   \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
+If \code{allNA_NA = FALSE} and \code{na.rm = FALSE}, identical to
+\code{x[i]}.
+
+If \code{allNA_NA = FALSE} and \code{na.rm = TRUE}, identical to
+\code{x[i[!is.na(i)]]}.
+
+If \code{allNA_NA = TRUE}, identical to \code{x[i]} unless
+\code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
 }
 \description{
 A wrapper for \code{[} that handles \code{NA} indices better when using
-inside \code{dplyr::summarize()}
+inside \link[dplyr:summarise]{summarize}
 }
 \details{
 This function was created to better handle the common situation
-of extracting values by index inside \code{dplyr::summarize} when some
+of extracting values by index inside \link[dplyr:summarise]{summarize} when some
 indices may be \code{NA}.
 Often this arises when using a function to find indices of interest might
 fail to find any, as can sometimes happen when using
-\code{which_max_gc} or \code{which_min_gc} (wrappers for  \code{which.max} 
-and \code{which.min}, respectively), 
-\code{find_local_extrema} and its wrappers \code{first_maxima} and
-\code{first_minima}, or \code{find_threshold_crosses} and its wrappers
-\code{first_below} and \code{first_above}. When all indices are \code{NA},
+\link{which_max_gc} or \link{which_min_gc} (wrappers for  \link{which.max}
+and \link{which.min}, respectively),
+\link{find_local_extrema} and its wrappers \link{first_maxima} and
+\link{first_minima}, or \link{find_threshold_crosses} and its wrappers
+\link{first_below} and \link{first_above}. When all indices are \code{NA},
 \code{[} returns a vector of all \code{NA} of length \code{length(x)}.
-Since this typically raises an undesirable warning or error from 
-\code{dplyr::summarize}, \code{extr_val} instead returns a single \code{NA} 
+Since this typically raises an undesirable warning or error from
+\link[dplyr:summarise]{summarize}, \code{extr_val} instead returns a single \code{NA}
 value.
 
 An alternative (but largely superseded) use of this function is to
-extract a value by index *after* \code{NA} values have been removed.
+extract a value by index \emph{after} \code{NA} values have been removed.
 This is not applicable for any common functions with \code{gcplyr},
 which all return index values for the original vector.
 }

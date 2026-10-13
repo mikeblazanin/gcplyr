@@ -4,16 +4,16 @@
 \name{example_design_tidy}
 \alias{example_design_tidy}
 \title{Design for example growth curve data
- 
+
 A tidy-shaped dataset with the experimental design (i.e. plate layout)
 for the example data included with \code{gcplyr}.}
 \format{
 A dataframe with 96 rows and 3 variables:
-\describe{
-     \item{Well}{The well of the plate}
-     \item{Bacteria_strain}{The numbered bacterial strain growing in each well}
-     \item{Phage}{Whether or not the bacteria were simulated growing with phages}
- }
+\itemize{
+\item \code{Well}: The well of the plate
+\item \code{Bacteria_strain}: The numbered bacterial strain growing in each well
+\item \code{Phage}: Whether or not the bacteria were simulated growing with phages
+}
 }
 \usage{
 example_design_tidy

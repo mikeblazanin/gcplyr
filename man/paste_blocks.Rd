@@ -14,18 +14,19 @@ data.frames}
 
 \item{nested_metadata}{A logical indicating the existence of nested metadata
 in the \code{blockmeasures} list, e.g. as is typically
-output by \link{read_blocks}. If NULL, will attempt to
+output by \link{read_blocks}. If \code{NULL}, will attempt to
 infer existence of nested metadata}
 }
 \value{
-If nested_metadata = TRUE (or is inferred to be TRUE), a list
-        containing a list containing: 1. a \code{data.frame} with the
-        pasted data values from \code{blocks}, and 2. a vector with the 
-        pasted metadata values from \code{blocks}
-        
-        If nested_metadata = FALSE (or is inferred to be FALSE), a list
-        containing \code{data.frame}'s with the pasted values from
-        \code{blocks}
+If \code{nested_metadata = TRUE} (or is inferred to be \code{TRUE}), a list
+containing a list containing: 1. a \code{data.frame} with the
+pasted data values from \code{blocks}, and 2. a vector with the
+pasted metadata values from \code{blocks}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `nested_metadata = FALSE` (or is inferred to be `FALSE`), a list
+    containing `data.frame`'s with the pasted values from
+    `blocks`
+}\if{html}{\out{</div>}}
 }
 \description{
 This function uses \link{paste} to concatenate the same-location entries

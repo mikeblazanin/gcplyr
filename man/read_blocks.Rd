@@ -33,68 +33,71 @@ where each filepath is a single plate read}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
 
-                 "csv", "xls", or "xlsx".
-                 
-                 "tbl" or "table" to use \link{read.table} to read the file,
-                 "csv2" to use \link{read.csv2}, "delim" to 
-                 use \link{read.delim}, or "delim2" to use \link{read.delim2}.
-                 
-                 If none provided, \code{read_blocks} will infer filetype(s) 
-                 from the extension(s) in \code{files}. When extension is 
-                 not "csv", "xls", or "xlsx", will use "table".}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             "csv", "xls", or "xlsx".
+             
+             "tbl" or "table" to use [read.table] to read the file,
+             "csv2" to use [read.csv2], "delim" to 
+             use [read.delim], or "delim2" to use [read.delim2].
+             
+             If none provided, `read_blocks` will infer filetype(s) 
+             from the extension(s) in `files`. When extension is 
+             not "csv", "xls", or "xlsx", will use "table".
+}\if{html}{\out{</div>}}}
 
-\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
+\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the measures data are located in \code{files}.
 
-Can be a vector or list the same length as \code{files}, or
-a single value that applies to all \code{files}. Values
-can be numeric or a string that will be automatically
-converted to numeric by \link{from_excel}.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            Can be a vector or list the same length as `files`, or
+            a single value that applies to all `files`. Values
+            can be numeric or a string that will be automatically
+            converted to numeric by [from_excel].
+            
+            If not provided, data is presumed to begin on the first
+            row and column of the file(s) and end on the last row and
+            column of the file(s).
+}\if{html}{\out{</div>}}}
 
-If not provided, data is presumed to begin on the first
-row and column of the file(s) and end on the last row and
-column of the file(s).}
-
-\item{sheet}{(optional) If data is in .xls or .xlsx files, which sheet it 
+\item{sheet}{(optional) If data is in .xls or .xlsx files, which sheet it
 is located on. Defaults to the first sheet if not specified}
 
-\item{metadata}{(optional) non-spectrophotometric data that should be 
-associated with each read blockmeasures. A named list where 
+\item{metadata}{(optional) non-spectrophotometric data that should be
+associated with each read blockmeasures. A named list where
 each item in the list is either: a vector of length 2, or
-a list containing two vectors. 
+a list containing two vectors.
 
-In the former case, each vector should provide the row and 
-column where the metadata is located in all of the
-blockmeasures input files.
-
-In the latter case, the first vector should provide the rows
-where the metadata is located in each of the corresponding
-input files, and the second vector should provide the 
-columns where the metadata is located in each of the
-corresponding input files. (This case is typically used 
-when reading multiple blocks from a single file.)}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            In the former case, each vector should provide the row and 
+            column where the metadata is located in all of the
+            blockmeasures input files.
+            
+            In the latter case, the first vector should provide the rows
+            where the metadata is located in each of the corresponding
+            input files, and the second vector should provide the 
+            columns where the metadata is located in each of the
+            corresponding input files. (This case is typically used 
+            when reading multiple blocks from a single file.)
+}\if{html}{\out{</div>}}}
 
 \item{block_names}{(optional) vector of names corresponding to each plate
-in \code{files}. If not provided, block_names are inferred
+in \code{files}. If not provided, \code{block_names} are inferred
 from the filenames}
 
 \item{block_names_header}{The name of the metadata field containing the
 \code{block_names}}
 
-\item{block_names_dot}{If block_names are inferred from filenames, should 
+\item{block_names_dot}{If \code{block_names} are inferred from filenames, should
 the leading './' (if any) be retained}
 
-\item{block_names_path}{If block_names are inferred from filenames, should 
+\item{block_names_path}{If \code{block_names} are inferred from filenames, should
 the path (if any) be retained}
 
-\item{block_names_ext}{If block_names are inferred from filenames, should 
+\item{block_names_ext}{If \code{block_names} are inferred from filenames, should
 the file extension (if any) be retained}
 
 \item{header}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
 such values, indicating whether the file(s) contains the
 column names as its first line. If \code{header = NA}
 will attempt to infer the presence of column names. If
-\code{header = FALSE} or no column names are inferred when 
+\code{header = FALSE} or no column names are inferred when
 \code{header = NA}, column names will be generated
 automatically according to \code{wellnames_numeric}}
 
@@ -102,7 +105,7 @@ automatically according to \code{wellnames_numeric}}
 such values, indicating whether the file(s) contains the
 row names as its first column. If \code{sider = NA}
 will attempt to infer the presence of row names. If
-\code{sider = FALSE} or no row names are inferred when 
+\code{sider = FALSE} or no row names are inferred when
 \code{sider = NA}, row names will be generated
 automatically according to \code{wellnames_numeric}}
 
@@ -111,15 +114,16 @@ input dataframe as specified by \code{header}
 and \code{sider}, then names will be generated
 automatically according to \code{wellnames_numeric}.
 
-If \code{wellnames_numeric} is TRUE, rows and columns
-will be numbered with "R" and "C" prefixes, respectively.
-
-If \code{wellnames_numeric} is FALSE, rows will be
-lettered A through Z, while columns will be numbered}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{                   If `wellnames_numeric` is `TRUE`, rows and columns
+                   will be numbered with "R" and "C" prefixes, respectively.
+                   
+                   If `wellnames_numeric` is `FALSE`, rows will be
+                   lettered A through Z, while columns will be numbered
+}\if{html}{\out{</div>}}}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \link{read.csv},
-\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
 or \link{read.table}}
 
 \item{extension}{Deprecated, use \code{filetype} instead}
@@ -127,46 +131,46 @@ or \link{read.table}}
 \item{block_name_header}{Deprecated, use \code{block_names_header} instead}
 
 \item{...}{Other arguments passed to \link{read.csv},
-\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
 or \link{read.table}}
 }
 \value{
 A list where each entry is a list containing the block data frame
-        followed by the block_names (or filenames, if block_names is not 
-        provided) and any specified metadata.
+followed by the \code{block_names} (or filenames, if \code{block_names} is not
+provided) and any specified metadata.
 }
 \description{
 A function that reads blocks into the R environment
 }
 \details{
-For metadata, \code{read_blocks} can handle an arbitrary number of additional
- pieces of information to extract from each blockcurve file as metadata.
- These pieces of information are specified as a named list of vectors
- where each vector is the c(row, column) where the information is to be
- pulled from in the input files.
+For \code{metadata}, \code{read_blocks} can handle an arbitrary number of additional
+pieces of information to extract from each blockcurve file as metadata.
+These pieces of information are specified as a named list of vectors
+where each vector is the \code{c(row, column)} where the information is to be
+pulled from in the input files.
 
- This metadata is returned as the second list element of each
- blockcurve, e.g.:
- 
-  [[1]] [1] "data" #1 [2] "metadata"  [2][1] name #1
-  
-  [2][2] date-time #1
-  
-  [2][3] temp #1
-  
-  [[2]] [1] "data" #2 [2] "metadata"  [2][1] name #2
-  
-  [2][2] date-time #2
-  
-  [2][3] temp #2
-  
-  ...
+This metadata is returned as the second list element of each
+blockcurve, e.g.:
 
- Calling \link{uninterleave} on the output of read_blocks works on block data
- and the associated metadata because uninterleave operates on the highest 
- level entries of the list (the [[1]] [[2]] level items), 
- leaving the meta-data associated with the block data
+\verb{[[1]]} \verb{[1]} "data" #1 \verb{[2]} "metadata"  \verb{[2][1]} name #1
 
- \link{trans_block_to_wide} integrates this metadata into the
- wide-shaped dataframe it produces
+\verb{[2][2]} date-time #1
+
+\verb{[2][3]} temp #1
+
+\verb{[[2]]} \verb{[1]} "data" #2 \verb{[2]} "metadata"  \verb{[2][1]} name #2
+
+\verb{[2][2]} date-time #2
+
+\verb{[2][3]} temp #2
+
+...
+
+Calling \link{uninterleave} on the output of \code{read_blocks} works on block data
+and the associated metadata because \link{uninterleave} operates on the highest
+level entries of the list (the \verb{[[1]]} \verb{[[2]]} level items),
+leaving the meta-data associated with the block data
+
+\link{trans_block_to_wide} integrates this metadata into the
+wide-shaped dataframe it produces
 }

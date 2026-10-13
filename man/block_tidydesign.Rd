@@ -12,10 +12,10 @@ block_tidydesign(
 )
 }
 \arguments{
-\item{tidydesign}{A tidydesign data.frame (e.g. as created by make_tidydesign)}
+\item{tidydesign}{A tidydesign data.frame (e.g. as created by \link{make_tidydesign})}
 
-\item{collapse}{NULL or a string to use for concatenating design elements
-together. If NULL each design column will be put into its
+\item{collapse}{\code{NULL} or a string to use for concatenating design elements
+together. If \code{NULL} each design column will be put into its
 own block. If a string, that string will be used to \link{paste}
 together all design elements and all design elements will
 be returned in a single block}
@@ -28,10 +28,10 @@ well names}
 }
 \value{
 A list of blockdesign data.frames (if \code{collapse} is not
-        \code{NULL} the list is of length 1
+\code{NULL} the list is of length 1
 }
 \description{
 This function allows users to convert designs created with tidydesign
- into a block format for easy output to csv for inclusion in lab notebooks,
- etc in a human-readable format
+into a block format for easy output to csv for inclusion in lab notebooks,
+etc in a human-readable format
 }

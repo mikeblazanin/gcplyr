@@ -15,18 +15,18 @@ by \code{x}, with \code{x} the index vector.}
 
 \item{...}{Additional arguments passed to \link{smooth.spline}.}
 
-\item{na.rm}{logical whether NA's should be removed before analyzing.
-Required to be TRUE if any \code{x} or \code{y} values are NA.}
+\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing.
+Required to be \code{TRUE} if any \code{x} or \code{y} values are \code{NA}.}
 }
 \value{
-Similar to \link{smooth.spline}, an object of class 
-        "\code{smooth.spline}" with many components. Differs in that
-        x, y, and w have NA's at any indices where \code{x} or \code{y} were 
-        NA in the inputs, and x, y, and w are returned to match the input 
-        \code{x} in order and length
+Similar to \link{smooth.spline}, an object of class
+"\code{smooth.spline}" with many components. Differs in that
+\code{x}, \code{y}, and \code{w} have \code{NA}'s at any indices where \code{x} or \code{y} were
+\code{NA} in the inputs, and \code{x}, \code{y}, and \code{w} are returned to match the input
+\code{x} in order and length
 }
 \description{
-This function is a wrapper for \link{smooth.spline}, which fits 
+This function is a wrapper for \link{smooth.spline}, which fits
 a cubic smoothing spline to the supplied data, but includes the option
 to remove \code{NA} values, and returns values in the original order.
 }

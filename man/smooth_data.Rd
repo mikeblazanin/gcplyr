@@ -16,96 +16,99 @@ smooth_data(
 )
 }
 \arguments{
-\item{...}{Arguments passed to \link{loess}, \link[mgcv]{gam},
-\link{moving_average}, \link{moving_median}, or 
-\link{smooth.spline}. Typically includes tuning 
+\item{...}{Arguments passed to \link{loess}, \link[mgcv:gam]{gam},
+\link{moving_average}, \link{moving_median}, or
+\link{smooth.spline}. Typically includes tuning
 parameter(s), which in some cases are required.
 See Details for more information.}
 
-\item{x}{An (often optional) vector of predictor values to smooth along 
+\item{x}{An (often optional) vector of predictor values to smooth along
 (e.g. time)}
 
-\item{y}{A vector of response values to be smoothed (e.g. density). If NULL,
-\code{formula} and \code{data} *must* be provided via \code{...}}
+\item{y}{A vector of response values to be smoothed (e.g. density). If \code{NULL},
+\code{formula} and \code{data} \emph{must} be provided via \code{...}}
 
 \item{sm_method}{Argument specifying which smoothing method should
-be used to smooth data. Options include 
+be used to smooth data. Options include
 "moving-average", "moving-median", "loess", "gam",
 and "smooth.spline".}
 
-\item{subset_by}{An optional vector as long as \code{y}. 
-\code{y} will be split by the unique values of this vector 
-and the smoothed data for each group will be calculated 
+\item{subset_by}{An optional vector as long as \code{y}.
+\code{y} will be split by the unique values of this vector
+and the smoothed data for each group will be calculated
 independently of the others.
 
-This provides an internally-implemented approach similar
-to \link[dplyr]{group_by} and \link[dplyr]{mutate}}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             This provides an internally-implemented approach similar
+             to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
+}\if{html}{\out{</div>}}}
 
 \item{return_fitobject}{logical whether entire object returned
-by fitting function should be returned. If FALSE,
+by fitting function should be returned. If \code{FALSE},
 just fitted values are returned.}
 
 \item{warn_ungrouped}{logical whether warning should be issued when
 \code{smooth_data} is being called on ungrouped data
 and \code{subset_by = NULL}.}
 
-\item{warn_gam_no_s}{logical whether warning should be issued when gam is 
-used without \code{s()} in the formula.}
+\item{warn_gam_no_s}{logical whether warning should be issued when \link[mgcv:gam]{gam} is
+used without \link[mgcv:s]{s} in the formula.}
 }
 \value{
-If \code{return_fitobject == FALSE:}
+If \verb{return_fitobject == FALSE:}
 
-        A vector, the same length as \code{y}, with the now-smoothed y values
-        
-        If \code{return_fitobject == TRUE:}
-        
-        A list the same length as unique(subset_by) where each element is
-        an object of the same class as returned by the smoothing method
-        (typically a named list-like object)
+\if{html}{\out{<div class="sourceCode">}}\preformatted{    A vector, the same length as `y`, with the now-smoothed `y` values
+    
+    If `return_fitobject == TRUE:`
+    
+    A list the same length as `unique(subset_by)` where each element is
+    an object of the same class as returned by the smoothing method
+    (typically a named list-like object)
+}\if{html}{\out{</div>}}
 }
 \description{
 This function calls other functions to smooth growth curve data
 }
 \details{
-For \link{moving_average} and \link{moving_median}, 
-           passing \code{window_width} or \code{window_width_n} via 
-           \code{...} is required. \code{window_width} sets the width
-           of the moving window in units of \code{x}, while 
-           \code{window_width_n} sets the width in units of number
-           of data points. Larger values for either will produce more 
-           "smoothed" data.
-           
-           For \link{loess}, the \code{span} argument sets the fraction of
-           data points that should be included in each calculation. It's
-           typically best to specify, since the default of 0.75 is often
-           too large for growth curves data. Larger values of \code{span} 
-           will produce more more "smoothed" data
-           
-           For \code{gam}, both arguments to \link[mgcv]{gam} and 
-           \link[mgcv]{s} can be provided via \code{...}. Most frequently, 
-           the \code{k} argument to \link[mgcv]{s} sets the number of 
-           "knots" the spline-fitting can use. Smaller values will be more 
-           "smoothed".
-           
-           When using \code{sm_method = "gam"}, advanced users may also modify 
-           other parameters of \code{s()}, including the smoothing basis 
-           \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
-           the default), cubic regressions (\code{bs = "cr"}), or many other 
-           options (see \link[mgcv]{s}). I recommend leaving the default 
-           thin plate regressions, whose main drawback is that they are 
-           computationally intensive to calculate. For growth curves data, 
-           this is unlikely to be relevant.
-           
-           As an alternative to passing \code{y}, for more advanced needs 
-           with \link{loess} or \link[mgcv]{gam}, \code{formula} and \code{data} 
-           can be passed to \code{smooth_data} via the \code{...} argument 
-           (in lieu of \code{y}).
-         
-           In this case, the formula should specify the response (e.g. density) 
-           and predictors. For \code{gam} smoothing, the formula should
-           typically be of the format: y ~ s(x), which uses 
-           \link[mgcv]{s} to smooth the data. The data argument should be a 
-           \code{data.frame} containing the variables in the formula.
-           In such cases, \code{subset_by} can still be specified as a vector
-           with length \code{nrow(data)}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{       For [moving_average] and [moving_median], 
+       passing `window_width` or `window_width_n` via 
+       `...` is required. `window_width` sets the width
+       of the moving window in units of `x`, while 
+       `window_width_n` sets the width in units of number
+       of data points. Larger values for either will produce more 
+       "smoothed" data.
+       
+       For [loess], the `span` argument sets the fraction of
+       data points that should be included in each calculation. It's
+       typically best to specify, since the default of 0.75 is often
+       too large for growth curves data. Larger values of `span` 
+       will produce more more "smoothed" data
+       
+       For [gam][mgcv::gam], both arguments to [gam][mgcv::gam] and 
+       [s][mgcv::s] can be provided via `...`. Most frequently, 
+       the `k` argument to [s][mgcv::s] sets the number of 
+       "knots" the spline-fitting can use. Smaller values will be more 
+       "smoothed".
+       
+       When using `sm_method = "gam"`, advanced users may also modify 
+       other parameters of [s][mgcv::s], including the smoothing basis 
+       `bs`. These bases can be thin plate (`bs = "tp"`, 
+       the default), cubic regressions (`bs = "cr"`), or many other 
+       options (see [s][mgcv::s]). I recommend leaving the default 
+       thin plate regressions, whose main drawback is that they are 
+       computationally intensive to calculate. For growth curves data, 
+       this is unlikely to be relevant.
+       
+       As an alternative to passing `y`, for more advanced needs 
+       with [loess] or [gam][mgcv::gam], `formula` and `data` 
+       can be passed to `smooth_data` via the `...` argument 
+       (in lieu of `y`).
+     
+       In this case, the formula should specify the response (e.g. density) 
+       and predictors. For [gam][mgcv::gam] smoothing, the formula should
+       typically be of the format: y ~ s(x), which uses 
+       [s][mgcv::s] to smooth the data. The data argument should be a 
+       `data.frame` containing the variables in the formula.
+       In such cases, `subset_by` can still be specified as a vector
+       with length `nrow(data)`
+}\if{html}{\out{</div>}}
 }

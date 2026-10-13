@@ -29,27 +29,29 @@ where each one is a tidy-shaped data file}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
 
-                 "csv", "xls", or "xlsx".
-                 
-                 "tbl" or "table" to use \link{read.table} to read the file,
-                 "csv2" to use \link{read.csv2}, "delim" to 
-                 use \link{read.delim}, or "delim2" to use \link{read.delim2}.
-                 
-                 If none provided, \code{read_tidys} will infer filetype(s) 
-                 from the extension(s) in \code{files}. When extension is 
-                 not "csv", "xls", or "xlsx", will use "table".}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             "csv", "xls", or "xlsx".
+             
+             "tbl" or "table" to use [read.table] to read the file,
+             "csv2" to use [read.csv2], "delim" to 
+             use [read.delim], or "delim2" to use [read.delim2].
+             
+             If none provided, `read_tidys` will infer filetype(s) 
+             from the extension(s) in `files`. When extension is 
+             not "csv", "xls", or "xlsx", will use "table".
+}\if{html}{\out{</div>}}}
 
-\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
+\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data are located in \code{files}.
 
-Can be a vector or list the same length as \code{files}, or
-a single value that applies to all \code{files}. Values
-can be numeric or a string that will be automatically
-converted to numeric by \link{from_excel}.
-
-If not provided, data is presumed to begin on the first
-row and column of the file(s) and end on the last row and
-column of the file(s).}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            Can be a vector or list the same length as `files`, or
+            a single value that applies to all `files`. Values
+            can be numeric or a string that will be automatically
+            converted to numeric by [from_excel].
+            
+            If not provided, data is presumed to begin on the first
+            row and column of the file(s) and end on the last row and
+            column of the file(s).
+}\if{html}{\out{</div>}}}
 
 \item{sheet}{The sheet of the input files where data is located (if input
 files are .xls or .xlsx). If not specified defaults to the first}
@@ -61,33 +63,34 @@ the \code{names_to_col} argument}
 
 \item{run_names_header}{Should the run names (provided in \code{run_names}
 or inferred from \code{files}) be added as a column to the
-output? 
+output?
 
-If \code{run_names_header} is TRUE, they will be added with
-the column name "run_name"
+\if{html}{\out{<div class="sourceCode">}}\preformatted{                If `run_names_header` is `TRUE`, they will be added with
+                the column name "run_name"
+                
+                If `run_names_header` is `FALSE`, they will not be added.
+                
+                If `run_names_header` is a string, they will be added
+                and the column name will be the string specified
+                for `run_names_header`.
+                
+                If `run_names_header` is `NULL`, they only will be 
+                added if there are multiple tidy data.frames being read.
+                In which case, the column name will be "run_name"
+}\if{html}{\out{</div>}}}
 
-If \code{run_names_header} is FALSE, they will not be added.
-
-If \code{run_names_header} is a string, they will be added
-and the column name will be the string specified
-for \code{run_names_header}.
-
-If \code{run_names_header} is NULL, they only will be 
-added if there are multiple tidy data.frames being read.
-In which case, the column name will be "run_name"}
-
-\item{run_names_dot}{If run_names are inferred from filenames, should 
+\item{run_names_dot}{If \code{run_names} are inferred from filenames, should
 the leading './' (if any) be retained}
 
-\item{run_names_path}{If run_names are inferred from filenames, should 
+\item{run_names_path}{If \code{run_names} are inferred from filenames, should
 the path (if any) be retained}
 
-\item{run_names_ext}{If run_names are inferred from filenames, should 
+\item{run_names_ext}{If \code{run_names} are inferred from filenames, should
 the file extension (if any) be retained}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \link{read.csv},
-\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
 or \link{read.table}}
 
 \item{extension}{Deprecated, use \code{filetype} instead}
@@ -95,26 +98,26 @@ or \link{read.table}}
 \item{names_to_col}{Deprecated, use \code{run_names_header} instead}
 
 \item{...}{Other arguments passed to \link{read.csv},
-\link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
+\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx}, or
 \link{read.table}
 sheet}
 }
 \value{
 A dataframe containing a single tidy data.frame, or
-        A list of tidy-shaped data.frames named by filename
+A list of tidy-shaped data.frames named by filename
 }
 \description{
 A function that imports tidy-shaped files into R. Largely acts as a
-wrapper for \link{read.csv}, \link[readxl]{read_xls},
-\link[readxl]{read_xls}, or \link[readxl]{read_xlsx}, but can handle
-multiple files at once and has additional options for taking subsets 
-of rows/columns rather than the entire file and for adding filename 
+wrapper for \link{read.csv}, \link[readxl:read_excel]{read_xls},
+\link[readxl:read_excel]{read_xls}, or \link[readxl:read_excel]{read_xlsx}, but can handle
+multiple files at once and has additional options for taking subsets
+of rows/columns rather than the entire file and for adding filename
 or run names as an added column in the output.
 }
 \details{
-\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-\code{sheet} and \code{filetype} can either be a single value that 
+\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol},
+\code{sheet} and \code{filetype} can either be a single value that
 applies for all files or vectors or lists the same length as \code{files}
 
-Note that the startrow is always assumed to be a header
+Note that the \code{startrow} is always assumed to be a header
 }

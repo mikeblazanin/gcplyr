@@ -44,5 +44,5 @@ make_design(nrows = 8, ncols = 12,
 
 }
 \seealso{
-[gcplyr::make_design()]
+\link{make_design}
 }

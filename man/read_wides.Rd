@@ -31,31 +31,33 @@ where each one is a widemeasures set of data}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
 
-                 "csv", "xls", or "xlsx".
-                 
-                 "tbl" or "table" to use \link{read.table} to read the file,
-                 "csv2" to use \link{read.csv2}, "delim" to 
-                 use \link{read.delim}, or "delim2" to use \link{read.delim2}.
-                 
-                 If none provided, \code{read_wides} will infer filetype(s) 
-                 from the extension(s) in \code{files}. When extension is 
-                 not "csv", "xls", or "xlsx", will use "table".}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{             "csv", "xls", or "xlsx".
+             
+             "tbl" or "table" to use [read.table] to read the file,
+             "csv2" to use [read.csv2], "delim" to 
+             use [read.delim], or "delim2" to use [read.delim2].
+             
+             If none provided, `read_wides` will infer filetype(s) 
+             from the extension(s) in `files`. When extension is 
+             not "csv", "xls", or "xlsx", will use "table".
+}\if{html}{\out{</div>}}}
 
-\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where 
+\item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data are located in \code{files}.
 
-Can be a vector or list the same length as \code{files}, or
-a single value that applies to all \code{files}. Values
-can be numeric or a string that will be automatically
-converted to numeric by \link{from_excel}.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            Can be a vector or list the same length as `files`, or
+            a single value that applies to all `files`. Values
+            can be numeric or a string that will be automatically
+            converted to numeric by [from_excel].
+            
+            If not provided, data is presumed to begin on the first
+            row and column of the file(s) and end on the last row and
+            column of the file(s).
+}\if{html}{\out{</div>}}}
 
-If not provided, data is presumed to begin on the first
-row and column of the file(s) and end on the last row and
-column of the file(s).}
-
-\item{header}{logical for whether there is a header in the data. If FALSE
-columns are simply numbered. If TRUE, the first row of the
-data (\code{startrow} if specified) is used 
+\item{header}{logical for whether there is a header in the data. If \code{FALSE}
+columns are simply numbered. If \code{TRUE}, the first row of the
+data (\code{startrow} if specified) is used
 as the column names}
 
 \item{sheet}{The sheet of the input files where data is located (if input
@@ -66,40 +68,41 @@ sheet}
 file names if not specified}
 
 \item{run_names_header}{Should the run names (provided in \code{run_names}
-or inferred from \code{files}) be added as a column to 
-the widemeasures? If \code{run_names_header} is NULL, 
-they will not be. If \code{run_names_header} is a string, 
-that string will be the column header for the column 
+or inferred from \code{files}) be added as a column to
+the widemeasures? If \code{run_names_header} is \code{NULL},
+they will not be. If \code{run_names_header} is a string,
+that string will be the column header for the column
 where the names will be stored}
 
-\item{run_names_dot}{If run_names are inferred from filenames, should 
+\item{run_names_dot}{If \code{run_names} are inferred from filenames, should
 the leading './' (if any) be retained}
 
-\item{run_names_path}{If run_names are inferred from filenames, should 
+\item{run_names_path}{If \code{run_names} are inferred from filenames, should
 the path (if any) be retained}
 
-\item{run_names_ext}{If run_names are inferred from filenames, should 
+\item{run_names_ext}{If \code{run_names} are inferred from filenames, should
 the file extension (if any) be retained}
 
-\item{metadata}{(optional) non-spectrophotometric data that should be 
-associated with each read widemeasures. A named list where 
+\item{metadata}{(optional) non-spectrophotometric data that should be
+associated with each read widemeasures. A named list where
 each item in the list is either: a vector of length 2, or
-a list containing two vectors. 
+a list containing two vectors.
 
-In the former case, each vector should provide the row and 
-column where the metadata is located in all of the
-blockmeasures input files.
-
-In the latter case, the first vector should provide the rows
-where the metadata is located in each of the corresponding
-input files, and the second vector should provide the 
-columns where the metadata is located in each of the
-corresponding input files. (This case is typically used 
-when reading multiple blocks from a single file.)}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            In the former case, each vector should provide the row and 
+            column where the metadata is located in all of the
+            blockmeasures input files.
+            
+            In the latter case, the first vector should provide the rows
+            where the metadata is located in each of the corresponding
+            input files, and the second vector should provide the 
+            columns where the metadata is located in each of the
+            corresponding input files. (This case is typically used 
+            when reading multiple blocks from a single file.)
+}\if{html}{\out{</div>}}}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \link{read.csv},
-\link[readxl]{read_xls}, \link[readxl]{read_xlsx},
+\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
 or \link{read.table}}
 
 \item{extension}{Deprecated, use \code{filetype} instead}
@@ -107,18 +110,18 @@ or \link{read.table}}
 \item{names_to_col}{Deprecated, use \code{run_names_header} instead}
 
 \item{...}{Other arguments passed to \link{read.csv},
-\link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
+\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx}, or
 \link{read.table}}
 }
 \value{
 A dataframe containing a single widemeasures, or
-        A list of widemeasures named by filename
+A list of widemeasures named by filename
 }
 \description{
 A function that imports widemeasures in files into the R environment
 }
 \details{
-startrow, endrow, startcol, endcol, timecol, sheet and filetype 
+\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, \code{sheet} and \code{filetype}
 can either be a single value that applies for all files or
 vectors or lists the same length as \code{files},
 }

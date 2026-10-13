@@ -15,13 +15,13 @@ trans_block_to_wide(
 \item{blocks}{Blocks, either a single dataframe or a list of
 dataframes}
 
-\item{wellnames_sep}{String to use as separator for well names between 
+\item{wellnames_sep}{String to use as separator for well names between
 row name and column name (ordered according to
 \code{colnames_first}}
 
 \item{nested_metadata}{A logical indicating the existence of nested metadata
 in the \code{blockmeasures} list, e.g. as is typically
-output by \link{read_blocks}. If \code{NULL}, will 
+output by \link{read_blocks}. If \code{NULL}, will
 attempt to infer existence of nested metadata}
 
 \item{colnames_first}{In the wellnames created by \link{paste}-ing the

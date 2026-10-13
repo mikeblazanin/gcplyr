@@ -34,23 +34,25 @@ lag_time(
 \item{blank}{y-value associated with a "blank" where the density is 0.
 Is required when \code{trans_y = TRUE}.
 
-A vector of blank values may be specified only when all of 
-\code{slope}, \code{x1}, \code{y1}, and \code{y0} are provided
-as vectors}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{           A vector of `blank` values may be specified only when all of 
+           `slope`, `x1`, `y1`, and `y0` are provided
+           as vectors
+}\if{html}{\out{</div>}}}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
-                transformation of y-values.
+transformation of y-values.
 
-                \code{'log'} is the default, producing calculations of
-                lag time assuming a transition to exponential growth
-                
-                \code{'linear'} is available for alternate uses}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{            `'log'` is the default, producing calculations of
+            lag time assuming a transition to exponential growth
+            
+            `'linear'` is available for alternate uses
+}\if{html}{\out{</div>}}}
 
 \item{na.rm}{a logical indicating whether missing values or values that
-become \code{NA} or infinite during log-transformation should 
+become \code{NA} or infinite during log-transformation should
 be removed}
 
-\item{slope}{Slope to project from x1,y1 to y0 (typically per-capita growth
+\item{slope}{Slope to project from \code{x1},\code{y1} to \code{y0} (typically per-capita growth
 rate). If not provided, will be calculated as \code{max(deriv)}}
 
 \item{x1}{x value (typically time) to project slope from. If not provided,
@@ -60,33 +62,33 @@ will be calculated as \code{x[which.max(deriv)]}.}
 will be calculated as \code{y[which.max(deriv)]}.}
 
 \item{y0}{y value (typically density) to find intersection of slope from
-x1, y1 with. If not provided, will be calculated as \code{min(y)}}
+\code{x1}, \code{y1} with. If not provided, will be calculated as \code{min(y)}}
 
-\item{warn_logtransform_warnings}{logical whether warning should be issued 
-when log(y) produced warnings.}
+\item{warn_logtransform_warnings}{logical whether warning should be issued
+when \code{log(y)} produced warnings.}
 
-\item{warn_logtransform_infinite}{logical whether warning should be issued 
-when log(y) produced infinite values that will
+\item{warn_logtransform_infinite}{logical whether warning should be issued
+when \code{log(y)} produced infinite values that will
 be treated as \code{NA}.}
 
-\item{warn_min_y_mismatch}{logical whether warning should be issued when 
-\code{min(y)} does not equal 
+\item{warn_min_y_mismatch}{logical whether warning should be issued when
+\code{min(y)} does not equal
 \code{min(y[!is.na(x)])}.}
 
-\item{warn_multiple_maxderiv}{logical whether warning should be issued when 
+\item{warn_multiple_maxderiv}{logical whether warning should be issued when
 there are multiple points in \code{deriv} that
 are tied for the highest, and only the first
 will be used.}
 
-\item{warn_one_lag}{logical whether warning should be issued when 
+\item{warn_one_lag}{logical whether warning should be issued when
 some, but not all, inputs are vectorized, and
 only one lag time value will be returned.}
 
 \item{warn_no_lag}{logical whether warning should be issued when calculated
-lag time is less than the minimum value of x.}
+lag time is less than the minimum value of \code{x}.}
 
 \item{warn_blank_length}{logical whether warning should be issued when an
-unexpected number of \code{blank} values was 
+unexpected number of \code{blank} values was
 provided and only the first will be used}
 }
 \value{
@@ -103,9 +105,9 @@ For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
 (using the per-capita derivative and \code{trans_y = 'log'}).
 
 Advanced users may wish to use alternate values for the slope of the tangent
-line (\code{slope}), origination point of the tangent line (\code{x1}, 
-\code{y1}), or minimum y-value \code{y0}. If specified, these values will 
-override the default calculations. If and only if all of \code{slope}, 
-\code{x1}, \code{y1}, and \code{y0} are provided, \code{lag_time} is 
+line (\code{slope}), origination point of the tangent line (\code{x1},
+\code{y1}), or minimum y-value \code{y0}. If specified, these values will
+override the default calculations. If and only if all of \code{slope},
+\code{x1}, \code{y1}, and \code{y0} are provided, \code{lag_time} is
 vectorized on their inputs and will return a vector of lag time values.
 }

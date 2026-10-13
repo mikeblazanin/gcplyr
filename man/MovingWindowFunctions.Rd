@@ -33,7 +33,7 @@ moving_median(
 )
 }
 \arguments{
-\item{formula}{Formula specifying the numeric response (density) 
+\item{formula}{Formula specifying the numeric response (density)
 and numeric predictor (time).}
 
 \item{data}{Dataframe containing variables in \code{formula}}
@@ -53,23 +53,24 @@ number of data points).}
 \item{window_width_frac}{Width of the window (as a fraction of the range of
 \code{x})}
 
-\item{na.rm}{logical whether NA's should be removed before analyzing}
+\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
 
-\item{warn_nonnumeric_sort}{logical whether warning should be issued when 
-predictor variable that data is sorted by is 
+\item{warn_nonnumeric_sort}{logical whether warning should be issued when
+predictor variable that data is sorted by is
 non-numeric.}
 }
 \value{
-Vector of smoothed data, with NA's appended at both ends
+Vector of smoothed data, with \code{NA}'s appended at both ends
 }
 \description{
 These functions use a moving window to smooth data
 }
 \details{
 Either \code{x} and \code{y} or \code{formula} and \code{data}
-         must be provided.
-         
-         Values of \code{NULL} or \code{NA} will be ignored for any of
-         \code{window_width_n}, \code{window_width},
-         \code{window_width_n_frac}, or \code{window_width_frac}
+must be provided.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     Values of `NULL` or `NA` will be ignored for any of
+     `window_width_n`, `window_width`,
+     `window_width_n_frac`, or `window_width_frac`
+}\if{html}{\out{</div>}}
 }

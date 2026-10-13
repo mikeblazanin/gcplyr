@@ -116,12 +116,12 @@ infer_names <- function(df,
 #' 
 #' @param filetype The vector of filetypes (often extensions) or NULL
 #' @param files The vector of filenames/paths
-#' @param needed_len Parameter to pass to \link{check_input_dimensions} for
+#' @param needed_len Parameter to pass to [check_input_dimensions] for
 #'                   desired length of output vector
-#' @param needed_name Parameter to pass to \link{check_input_dimensions} for
+#' @param needed_name Parameter to pass to [check_input_dimensions] for
 #'                    name of desired length for error message
-#' @param ... Other arguments to pass to \link{check_input_dimensions}, most
-#'            frequently \code{needed_name} for what the desired length 
+#' @param ... Other arguments to pass to [check_input_dimensions], most
+#'            frequently `needed_name` for what the desired length 
 #'            corresponds to (e.g. number of files)
 #' 
 #' @return vector of filetypes
@@ -181,13 +181,13 @@ parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
 #' @param filetype The type of file, one of:
 #'                 'tbl', 'table', 'csv', 'xls', 'xlsx', 'csv2', 'delim',
 #'                 'delim2'
-#' @param na.strings Strings to be interpreted as \code{NA}
+#' @param na.strings Strings to be interpreted as `NA`
 #' @param sheet What sheet to read (only needed for 'xls' and 'xlsx')
 #' 
 #' @details None of the specified arguments should be a vector, they should
 #'          all be single values
 #' 
-#' @return The \code{data.frame} resulting from reading the file
+#' @return The `data.frame` resulting from reading the file
 #' 
 #' @noRd
 read_gcfile <- function(file, filetype, na.strings, sheet = NULL, ...) {
@@ -302,7 +302,7 @@ read_gcfile <- function(file, filetype, na.strings, sheet = NULL, ...) {
 #' @param row The row where metadata should be
 #' @param col The column where metadata should be
 #' 
-#' @return The metadata, or \code{NA} with a warning if out of range
+#' @return The metadata, or `NA` with a warning if out of range
 #' 
 #' @noRd
 get_metadata <- function(df, row, col) {
@@ -329,20 +329,20 @@ get_metadata <- function(df, row, col) {
 #' 
 #'                  "csv", "xls", or "xlsx".
 #'                  
-#'                  "tbl" or "table" to use \link{read.table} to read the file,
-#'                  "csv2" to use \link{read.csv2}, "delim" to 
-#'                  use \link{read.delim}, or "delim2" to use \link{read.delim2}.
+#'                  "tbl" or "table" to use [read.table] to read the file,
+#'                  "csv2" to use [read.csv2], "delim" to 
+#'                  use [read.delim], or "delim2" to use [read.delim2].
 #'                  
-#'                  If none provided, \code{read_blocks} will infer filetype(s) 
-#'                  from the extension(s) in \code{files}. When extension is 
+#'                  If none provided, `read_blocks` will infer filetype(s) 
+#'                  from the extension(s) in `files`. When extension is 
 #'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
-#'                 the measures data are located in \code{files}.
+#'                 the measures data are located in `files`.
 #'                 
-#'                 Can be a vector or list the same length as \code{files}, or
-#'                 a single value that applies to all \code{files}. Values
+#'                 Can be a vector or list the same length as `files`, or
+#'                 a single value that applies to all `files`. Values
 #'                 can be numeric or a string that will be automatically
-#'                 converted to numeric by \link{from_excel}.
+#'                 converted to numeric by [from_excel].
 #'                 
 #'                 If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
@@ -365,52 +365,52 @@ get_metadata <- function(df, row, col) {
 #'                 corresponding input files. (This case is typically used 
 #'                 when reading multiple blocks from a single file.)
 #' @param block_names (optional) vector of names corresponding to each plate
-#'                 in \code{files}. If not provided, block_names are inferred
+#'                 in `files`. If not provided, block_names are inferred
 #'                 from the filenames
 #' @param block_names_header The name of the metadata field containing the
-#'                          \code{block_names}
+#'                          `block_names`
 #' @param block_names_dot If block_names are inferred from filenames, should 
 #'                        the leading './' (if any) be retained
 #' @param block_names_path If block_names are inferred from filenames, should 
 #'                        the path (if any) be retained
 #' @param block_names_ext If block_names are inferred from filenames, should 
 #'                        the file extension (if any) be retained
-#' @param header   \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+#' @param header   `TRUE`, `FALSE`, or `NA`, or a vector of
 #'                 such values, indicating whether the file(s) contains the
-#'                 column names as its first line. If \code{header = NA}
+#'                 column names as its first line. If `header = NA`
 #'                 will attempt to infer the presence of column names. If
-#'                 \code{header = FALSE} or no column names are inferred when 
-#'                 \code{header = NA}, column names will be generated
-#'                 automatically according to \code{wellnames_numeric}
-#' @param sider    \code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+#'                 `header = FALSE` or no column names are inferred when 
+#'                 `header = NA`, column names will be generated
+#'                 automatically according to `wellnames_numeric`
+#' @param sider    `TRUE`, `FALSE`, or `NA`, or a vector of
 #'                 such values, indicating whether the file(s) contains the
-#'                 row names as its first column. If \code{sider = NA}
+#'                 row names as its first column. If `sider = NA`
 #'                 will attempt to infer the presence of row names. If
-#'                 \code{sider = FALSE} or no row names are inferred when 
-#'                 \code{sider = NA}, row names will be generated
-#'                 automatically according to \code{wellnames_numeric}
+#'                 `sider = FALSE` or no row names are inferred when 
+#'                 `sider = NA`, row names will be generated
+#'                 automatically according to `wellnames_numeric`
 #' @param wellnames_numeric If row names and column names are not provided in the
-#'                        input dataframe as specified by \code{header}
-#'                        and \code{sider}, then names will be generated
-#'                        automatically according to \code{wellnames_numeric}.
+#'                        input dataframe as specified by `header`
+#'                        and `sider`, then names will be generated
+#'                        automatically according to `wellnames_numeric`.
 #'                        
-#'                        If \code{wellnames_numeric} is TRUE, rows and columns
+#'                        If `wellnames_numeric` is TRUE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
 #'                        
-#'                        If \code{wellnames_numeric} is FALSE, rows will be
+#'                        If `wellnames_numeric` is FALSE, rows will be
 #'                        lettered A through Z, while columns will be numbered
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values by \link{read.csv},
-#'                   \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
-#'                   or \link{read.table}
-#' @param extension Deprecated, use \code{filetype} instead
-#' @param block_name_header Deprecated, use \code{block_names_header} instead
-#' @param ...   Other arguments passed to \link{read.csv},
-#'              \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
-#'              or \link{read.table}
+#'                   as `NA` values by [read.csv],
+#'                   [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
+#'                   or [read.table]
+#' @param extension Deprecated, use `filetype` instead
+#' @param block_name_header Deprecated, use `block_names_header` instead
+#' @param ...   Other arguments passed to [read.csv],
+#'              [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
+#'              or [read.table]
 #'
 #' @details 
-#'  For metadata, \code{read_blocks} can handle an arbitrary number of additional
+#'  For metadata, `read_blocks` can handle an arbitrary number of additional
 #'  pieces of information to extract from each blockcurve file as metadata.
 #'  These pieces of information are specified as a named list of vectors
 #'  where each vector is the c(row, column) where the information is to be
@@ -433,12 +433,12 @@ get_metadata <- function(df, row, col) {
 #'   
 #'   ...
 #' 
-#'  Calling \link{uninterleave} on the output of read_blocks works on block data
+#'  Calling [uninterleave] on the output of read_blocks works on block data
 #'  and the associated metadata because uninterleave operates on the highest 
 #'  level entries of the list (the [[1]] [[2]] level items), 
 #'  leaving the meta-data associated with the block data
 #' 
-#'  \link{trans_block_to_wide} integrates this metadata into the
+#'  [trans_block_to_wide] integrates this metadata into the
 #'  wide-shaped dataframe it produces
 #' 
 #' @return A list where each entry is a list containing the block data frame
@@ -655,7 +655,7 @@ read_blocks <- function(files, filetype = NULL,
 #' @details
 #' startrow, endrow, startcol, endcol, timecol, sheet and filetype 
 #' can either be a single value that applies for all files or
-#' vectors or lists the same length as \code{files}, 
+#' vectors or lists the same length as `files`, 
 #' 
 #' @param files A vector of filepaths (relative to current working directory)
 #'              where each one is a widemeasures set of data
@@ -663,37 +663,37 @@ read_blocks <- function(files, filetype = NULL,
 #' 
 #'                  "csv", "xls", or "xlsx".
 #'                  
-#'                  "tbl" or "table" to use \link{read.table} to read the file,
-#'                  "csv2" to use \link{read.csv2}, "delim" to 
-#'                  use \link{read.delim}, or "delim2" to use \link{read.delim2}.
+#'                  "tbl" or "table" to use [read.table] to read the file,
+#'                  "csv2" to use [read.csv2], "delim" to 
+#'                  use [read.delim], or "delim2" to use [read.delim2].
 #'                  
-#'                  If none provided, \code{read_wides} will infer filetype(s) 
-#'                  from the extension(s) in \code{files}. When extension is 
+#'                  If none provided, `read_wides` will infer filetype(s) 
+#'                  from the extension(s) in `files`. When extension is 
 #'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
-#'                 the data are located in \code{files}.
+#'                 the data are located in `files`.
 #'                 
-#'                 Can be a vector or list the same length as \code{files}, or
-#'                 a single value that applies to all \code{files}. Values
+#'                 Can be a vector or list the same length as `files`, or
+#'                 a single value that applies to all `files`. Values
 #'                 can be numeric or a string that will be automatically
-#'                 converted to numeric by \link{from_excel}.
+#'                 converted to numeric by [from_excel].
 #'                 
 #'                 If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
 #' @param header logical for whether there is a header in the data. If FALSE
 #'               columns are simply numbered. If TRUE, the first row of the
-#'               data (\code{startrow} if specified) is used 
+#'               data (`startrow` if specified) is used 
 #'               as the column names
 #' @param sheet The sheet of the input files where data is located (if input
 #'              files are .xls or .xlsx). If not specified defaults to the first
 #'              sheet
 #' @param run_names Names to give the widemeasures read in. By default uses the
 #'                   file names if not specified
-#' @param run_names_header Should the run names (provided in \code{run_names}
-#'                     or inferred from \code{files}) be added as a column to 
-#'                     the widemeasures? If \code{run_names_header} is NULL, 
-#'                     they will not be. If \code{run_names_header} is a string, 
+#' @param run_names_header Should the run names (provided in `run_names`
+#'                     or inferred from `files`) be added as a column to 
+#'                     the widemeasures? If `run_names_header` is NULL, 
+#'                     they will not be. If `run_names_header` is a string, 
 #'                     that string will be the column header for the column 
 #'                     where the names will be stored
 #' @param run_names_dot If run_names are inferred from filenames, should 
@@ -718,14 +718,14 @@ read_blocks <- function(files, filetype = NULL,
 #'                 corresponding input files. (This case is typically used 
 #'                 when reading multiple blocks from a single file.)
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values by \link{read.csv},
-#'                   \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
-#'                   or \link{read.table}
-#' @param extension Deprecated, use \code{filetype} instead
-#' @param names_to_col Deprecated, use \code{run_names_header} instead
-#' @param ...   Other arguments passed to \link{read.csv},
-#'              \link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
-#'              \link{read.table}
+#'                   as `NA` values by [read.csv],
+#'                   [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
+#'                   or [read.table]
+#' @param extension Deprecated, use `filetype` instead
+#' @param names_to_col Deprecated, use `run_names_header` instead
+#' @param ...   Other arguments passed to [read.csv],
+#'              [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx], or
+#'              [read.table]
 #'              
 #' @return A dataframe containing a single widemeasures, or
 #'         A list of widemeasures named by filename
@@ -916,8 +916,8 @@ read_wides <- function(files, filetype = NULL,
 #' Read tidy-shaped files
 #' 
 #' A function that imports tidy-shaped files into R. Largely acts as a
-#' wrapper for \link{read.csv}, \link[readxl]{read_xls},
-#' \link[readxl]{read_xls}, or \link[readxl]{read_xlsx}, but can handle
+#' wrapper for [read.csv], [read_xls][readxl::read_xls],
+#' [read_xls][readxl::read_xls], or [read_xlsx][readxl::read_xlsx], but can handle
 #' multiple files at once and has additional options for taking subsets 
 #' of rows/columns rather than the entire file and for adding filename 
 #' or run names as an added column in the output.
@@ -928,20 +928,20 @@ read_wides <- function(files, filetype = NULL,
 #' 
 #'                  "csv", "xls", or "xlsx".
 #'                  
-#'                  "tbl" or "table" to use \link{read.table} to read the file,
-#'                  "csv2" to use \link{read.csv2}, "delim" to 
-#'                  use \link{read.delim}, or "delim2" to use \link{read.delim2}.
+#'                  "tbl" or "table" to use [read.table] to read the file,
+#'                  "csv2" to use [read.csv2], "delim" to 
+#'                  use [read.delim], or "delim2" to use [read.delim2].
 #'                  
-#'                  If none provided, \code{read_tidys} will infer filetype(s) 
-#'                  from the extension(s) in \code{files}. When extension is 
+#'                  If none provided, `read_tidys` will infer filetype(s) 
+#'                  from the extension(s) in `files`. When extension is 
 #'                  not "csv", "xls", or "xlsx", will use "table".
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
-#'                 the data are located in \code{files}.
+#'                 the data are located in `files`.
 #'                 
-#'                 Can be a vector or list the same length as \code{files}, or
-#'                 a single value that applies to all \code{files}. Values
+#'                 Can be a vector or list the same length as `files`, or
+#'                 a single value that applies to all `files`. Values
 #'                 can be numeric or a string that will be automatically
-#'                 converted to numeric by \link{from_excel}.
+#'                 converted to numeric by [from_excel].
 #'                 
 #'                 If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
@@ -951,21 +951,21 @@ read_wides <- function(files, filetype = NULL,
 #' @param run_names Names to give the tidy files read in. By default uses the
 #'                  file names if not specified. These names may be added
 #'                  to the resulting data frame depending on the value of
-#'                  the \code{names_to_col} argument
-#' @param run_names_header Should the run names (provided in \code{run_names}
-#'                     or inferred from \code{files}) be added as a column to the
+#'                  the `names_to_col` argument
+#' @param run_names_header Should the run names (provided in `run_names`
+#'                     or inferred from `files`) be added as a column to the
 #'                     output? 
 #'                     
-#'                     If \code{run_names_header} is TRUE, they will be added with
+#'                     If `run_names_header` is TRUE, they will be added with
 #'                     the column name "run_name"
 #'                     
-#'                     If \code{run_names_header} is FALSE, they will not be added.
+#'                     If `run_names_header` is FALSE, they will not be added.
 #'                     
-#'                     If \code{run_names_header} is a string, they will be added
+#'                     If `run_names_header` is a string, they will be added
 #'                     and the column name will be the string specified
-#'                     for \code{run_names_header}.
+#'                     for `run_names_header`.
 #'                     
-#'                     If \code{run_names_header} is NULL, they only will be 
+#'                     If `run_names_header` is NULL, they only will be 
 #'                     added if there are multiple tidy data.frames being read.
 #'                     In which case, the column name will be "run_name"
 #' @param run_names_dot If run_names are inferred from filenames, should 
@@ -975,20 +975,20 @@ read_wides <- function(files, filetype = NULL,
 #' @param run_names_ext If run_names are inferred from filenames, should 
 #'                        the file extension (if any) be retained
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values by \link{read.csv},
-#'                   \link[readxl]{read_xls}, \link[readxl]{read_xlsx},
-#'                   or \link{read.table}
-#' @param extension Deprecated, use \code{filetype} instead
-#' @param names_to_col Deprecated, use \code{run_names_header} instead
-#' @param ...   Other arguments passed to \link{read.csv},
-#'              \link[readxl]{read_xls}, \link[readxl]{read_xlsx}, or
-#'              \link{read.table}
+#'                   as `NA` values by [read.csv],
+#'                   [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
+#'                   or [read.table]
+#' @param extension Deprecated, use `filetype` instead
+#' @param names_to_col Deprecated, use `run_names_header` instead
+#' @param ...   Other arguments passed to [read.csv],
+#'              [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx], or
+#'              [read.table]
 #'              sheet
 #'               
 #' @details
-#' \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-#' \code{sheet} and \code{filetype} can either be a single value that 
-#' applies for all files or vectors or lists the same length as \code{files}
+#' `startrow`, `endrow`, `startcol`, `endcol`, 
+#' `sheet` and `filetype` can either be a single value that 
+#' applies for all files or vectors or lists the same length as `files`
 #' 
 #' Note that the startrow is always assumed to be a header
 #' 
@@ -1119,8 +1119,8 @@ read_tidys <- function(files, filetype = NULL,
 #' Import blockmeasures
 #' 
 #' Function to import blockmeasures from files and return widemeasures
-#' This function acts as a wrapper to call \link{read_blocks}, 
-#' \link{uninterleave}, then \link{trans_block_to_wide} in one go
+#' This function acts as a wrapper to call [read_blocks], 
+#' [uninterleave], then [trans_block_to_wide] in one go
 #' 
 #' @param files Vector of filenames (as strings), each of which is a 
 #'              block-shaped file containing measures data. File formats
@@ -1130,29 +1130,29 @@ read_tidys <- function(files, filetype = NULL,
 #' @param plate_names (optional) Names to put onto the plates when output
 #' @param wellnames_sep String to use as separator for well names between 
 #'                      rowname and column name
-#' @param ... Other arguments to pass to \link{read_blocks}, \link{uninterleave},
-#'            or \link{trans_block_to_wide}
-#' @details     Common arguments that you may want to provide via \code{...}
+#' @param ... Other arguments to pass to [read_blocks], [uninterleave],
+#'            or [trans_block_to_wide]
+#' @details     Common arguments that you may want to provide via `...`
 #'              include:
 #' 
-#'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-#'              \code{sheet} - specifying the location of design information 
-#'              inside \code{files} to \link{read_blocks}
+#'              `startrow`, `endrow`, `startcol`, `endcol`, 
+#'              `sheet` - specifying the location of design information 
+#'              inside `files` to [read_blocks]
 #'              
-#'              \code{metadata} - specifying metadata to \link{read_blocks}
+#'              `metadata` - specifying metadata to [read_blocks]
 #'              
-#'              See \link{read_blocks} for more details
+#'              See [read_blocks] for more details
 #'              
 #'              If you find yourself needing more control, you can run the 
-#'              steps manually, first reading with \link{read_blocks}, 
-#'              separating plates as needed with \link{uninterleave}, 
-#'              then transforming to wide with \link{trans_block_to_wide}.
+#'              steps manually, first reading with [read_blocks], 
+#'              separating plates as needed with [uninterleave], 
+#'              then transforming to wide with [trans_block_to_wide].
 #'              
-#' @return If \code{num_plates = 1}, a wide-shaped \code{data.frame}
+#' @return If `num_plates = 1`, a wide-shaped `data.frame`
 #'         containing the measures data.
 #'         
-#'         if \code{num_plates} is greater than one, a list of 
-#'         \code{data.frame}'s, where each \code{data.frame} is wide-shaped.
+#'         if `num_plates` is greater than one, a list of 
+#'         `data.frame`'s, where each `data.frame` is wide-shaped.
 #'              
 #' @export       
 import_blockmeasures <- function(files, num_plates = 1, 
@@ -1184,103 +1184,103 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' Import blockdesigns
 #' 
 #' Function to import block-shaped designs from files and return tidy designs.
-#' This function acts as a wrapper that calls \link{read_blocks}, 
-#' \link{paste_blocks}, \link{trans_block_to_wide}, \link{trans_wide_to_tidy}, 
-#' and \link{separate_tidy}
+#' This function acts as a wrapper that calls [read_blocks], 
+#' [paste_blocks], [trans_block_to_wide], [trans_wide_to_tidy], 
+#' and [separate_tidy]
 #'
 #' @param files A vector of filepaths relative to the current working directory
 #'              where each filepath is a single plate read to be read by
-#'              \link{read_blocks}.
+#'              [read_blocks].
 #' @param block_names
 #'              Vector of names corresponding to each design element (each
 #'              block). Inferred from filenames, if not specified.
 #'              
-#'              When \code{keep_blocknames = TRUE}, the output will have
+#'              When `keep_blocknames = TRUE`, the output will have
 #'              a column containing these values, with the column name
-#'              specified by \code{block_name_header}.
+#'              specified by `block_name_header`.
 #'              
-#'              When \code{join_as_cols = TRUE}, the \code{block_names} are
+#'              When `join_as_cols = TRUE`, the `block_names` are
 #'              also used as the output column names for each separated
 #'              design column.
 #' @param block_name_header 
-#'              When \code{keep_blocknames = TRUE}, the column name of the
-#'              column containing the \code{block_names}.
+#'              When `keep_blocknames = TRUE`, the column name of the
+#'              column containing the `block_names`.
 #' @param join_as_cols logical indicating whether blocks (if there are multiple)
 #'              should be joined as columns (i.e. describe the same plate) in 
-#'              the tidy output. If \code{FALSE}, blocks are joined as rows
+#'              the tidy output. If `FALSE`, blocks are joined as rows
 #'              (i.e. describe different plates) in the tidy output.
 #' @param sep   If designs have been pasted together, this specifies the
-#'              string they should be split apart by via \link{separate_tidy}.
-#' @param values_colname When \code{join_as_cols = FALSE} and \code{sep} is
+#'              string they should be split apart by via [separate_tidy].
+#' @param values_colname When `join_as_cols = FALSE` and `sep` is
 #'              not specified, all the design values will be in a column
-#'              named by \code{values_colname}. For other cases, see the
-#'              \strong{Value} section.
-#' @param into  When \code{sep} is specified, \code{into} sets the names
-#'              of the columns after splitting (see \strong{Value} section
-#'              for behavior when \code{into} is not set).
+#'              named by `values_colname`. For other cases, see the
+#'              **Value** section.
+#' @param into  When `sep` is specified, `into` sets the names
+#'              of the columns after splitting (see **Value** section
+#'              for behavior when `into` is not set).
 #' @param keep_blocknames logical indicating whether the column containing
-#'              \code{block_names} (or those inferred from file names) should
+#'              `block_names` (or those inferred from file names) should
 #'              be retained in the output. By default, blocknames are retained
-#'              only if \code{join_as_cols = FALSE}.
+#'              only if `join_as_cols = FALSE`.
 #' @param warn_joinrows_nointo logical indicating whether warning should
 #'              be raised when multiple blocks are joined as rows 
-#'              (\code{join_as_cols = FALSE}) and \code{sep} is specified,
-#'              but \code{into} is not specified.
-#' @param join_designs Deprecated, use \code{join_as_cols} instead            
-#' @param ...   Other arguments to pass to \link{read_blocks}, 
-#'              \link{paste_blocks}, \link{trans_block_to_wide},
-#'              \link{trans_wide_to_tidy}, or \link{separate_tidy}.
+#'              (`join_as_cols = FALSE`) and `sep` is specified,
+#'              but `into` is not specified.
+#' @param join_designs Deprecated, use `join_as_cols` instead            
+#' @param ...   Other arguments to pass to [read_blocks], 
+#'              [paste_blocks], [trans_block_to_wide],
+#'              [trans_wide_to_tidy], or [separate_tidy].
 #'              
 #'              See Details for more information
 #'              
 #' @details     Other common arguments that you may want to provide via 
-#'              \code{...} include:
+#'              `...` include:
 #' 
-#'              \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, 
-#'              \code{sheet} - specifying the location of design information 
-#'              inside \code{files} to \link{read_blocks}.
+#'              `startrow`, `endrow`, `startcol`, `endcol`, 
+#'              `sheet` - specifying the location of design information 
+#'              inside `files` to [read_blocks].
 #'              
-#'              \code{wellnames_sep} - specifying what character (or "" for 
+#'              `wellnames_sep` - specifying what character (or "" for 
 #'              none) should be used when pasting together the rownames and
 #'              column names. Note that this should be chosen to match
 #'              the well names in your measures.
 #'              
-#'              \code{into} - specifying the column names resulting from
-#'              using \link{separate_tidy} on the values_colname column.
+#'              `into` - specifying the column names resulting from
+#'              using [separate_tidy] on the values_colname column.
 #'              
-#'              Note that \code{import_blockdesigns} cannot currently handle
-#'              metadata specified via the \code{metadata} argument of
-#'              \link{read_blocks}.
+#'              Note that `import_blockdesigns` cannot currently handle
+#'              metadata specified via the `metadata` argument of
+#'              [read_blocks].
 #'              
 #'              If you find yourself needing more control, you can run the 
-#'              steps manually, first reading with \link{read_blocks},
-#'              pasting as needed with \link{paste_blocks}, 
-#'              transforming to tidy with \link{trans_block_to_wide} and
-#'              \link{trans_wide_to_tidy}, and separating as needed with
-#'              \link{separate_tidy}.
+#'              steps manually, first reading with [read_blocks],
+#'              pasting as needed with [paste_blocks], 
+#'              transforming to tidy with [trans_block_to_wide] and
+#'              [trans_wide_to_tidy], and separating as needed with
+#'              [separate_tidy].
 #'              
-#' @return A tidy-shaped \code{data.frame} containing the design information
-#'         from \code{files}. This always includes a "Well" column. 
+#' @return A tidy-shaped `data.frame` containing the design information
+#'         from `files`. This always includes a "Well" column. 
 #'         
-#'         If \code{keep_blocknames = TRUE}, this includes a column with the
-#'         column name specified by \code{block_name_header} and containing
-#'         \code{block_names} (or block names inferred from file names).
+#'         If `keep_blocknames = TRUE`, this includes a column with the
+#'         column name specified by `block_name_header` and containing
+#'         `block_names` (or block names inferred from file names).
 #'         
 #'         The layout of the design values varies depending on the inputs:
 #'         
-#'         If \code{join_as_cols = TRUE}, each block was joined as a column,
-#'         with the columns named according to \code{block_names} (or block
-#'         names inferred from file names). In this case, if \code{sep} was 
-#'         specified, each column was split by \code{sep} into columns named by 
-#'         splitting the corresponding block name by \code{sep} (post-split 
-#'         column names can alternatively be specified directly via \code{into}).
+#'         If `join_as_cols = TRUE`, each block was joined as a column,
+#'         with the columns named according to `block_names` (or block
+#'         names inferred from file names). In this case, if `sep` was 
+#'         specified, each column was split by `sep` into columns named by 
+#'         splitting the corresponding block name by `sep` (post-split 
+#'         column names can alternatively be specified directly via `into`).
 #'         
-#'         Otherwise, when \code{join_as_cols = FALSE}, each block was joined
+#'         Otherwise, when `join_as_cols = FALSE`, each block was joined
 #'         as rows, with the column containing all design values named by
-#'         \code{values_colname}. In this case, if \code{sep} was specified,
-#'         that single design column was split by \code{sep} into columns
-#'         named by splitting \code{values_colname} (post-split column names
-#'         can alternatively be specified directly via \code{into}).
+#'         `values_colname`. In this case, if `sep` was specified,
+#'         that single design column was split by `sep` into columns
+#'         named by splitting `values_colname` (post-split column names
+#'         can alternatively be specified directly via `into`).
 #' 
 #' @export
 import_blockdesigns <- function(
@@ -1344,14 +1344,14 @@ import_blockdesigns <- function(
 #' for later merging with read data
 #' 
 #' @details 
-#' Note that either \code{nrows} or \code{block_row_names} must be provided
-#' and that either \code{ncols} or \code{block_col_names} must be provided
+#' Note that either `nrows` or `block_row_names` must be provided
+#' and that either `ncols` or `block_col_names` must be provided
 #' 
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
 #' @param block_name_header The name of the field containing the
-#'                          \code{block_names}
+#'                          `block_names`
 #' @param output_format One of c("blocks", "blocks_pasted", "wide", "tidy")
 #'                      denoting the format of the resulting data.frame
 #'                      
@@ -1363,24 +1363,24 @@ import_blockdesigns <- function(
 #'                      
 #'                      For writing to block-shaped file(s), choose 'blocks' or
 #'                      'blocks_pasted'.
-#' @param wellnames_numeric If \code{block_row_names} or \code{block_col_names}
+#' @param wellnames_numeric If `block_row_names` or `block_col_names`
 #'                        are not specified, then names will be generated
-#'                        automatically according to \code{wellnames_numeric}.
+#'                        automatically according to `wellnames_numeric`.
 #'                        
-#'                        If \code{wellnames_numeric} is TRUE, rows and columns
+#'                        If `wellnames_numeric` is TRUE, rows and columns
 #'                        will be numbered with "R" and "C" prefixes, respectively.
 #'                        
-#'                        If \code{wellnames_numeric} is FALSE, rows will be
+#'                        If `wellnames_numeric` is FALSE, rows will be
 #'                        lettered A through Z, while columns will be numbered
 #' @param wellnames_sep A string used when concatenating rownames and column
 #'                      names to create well names, when 
-#'                      \code{output_format = "wide"} or 
-#'                      \code{output_format = "tidy"}
+#'                      `output_format = "wide"` or 
+#'                      `output_format = "tidy"`
 #' @param wellnames_colname Header for newly-created column containing the
-#'                          well names, when \code{output_format = "tidy"}
+#'                          well names, when `output_format = "tidy"`
 #' @param colnames_first  When wellnames are created for 
-#'                        \code{output_format = "wide"} or 
-#'                        \code{output_format = "tidy"} by \link{paste}-ing the
+#'                        `output_format = "wide"` or 
+#'                        `output_format = "tidy"` by [paste]-ing the
 #'                        rownames and column names, should the column names
 #'                        come first. 
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
@@ -1391,8 +1391,8 @@ import_blockdesigns <- function(
 #'                         for example, lookup_tbl_start = "A", then the lookup
 #'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
 #' @param pattern_split character to split pattern elements provided in
-#'                      \code{...} by, if they're not already a vector
-#' @param ... Each \code{...} argument must be named, and must be a list with 
+#'                      `...` by, if they're not already a vector
+#' @param ... Each `...` argument must be named, and must be a list with 
 #'            five elements:
 #' 
 #'              1. a vector of the values
@@ -1404,7 +1404,7 @@ import_blockdesigns <- function(
 #'              4. a string or vector denoting the pattern in which the
 #'                 values should be filled into the rows and columns specified.
 #'                 
-#'                 If it's a string, will be split by \code{pattern_split}.
+#'                 If it's a string, will be split by `pattern_split`.
 #'                 Pattern will be used as the indices of the values vector.
 #'               
 #'                 0's refer to NA. The pattern will be recycled as necessary
@@ -1412,20 +1412,20 @@ import_blockdesigns <- function(
 #'               
 #'              5. a logical for whether this pattern should be filled byrow
 #'
-#' @return Depends on \code{output_format}:
+#' @return Depends on `output_format`:
 #' 
-#'         If \code{output_format = "blocks"}, a list of \code{data.frame}'s
-#'         where each \code{data.frame} is block-shaped containing the
+#'         If `output_format = "blocks"`, a list of `data.frame`'s
+#'         where each `data.frame` is block-shaped containing the
 #'         information for a single design element
 #'         
-#'         If \code{output_format = "blocks_pasted"}, a single 
-#'         \code{data.frame} containing the \link{paste}-ed information
+#'         If `output_format = "blocks_pasted"`, a single 
+#'         `data.frame` containing the [paste]-ed information
 #'         for all design elements
 #'         
-#'         If \code{output_format = "wide"}, a wide-shaped \code{data.frame}
+#'         If `output_format = "wide"`, a wide-shaped `data.frame`
 #'         containing all the design elements
 #'         
-#'         If \code{output_format = "tidy"}, a tidy-shaped \code{data.frame}
+#'         If `output_format = "tidy"`, a tidy-shaped `data.frame`
 #'         containing all the design elements
 #'         
 #' @examples
@@ -1602,16 +1602,16 @@ do you need to set `lookup_tbl_start` differently?")
 
 #' Make design pattern
 #' 
-#' A helper function for use with \link{make_design}
+#' A helper function for use with [make_design]
 #' 
 #' @param values Vector of values to use
 #' @param rows Vector of rows where pattern applies
 #' @param cols Vector of cols where pattern applies
 #' @param pattern Numeric pattern itself, where numbers refer to entries
-#'                in \code{values}
+#'                in `values`
 #' @param byrow logical for whether pattern should be created by row
 #' 
-#' @return \code{list(values, rows, cols, pattern, byrow)}
+#' @return `list(values, rows, cols, pattern, byrow)`
 #' 
 #' @examples
 #' make_design(nrows = 8, ncols = 12,
@@ -1636,24 +1636,24 @@ make_designpattern <- function(values, rows, cols,
 #' @export
 mdp <- make_designpattern
 
-#' Fill output data.frame with \code{data} and \code{metadata}
+#' Fill output data.frame with `data` and `metadata`
 #'
-#' This is an internal function used by \link{write_blocks} that does the 
+#' This is an internal function used by [write_blocks] that does the 
 #' fill data and metadata step
 #' 
 #' @param output Data frame for data and metadata to be filled into
-#' @param input One data and metadata to fill into \code{output}
-#' @param rs index of the row in \code{output} where data and metadata should
+#' @param input One data and metadata to fill into `output`
+#' @param rs index of the row in `output` where data and metadata should
 #'           start being filled in
 #' @param metadata_include Indices of which metadata items should be included
 #'                         
 #'                         Use NULL for no metadata inclusion
 #'                         
-#' @return A list, where [[1]] is \code{output} containing the data and
-#'         metadata from \code{input} but properly formatted for writing.
+#' @return A list, where [[1]] is `output` containing the data and
+#'         metadata from `input` but properly formatted for writing.
 #'         
-#'         And [[2]] is the updated \code{rs} to be used for subsequent
-#'         calls to \link{fill_data_metadata}
+#'         And [[2]] is the updated `rs` to be used for subsequent
+#'         calls to [fill_data_metadata]
 #' 
 #' @noRd
 fill_data_metadata <- function(output, input, rs, 
@@ -1688,25 +1688,25 @@ fill_data_metadata <- function(output, input, rs,
 #' Write block designs to csv
 #' 
 #' This function writes block-shaped lists (as created by
-#' \link{read_blocks} or \link{make_design}) to csv files, including
-#' both \code{data} and \code{metadata} in a variety of output formats
+#' [read_blocks] or [make_design]) to csv files, including
+#' both `data` and `metadata` in a variety of output formats
 #' 
 #' 
 #' @param blocks list of block-shaped data to be written to file
-#' @param file \code{NULL}, a character string naming a file to write to, or a 
+#' @param file `NULL`, a character string naming a file to write to, or a 
 #'             vector of character strings naming files to write to. 
 #' 
-#'             A file name is required when \code{output_format = "single"}
+#'             A file name is required when `output_format = "single"`
 #'             
-#'             A file name can be specified when \code{output_format = "pasted"},
-#'             or \code{file} can be set to \code{NULL} as long as 
-#'             \code{block_name_location = "filename"} (where pasted 
-#'             \code{block_name} metadata will be used for the file name)
+#'             A file name can be specified when `output_format = "pasted"`,
+#'             or `file` can be set to `NULL` as long as 
+#'             `block_name_location = "filename"` (where pasted 
+#'             `block_name` metadata will be used for the file name)
 #'             
-#'             File names can be specified when \code{output_format = "multiple"},
-#'             or \code{file} can be set to \code{NULL} as long as 
-#'             \code{block_name_location = "filename"} (where the 
-#'             \code{block_name} metadata will be used for the file names)
+#'             File names can be specified when `output_format = "multiple"`,
+#'             or `file` can be set to `NULL` as long as 
+#'             `block_name_location = "filename"` (where the 
+#'             `block_name` metadata will be used for the file names)
 #'             
 #' @param output_format One of "single", "pasted", "multiple".
 #' 
@@ -1715,39 +1715,39 @@ fill_data_metadata <- function(output, input, rs,
 #'                      blocks.
 #'                      
 #'                      "pasted" will paste all blocks together using a
-#'                      \code{paste_sep}, and then write that now-pasted
+#'                      `paste_sep`, and then write that now-pasted
 #'                      block to a single csv file.
 #'                      
 #'                      "multiple" will write each block to its own csv file.
-#' @param block_name_location Either \code{NULL}, 'filename' or 'file'.
+#' @param block_name_location Either `NULL`, 'filename' or 'file'.
 #' 
-#'                           If \code{NULL}, \code{block_name_location} will 
+#'                           If `NULL`, `block_name_location` will 
 #'                           be automatically selected based on 
-#'                           \code{output_format}. For 
-#'                           \code{output_format = 'single'} and 
-#'                           \code{output_format = 'pasted'}, 
-#'                           \code{block_name_location} defaults to 'file'.
-#'                           For \code{output_format = 'multiple'}, 
-#'                           \code{block_name_location} defaults to 'filename'
+#'                           `output_format`. For 
+#'                           `output_format = 'single'` and 
+#'                           `output_format = 'pasted'`, 
+#'                           `block_name_location` defaults to 'file'.
+#'                           For `output_format = 'multiple'`, 
+#'                           `block_name_location` defaults to 'filename'
 #' 
-#'                           If 'filename', the \code{block_name} metadata 
+#'                           If 'filename', the `block_name` metadata 
 #'                           will be used as the output file name(s) when
 #'                           no file name(s) are provided, or appended to
 #'                           file name(s) when they have been provided.
 #'                           
-#'                           If 'file', the \code{block_name} metadata will be
+#'                           If 'file', the `block_name` metadata will be
 #'                           included as a row in the output file.
 #' @param block_name_header The name of the field containing the
-#'                          \code{block_names}
-#' @param paste_sep When \code{output_format = 'pasted'}, what character
+#'                          `block_names`
+#' @param paste_sep When `output_format = 'pasted'`, what character
 #'                  will be used to paste together blocks.   
 #' @param filename_sep What character will be used to paste together 
 #'                     filenames when block_name_location = 'filename'.   
 #' @param na The string to use for missing values in the data.
 #' @param dir The directory that file(s) will be written into. When 
-#'            \code{dir = NULL}, writes to the current working directory.
-#'            (Can only be used when \code{file = NULL})
-#' @param ... Other arguments passed to \link{write.table}
+#'            `dir = NULL`, writes to the current working directory.
+#'            (Can only be used when `file = NULL`)
+#' @param ... Other arguments passed to [write.table]
 #' @return Nothing, but R objects are written to files
 #' 
 #' @export
@@ -2022,12 +2022,12 @@ Putting block_names in filename and writing remaining metadata into file\n")
 #'                      dataframes
 #' @param wellnames_sep String to use as separator for well names between 
 #'                      row name and column name (ordered according to
-#'                      \code{colnames_first}
+#'                      `colnames_first`
 #' @param nested_metadata A logical indicating the existence of nested metadata
-#'                        in the \code{blockmeasures} list, e.g. as is typically
-#'                        output by \link{read_blocks}. If \code{NULL}, will 
+#'                        in the `blockmeasures` list, e.g. as is typically
+#'                        output by [read_blocks]. If `NULL`, will 
 #'                        attempt to infer existence of nested metadata
-#' @param colnames_first  In the wellnames created by \link{paste}-ing the
+#' @param colnames_first  In the wellnames created by [paste]-ing the
 #'                        rownames and column names, should the column names
 #'                        come first?
 #'
@@ -2143,37 +2143,37 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "",
 
 #' Pivot wide-shaped into tidy
 #' 
-#' Essentially a wrapper for \link[tidyr]{pivot_longer} that works on both a 
+#' Essentially a wrapper for [pivot_longer][tidyr::pivot_longer] that works on both a 
 #' single wide-shaped dataframe as well as a list of wide-shaped dataframe's
 #' 
 #' @param wides A single wide-shaped dataframe, or a list of wide-shaped
 #'                   dataframe's
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
-#'                          (in \link[tidyr]{pivot_longer} parlance). Each can be
+#'                          (in [pivot_longer][tidyr::pivot_longer] parlance). Each can be
 #'                          a single vector (which will be applied for all
 #'                          dataframes) or a list of vectors, with each
 #'                          vector corresponding to the same-index dataframe
-#'                          in \code{wides}
+#'                          in `wides`
 #'                          
 #'                          Entries that are NA in the list will not be used
 #'                          
-#'                          If neither \code{data_cols} nor \code{id_cols} are 
+#'                          If neither `data_cols` nor `id_cols` are 
 #'                          specified, user must provide arguments to 
-#'                          \link[tidyr]{pivot_longer} via \code{...} for at 
-#'                          least the \code{cols} argument and these arguments 
-#'                          provided via \code{...} will be used for all 
-#'                          \code{wides} dataframe's
+#'                          [pivot_longer][tidyr::pivot_longer] via `...` for at 
+#'                          least the `cols` argument and these arguments 
+#'                          provided via `...` will be used for all 
+#'                          `wides` dataframe's
 #' @param names_to,values_to Specifies the output column names created by
-#'                           \link[tidyr]{pivot_longer}. Each can be provided 
-#'                           as vectors the same length as \code{wides}
+#'                           [pivot_longer][tidyr::pivot_longer]. Each can be provided 
+#'                           as vectors the same length as `wides`
 #' @param values_to_numeric logical indicating whether values will be coerced
 #'                          to numeric. See below for when this may be
-#'                          overridden by arguments passed in \code{...}
-#' @param ... Other arguments to be passed to \link[tidyr]{pivot_longer}
-#'            Note that including \code{values_transform} here will override the
-#'            behavior of \code{values_to_numeric}
-#' @return Pivoted longer dataframe (if \code{wides} is a single dataframe)
-#'         or list of pivoted longer dataframes (if \code{wides} is
+#'                          overridden by arguments passed in `...`
+#' @param ... Other arguments to be passed to [pivot_longer][tidyr::pivot_longer]
+#'            Note that including `values_transform` here will override the
+#'            behavior of `values_to_numeric`
+#' @return Pivoted longer dataframe (if `wides` is a single dataframe)
+#'         or list of pivoted longer dataframes (if `wides` is
 #'         a list of dataframes)
 #' 
 #' @export  
@@ -2261,52 +2261,52 @@ trans_wide_to_tidy <- function(wides,
 
 #' Collapse a list of dataframes, or merge two dataframes together
 #' 
-#' This function is essentially a wrapper for any of \code{dplyr}'s
-#' \link[dplyr]{mutate-joins} (by default, a \link[dplyr]{full_join}). 
+#' This function is essentially a wrapper for any of `dplyr`'s
+#' [mutate-joins][dplyr::mutate-joins] (by default, a [full_join][dplyr::full_join]). 
 #' The most typical use of this function is to merge designs with measures 
 #' data, or to use the collapse functionality to merge a list of data.frames 
 #' into a single data.frame. Merging is done by column names that match 
-#' between \code{x} and \code{y}.
+#' between `x` and `y`.
 #'  
 #' @param x First data.frame, or list of data frames, to be joined
 #' @param y Second data.frame, or list of data frames, to be joined
 #' @param by A character vector of variables to join by, passed directly
 #'           to the join function
-#' @param drop Should only \code{complete_cases} of the resulting
+#' @param drop Should only `complete_cases` of the resulting
 #'             data.frame be returned?
 #' @param collapse A logical indicating whether x or y is a list containing
 #'                 data frames that should be merged together before
 #'                 being merged with the other
-#' @param names_to Column name for where \code{names(x)} or \code{names(y)} 
-#'                 will be entered in if \code{collapse = TRUE}.
+#' @param names_to Column name for where `names(x)` or `names(y)` 
+#'                 will be entered in if `collapse = TRUE`.
 #'                 
-#'                 If a value of \code{NA} then \code{names(x)} or 
-#'                 \code{names(y)} will not be put into a column in the
+#'                 If a value of `NA` then `names(x)` or 
+#'                 `names(y)` will not be put into a column in the
 #'                 returned data.frame
-#' @param join     Type of join used to merge \code{x} and \code{y}. Options
+#' @param join     Type of join used to merge `x` and `y`. Options
 #'                 are 'full' (default), 'inner', 'left', and 'right'.
 #'                 
-#'                 \itemize{
-#'                  \item A \code{full} join keeps all observations in \code{x} and 
-#'                   \code{y}
-#'                  \item A \code{left} join keeps all observations in \code{x}
-#'                  \item A \code{right} join keeps all observations in \code{y}
-#'                  \item An \code{inner} join only keeps observations found in
-#'                   both \code{x} and \code{y} (inner joins are not appropriate
-#'                   in most cases because observations are frequently dropped).
-#'                 }
 #'                 
-#'                 See \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
-#'                 \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for 
+#'                  - A `full` join keeps all observations in `x` and 
+#'                   `y`
+#'                  - A `left` join keeps all observations in `x`
+#'                  - A `right` join keeps all observations in `y`
+#'                  - An `inner` join only keeps observations found in
+#'                   both `x` and `y` (inner joins are not appropriate
+#'                   in most cases because observations are frequently dropped).
+#'                 
+#'                 
+#'                 See [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
+#'                 [right_join][dplyr::right_join], or [inner_join][dplyr::inner_join] for 
 #'                 more details
 #' @param warn_morerows logical, should a warning be passed when the output
 #'                      has more rows than x and more rows than y?
 #' @param ... Other arguments to pass to the underlying join function. See 
-#'            \link[dplyr]{full_join}, \link[dplyr]{left_join}, 
-#'            \link[dplyr]{right_join}, or \link[dplyr]{inner_join} for options.
+#'            [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
+#'            [right_join][dplyr::right_join], or [inner_join][dplyr::inner_join] for options.
 #' 
-#' @return Data.frame containing merged output of \code{x} and
-#'         \code{y}
+#' @return Data.frame containing merged output of `x` and
+#'         `y`
 #' 
 #' @export
 merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
@@ -2378,7 +2378,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 
 #' Paste a list of blocks into a single block
 #' 
-#' This function uses \link{paste} to concatenate the same-location entries
+#' This function uses [paste] to concatenate the same-location entries
 #' of a list of data.frames together (i.e. all the first row-first column
 #' values are pasted together, all the second row-first column values are
 #' pasted together, etc.)
@@ -2387,18 +2387,18 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
 #'                      data.frames
 #' @param sep String to use as separator for output pasted values
 #' @param nested_metadata A logical indicating the existence of nested metadata
-#'                        in the \code{blockmeasures} list, e.g. as is typically
-#'                        output by \link{read_blocks}. If NULL, will attempt to
+#'                        in the `blockmeasures` list, e.g. as is typically
+#'                        output by [read_blocks]. If NULL, will attempt to
 #'                        infer existence of nested metadata
 #' 
 #' @return If nested_metadata = TRUE (or is inferred to be TRUE), a list
-#'         containing a list containing: 1. a \code{data.frame} with the
-#'         pasted data values from \code{blocks}, and 2. a vector with the 
-#'         pasted metadata values from \code{blocks}
+#'         containing a list containing: 1. a `data.frame` with the
+#'         pasted data values from `blocks`, and 2. a vector with the 
+#'         pasted metadata values from `blocks`
 #'         
 #'         If nested_metadata = FALSE (or is inferred to be FALSE), a list
-#'         containing \code{data.frame}'s with the pasted values from
-#'         \code{blocks}
+#'         containing `data.frame`'s with the pasted values from
+#'         `blocks`
 #' 
 #' @export
 paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
@@ -2482,35 +2482,35 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 
 #' Separate a column into multiple columns
 #' 
-#' This function is primarily a wrapper for \link[tidyr]{separate}, which
+#' This function is primarily a wrapper for [separate][tidyr::separate], which
 #' turns a single character column into multiple columns
 #' 
 #' @param data A data frame
 #' @param col  Column name or position
-#' @param into A character vector of the new column names. Use \code{NA} to
+#' @param into A character vector of the new column names. Use `NA` to
 #'             omit the variable in the output.
 #'             
-#'             If NULL, \code{separate_tidy} will attempt to infer the new
-#'             column names by splitting the column name of \code{col}
-#' @param sep Separator between columns passed to \link[tidyr]{separate}:
+#'             If NULL, `separate_tidy` will attempt to infer the new
+#'             column names by splitting the column name of `col`
+#' @param sep Separator between columns passed to [separate][tidyr::separate]:
 #' 
-#'            If character, \code{sep} is interpreted as a regular expression.
+#'            If character, `sep` is interpreted as a regular expression.
 #'            
-#'            If numeric, \code{sep} is interpreted as character positions
+#'            If numeric, `sep` is interpreted as character positions
 #'            to split at. Positive values start at 1 at the far-left of the
 #'            string; negative values start at -1 at the far-right of the
-#'            string. The length of \code{sep} should be one less than 
-#'            \code{into}
+#'            string. The length of `sep` should be one less than 
+#'            `into`
 #' @param coerce_NA  logical dictating if strings matching any of 
-#'                   \code{na.strings} will be coerced into  \code{NA} values 
+#'                   `na.strings` will be coerced into  `NA` values 
 #'                   after separating.
 #' @param na.strings A character vector of strings which are to be interpreted
-#'                   as \code{NA} values if \code{coerce_NA == TRUE}
-#' @param message_inferred_into logical whether column names for \code{into}
+#'                   as `NA` values if `coerce_NA == TRUE`
+#' @param message_inferred_into logical whether column names for `into`
 #'                              should be printed in a message when inferred
-#' @param ... Other arguments passed to \link[tidyr]{separate}
+#' @param ... Other arguments passed to [separate][tidyr::separate]
 #' 
-#' @return A data frame containing new columns in the place of \code{col}
+#' @return A data frame containing new columns in the place of `col`
 #' 
 #' @export
 separate_tidy <- function(data, col, into = NULL, sep = "_",
@@ -2545,83 +2545,83 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #' 
 #' This function calls other functions to smooth growth curve data
 #' 
-#' @param ... Arguments passed to \link{loess}, \link[mgcv]{gam},
-#'            \link{moving_average}, \link{moving_median}, or 
-#'            \link{smooth.spline}. Typically includes tuning 
+#' @param ... Arguments passed to [loess], [gam][mgcv::gam],
+#'            [moving_average], [moving_median], or 
+#'            [smooth.spline]. Typically includes tuning 
 #'            parameter(s), which in some cases are required.
 #'            See Details for more information.
 #' @param x An (often optional) vector of predictor values to smooth along 
 #'          (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density). If NULL,
-#'          \code{formula} and \code{data} *must* be provided via \code{...}
+#'          `formula` and `data` *must* be provided via `...`
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
 #'                  "moving-average", "moving-median", "loess", "gam",
 #'                  and "smooth.spline".
-#' @param subset_by An optional vector as long as \code{y}. 
-#'                  \code{y} will be split by the unique values of this vector 
+#' @param subset_by An optional vector as long as `y`. 
+#'                  `y` will be split by the unique values of this vector 
 #'                  and the smoothed data for each group will be calculated 
 #'                  independently of the others.
 #'                  
 #'                  This provides an internally-implemented approach similar
-#'                  to \link[dplyr]{group_by} and \link[dplyr]{mutate}
+#'                  to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
 #' @param return_fitobject logical whether entire object returned
 #'                         by fitting function should be returned. If FALSE,
 #'                         just fitted values are returned.
 #' @param warn_ungrouped logical whether warning should be issued when
-#'                       \code{smooth_data} is being called on ungrouped data
-#'                       and \code{subset_by = NULL}.
+#'                       `smooth_data` is being called on ungrouped data
+#'                       and `subset_by = NULL`.
 #' @param warn_gam_no_s logical whether warning should be issued when gam is 
-#'                      used without \code{s()} in the formula.
+#'                      used without `s()` in the formula.
 #'
 #' @details 
-#'            For \link{moving_average} and \link{moving_median}, 
-#'            passing \code{window_width} or \code{window_width_n} via 
-#'            \code{...} is required. \code{window_width} sets the width
-#'            of the moving window in units of \code{x}, while 
-#'            \code{window_width_n} sets the width in units of number
+#'            For [moving_average] and [moving_median], 
+#'            passing `window_width` or `window_width_n` via 
+#'            `...` is required. `window_width` sets the width
+#'            of the moving window in units of `x`, while 
+#'            `window_width_n` sets the width in units of number
 #'            of data points. Larger values for either will produce more 
 #'            "smoothed" data.
 #'            
-#'            For \link{loess}, the \code{span} argument sets the fraction of
+#'            For [loess], the `span` argument sets the fraction of
 #'            data points that should be included in each calculation. It's
 #'            typically best to specify, since the default of 0.75 is often
-#'            too large for growth curves data. Larger values of \code{span} 
+#'            too large for growth curves data. Larger values of `span` 
 #'            will produce more more "smoothed" data
 #'            
-#'            For \code{gam}, both arguments to \link[mgcv]{gam} and 
-#'            \link[mgcv]{s} can be provided via \code{...}. Most frequently, 
-#'            the \code{k} argument to \link[mgcv]{s} sets the number of 
+#'            For `gam`, both arguments to [gam][mgcv::gam] and 
+#'            [s][mgcv::s] can be provided via `...`. Most frequently, 
+#'            the `k` argument to [s][mgcv::s] sets the number of 
 #'            "knots" the spline-fitting can use. Smaller values will be more 
 #'            "smoothed".
 #'            
-#'            When using \code{sm_method = "gam"}, advanced users may also modify 
-#'            other parameters of \code{s()}, including the smoothing basis 
-#'            \code{bs}. These bases can be thin plate (\code{bs = "tp"}, 
-#'            the default), cubic regressions (\code{bs = "cr"}), or many other 
-#'            options (see \link[mgcv]{s}). I recommend leaving the default 
+#'            When using `sm_method = "gam"`, advanced users may also modify 
+#'            other parameters of `s()`, including the smoothing basis 
+#'            `bs`. These bases can be thin plate (`bs = "tp"`, 
+#'            the default), cubic regressions (`bs = "cr"`), or many other 
+#'            options (see [s][mgcv::s]). I recommend leaving the default 
 #'            thin plate regressions, whose main drawback is that they are 
 #'            computationally intensive to calculate. For growth curves data, 
 #'            this is unlikely to be relevant.
 #'            
-#'            As an alternative to passing \code{y}, for more advanced needs 
-#'            with \link{loess} or \link[mgcv]{gam}, \code{formula} and \code{data} 
-#'            can be passed to \code{smooth_data} via the \code{...} argument 
-#'            (in lieu of \code{y}).
+#'            As an alternative to passing `y`, for more advanced needs 
+#'            with [loess] or [gam][mgcv::gam], `formula` and `data` 
+#'            can be passed to `smooth_data` via the `...` argument 
+#'            (in lieu of `y`).
 #'          
 #'            In this case, the formula should specify the response (e.g. density) 
-#'            and predictors. For \code{gam} smoothing, the formula should
+#'            and predictors. For `gam` smoothing, the formula should
 #'            typically be of the format: y ~ s(x), which uses 
-#'            \link[mgcv]{s} to smooth the data. The data argument should be a 
-#'            \code{data.frame} containing the variables in the formula.
-#'            In such cases, \code{subset_by} can still be specified as a vector
-#'            with length \code{nrow(data)}
+#'            [s][mgcv::s] to smooth the data. The data argument should be a 
+#'            `data.frame` containing the variables in the formula.
+#'            In such cases, `subset_by` can still be specified as a vector
+#'            with length `nrow(data)`
 #' 
-#' @return If \code{return_fitobject == FALSE:}
+#' @return If `return_fitobject == FALSE:`
 #' 
-#'         A vector, the same length as \code{y}, with the now-smoothed y values
+#'         A vector, the same length as `y`, with the now-smoothed y values
 #'         
-#'         If \code{return_fitobject == TRUE:}
+#'         If `return_fitobject == TRUE:`
 #'         
 #'         A list the same length as unique(subset_by) where each element is
 #'         an object of the same class as returned by the smoothing method
@@ -2768,16 +2768,16 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 #' 
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
-#' @param data Dataframe containing variables in \code{formula}
+#' @param data Dataframe containing variables in `formula`
 #' @param x A vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density).
 #' @param window_width_n Number of data points wide the moving window is
 #'                     (therefore, must be an odd number of points)
-#' @param window_width Width of the moving window (in units of \code{x})
+#' @param window_width Width of the moving window (in units of `x`)
 #' @param window_width_n_frac Width of the window (as a fraction of the total
 #'                          number of data points).
 #' @param window_width_frac Width of the window (as a fraction of the range of
-#'                          \code{x})
+#'                          `x`)
 #' @param na.rm logical whether NA's should be removed before analyzing
 #' @param warn_nonnumeric_sort logical whether warning should be issued when 
 #'                             predictor variable that data is sorted by is 
@@ -2864,27 +2864,27 @@ setup_moving_smooth <- function(formula, data, x, y,
 #' 
 #' @param formula Formula specifying the numeric response (density) 
 #'                and numeric predictor (time).
-#' @param data Dataframe containing variables in \code{formula}
+#' @param data Dataframe containing variables in `formula`
 #' @param x A vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density).
 #' @param window_width_n Number of data points wide the moving window is
 #'                     (therefore, must be an odd number of points)
-#' @param window_width Width of the moving window (in units of \code{x})
+#' @param window_width Width of the moving window (in units of `x`)
 #' @param window_width_n_frac Width of the window (as a fraction of the total
 #'                          number of data points).
 #' @param window_width_frac Width of the window (as a fraction of the range of
-#'                          \code{x})
+#'                          `x`)
 #' @param na.rm logical whether NA's should be removed before analyzing
 #' @param warn_nonnumeric_sort logical whether warning should be issued when 
 #'                             predictor variable that data is sorted by is 
 #'                             non-numeric.
 #' 
-#' @details Either \code{x} and \code{y} or \code{formula} and \code{data}
+#' @details Either `x` and `y` or `formula` and `data`
 #'          must be provided.
 #'          
-#'          Values of \code{NULL} or \code{NA} will be ignored for any of
-#'          \code{window_width_n}, \code{window_width},
-#'          \code{window_width_n_frac}, or \code{window_width_frac}
+#'          Values of `NULL` or `NA` will be ignored for any of
+#'          `window_width_n`, `window_width`,
+#'          `window_width_n_frac`, or `window_width_frac`
 #'          
 #' @return Vector of smoothed data, with NA's appended at both ends
 #' 
@@ -2985,14 +2985,14 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 #' @param newdata A vector of new predictor values for which the response
 #'                value will be predicted
 #' @param extrapolate_predictions 
-#'                Boolean indicating whether values of \code{newdata} that are 
-#'                out of the domain of \code{x} should be predicted (by 
-#'                extrapolating the slope from the endpoints of \code{x}). If
-#'                \code{FALSE}, such values will be returned as \code{NA}.
+#'                Boolean indicating whether values of `newdata` that are 
+#'                out of the domain of `x` should be predicted (by 
+#'                extrapolating the slope from the endpoints of `x`). If
+#'                `FALSE`, such values will be returned as `NA`.
 #' @param na.rm logical whether NA's should be removed before making predictions
 #'
 #' @return A vector of response values for each predictor value in 
-#'         \code{newdata}
+#'         `newdata`
 #'         
 #' @export
 predict_interpolation <- function(
@@ -3061,25 +3061,25 @@ predict_interpolation <- function(
 
 #' Fit a Smoothing Spline
 #' 
-#' This function is a wrapper for \link{smooth.spline}, which fits 
+#' This function is a wrapper for [smooth.spline], which fits 
 #' a cubic smoothing spline to the supplied data, but includes the option
-#' to remove \code{NA} values, and returns values in the original order.
+#' to remove `NA` values, and returns values in the original order.
 #' 
 #' @param x A vector giving the values of the predictor variable.
-#' @param y A vector giving the values of the response variable. If \code{y} is
-#'          missing or \code{NULL}, the responses are assumed to be specified
-#'          by \code{x}, with \code{x} the index vector.
-#' @param ... Additional arguments passed to \link{smooth.spline}.
+#' @param y A vector giving the values of the response variable. If `y` is
+#'          missing or `NULL`, the responses are assumed to be specified
+#'          by `x`, with `x` the index vector.
+#' @param ... Additional arguments passed to [smooth.spline].
 #' @param na.rm logical whether NA's should be removed before analyzing.
-#'              Required to be TRUE if any \code{x} or \code{y} values are NA.
+#'              Required to be TRUE if any `x` or `y` values are NA.
 #'              
-#' @details See \link{smooth.spline}              
+#' @details See [smooth.spline]              
 #' 
-#' @return Similar to \link{smooth.spline}, an object of class 
-#'         "\code{smooth.spline}" with many components. Differs in that
-#'         x, y, and w have NA's at any indices where \code{x} or \code{y} were 
+#' @return Similar to [smooth.spline], an object of class 
+#'         "`smooth.spline`" with many components. Differs in that
+#'         x, y, and w have NA's at any indices where `x` or `y` were 
 #'         NA in the inputs, and x, y, and w are returned to match the input 
-#'         \code{x} in order and length
+#'         `x` in order and length
 #' 
 #' @export   
 gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
@@ -3122,11 +3122,11 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 
 # Processing: Cross-validation ----
 
-#' Create method argument for \link[caret]{train} of growth curve smoothers
+#' Create method argument for [train][caret::train] of growth curve smoothers
 #' 
 #' This function generates a list which is compatible to be used as the
-#' \code{method} argument to \link[caret]{train}. This enables users to
-#' call \link[caret]{train} directly themselves with \code{smooth_data}
+#' `method` argument to [train][caret::train]. This enables users to
+#' call [train][caret::train] directly themselves with `smooth_data`
 #' smoothing functions.
 #' 
 #' @param sm_method Argument specifying which smoothing method should
@@ -3135,17 +3135,17 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' @param tuneGrid A data frame with possible tuning value. The columns should 
 #'                 be named the same as the tuning parameters.
 #'                 
-#'                 Note that, when using \link[caret]{train}, the tuneGrid
+#'                 Note that, when using [train][caret::train], the tuneGrid
 #'                 must be passed both to this function as well as directly
-#'                 to \link[caret]{train}.
+#'                 to [train][caret::train].
 #' 
 #' @return A list that can be used as the method argument to
-#'         \link[caret]{train}. Contains elements:
-#'         \code{library}, \code{type}, \code{prob}, \code{fit},
-#'         \code{parameters}, \code{grid}, \code{fit}, and \code{predict}.
+#'         [train][caret::train]. Contains elements:
+#'         `library`, `type`, `prob`, `fit`,
+#'         `parameters`, `grid`, `fit`, and `predict`.
 #'         
 #'         See documentation on using a custom model model in 
-#'         \link[caret]{train} for more details.
+#'         [train][caret::train] for more details.
 #'
 #' @export
 makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
@@ -3255,11 +3255,11 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 
 #' Test efficacy of different smoothing parameters
 #' 
-#' This function is based on \link[caret]{train}, which runs models
+#' This function is based on [train][caret::train], which runs models
 #' (in our case different smoothing algorithms) on data across different 
 #' parameter values (in our case different smoothness parameters).
 #' 
-#' @param ... Arguments passed to \link{smooth_data}. These arguments cannot
+#' @param ... Arguments passed to [smooth_data]. These arguments cannot
 #'            overlap with any of those to be tuned.
 #' @param x A vector of predictor values to smooth along (e.g. time)
 #' @param y A vector of response values to be smoothed (e.g. density).
@@ -3268,63 +3268,63 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'                  "loess", "gam", and "smooth.spline".
 #' @param preProcess A string vector that defines a pre-processing of the
 #'                   predictor data. The default is no pre-processing.
-#'                   See \link[caret]{train} for more details.
+#'                   See [train][caret::train] for more details.
 #' @param weights    A numeric vector of case weights. This argument currently
-#'                   does not affect any \code{train_smooth_data} models.
+#'                   does not affect any `train_smooth_data` models.
 #' @param metric     A string that specifies what summary metric will be
 #'                   used to select the optimal model. By default, possible
 #'                   values are "RMSE" and "Rsquared" for regression.
-#'                   See \link[caret]{train} for more details.
+#'                   See [train][caret::train] for more details.
 #' @param maximize   A logical: should the metric be maximized or minimized?
 #' @param trControl  A list of values that define how this function acts.
-#'                   See \link[caret]{train} and \link[caret]{trainControl}
+#'                   See [train][caret::train] and [trainControl][caret::trainControl]
 #'                   for more details.
 #' @param tuneGrid A data frame with possible tuning values, or a named list
 #'                 containing vectors with possible tuning values. If a data 
 #'                 frame, the columns should be named the same as the tuning 
 #'                 parameters. If a list, the elements of the list should be
 #'                 named the same as the tuning parameters. If a list,
-#'                 \link{expand.grid} will be used to make all possible
+#'                 [expand.grid] will be used to make all possible
 #'                 combinations of tuning parameter values.
 #' @param tuneLength An integer denoting the amount of granularity in
 #'                   the tuning parameter grid. By default, this argument
 #'                   is the number of levels for each tuning parameter that
-#'                   should be generated. If \code{trControl} has the option
-#'                   \code{search = "random"}, this is the maximum number
+#'                   should be generated. If `trControl` has the option
+#'                   `search = "random"`, this is the maximum number
 #'                   of tuning parameter combinations that will be generated
 #'                   by the random search. (NOTE: If given, this argument
 #'                   must be named.)
 #' @param return_trainobject A logical indicating whether the entire result
-#'                           of \link[caret]{train} should be returned, or
-#'                           only the \code{results} element.
+#'                           of [train][caret::train] should be returned, or
+#'                           only the `results` element.
 #'                           
-#' @details See \link[caret]{train} for more information.
+#' @details See [train][caret::train] for more information.
 #' 
 #'          The default method is k-fold cross-validation 
-#'          (\code{trControl = caret::trainControl(method = "cv")}). 
+#'          (`trControl = caret::trainControl(method = "cv")`). 
 #'          
 #'          For less variable, but more computationally costly, cross-validation,
 #'          users may choose to increase the number of folds. This can be
-#'          done by altering the \code{number} argument in 
-#'          \link[caret]{trainControl}, or by setting \code{method = "LOOCV"} 
+#'          done by altering the `number` argument in 
+#'          [trainControl][caret::trainControl], or by setting `method = "LOOCV"` 
 #'          for leave one out cross-validation where the number of folds is 
 #'          equal to the number of data points. 
 #'          
 #'          For less variable, but more computationally costly, cross-validation,
-#'          users may alternatively choose \code{method = "repeatedcv"} for 
+#'          users may alternatively choose `method = "repeatedcv"` for 
 #'          repeated k-fold cross-validation.
 #' 
 #'          For more control, advanced users may wish to call 
-#'          \link[caret]{train} directly, using 
-#'          \link{makemethod_train_smooth_data} to specify the \code{method} 
+#'          [train][caret::train] directly, using 
+#'          [makemethod_train_smooth_data] to specify the `method` 
 #'          argument.
 #' 
-#' @return If \code{return_trainobject = FALSE} (the default), a data frame
+#' @return If `return_trainobject = FALSE` (the default), a data frame
 #'         with the values of all tuning parameter combinations and the
-#'         training error rate for each combination (i.e. the \code{results}
-#'         element of the output of \link[caret]{train}).
+#'         training error rate for each combination (i.e. the `results`
+#'         element of the output of [train][caret::train]).
 #'         
-#'         If \code{return_trainobject = TRUE}, the output of \link[caret]{train}
+#'         If `return_trainobject = TRUE`, the output of [train][caret::train]
 #' 
 #' @export   
 train_smooth_data <- function(..., x = NULL, y = NULL, sm_method,
@@ -3378,8 +3378,8 @@ and dplyr::reframe instead")}
 #' @param y       Data to calculate difference or derivative of
 #' @param x       Vector of x values provided as a simple numeric.
 #' @param return One of c("difference", "derivative") for whether the
-#'               differences in \code{y} should be returned, or the
-#'               derivative of \code{y} with respect to \code{x}
+#'               differences in `y` should be returned, or the
+#'               derivative of `y` with respect to `x`
 #' @param percapita When percapita = TRUE, the per-capita difference or
 #'                  derivative is returned
 #' @param x_scale Numeric to scale x by in derivative calculation
@@ -3387,94 +3387,94 @@ and dplyr::reframe instead")}
 #'                Set x_scale to the ratio of the units of 
 #'                x to the desired units. E.g. if x is in seconds, but the 
 #'                desired derivative is in units of /minute, set 
-#'                \code{x_scale = 60} (since there are 60 seconds in 1 minute).
+#'                `x_scale = 60` (since there are 60 seconds in 1 minute).
 #' @param blank   y-value associated with a "blank" where the density is 0.
-#'                Is required when \code{percapita = TRUE}.
+#'                Is required when `percapita = TRUE`.
 #'                
 #'                If a vector of blank values is specified, blank values are
 #'                assumed to be in the same order as unique(subset_by)  
-#' @param subset_by An optional vector as long as \code{y}. 
-#'                  \code{y} will be split by the unique values of this vector 
+#' @param subset_by An optional vector as long as `y`. 
+#'                  `y` will be split by the unique values of this vector 
 #'                  and the derivative for each group will be calculated 
 #'                  independently of the others.
 #'                  
 #'                  This provides an internally-implemented approach similar
-#'                  to \link[dplyr]{group_by} and \link[dplyr]{mutate}
+#'                  to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
 #' @param window_width,window_width_n,window_width_frac,window_width_n_frac
 #'                  Set how many data points are used to determine
 #'                  the slope at each point.
 #'                       
-#'                  When all are \code{NULL}, \code{calc_deriv} 
+#'                  When all are `NULL`, `calc_deriv` 
 #'                  calculates the difference or derivative
 #'                  of each point with the next point, appending
-#'                  \code{NA} at the end.
+#'                  `NA` at the end.
 #'                       
 #'                  When one or multiple are specified, a linear regression 
 #'                  is fit to all points in the window to determine the 
 #'                  slope.
 #'                       
-#'                  \code{window_width_n} specifies the width of the
-#'                  window in number of data points. \code{window_width}
-#'                  specifies the width of the window in units of \code{x}.
-#'                  \code{window_width_n_frac} specifies the width of the
+#'                  `window_width_n` specifies the width of the
+#'                  window in number of data points. `window_width`
+#'                  specifies the width of the window in units of `x`.
+#'                  `window_width_n_frac` specifies the width of the
 #'                  window as a fraction of the total number of data points.
 #'                       
 #'                  When using multiple window specifications at the same 
 #'                  time, windows are conservative. Points 
 #'                  included in each window will meet all of the 
-#'                  \code{window_width}, \code{window_width_n}, and
-#'                  \code{window_width_n_frac}.
+#'                  `window_width`, `window_width_n`, and
+#'                  `window_width_n_frac`.
 #'                  
-#'                  A value of \code{window_width_n = 3} or 
-#'                  \code{window_width_n = 5} is often a good default.
-#' @param trans_y  One of \code{c("linear", "log")} specifying the
+#'                  A value of `window_width_n = 3` or 
+#'                  `window_width_n = 5` is often a good default.
+#' @param trans_y  One of `c("linear", "log")` specifying the
 #'                 transformation of y-values.
 #' 
-#'                 \code{'log'} is only available when calculating per-capita
+#'                 `'log'` is only available when calculating per-capita
 #'                 derivatives using a fitting approach (when non-default 
-#'                 values are specified for \code{window_width} or 
-#'                 \code{window_width_n}).
+#'                 values are specified for `window_width` or 
+#'                 `window_width_n`).
 #' 
 #'                 For per-capita growth expected to be exponential or 
-#'                 nearly-exponential, \code{"log"} is recommended, since 
+#'                 nearly-exponential, `"log"` is recommended, since 
 #'                 exponential growth is linear when log-transformed. However, 
 #'                 log-transformations must be used with care, since y-values 
 #'                 at or below 0 will become undefined and results will be 
-#'                 more sensitive to incorrect values of \code{blank}.
+#'                 more sensitive to incorrect values of `blank`.
 #' @param na.rm logical whether NA's should be removed before analyzing
 #' @param warn_ungrouped logical whether warning should be issued when
-#'                       \code{calc_deriv} is being called on ungrouped data
-#'                       and \code{subset_by = NULL}.
+#'                       `calc_deriv` is being called on ungrouped data
+#'                       and `subset_by = NULL`.
 #' @param warn_logtransform_warnings logical whether warning should be issued 
 #'                             when log(y) produced warnings.
 #' @param warn_logtransform_infinite logical whether warning should be issued 
 #'                             when log(y) produced infinite values that will
-#'                             be treated as \code{NA}.
+#'                             be treated as `NA`.
 #' @param warn_window_toosmall logical whether warning should be issued 
 #'                             when only one data point is in the window
-#'                             set by \code{window_width_n}, 
-#'                             \code{window_width}, or \code{window_width_n_frac},
-#'                             and so \code{NA} will be returned.
+#'                             set by `window_width_n`, 
+#'                             `window_width`, or `window_width_n_frac`,
+#'                             and so `NA` will be returned.
 #' 
-#' @details For per-capita derivatives, \code{trans_y = 'linear'} and
-#'          \code{trans_y = 'log'} approach the same value as time resolution
+#' @details For per-capita derivatives, `trans_y = 'linear'` and
+#'          `trans_y = 'log'` approach the same value as time resolution
 #'          increases. 
 #'          
-#'          For instance, let's assume exponential growth \eqn{N = e^rt} with 
-#'          per-capita growth rate \eqn{r}.
+#'          For instance, let's assume exponential growth $N = e^rt$ with 
+#'          per-capita growth rate $r$.
 #'          
-#'          With \code{trans_y = 'linear'}, note that \eqn{dN/dt = r e^rt = r N}. 
-#'          So we can calculate per-capita growth rate as \eqn{r = dN/dt * 1/N}. 
+#'          With `trans_y = 'linear'`, note that $dN/dt = r e^rt = r N$. 
+#'          So we can calculate per-capita growth rate as $r = dN/dt * 1/N$. 
 #'          
-#'          With \code{trans_y = 'log'}, note that \eqn{log(N) = log(e^rt) = rt}.
+#'          With `trans_y = 'log'`, note that $log(N) = log(e^rt) = rt$.
 #'          So we can calculate per-capita growth rate as the slope of a linear
-#'          fit of \eqn{log(N)} against time, \eqn{r = log(N)/t}.
+#'          fit of $log(N)$ against time, $r = log(N)/t$.
 #' 
-#' @return A vector of values for the plain (if \code{percapita = FALSE})
-#'         or per-capita (if \code{percapita = TRUE}) difference 
-#'         (if \code{return = "difference"}) or derivative 
-#'         (if \code{return = "derivative"}) between \code{y} values. Vector
-#'         will be the same length as \code{y},  with \code{NA} values 
+#' @return A vector of values for the plain (if `percapita = FALSE`)
+#'         or per-capita (if `percapita = TRUE`) difference 
+#'         (if `return = "difference"`) or derivative 
+#'         (if `return = "derivative"`) between `y` values. Vector
+#'         will be the same length as `y`,  with `NA` values 
 #'         at the ends
 #' 
 #' @export   
@@ -3643,11 +3643,11 @@ window_width_n_frac are used")}
 #'                
 #'                Set x_scale to the ratio of the the units of 
 #'                y to the desired units. E.g. if y is in per-second, but the 
-#'                desired doubling time is in minutes, \code{x_scale = 60} 
+#'                desired doubling time is in minutes, `x_scale = 60` 
 #'                (since there are 60 seconds in 1 minute).
 #' 
 #' @return A vector of values for the doubling time equivalent to the
-#'         per-capita growth rate supplied for \code{y}
+#'         per-capita growth rate supplied for `y`
 #' 
 #' @export   
 doubling_time <- function(y, x_scale = 1) {
@@ -3662,7 +3662,7 @@ doubling_time <- function(y, x_scale = 1) {
 
 #' Find local extrema of a numeric vector
 #' 
-#' These functions take a vector of \code{y} values and identify local extrema.
+#' These functions take a vector of `y` values and identify local extrema.
 #'   
 #' @param y Numeric vector of y values in which to identify local extrema
 #' @param x Optional numeric vector of corresponding x values
@@ -3670,19 +3670,19 @@ doubling_time <- function(y, x_scale = 1) {
 #'                   Arguments that set the width/height of the window used to
 #'                   search for local extrema.
 #'                   
-#'                   \code{window_width} is in units of \code{x}.
+#'                   `window_width` is in units of `x`.
 #'                   
-#'                   \code{window_width_n} is in units of number of data points.
+#'                   `window_width_n` is in units of number of data points.
 #'                   
-#'                   \code{window_height} is the maximum change in \code{y} 
+#'                   `window_height` is the maximum change in `y` 
 #'                   a single extrema-search step is allowed to take.
 #'                   
-#'                   \code{window_width_n_frac} is as a fraction of the total
+#'                   `window_width_n_frac` is as a fraction of the total
 #'                   number of data points.
 #'                   
 #'                   For example, the function will not pass a peak or valley
-#'                   more than \code{window_width_n} data points wide, nor
-#'                   a peak/valley taller or deeper than \code{window_height}.
+#'                   more than `window_width_n` data points wide, nor
+#'                   a peak/valley taller or deeper than `window_height`.
 #'                   
 #'                   A narrower width will be more sensitive to narrow local 
 #'                   maxima/minima, while a wider width will be less sensitive 
@@ -3694,53 +3694,53 @@ doubling_time <- function(y, x_scale = 1) {
 #'               identified extremas
 #' @param return_maxima,return_minima logical for which classes of local extrema
 #'                                    to return
-#' @param return_endpoints Should the first and last values in \code{y}
+#' @param return_endpoints Should the first and last values in `y`
 #'                         be included if they are in the returned 
 #'                         vector of extrema?
 #' @param subset A vector of logical values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
-#'               If \code{return = "index"}, index will be for the whole 
+#'               If `return = "index"`, index will be for the whole 
 #'               vector and not the subset of the vector
 #' @param na.rm logical whether NA's should be removed before analyzing
-#' @param width_limit Deprecated, use \code{window_width} instead
-#' @param width_limit_n Deprecated, use \code{window_width_n} instead
-#' @param height_limit Deprecated, use \code{window_height} instead
-#' @param ... (for \code{first_maxima} and \code{first_minima}), other 
-#'            parameters to pass to \code{find_local_extrema}
+#' @param width_limit Deprecated, use `window_width` instead
+#' @param width_limit_n Deprecated, use `window_width_n` instead
+#' @param height_limit Deprecated, use `window_height` instead
+#' @param ... (for `first_maxima` and `first_minima`), other 
+#'            parameters to pass to `find_local_extrema`
 #' 
 #' @details 
-#' For \code{find_local_extrema}, one of \code{window_width}, 
-#' \code{window_width_n}, \code{window_height}, or \code{window_width_n_frac}
+#' For `find_local_extrema`, one of `window_width`, 
+#' `window_width_n`, `window_height`, or `window_width_n_frac`
 #' must be provided.
 #' 
-#' For \code{first_minima} or \code{first_maxima}, set 
-#' \code{window_width_n_frac = NULL} to override default width behavior.
+#' For `first_minima` or `first_maxima`, set 
+#' `window_width_n_frac = NULL` to override default width behavior.
 #' 
-#' If multiple of \code{window_width}, \code{window_width_n},
-#' \code{window_height}, or \code{window_width_n_frac} are provided, steps 
+#' If multiple of `window_width`, `window_width_n`,
+#' `window_height`, or `window_width_n_frac` are provided, steps 
 #' are limited conservatively (a single step must meet all criteria).
 #' 
-#' In the case of exact ties in \code{y} values within a window, only the 
+#' In the case of exact ties in `y` values within a window, only the 
 #' first local extrema is returned.
 #' 
 #' @return 
-#'    \code{find_local_extrema} returns a vector corresponding to all the 
+#'    `find_local_extrema` returns a vector corresponding to all the 
 #'    found local extrema.
 #' 
-#'    \code{first_maxima} returns only the first maxima, so is a shortcut for 
-#'    \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
+#'    `first_maxima` returns only the first maxima, so is a shortcut for 
+#'    `find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]`
 #' 
-#'    \code{first_minima} returns only the first minima, so is a shortcut for
-#'    \code{find_local_extrema(return_maxima = FALSE, return_maxima = FALSE)[1]}
+#'    `first_minima` returns only the first minima, so is a shortcut for
+#'    `find_local_extrema(return_maxima = FALSE, return_maxima = FALSE)[1]`
 #' 
-#'    If \code{return = "index"}, the returned value(s) are the indices
+#'    If `return = "index"`, the returned value(s) are the indices
 #'    corresponding to local extrema in the data
 #'           
-#'    If \code{return = "x"}, the returned value(s) are the x value(s) 
+#'    If `return = "x"`, the returned value(s) are the x value(s) 
 #'    corresponding to local extrema in the data
 #'          
-#'    If \code{return = "y"}, the returned value(s) are the y value(s)
+#'    If `return = "y"`, the returned value(s) are the y value(s)
 #'    corresponding to local extrema in the data
 #' 
 #' @name ExtremaFunctions
@@ -3927,63 +3927,63 @@ use find_local_extrema for more flexibility")
 
 #' Find point(s) when a numeric vector crosses some threshold
 #' 
-#' These functions take a vector of \code{y} values and identify points where
-#' the \code{y} values cross some \code{threshold} y value.
+#' These functions take a vector of `y` values and identify points where
+#' the `y` values cross some `threshold` y value.
 #' 
 #' @param y Numeric vector of y values in which to identify threshold
 #'          crossing event(s)
 #' @param x Optional numeric vector of corresponding x values
 #' @param threshold Threshold y value of interest
-#' @param return One of \code{c("index", "x")}, determining whether the function
-#'               will return the \code{index} or \code{x} value associated with the
+#' @param return One of `c("index", "x")`, determining whether the function
+#'               will return the `index` or `x` value associated with the
 #'               threshold-crossing event.
 #'               
-#'               If \code{index}, it will refer to the data point immediately after
+#'               If `index`, it will refer to the data point immediately after
 #'               the crossing event.
 #'               
-#'               If \code{x}, it will use linear interpolation and the data
+#'               If `x`, it will use linear interpolation and the data
 #'               points immediately before and after the threshold-crossing
-#'               to return the exact \code{x} value when the threshold crossing
+#'               to return the exact `x` value when the threshold crossing
 #'               occurred
 #' @param subset A vector of logical values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #'               
-#'               If \code{return = "index"}, index will be for the whole 
+#'               If `return = "index"`, index will be for the whole 
 #'               vector and not the subset of the vector
-#' @param return_rising logical for whether crossing events where \code{y}
-#'                      rises above \code{threshold} should be returned
-#' @param return_falling logical for whether crossing events where \code{y}
-#'                      falls below \code{threshold} should be returned
+#' @param return_rising logical for whether crossing events where `y`
+#'                      rises above `threshold` should be returned
+#' @param return_falling logical for whether crossing events where `y`
+#'                      falls below `threshold` should be returned
 #' @param return_endpoints logical for whether startpoint should be returned
-#'                      when the startpoint is above \code{threshold} and
-#'                      \code{return_rising = TRUE}, or when the startpoint is
-#'                      below \code{threshold} and \code{return_falling = TRUE}
+#'                      when the startpoint is above `threshold` and
+#'                      `return_rising = TRUE`, or when the startpoint is
+#'                      below `threshold` and `return_falling = TRUE`
 #' @param na.rm logical whether NA's should be removed before analyzing.
-#'              If \code{return = 'index'}, indices will refer to the original
-#'              \code{y} vector *including* \code{NA} values
-#' @param ... (for \code{first_above} and \code{first_below}) other arguments 
-#'            to pass to \code{find_threshold_crosses}
+#'              If `return = 'index'`, indices will refer to the original
+#'              `y` vector *including* `NA` values
+#' @param ... (for `first_above` and `first_below`) other arguments 
+#'            to pass to `find_threshold_crosses`
 #'  
 #' @return 
-#'    \code{find_threshold_crosses} returns a vector corresponding to all the 
+#'    `find_threshold_crosses` returns a vector corresponding to all the 
 #'    threshold crossings.
 #' 
-#'    \code{first_above} returns only the first time the \code{y} values
+#'    `first_above` returns only the first time the `y` values
 #'    rise above the threshold, so is a shortcut for 
-#'    \code{find_threshold_crosses(return_rising = TRUE, return_falling = FALSE)[1]}
+#'    `find_threshold_crosses(return_rising = TRUE, return_falling = FALSE)[1]`
 #' 
-#'    \code{first_below} returns only the first time the \code{y} values
+#'    `first_below` returns only the first time the `y` values
 #'    fall below the threshold, so is a shortcut for 
-#'    \code{find_threshold_crosses(return_rising = FALSE, return_falling = TRUE)[1]}
+#'    `find_threshold_crosses(return_rising = FALSE, return_falling = TRUE)[1]`
 #' 
-#'    If \code{return = "index"}, the returned value(s) are the indices
+#'    If `return = "index"`, the returned value(s) are the indices
 #'    immediately following threshold crossing(s)
 #'           
-#'    If \code{return = "x"}, the returned value(s) are the x value(s) 
+#'    If `return = "x"`, the returned value(s) are the x value(s) 
 #'    corresponding to threshold crossing(s)
 #'    
 #'    If no threshold-crossings are detected that meet the criteria, will
-#'    return \code{NA}
+#'    return `NA`
 #'          
 #' @name ThresholdFunctions
 NULL
@@ -4108,7 +4108,7 @@ please use find_threshold_crosses for more flexibility")
 
 #' Calculate area under the curve
 #' 
-#' This function takes a vector of \code{x} and \code{y} values
+#' This function takes a vector of `x` and `y` values
 #' and returns a scalar for the area under the curve, calculated using 
 #' the trapezoid rule
 #'  
@@ -4118,20 +4118,20 @@ please use find_threshold_crosses for more flexibility")
 #'             area under the curve should be calculated (where NA can be
 #'             provided for the area to be calculated from the start or to
 #'             the end of the data)
-#' @param blank Value to be subtracted from \code{y} values before calculating
+#' @param blank Value to be subtracted from `y` values before calculating
 #'              area under the curve
 #' @param subset A vector of logical values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #' @param na.rm a logical indicating whether missing values should be removed
-#' @param neg.rm a logical indicating whether \code{y} values below zero should 
-#'               be treated as zeros. If \code{FALSE}, area under the curve
-#'               for negative \code{y} values will be calculated normally,
+#' @param neg.rm a logical indicating whether `y` values below zero should 
+#'               be treated as zeros. If `FALSE`, area under the curve
+#'               for negative `y` values will be calculated normally,
 #'               effectively subtracting from the returned value.
 #' @param warn_xlim_out_of_range logical whether warning should be issued when 
 #'                             xlim is lower than the lowest x value or higher
 #'                             than the highest x value.
 #' @param warn_negative_y logical whether warning should be issued when 
-#'                        \code{neg.rm == FALSE} but some y values are below 0.
+#'                        `neg.rm == FALSE` but some y values are below 0.
 #' 
 #' @return A scalar for the total area under the curve
 #'             
@@ -4231,7 +4231,7 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 
 #' Calculate centroid
 #' 
-#' This function takes a vector of \code{x} and \code{y} values
+#' This function takes a vector of `x` and `y` values
 #' and returns the x and/or y position of the centroid of mass of the
 #' area under the curve
 #'  
@@ -4244,27 +4244,27 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 #'             centroid should be calculated (where NA can be
 #'             provided for the area to be calculated from the start or to
 #'             the end of the data)
-#' @param blank Value to be subtracted from \code{y} values before calculating
+#' @param blank Value to be subtracted from `y` values before calculating
 #'              the centroid
 #' @param subset A vector of logical values indicating which x and y values
 #'               should be included (TRUE) or excluded (FALSE).
 #' @param na.rm a logical indicating whether missing values should be removed
-#' @param neg.rm a logical indicating whether \code{y} values below zero should 
-#'               be treated as zeros. If \code{FALSE}, the centroid
-#'               for negative \code{y} values will be calculated normally,
+#' @param neg.rm a logical indicating whether `y` values below zero should 
+#'               be treated as zeros. If `FALSE`, the centroid
+#'               for negative `y` values will be calculated normally,
 #'               effectively pulling the centroid towards the x axis.
 #' @param warn_xlim_out_of_range logical whether warning should be issued when 
 #'                             xlim is lower than the lowest x value or higher
 #'                             than the highest x value.
 #' @param warn_negative_y logical whether warning should be issued when 
-#'                        \code{neg.rm == FALSE} but some y values are below 0.
-#' @param ... Other arguments to pass to \code{centroid}
+#'                        `neg.rm == FALSE` but some y values are below 0.
+#' @param ... Other arguments to pass to `centroid`
 #' 
-#' @return A scalar for the x value (if \code{return = 'x'}) or
-#'         y value (if \code{return = 'y'}) of the centroid of the data
+#' @return A scalar for the x value (if `return = 'x'`) or
+#'         y value (if `return = 'y'`) of the centroid of the data
 #'         
 #' @details
-#' This function uses \link[sf]{st_centroid} to calculate the centroid of mass
+#' This function uses [st_centroid][sf::st_centroid] to calculate the centroid of mass
 #'         
 #' @name CentroidFunctions
 NULL  
@@ -4422,39 +4422,39 @@ centroid_both <- function(x, y, return = "both", ...) {
 #' @param y Vector of y values (typically density)
 #' @param deriv Vector of derivative values (typically per-capita derivative)
 #' @param blank   y-value associated with a "blank" where the density is 0.
-#'                Is required when \code{trans_y = TRUE}.
+#'                Is required when `trans_y = TRUE`.
 #'                
 #'                A vector of blank values may be specified only when all of 
-#'                \code{slope}, \code{x1}, \code{y1}, and \code{y0} are provided
+#'                `slope`, `x1`, `y1`, and `y0` are provided
 #'                as vectors
-#' @param trans_y  One of \code{c("linear", "log")} specifying the
+#' @param trans_y  One of `c("linear", "log")` specifying the
 #'                 transformation of y-values.
 #' 
-#'                 \code{'log'} is the default, producing calculations of
+#'                 `'log'` is the default, producing calculations of
 #'                 lag time assuming a transition to exponential growth
 #'                 
-#'                 \code{'linear'} is available for alternate uses
+#'                 `'linear'` is available for alternate uses
 #' @param na.rm a logical indicating whether missing values or values that
-#'              become \code{NA} or infinite during log-transformation should 
+#'              become `NA` or infinite during log-transformation should 
 #'              be removed
 #' @param slope Slope to project from x1,y1 to y0 (typically per-capita growth
-#'              rate). If not provided, will be calculated as \code{max(deriv)}
+#'              rate). If not provided, will be calculated as `max(deriv)`
 #' @param x1 x value (typically time) to project slope from. If not provided,
-#'           will be calculated as \code{x[which.max(deriv)]}.
+#'           will be calculated as `x[which.max(deriv)]`.
 #' @param y1 y value (typically density) to project slope from. If not provided,
-#'           will be calculated as \code{y[which.max(deriv)]}.
+#'           will be calculated as `y[which.max(deriv)]`.
 #' @param y0 y value (typically density) to find intersection of slope from
-#'             x1, y1 with. If not provided, will be calculated as \code{min(y)}
+#'             x1, y1 with. If not provided, will be calculated as `min(y)`
 #' @param warn_logtransform_warnings logical whether warning should be issued 
 #'                             when log(y) produced warnings.
 #' @param warn_logtransform_infinite logical whether warning should be issued 
 #'                             when log(y) produced infinite values that will
-#'                             be treated as \code{NA}.
+#'                             be treated as `NA`.
 #' @param warn_min_y_mismatch logical whether warning should be issued when 
-#'                            \code{min(y)} does not equal 
-#'                            \code{min(y[!is.na(x)])}.
+#'                            `min(y)` does not equal 
+#'                            `min(y[!is.na(x)])`.
 #' @param warn_multiple_maxderiv logical whether warning should be issued when 
-#'                             there are multiple points in \code{deriv} that
+#'                             there are multiple points in `deriv` that
 #'                             are tied for the highest, and only the first
 #'                             will be used.
 #' @param warn_one_lag logical whether warning should be issued when 
@@ -4463,18 +4463,18 @@ centroid_both <- function(x, y, return = "both", ...) {
 #' @param warn_no_lag logical whether warning should be issued when calculated
 #'                    lag time is less than the minimum value of x.
 #' @param warn_blank_length logical whether warning should be issued when an
-#'                          unexpected number of \code{blank} values was 
+#'                          unexpected number of `blank` values was 
 #'                          provided and only the first will be used
 #'                            
 #' @details 
-#' For most typical uses, simply supply \code{x}, \code{y}, and \code{deriv}
-#' (using the per-capita derivative and \code{trans_y = 'log'}).
+#' For most typical uses, simply supply `x`, `y`, and `deriv`
+#' (using the per-capita derivative and `trans_y = 'log'`).
 #' 
 #' Advanced users may wish to use alternate values for the slope of the tangent
-#' line (\code{slope}), origination point of the tangent line (\code{x1}, 
-#' \code{y1}), or minimum y-value \code{y0}. If specified, these values will 
-#' override the default calculations. If and only if all of \code{slope}, 
-#' \code{x1}, \code{y1}, and \code{y0} are provided, \code{lag_time} is 
+#' line (`slope`), origination point of the tangent line (`x1`, 
+#' `y1`), or minimum y-value `y0`. If specified, these values will 
+#' override the default calculations. If and only if all of `slope`, 
+#' `x1`, `y1`, and `y0` are provided, `lag_time` is 
 #' vectorized on their inputs and will return a vector of lag time values.
 #'
 #' @return Typically a scalar of the lag time in units of x. See Details for
@@ -4611,11 +4611,11 @@ only using the first for normalizing 'y0'")
 #' Find the first local maxima of a numeric vector
 #' 
 #' This function has been deprecated in favor of the identical new 
-#' function \link{first_maxima}
+#' function [first_maxima]
 #' 
-#' This function takes a vector of \code{y} values and returns the index
+#' This function takes a vector of `y` values and returns the index
 #' (by default) of the first local maxima. It serves as a shortcut
-#' for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
+#' for `find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]`
 #' 
 #' @seealso [first_maxima()]
 #' 
@@ -4624,47 +4624,47 @@ only using the first for normalizing 'y0'")
 #' @param return One of c("index", "x", "y"), determining whether the function
 #'               will return the index, x value, or y value associated with the
 #'               first maxima in y values
-#' @param window_width Width of the window (in units of \code{x}) used to
+#' @param window_width Width of the window (in units of `x`) used to
 #'                   search for local extrema. A narrower width will be more
 #'                   sensitive to narrow local maxima/minima, while a wider
 #'                   width will be less sensitive to local maxima/minima.
 #' @param window_width_n The maximum number of data points a single 
 #'                      extrema-search step is allowed to take. For example,
 #'                      when maxima-finding, the function will not pass
-#'                      a valley consisting of more than \code{window_width_n}
+#'                      a valley consisting of more than `window_width_n`
 #'                      data points.
 #'                      
-#'                      A smaller \code{window_width_n} will be more sensitive 
+#'                      A smaller `window_width_n` will be more sensitive 
 #'                      to narrow local maxima/minima, while a larger 
-#'                      \code{window_width_n} will be less sensitive to 
+#'                      `window_width_n` will be less sensitive to 
 #'                      narrow local maxima/minima.
 #'                      
 #'                      If not provided, defaults to ~0.2*length(y)
-#' @param window_height The maximum change in \code{y} a single extrema-search
+#' @param window_height The maximum change in `y` a single extrema-search
 #'                     step is allowed to take.  For example, when 
 #'                     maxima-finding, the function will not pass a
-#'                     valley deeper than \code{window_height}.
+#'                     valley deeper than `window_height`.
 #'                     
-#'                     A smaller \code{window_height} will be more sensitive 
+#'                     A smaller `window_height` will be more sensitive 
 #'                     to shallow local maxima/minima, while a larger 
-#'                     \code{window_height} will be less sensitive to 
+#'                     `window_height` will be less sensitive to 
 #'                     shallow maxima/minima.
-#' @param return_endpoints Should the first or last value in \code{y}
+#' @param return_endpoints Should the first or last value in `y`
 #'                         be allowed to be returned?
-#' @param ... Other parameters to pass to \link{find_local_extrema}
+#' @param ... Other parameters to pass to [find_local_extrema]
 #' 
-#' @return If \code{return = "index"}, a vector of indices corresponding 
+#' @return If `return = "index"`, a vector of indices corresponding 
 #'           to local extrema in the data
 #'           
-#'         If \code{return = "x"}, a vector of x values corresponding
+#'         If `return = "x"`, a vector of x values corresponding
 #'           to local extrema in the data
 #'          
-#'         If \code{return = "y"}, a vector of y values corresponding
+#'         If `return = "y"`, a vector of y values corresponding
 #'           to local extrema in the data
 #' 
 #' @details 
-#' If none of \code{window_width}, \code{window_width_n}, or 
-#' \code{window_height} are provided, default value of \code{window_width_n}
+#' If none of `window_width`, `window_width_n`, or 
+#' `window_height` are provided, default value of `window_width_n`
 #' will be used.
 #' 
 #' @export    
@@ -4690,8 +4690,8 @@ first_peak <- function(y, x = NULL,
 #' for later merging with read data
 #' 
 #' @details 
-#' Note that either \code{nrows} or \code{block_row_names} must be provided
-#' and that either \code{ncols} or \code{block_col_names} must be provided
+#' Note that either `nrows` or `block_row_names` must be provided
+#' and that either `ncols` or `block_col_names` must be provided
 #' 
 #' Examples:
 #' my_example <- make_tidydesign(nrows = 8, ncols = 12,
@@ -4712,13 +4712,13 @@ first_peak <- function(y, x = NULL,
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
 #'                          well names
-#' @param wellnames_Excel If \code{block_row_names} or \code{block_col_names}
+#' @param wellnames_Excel If `block_row_names` or `block_col_names`
 #'                        are not specified, should rows and columns be named
 #'                        using Excel-style base-26 lettering for rows
 #'                        and numbering for columns? If FALSE, rows and columns
 #'                        will be numbered with "R" and "C" prefix.
 #' @param pattern_split character to split pattern elements provided in
-#'                      \code{...} by
+#'                      `...` by
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
 #'                         that corresponds to the first value in the vector.
 #'                         
@@ -4726,10 +4726,10 @@ first_peak <- function(y, x = NULL,
 #'                         c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z). If,
 #'                         for example, lookup_tbl_start = "A", then the lookup
 #'                         table will now be c(A,B,...Y,Z,a,b,...,y,z)
-#' @param colnames_first  In the wellnames created by \code{paste}-ing the
+#' @param colnames_first  In the wellnames created by `paste`-ing the
 #'                        rownames and column names, should the column names
 #'                        come first
-#' @param ... Each \code{...} argument must be a list with five elements:
+#' @param ... Each `...` argument must be a list with five elements:
 #' 
 #'              1. a vector of the values
 #'              
@@ -4747,7 +4747,7 @@ first_peak <- function(y, x = NULL,
 #'               
 #'              5. a logical for whether this pattern should be filled byrow
 #'              
-#' @return a tidy-shaped \code{data.frame} containing all the design elements
+#' @return a tidy-shaped `data.frame` containing all the design elements
 #' 
 #' @export
 make_tidydesign <- function(nrows = NULL, ncols = NULL,
@@ -4878,15 +4878,15 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 #' @param tidydesign A tidydesign data.frame (e.g. as created by make_tidydesign)
 #' @param collapse NULL or a string to use for concatenating design elements
 #'                 together. If NULL each design column will be put into its
-#'                 own block. If a string, that string will be used to \link{paste}
+#'                 own block. If a string, that string will be used to [paste]
 #'                 together all design elements and all design elements will
 #'                 be returned in a single block
 #' @param wellnames_sep A string used when concatenating rownames and column
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
 #'                          well names
-#' @return A list of blockdesign data.frames (if \code{collapse} is not
-#'         \code{NULL} the list is of length 1
+#' @return A list of blockdesign data.frames (if `collapse` is not
+#'         `NULL` the list is of length 1
 #'
 #' @export
 block_tidydesign <- function(tidydesign, collapse = NULL,

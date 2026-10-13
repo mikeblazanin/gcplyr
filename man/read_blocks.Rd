@@ -148,19 +148,31 @@ pulled from in the input files.
 This metadata is returned as the second list element of each
 blockcurve, e.g.:
 
-\verb{[[1]]} \verb{[1]} "data" #1 \verb{[2]} "metadata"  \verb{[2][1]} name #1
+\verb{[[1]]}
+
+\verb{[1]} "data" #1
+
+\verb{[2]} "metadata"
+
+\verb{[2][1]} name #1
 
 \verb{[2][2]} date-time #1
 
 \verb{[2][3]} temp #1
 
-\verb{[[2]]} \verb{[1]} "data" #2 \verb{[2]} "metadata"  \verb{[2][1]} name #2
+\verb{[[2]]}
+
+\verb{[1]} "data" #2
+
+\verb{[2]} "metadata"
+
+\verb{[2][1]} name #2
 
 \verb{[2][2]} date-time #2
 
 \verb{[2][3]} temp #2
 
-...
+\code{...}
 
 Calling \link{uninterleave} on the output of \code{read_blocks} works on block data
 and the associated metadata because \link{uninterleave} operates on the highest

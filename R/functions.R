@@ -419,19 +419,31 @@ get_metadata <- function(df, row, col) {
 #'  This metadata is returned as the second list element of each
 #'  blockcurve, e.g.:
 #'  
-#'   `[[1]]` `[1]` "data" #1 `[2]` "metadata"  `[2][1]` name #1
+#'   `[[1]]` 
+#'   
+#'   `[1]` "data" #1 
+#'   
+#'   `[2]` "metadata"  
+#'   
+#'   `[2][1]` name #1
 #'   
 #'   `[2][2]` date-time #1
 #'   
 #'   `[2][3]` temp #1
 #'   
-#'   `[[2]]` `[1]` "data" #2 `[2]` "metadata"  `[2][1]` name #2
+#'   `[[2]]` 
+#'   
+#'   `[1]` "data" #2 
+#'   
+#'   `[2]` "metadata"  
+#'   
+#'   `[2][1]` name #2
 #'   
 #'   `[2][2]` date-time #2
 #'   
 #'   `[2][3]` temp #2
 #'   
-#'   ...
+#'   `...`
 #' 
 #'  Calling [uninterleave] on the output of `read_blocks` works on block data
 #'  and the associated metadata because [uninterleave] operates on the highest 

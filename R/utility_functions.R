@@ -20,10 +20,10 @@
 
 #' Nicely print the contents of a data.frame
 #' 
-#' This function uses \code{write.table} to print the input \code{data.frame}
+#' This function uses `write.table` to print the input `data.frame`
 #' in a nicely-formatted manner that is easy to read
 #' 
-#' @param x The \code{data.frame} to be printed
+#' @param x The `data.frame` to be printed
 #' @param col.names Boolean for whether column names should be printed
 #' @param row.names Boolean for whether row names should be printed
 #' 
@@ -43,7 +43,7 @@ print_df <- function(x, col.names = FALSE, row.names = FALSE) {
 #' @param input_name Name of the input used for error messages
 #' @param needed_len Desired length of output vector
 #' @param needed_name What the desired length corresponds to (e.g. number of files)
-#' @return The values of \code{input} coerced to a vector of length \code{needed_len}
+#' @return The values of `input` coerced to a vector of length `needed_len`
 #' 
 #' @noRd
 check_input_dimensions <- function(input, input_name, needed_len,
@@ -164,16 +164,16 @@ from_excel <- function(x) {
 #' Use this in cases where a parent function calls multiple sub-functions
 #' and passes the ... dots argument to each, but some arguments users
 #' specify in the ... dots argument only work for some of the sub-functions.
-#' In this case, parse_dots will check and run \code{FUN} with only
-#' the arguments that \code{FUN} accepts
+#' In this case, parse_dots will check and run `FUN` with only
+#' the arguments that `FUN` accepts
 #' 
 #' @param FUN The function to be called
-#' @param SUBFUN A subfunction called by \code{FUN}, so all arguments for
-#'               the subfunction should be passed to \code{FUN}
+#' @param SUBFUN A subfunction called by `FUN`, so all arguments for
+#'               the subfunction should be passed to `FUN`
 #' @param ... Additional arguments, some of which may not be arguments
-#'            for \code{FUN}
+#'            for `FUN`
 #' 
-#' @return The output of \code{FUN} operating on arguments in \code{...}
+#' @return The output of `FUN` operating on arguments in `...`
 #' 
 #' @noRd
 parse_dots <- function(FUN, SUBFUN = NULL, ...) {
@@ -183,15 +183,15 @@ parse_dots <- function(FUN, SUBFUN = NULL, ...) {
   return(do.call(FUN, dots[names(dots) %in% argnames]))
 }
 
-#' A function that checks if an argument was speicified in \code{...}: if it was,
-#' returns the value of that argument as specified in \code{...}, if not, returns
+#' A function that checks if an argument was speicified in `...`: if it was,
+#' returns the value of that argument as specified in `...`, if not, returns
 #' a default value
 #' 
 #' @param argname The name of the argument
-#' @param default The value for the argument if not specified in the \code{...}
-#' @param ... The \code{...} arguments
+#' @param default The value for the argument if not specified in the `...`
+#' @param ... The `...` arguments
 #' 
-#' @return The value for argname, either the default or as-specified in \code{...}
+#' @return The value for argname, either the default or as-specified in `...`
 #' 
 #' @noRd
 check_dots <- function(argname, default, ...) {
@@ -227,7 +227,7 @@ infer_block_metadata <- function(blocks) {
 #' 
 #' @param blocks The list of blocks
 #' @param nested_metadata A logical for if there is nested metadata in
-#'                        \code{blocks}. Will attempt to infer if left NULL
+#'                        `blocks`. Will attempt to infer if left NULL
 #' 
 #' @return vector of characters not found in the blocks that can be used
 #'         as a separator without issue (or error if none can be found)
@@ -279,7 +279,7 @@ find_char_for_sep <- function(blocks, nested_metadata = NULL) {
 #'                     to be infinite by as.numeric) be considered as numeric?
 #' @param nan_num Should NaN values (or values that are coerced
 #'                     to be infinite by as.numeric) be considered as numeric?
-#' @return TRUE if \code{x} is numeric or can be converted to numeric without
+#' @return TRUE if `x` is numeric or can be converted to numeric without
 #'         warnings. Otherwise, FALSE
 #' 
 #' @noRd
@@ -364,7 +364,7 @@ rm_nas <- function(..., na.rm, stopifNA = FALSE) {
 #' been previously removed
 #' 
 #' Note: if x vector is empty (because all values were removed), this function
-#' will return a vector of all \code{NA}'s for x. However, if y vector is
+#' will return a vector of all `NA`'s for x. However, if y vector is
 #' empty (because all values were removed), this function will not return
 #' anything for y (because it's seen as NULL, the default value for y, which
 #' is an optional argument). See Github Issue #231
@@ -417,11 +417,11 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
 #'                            
 #'     [3] "order" = the original order, such that:
 #'                            
-#'     \code{return[["x"]][order(return[["order"]])] == x}
+#'     `return[["x"]][order(return[["order"]])] == x`
 #'                            
 #'     and
 #'                            
-#'     \code{return[["y"]][order(return[["order"]])] == y}
+#'     `return[["y"]][order(return[["order"]])] == y`
 #' 
 #' @noRd
 reorder_xy <- function(x = NULL, y) {
@@ -441,13 +441,13 @@ reorder_xy <- function(x = NULL, y) {
 #' 
 #' @param x Vector of x values
 #' @param y Vector of y values
-#' @param window_width Width of the window (in units of \code{x}).
-#' @param window_width_n Width of the window (in number of \code{y} values).
+#' @param window_width Width of the window (in units of `x`).
+#' @param window_width_n Width of the window (in number of `y` values).
 #' @param window_width_frac Width of the window (as a fraction of the total
-#'                          range of \code{x}).
+#'                          range of `x`).
 #' @param window_width_n_frac Width of the window (as a fraction of the total
-#'                          number of \code{y} values).
-#' @param window_height The maximum change in \code{y} within each window.
+#'                          number of `y` values).
+#' @param window_height The maximum change in `y` within each window.
 #' @param edge_NA logical for whether windows that pass the edge of the data
 #'                should be returned as NA or simply truncated at the edge
 #'                of the data.
@@ -459,7 +459,7 @@ reorder_xy <- function(x = NULL, y) {
 #'                In contrast, extrema-finding typically want edge_NA = FALSE
 #'                so that searching simply stops at the edge of the data
 #' @param force_height_multi_n 
-#'                logical for whether windows limits set by \code{window_height}
+#'                logical for whether windows limits set by `window_height`
 #'                should always have at least 3 data points in them (or 2 
 #'                data points for windows located at the edge of the domain)
 #'                         
@@ -609,11 +609,11 @@ check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
 #' @param expr The expression to run
 #' @return Returns list with $value $warning $error
 #'         
-#'         If successful, $warning and $error will be \code{NULL}
+#'         If successful, $warning and $error will be `NULL`
 #'         
-#'         If warning, $error will be \code{NULL} ($value will be present)
+#'         If warning, $error will be `NULL` ($value will be present)
 #'         
-#'         If error, $warning and $value will be \code{NULL}
+#'         If error, $warning and $value will be `NULL`
 #'         
 #' @details 
 #' I didn't write this, see: https://stackoverflow.com/a/24569739/14805829
@@ -647,26 +647,26 @@ gcTryCatch <- function(expr) {
 #'              x3, or y3)
 #' 
 #' @details Note that there is no requirement that 
-#'          \code{x1} < \code{x2} < \code{x3}: the points can be in any order 
+#'          `x1` < `x2` < `x3`: the points can be in any order 
 #'          along the line.
 #'          
-#'          \code{solve_linear} works with vectors of all inputs to solve
-#'          multiple lines at once, where the \code{i}th element of each 
-#'          argument corresponds to the \code{i}th output. Note that all
+#'          `solve_linear` works with vectors of all inputs to solve
+#'          multiple lines at once, where the `i`th element of each 
+#'          argument corresponds to the `i`th output. Note that all
 #'          lines must be missing the same information. Input vectors
 #'          will be recycled as necessary.
 #' 
 #' @return A named vector with the missing information from the line:
 #' 
-#'         If \code{m} and \code{x2} are provided, \code{y2} will be returned
+#'         If `m` and `x2` are provided, `y2` will be returned
 #'         
-#'         If \code{m} and \code{y2} are provided, \code{x2} will be returned
+#'         If `m` and `y2` are provided, `x2` will be returned
 #'         
-#'         If \code{x2} and \code{y2} are provided, but neither \code{x3} nor 
-#'         \code{y3} are provided, \code{m} will be returned
+#'         If `x2` and `y2` are provided, but neither `x3` nor 
+#'         `y3` are provided, `m` will be returned
 #'         
-#'         If \code{x2} and \code{y2} are provided and one of \code{x3} or 
-#'         \code{y3} are provided, the other (\code{y3} or \code{x3}) will be 
+#'         If `x2` and `y2` are provided and one of `x3` or 
+#'         `y3` are provided, the other (`y3` or `x3`) will be 
 #'         returned
 #' 
 #' @export
@@ -730,24 +730,24 @@ all_same <- function(x) {
 #' Determines the location, i.e. index, of the (first) minimum or maximum of
 #' a numeric (or logical) vector.
 #' 
-#' @param x numeric (logical, integer, or double) vector or an \code{R} object
+#' @param x numeric (logical, integer, or double) vector or an `R` object
 #'          for which the internal coercion to double works whose min or max
 #'          is searched for.
 #' @param empty_NA logical, indicating if an empty value should be returned
-#'                 as \code{NA} (the default) or as \code{integer(0}) (the
-#'                 same as \code{which.min} and \code{which.max}).
+#'                 as `NA` (the default) or as `integer(0`) (the
+#'                 same as `which.min` and `which.max`).
 #' @details 
-#' These functions are wrappers for \code{which.min} and \code{which.max},
-#' with the additional argument \code{empty_NA}.
+#' These functions are wrappers for `which.min` and `which.max`,
+#' with the additional argument `empty_NA`.
 #'  
 #' @return 
-#'    If \code{empty_NA = FALSE}, identical to \code{which.min} or 
-#'    \code{which.max}
+#'    If `empty_NA = FALSE`, identical to `which.min` or 
+#'    `which.max`
 #'    
-#'    If \code{empty_NA = TRUE}, identical to \code{which.min} or 
-#'    \code{which.max} except that, in cases where \code{which.min} or 
-#'    \code{which.max} would return \code{integer(0)}, \code{which_min_gc} and
-#'    \code{which_max_gc} return \code{NA}
+#'    If `empty_NA = TRUE`, identical to `which.min` or 
+#'    `which.max` except that, in cases where `which.min` or 
+#'    `which.max` would return `integer(0)`, `which_min_gc` and
+#'    `which_max_gc` return `NA`
 #'          
 #' @name WhichMinMaxGC
 NULL
@@ -774,24 +774,24 @@ which_max_gc <- function(x, empty_NA = TRUE) {
 #' 
 #' @param ... numeric or character arguments
 #' @param na.rm a logical indicating whether missing values should be removed.
-#' @param allmissing_NA a logical indicating whether \code{NA} should be
+#' @param allmissing_NA a logical indicating whether `NA` should be
 #'                      returned when there are no non-missing arguments
-#'                      passed to \code{min} or \code{max} (often because
-#'                      \code{na.rm = TRUE} but all values are \code{NA})
+#'                      passed to `min` or `max` (often because
+#'                      `na.rm = TRUE` but all values are `NA`)
 #' 
 #' @details 
-#' These functions are wrappers for \code{min} and \code{max},
-#' with the additional argument \code{allmissing_NA}.
+#' These functions are wrappers for `min` and `max`,
+#' with the additional argument `allmissing_NA`.
 #'  
 #' @return 
-#'    If \code{allmissing_NA = FALSE}, identical to \code{min} or 
-#'    \code{max}.
+#'    If `allmissing_NA = FALSE`, identical to `min` or 
+#'    `max`.
 #'    
-#'    If \code{allmissing_NA = TRUE}, identical to \code{min} or 
-#'    \code{max} except that, in cases where \code{min} or 
-#'    \code{max} would return an infinite value and raise a warning because
-#'    there are no non-missing arguments, \code{min_gc} and
-#'    \code{max_gc} return \code{NA}
+#'    If `allmissing_NA = TRUE`, identical to `min` or 
+#'    `max` except that, in cases where `min` or 
+#'    `max` would return an infinite value and raise a warning because
+#'    there are no non-missing arguments, `min_gc` and
+#'    `max_gc` return `NA`
 #'          
 #' @name MinMaxGC
 NULL
@@ -827,46 +827,46 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 
 #' Extract parts of an object
 #' 
-#' A wrapper for \code{[} that handles \code{NA} indices better when using
-#' inside \code{dplyr::summarize()}
+#' A wrapper for `[` that handles `NA` indices better when using
+#' inside `dplyr::summarize()`
 #' 
 #' @details
 #' This function was created to better handle the common situation
-#' of extracting values by index inside \code{dplyr::summarize} when some
-#' indices may be \code{NA}.
+#' of extracting values by index inside `dplyr::summarize` when some
+#' indices may be `NA`.
 #' Often this arises when using a function to find indices of interest might
 #' fail to find any, as can sometimes happen when using
-#' \code{which_max_gc} or \code{which_min_gc} (wrappers for  \code{which.max} 
-#' and \code{which.min}, respectively), 
-#' \code{find_local_extrema} and its wrappers \code{first_maxima} and
-#' \code{first_minima}, or \code{find_threshold_crosses} and its wrappers
-#' \code{first_below} and \code{first_above}. When all indices are \code{NA},
-#' \code{[} returns a vector of all \code{NA} of length \code{length(x)}.
+#' `which_max_gc` or `which_min_gc` (wrappers for  `which.max` 
+#' and `which.min`, respectively), 
+#' `find_local_extrema` and its wrappers `first_maxima` and
+#' `first_minima`, or `find_threshold_crosses` and its wrappers
+#' `first_below` and `first_above`. When all indices are `NA`,
+#' `[` returns a vector of all `NA` of length `length(x)`.
 #' Since this typically raises an undesirable warning or error from 
-#' \code{dplyr::summarize}, \code{extr_val} instead returns a single \code{NA} 
+#' `dplyr::summarize`, `extr_val` instead returns a single `NA` 
 #' value.
 #' 
 #' An alternative (but largely superseded) use of this function is to
-#' extract a value by index *after* \code{NA} values have been removed.
-#' This is not applicable for any common functions with \code{gcplyr},
+#' extract a value by index *after* `NA` values have been removed.
+#' This is not applicable for any common functions with `gcplyr`,
 #' which all return index values for the original vector.
 #' 
 #' @param x object from which to extract element(s)
 #' @param i index specifying element to extract.
-#' @param allNA_NA logical indicating whether \code{NA} should be returned
-#'                 when \code{all(is.na(i)) == TRUE}.
+#' @param allNA_NA logical indicating whether `NA` should be returned
+#'                 when `all(is.na(i)) == TRUE`.
 #' @param na.rm a logical indicating whether missing values should be 
 #'              removed.
 #'
 #' @return 
-#'    If \code{allNA_NA = FALSE} and \code{na.rm = FALSE}, identical to 
-#'    \code{x[i]}.
+#'    If `allNA_NA = FALSE` and `na.rm = FALSE`, identical to 
+#'    `x[i]`.
 #'    
-#'    If \code{allNA_NA = FALSE} and \code{na.rm = TRUE}, identical to
-#'    \code{x[i[!is.na(i)]]}.
+#'    If `allNA_NA = FALSE` and `na.rm = TRUE`, identical to
+#'    `x[i[!is.na(i)]]`.
 #'    
-#'    If \code{allNA_NA = TRUE}, identical to \code{x[i]} unless 
-#'    \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
+#'    If `allNA_NA = TRUE`, identical to `x[i]` unless 
+#'    `all(is.na(i)) == TRUE`, in which case returns `NA`
 #'    
 #' @export
 extr_val <- function(x, i, allNA_NA = TRUE, na.rm = FALSE) {
@@ -924,9 +924,9 @@ take_subset <- function(x = NULL, y = NULL, subset = NULL) {
 #' of x data and a vector of y data
 #' 
 #' @param formula Formula specifying the numeric response and numeric predictor.
-#' @param data Dataframe containing variables in \code{formula}
+#' @param data Dataframe containing variables in `formula`
 #' 
-#' @return List containing: vector of \code{x}, vector of \code{y},
+#' @return List containing: vector of `x`, vector of `y`,
 #'                          predictor variable name, response variable name
 #' 
 #' @noRd
@@ -960,7 +960,7 @@ parse_formula_data <- function(formula, data, s_term = FALSE) {
 #' 
 #' @param x Input
 #' 
-#' @return \code{x}, or \code{NULL} if \code{x == NA}
+#' @return `x`, or `NULL` if `x == NA`
 #' 
 #' @noRd
 NA_to_NULL <- function(x) {

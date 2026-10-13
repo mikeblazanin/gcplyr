@@ -451,7 +451,7 @@ We can use the `gcplyr` function `find_local_extrema` to find that minima. Speci
 At the same time, we're also going to save the density where the diauxic shift occurs. First, we'll use `find_local_extrema` again, but this time to save the *index* where the diauxic shift occurs to a column titled `diauxie_idx`. Then, we can get the `Measurements` value at that index. (Note that it wouldn't work to just specify `return = "y"`, because the `y` values in this case are the `deriv` values). (`extr_val` works just like `R`'s built-in `[`, but with better default settings for handling `NA` values when doing analyses within `summarize`).
 
 ```{r}
-ex_dat_mrg_sum2 <-
+ex_dat_mrg_sum <-
   summarize(group_by(ex_dat_mrg, Bacteria_strain, Phage, Well),
     diauxie_idx = find_local_extrema(x = Time, y = deriv, return = "index",
                                    return_maxima = FALSE, return_minima = TRUE,

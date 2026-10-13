@@ -32,9 +32,8 @@ or \link{trans_block_to_wide}}
 If \code{num_plates = 1}, a wide-shaped \code{data.frame}
 containing the measures data.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    if `num_plates` is greater than one, a list of 
-    `data.frame`'s, where each `data.frame` is wide-shaped.
-}\if{html}{\out{</div>}}
+if \code{num_plates} is greater than one, a list of
+\code{data.frame}'s, where each \code{data.frame} is wide-shaped.
 }
 \description{
 Function to import blockmeasures from files and return widemeasures
@@ -44,18 +43,18 @@ This function acts as a wrapper to call \link{read_blocks},
 \details{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{Common arguments that you may want to provide via `...`
          include:
-
-         `startrow`, `endrow`, `startcol`, `endcol`, 
-         `sheet` - specifying the location of design information 
-         inside `files` to [read_blocks]
-         
-         `metadata` - specifying metadata to [read_blocks]
-         
-         See [read_blocks] for more details
-         
-         If you find yourself needing more control, you can run the 
-         steps manually, first reading with [read_blocks], 
-         separating plates as needed with [uninterleave], 
-         then transforming to wide with [trans_block_to_wide].
 }\if{html}{\out{</div>}}
+
+\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol},
+\code{sheet} - specifying the location of design information
+inside \code{files} to \link{read_blocks}
+
+\code{metadata} - specifying metadata to \link{read_blocks}
+
+See \link{read_blocks} for more details
+
+If you find yourself needing more control, you can run the
+steps manually, first reading with \link{read_blocks},
+separating plates as needed with \link{uninterleave},
+then transforming to wide with \link{trans_block_to_wide}.
 }

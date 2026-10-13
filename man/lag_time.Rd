@@ -34,19 +34,17 @@ lag_time(
 \item{blank}{y-value associated with a "blank" where the density is 0.
 Is required when \code{trans_y = TRUE}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{           A vector of `blank` values may be specified only when all of 
-           `slope`, `x1`, `y1`, and `y0` are provided
-           as vectors
-}\if{html}{\out{</div>}}}
+A vector of \code{blank} values may be specified only when all of
+\code{slope}, \code{x1}, \code{y1}, and \code{y0} are provided
+as vectors}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
 transformation of y-values.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            `'log'` is the default, producing calculations of
-            lag time assuming a transition to exponential growth
-            
-            `'linear'` is available for alternate uses
-}\if{html}{\out{</div>}}}
+\code{'log'} is the default, producing calculations of
+lag time assuming a transition to exponential growth
+
+\code{'linear'} is available for alternate uses}
 
 \item{na.rm}{a logical indicating whether missing values or values that
 become \code{NA} or infinite during log-transformation should

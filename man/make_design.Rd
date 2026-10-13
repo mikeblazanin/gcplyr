@@ -32,26 +32,24 @@ of the plate blockmeasures data}
 \item{output_format}{One of \code{c("blocks", "blocks_pasted", "wide", "tidy")}
 denoting the format of the resulting data.frame
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                 For easy merging with tidymeasures, leave as default
-                 of 'tidy'. 
-                 
-                 For human-readability to confirm design
-                 is correct, choose 'blocks' or 'blocks_pasted'. 
-                 
-                 For writing to block-shaped file(s), choose 'blocks' or
-                 'blocks_pasted'.
-}\if{html}{\out{</div>}}}
+For easy merging with tidymeasures, leave as default
+of 'tidy'.
+
+For human-readability to confirm design
+is correct, choose 'blocks' or 'blocks_pasted'.
+
+For writing to block-shaped file(s), choose 'blocks' or
+'blocks_pasted'.}
 
 \item{wellnames_numeric}{If \code{block_row_names} or \code{block_col_names}
 are not specified, then names will be generated
 automatically according to \code{wellnames_numeric}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                   If `wellnames_numeric` is `TRUE`, rows and columns
-                   will be numbered with "R" and "C" prefixes, respectively.
-                   
-                   If `wellnames_numeric` is `FALSE`, rows will be
-                   lettered A through Z, while columns will be numbered
-}\if{html}{\out{</div>}}}
+If \code{wellnames_numeric} is \code{TRUE}, rows and columns
+will be numbered with "R" and "C" prefixes, respectively.
+
+If \code{wellnames_numeric} is \code{FALSE}, rows will be
+lettered A through Z, while columns will be numbered}
 
 \item{wellnames_sep}{A string used when concatenating rownames and column
 names to create well names, when
@@ -70,53 +68,47 @@ come first.}
 \item{lookup_tbl_start}{Value in the lookup table for the split pattern values
 that corresponds to the first value in the vector.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                    Lookup table by default is 
-                    `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`. If,
-                    for example, `lookup_tbl_start = "A"`, then the lookup
-                    table will now be `c(A,B,...Y,Z,a,b,...,y,z)`
-}\if{html}{\out{</div>}}}
+Lookup table by default is
+\code{c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)}. If,
+for example, \code{lookup_tbl_start = "A"}, then the lookup
+table will now be \code{c(A,B,...Y,Z,a,b,...,y,z)}}
 
 \item{pattern_split}{character to split pattern elements provided in
 \code{...} by, if they're not already a vector}
 
 \item{...}{Each \code{...} argument must be named, and must be a list with
 five elements:
+\enumerate{
+\item a vector of the values
+\item a vector of the rows the pattern should be applied to
+\item a vector of the columns the pattern should be applied to
+\item a string or vector denoting the pattern in which the
+values should be filled into the rows and columns specified.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{         1. a vector of the values
-         
-         2. a vector of the rows the pattern should be applied to
-         
-         3. a vector of the columns the pattern should be applied to
-         
-         4. a string or vector denoting the pattern in which the
-            values should be filled into the rows and columns specified.
-            
-            If it's a string, will be split by `pattern_split`.
-            Pattern will be used as the indices of the values vector.
-          
-            0's refer to `NA`. The pattern will be recycled as necessary
-            to fill all the wells of the rows and columns specified.
-          
-         5. a logical for whether this pattern should be filled byrow
-}\if{html}{\out{</div>}}}
+If it's a string, will be split by \code{pattern_split}.
+Pattern will be used as the indices of the values vector.
+
+0's refer to \code{NA}. The pattern will be recycled as necessary
+to fill all the wells of the rows and columns specified.
+\item a logical for whether this pattern should be filled byrow
+}}
 }
 \value{
 Depends on \code{output_format}:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `output_format = "blocks"`, a list of `data.frame`'s
-    where each `data.frame` is block-shaped containing the
-    information for a single design element
-    
-    If `output_format = "blocks_pasted"`, a single 
-    `data.frame` containing the [paste]-ed information
-    for all design elements
-    
-    If `output_format = "wide"`, a wide-shaped `data.frame`
-    containing all the design elements
-    
-    If `output_format = "tidy"`, a tidy-shaped `data.frame`
-    containing all the design elements
-}\if{html}{\out{</div>}}
+If \code{output_format = "blocks"}, a list of \code{data.frame}'s
+where each \code{data.frame} is block-shaped containing the
+information for a single design element
+
+If \code{output_format = "blocks_pasted"}, a single
+\code{data.frame} containing the \link{paste}-ed information
+for all design elements
+
+If \code{output_format = "wide"}, a wide-shaped \code{data.frame}
+containing all the design elements
+
+If \code{output_format = "tidy"}, a tidy-shaped \code{data.frame}
+containing all the design elements
 }
 \description{
 This is a function to easily input experimental design elements

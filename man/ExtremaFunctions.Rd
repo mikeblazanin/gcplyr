@@ -60,26 +60,25 @@ first_minima(
 \item{window_width, window_width_n, window_height, window_width_frac, window_width_n_frac}{Arguments that set the width/height of the window used to
 search for local extrema.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{              `window_width` is in units of `x`.
-              
-              `window_width_n` is in units of number of data points.
-              
-              `window_height` is the maximum change in `y` 
-              a single extrema-search step is allowed to take.
-              
-              `window_width_n_frac` is as a fraction of the total
-              number of data points.
-              
-              For example, the function will not pass a peak or valley
-              more than `window_width_n` data points wide, nor
-              a peak/valley taller or deeper than `window_height`.
-              
-              A narrower width will be more sensitive to narrow local 
-              maxima/minima, while a wider width will be less sensitive 
-              to local maxima/minima. A smaller height will be more 
-              sensitive to shallow local maxima/minima, while a larger 
-              height will be less sensitive to shallow maxima/minima.
-}\if{html}{\out{</div>}}}
+\code{window_width} is in units of \code{x}.
+
+\code{window_width_n} is in units of number of data points.
+
+\code{window_height} is the maximum change in \code{y}
+a single extrema-search step is allowed to take.
+
+\code{window_width_n_frac} is as a fraction of the total
+number of data points.
+
+For example, the function will not pass a peak or valley
+more than \code{window_width_n} data points wide, nor
+a peak/valley taller or deeper than \code{window_height}.
+
+A narrower width will be more sensitive to narrow local
+maxima/minima, while a wider width will be less sensitive
+to local maxima/minima. A smaller height will be more
+sensitive to shallow local maxima/minima, while a larger
+height will be less sensitive to shallow maxima/minima.}
 
 \item{return}{One of \code{c("index", "x", "y")}, determining whether the function
 will return the index, x value, or y value associated with the
@@ -95,9 +94,8 @@ vector of extrema?}
 \item{subset}{A vector of logical values indicating which \code{x} and \code{y} values
 should be included (\code{TRUE}) or excluded (\code{FALSE}).
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{          If `return = "index"`, index will be for the whole 
-          vector and not the subset of the vector
-}\if{html}{\out{</div>}}}
+If \code{return = "index"}, index will be for the whole
+vector and not the subset of the vector}
 
 \item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
 
@@ -118,7 +116,7 @@ found local extrema.
 \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 
 \code{first_minima} returns only the first minima, so is a shortcut for
-\code{find_local_extrema(return_maxima = FALSE, return_maxima = FALSE)[1]}
+\code{find_local_extrema(return_maxima = FALSE, return_minima = TRUE)[1]}
 
 If \code{return = "index"}, the returned value(s) are the indices
 corresponding to local extrema in the data

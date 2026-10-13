@@ -39,11 +39,10 @@ will be numbered with "R" and "C" prefix.}
 \item{lookup_tbl_start}{Value in the lookup table for the split pattern values
 that corresponds to the first value in the vector.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                    Lookup table by default is 
-                    `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`. If,
-                    for example, `lookup_tbl_start = "A"`, then the lookup
-                    table will now be `c(A,B,...Y,Z,a,b,...,y,z)`
-}\if{html}{\out{</div>}}}
+Lookup table by default is
+\code{c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)}. If,
+for example, \code{lookup_tbl_start = "A"}, then the lookup
+table will now be \code{c(A,B,...Y,Z,a,b,...,y,z)}}
 
 \item{pattern_split}{character to split pattern elements provided in
 \code{...} by}
@@ -53,23 +52,19 @@ rownames and column names, should the column names
 come first}
 
 \item{...}{Each \code{...} argument must be a list with five elements:
+\enumerate{
+\item a vector of the values
+\item a vector of the rows the pattern should be applied to
+\item a vector of the columns the pattern should be applied to
+\item a string of the pattern itself, where numbers refer to
+the indices in the values vector
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{         1. a vector of the values
-         
-         2. a vector of the rows the pattern should be applied to
-         
-         3. a vector of the columns the pattern should be applied to
-         
-         4. a string of the pattern itself, where numbers refer to
-          the indices in the values vector
-          
-          0's refer to `NA`
-          
-          This pattern will be split using `pattern_split`, which
-          defaults to every character
-          
-         5. a logical for whether this pattern should be filled byrow
-}\if{html}{\out{</div>}}}
+0's refer to \code{NA}
+
+This pattern will be split using \code{pattern_split}, which
+defaults to every character
+\item a logical for whether this pattern should be filled byrow
+}}
 }
 \value{
 a tidy-shaped \code{data.frame} containing all the design elements

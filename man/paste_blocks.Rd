@@ -23,10 +23,9 @@ containing a list containing: 1. a \code{data.frame} with the
 pasted data values from \code{blocks}, and 2. a vector with the
 pasted metadata values from \code{blocks}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `nested_metadata = FALSE` (or is inferred to be `FALSE`), a list
-    containing `data.frame`'s with the pasted values from
-    `blocks`
-}\if{html}{\out{</div>}}
+If \code{nested_metadata = FALSE} (or is inferred to be \code{FALSE}), a list
+containing \code{data.frame}'s with the pasted values from
+\code{blocks}
 }
 \description{
 This function uses \link{paste} to concatenate the same-location entries

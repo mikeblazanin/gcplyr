@@ -23,20 +23,18 @@ separate_tidy(
 \item{into}{A character vector of the new column names. Use \code{NA} to
 omit the variable in the output.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{        If `NULL`, `separate_tidy` will attempt to infer the new
-        column names by splitting the column name of `col`
-}\if{html}{\out{</div>}}}
+If \code{NULL}, \code{separate_tidy} will attempt to infer the new
+column names by splitting the column name of \code{col}}
 
 \item{sep}{Separator between columns passed to \link[tidyr:separate]{separate}:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{       If character, `sep` is interpreted as a regular expression.
-       
-       If numeric, `sep` is interpreted as character positions
-       to split at. Positive values start at 1 at the far-left of the
-       string; negative values start at -1 at the far-right of the
-       string. The length of `sep` should be one less than 
-       `into`
-}\if{html}{\out{</div>}}}
+If character, \code{sep} is interpreted as a regular expression.
+
+If numeric, \code{sep} is interpreted as character positions
+to split at. Positive values start at 1 at the far-left of the
+string; negative values start at -1 at the far-right of the
+string. The length of \code{sep} should be one less than
+\code{into}}
 
 \item{coerce_NA}{logical dictating if strings matching any of
 \code{na.strings} will be coerced into  \code{NA} values

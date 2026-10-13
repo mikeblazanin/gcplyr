@@ -49,14 +49,13 @@ crossing event(s)}
 will return the \code{index} or \code{x} value associated with the
 threshold-crossing event.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{          If `index`, it will refer to the data point immediately after
-          the crossing event.
-          
-          If `x`, it will use linear interpolation and the data
-          points immediately before and after the threshold-crossing
-          to return the exact `x` value when the threshold crossing
-          occurred
-}\if{html}{\out{</div>}}}
+If \code{index}, it will refer to the data point immediately after
+the crossing event.
+
+If \code{x}, it will use linear interpolation and the data
+points immediately before and after the threshold-crossing
+to return the exact \code{x} value when the threshold crossing
+occurred}
 
 \item{return_rising}{logical for whether crossing events where \code{y}
 rises above \code{threshold} should be returned}
@@ -72,9 +71,8 @@ below \code{threshold} and \code{return_falling = TRUE}}
 \item{subset}{A vector of logical values indicating which \code{x} and \code{y} values
 should be included (\code{TRUE}) or excluded (\code{FALSE}).
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{          If `return = "index"`, index will be for the whole 
-          vector and not the subset of the vector
-}\if{html}{\out{</div>}}}
+If \code{return = "index"}, index will be for the whole
+vector and not the subset of the vector}
 
 \item{na.rm}{logical whether \code{NA}'s should be removed before analyzing.
 If \code{return = 'index'}, indices will refer to the original

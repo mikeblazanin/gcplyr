@@ -14,10 +14,9 @@ be used. Options include "moving-average", "moving-median",
 \item{tuneGrid}{A data frame with possible tuning value. The columns should
 be named the same as the tuning parameters.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            Note that, when using [train][caret::train], the `tuneGrid`
-            must be passed both to this function as well as directly
-            to [train][caret::train].
-}\if{html}{\out{</div>}}}
+Note that, when using \link[caret:train]{train}, the \code{tuneGrid}
+must be passed both to this function as well as directly
+to \link[caret:train]{train}.}
 }
 \value{
 A list that can be used as the method argument to
@@ -25,9 +24,8 @@ A list that can be used as the method argument to
 \code{library}, \code{type}, \code{prob}, \code{fit},
 \code{parameters}, \code{grid}, \code{fit}, and \code{predict}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    See documentation on using a custom model model in 
-    [train][caret::train] for more details.
-}\if{html}{\out{</div>}}
+See documentation on using a custom model model in
+\link[caret:train]{train} for more details.
 }
 \description{
 This function generates a list which is compatible to be used as the

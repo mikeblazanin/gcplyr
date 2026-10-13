@@ -38,9 +38,8 @@ and "smooth.spline".}
 and the smoothed data for each group will be calculated
 independently of the others.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{             This provides an internally-implemented approach similar
-             to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
-}\if{html}{\out{</div>}}}
+This provides an internally-implemented approach similar
+to \link[dplyr:group_by]{group_by} and \link[dplyr:mutate]{mutate}}
 
 \item{return_fitobject}{logical whether entire object returned
 by fitting function should be returned. If \code{FALSE},
@@ -56,14 +55,13 @@ used without \link[mgcv:s]{s} in the formula.}
 \value{
 If \verb{return_fitobject == FALSE:}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    A vector, the same length as `y`, with the now-smoothed `y` values
-    
-    If `return_fitobject == TRUE:`
-    
-    A list the same length as `unique(subset_by)` where each element is
-    an object of the same class as returned by the smoothing method
-    (typically a named list-like object)
-}\if{html}{\out{</div>}}
+A vector, the same length as \code{y}, with the now-smoothed \code{y} values
+
+If \verb{return_fitobject == TRUE:}
+
+A list the same length as \code{unique(subset_by)} where each element is
+an object of the same class as returned by the smoothing method
+(typically a named list-like object)
 }
 \description{
 This function calls other functions to smooth growth curve data
@@ -76,39 +74,39 @@ This function calls other functions to smooth growth curve data
        `window_width_n` sets the width in units of number
        of data points. Larger values for either will produce more 
        "smoothed" data.
-       
-       For [loess], the `span` argument sets the fraction of
-       data points that should be included in each calculation. It's
-       typically best to specify, since the default of 0.75 is often
-       too large for growth curves data. Larger values of `span` 
-       will produce more more "smoothed" data
-       
-       For [gam][mgcv::gam], both arguments to [gam][mgcv::gam] and 
-       [s][mgcv::s] can be provided via `...`. Most frequently, 
-       the `k` argument to [s][mgcv::s] sets the number of 
-       "knots" the spline-fitting can use. Smaller values will be more 
-       "smoothed".
-       
-       When using `sm_method = "gam"`, advanced users may also modify 
-       other parameters of [s][mgcv::s], including the smoothing basis 
-       `bs`. These bases can be thin plate (`bs = "tp"`, 
-       the default), cubic regressions (`bs = "cr"`), or many other 
-       options (see [s][mgcv::s]). I recommend leaving the default 
-       thin plate regressions, whose main drawback is that they are 
-       computationally intensive to calculate. For growth curves data, 
-       this is unlikely to be relevant.
-       
-       As an alternative to passing `y`, for more advanced needs 
-       with [loess] or [gam][mgcv::gam], `formula` and `data` 
-       can be passed to `smooth_data` via the `...` argument 
-       (in lieu of `y`).
-     
-       In this case, the formula should specify the response (e.g. density) 
-       and predictors. For [gam][mgcv::gam] smoothing, the formula should
-       typically be of the format: y ~ s(x), which uses 
-       [s][mgcv::s] to smooth the data. The data argument should be a 
-       `data.frame` containing the variables in the formula.
-       In such cases, `subset_by` can still be specified as a vector
-       with length `nrow(data)`
 }\if{html}{\out{</div>}}
+
+For \link{loess}, the \code{span} argument sets the fraction of
+data points that should be included in each calculation. It's
+typically best to specify, since the default of 0.75 is often
+too large for growth curves data. Larger values of \code{span}
+will produce more more "smoothed" data
+
+For \link[mgcv:gam]{gam}, both arguments to \link[mgcv:gam]{gam} and
+\link[mgcv:s]{s} can be provided via \code{...}. Most frequently,
+the \code{k} argument to \link[mgcv:s]{s} sets the number of
+"knots" the spline-fitting can use. Smaller values will be more
+"smoothed".
+
+When using \code{sm_method = "gam"}, advanced users may also modify
+other parameters of \link[mgcv:s]{s}, including the smoothing basis
+\code{bs}. These bases can be thin plate (\code{bs = "tp"},
+the default), cubic regressions (\code{bs = "cr"}), or many other
+options (see \link[mgcv:s]{s}). I recommend leaving the default
+thin plate regressions, whose main drawback is that they are
+computationally intensive to calculate. For growth curves data,
+this is unlikely to be relevant.
+
+As an alternative to passing \code{y}, for more advanced needs
+with \link{loess} or \link[mgcv:gam]{gam}, \code{formula} and \code{data}
+can be passed to \code{smooth_data} via the \code{...} argument
+(in lieu of \code{y}).
+
+In this case, the formula should specify the response (e.g. density)
+and predictors. For \link[mgcv:gam]{gam} smoothing, the formula should
+typically be of the format: y ~ s(x), which uses
+\link[mgcv:s]{s} to smooth the data. The data argument should be a
+\code{data.frame} containing the variables in the formula.
+In such cases, \code{subset_by} can still be specified as a vector
+with length \code{nrow(data)}
 }

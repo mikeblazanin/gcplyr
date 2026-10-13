@@ -31,24 +31,22 @@ when maxima-finding, the function will not pass
 a valley consisting of more than \code{window_width_n}
 data points.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                 A smaller `window_width_n` will be more sensitive 
-                 to narrow local maxima/minima, while a larger 
-                 `window_width_n` will be less sensitive to 
-                 narrow local maxima/minima.
-                 
-                 If not provided, defaults to `~0.2*length(y)`
-}\if{html}{\out{</div>}}}
+A smaller \code{window_width_n} will be more sensitive
+to narrow local maxima/minima, while a larger
+\code{window_width_n} will be less sensitive to
+narrow local maxima/minima.
+
+If not provided, defaults to \code{~0.2*length(y)}}
 
 \item{window_height}{The maximum change in \code{y} a single extrema-search
 step is allowed to take.  For example, when
 maxima-finding, the function will not pass a
 valley deeper than \code{window_height}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                A smaller `window_height` will be more sensitive 
-                to shallow local maxima/minima, while a larger 
-                `window_height` will be less sensitive to 
-                shallow maxima/minima.
-}\if{html}{\out{</div>}}}
+A smaller \code{window_height} will be more sensitive
+to shallow local maxima/minima, while a larger
+\code{window_height} will be less sensitive to
+shallow maxima/minima.}
 
 \item{return}{One of \code{c("index", "x", "y")}, determining whether the function
 will return the index, x value, or y value associated with the
@@ -63,12 +61,11 @@ be allowed to be returned?}
 If \code{return = "index"}, a vector of indices corresponding
 to local extrema in the data
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `return = "x"`, a vector of x values corresponding
-      to local extrema in the data
-     
-    If `return = "y"`, a vector of y values corresponding
-      to local extrema in the data
-}\if{html}{\out{</div>}}
+If \code{return = "x"}, a vector of x values corresponding
+to local extrema in the data
+
+If \code{return = "y"}, a vector of y values corresponding
+to local extrema in the data
 }
 \description{
 This function has been deprecated in favor of the identical new

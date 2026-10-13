@@ -26,14 +26,13 @@ where each filepath is a single plate read to be read by
 \item{block_names}{Vector of names corresponding to each design element (each
 block). Inferred from filenames, if not specified.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{         When `keep_blocknames = TRUE`, the output will have
-         a column containing these values, with the column name
-         specified by `block_name_header`.
-         
-         When `join_as_cols = TRUE`, the `block_names` are
-         also used as the output column names for each separated
-         design column.
-}\if{html}{\out{</div>}}}
+When \code{keep_blocknames = TRUE}, the output will have
+a column containing these values, with the column name
+specified by \code{block_name_header}.
+
+When \code{join_as_cols = TRUE}, the \code{block_names} are
+also used as the output column names for each separated
+design column.}
 
 \item{block_name_header}{When \code{keep_blocknames = TRUE}, the column name of the
 column containing the \code{block_names}.}
@@ -71,33 +70,31 @@ but \code{into} is not specified.}
 \link{paste_blocks}, \link{trans_block_to_wide},
 \link{trans_wide_to_tidy}, or \link{separate_tidy}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{         See Details for more information
-}\if{html}{\out{</div>}}}
+See Details for more information}
 }
 \value{
 A tidy-shaped \code{data.frame} containing the design information
 from \code{files}. This always includes a "Well" column.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `keep_blocknames = TRUE`, this includes a column with the
-    column name specified by `block_name_header` and containing
-    `block_names` (or block names inferred from file names).
-    
-    The layout of the design values varies depending on the inputs:
-    
-    If `join_as_cols = TRUE`, each block was joined as a column,
-    with the columns named according to `block_names` (or block
-    names inferred from file names). In this case, if `sep` was 
-    specified, each column was split by `sep` into columns named by 
-    splitting the corresponding block name by `sep` (post-split 
-    column names can alternatively be specified directly via `into`).
-    
-    Otherwise, when `join_as_cols = FALSE`, each block was joined
-    as rows, with the column containing all design values named by
-    `values_colname`. In this case, if `sep` was specified,
-    that single design column was split by `sep` into columns
-    named by splitting `values_colname` (post-split column names
-    can alternatively be specified directly via `into`).
-}\if{html}{\out{</div>}}
+If \code{keep_blocknames = TRUE}, this includes a column with the
+column name specified by \code{block_name_header} and containing
+\code{block_names} (or block names inferred from file names).
+
+The layout of the design values varies depending on the inputs:
+
+If \code{join_as_cols = TRUE}, each block was joined as a column,
+with the columns named according to \code{block_names} (or block
+names inferred from file names). In this case, if \code{sep} was
+specified, each column was split by \code{sep} into columns named by
+splitting the corresponding block name by \code{sep} (post-split
+column names can alternatively be specified directly via \code{into}).
+
+Otherwise, when \code{join_as_cols = FALSE}, each block was joined
+as rows, with the column containing all design values named by
+\code{values_colname}. In this case, if \code{sep} was specified,
+that single design column was split by \code{sep} into columns
+named by splitting \code{values_colname} (post-split column names
+can alternatively be specified directly via \code{into}).
 }
 \description{
 Function to import block-shaped designs from files and return tidy designs.
@@ -108,28 +105,28 @@ and \link{separate_tidy}
 \details{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{Other common arguments that you may want to provide via 
          `...` include:
-
-         `startrow`, `endrow`, `startcol`, `endcol`, 
-         `sheet` - specifying the location of design information 
-         inside `files` to [read_blocks].
-         
-         `wellnames_sep` - specifying what character (or "" for 
-         none) should be used when pasting together the rownames and
-         column names. Note that this should be chosen to match
-         the well names in your measures.
-         
-         `into` - specifying the column names resulting from
-         using [separate_tidy] on the `values_colname` column.
-         
-         Note that `import_blockdesigns` cannot currently handle
-         metadata specified via the `metadata` argument of
-         [read_blocks].
-         
-         If you find yourself needing more control, you can run the 
-         steps manually, first reading with [read_blocks],
-         pasting as needed with [paste_blocks], 
-         transforming to tidy with [trans_block_to_wide] and
-         [trans_wide_to_tidy], and separating as needed with
-         [separate_tidy].
 }\if{html}{\out{</div>}}
+
+\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol},
+\code{sheet} - specifying the location of design information
+inside \code{files} to \link{read_blocks}.
+
+\code{wellnames_sep} - specifying what character (or "" for
+none) should be used when pasting together the rownames and
+column names. Note that this should be chosen to match
+the well names in your measures.
+
+\code{into} - specifying the column names resulting from
+using \link{separate_tidy} on the \code{values_colname} column.
+
+Note that \code{import_blockdesigns} cannot currently handle
+metadata specified via the \code{metadata} argument of
+\link{read_blocks}.
+
+If you find yourself needing more control, you can run the
+steps manually, first reading with \link{read_blocks},
+pasting as needed with \link{paste_blocks},
+transforming to tidy with \link{trans_block_to_wide} and
+\link{trans_wide_to_tidy}, and separating as needed with
+\link{separate_tidy}.
 }

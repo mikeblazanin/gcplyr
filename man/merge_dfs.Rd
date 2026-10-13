@@ -34,27 +34,25 @@ being merged with the other}
 \item{names_to}{Column name for where \code{names(x)} or \code{names(y)}
 will be entered in if \code{collapse = TRUE}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            If a value of `NA` then `names(x)` or 
-            `names(y)` will not be put into a column in the
-            returned data.frame
-}\if{html}{\out{</div>}}}
+If a value of \code{NA} then \code{names(x)} or
+\code{names(y)} will not be put into a column in the
+returned data.frame}
 
 \item{join}{Type of join used to merge \code{x} and \code{y}. Options
 are 'full' (default), 'inner', 'left', and 'right'.
+\itemize{
+\item A \code{full} join keeps all observations in \code{x} and
+\code{y}
+\item A \code{left} join keeps all observations in \code{x}
+\item A \code{right} join keeps all observations in \code{y}
+\item An \code{inner} join only keeps observations found in
+both \code{x} and \code{y} (inner joins are not appropriate
+in most cases because observations are frequently dropped).
+}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{             - A `full` join keeps all observations in `x` and 
-              `y`
-             - A `left` join keeps all observations in `x`
-             - A `right` join keeps all observations in `y`
-             - An `inner` join only keeps observations found in
-              both `x` and `y` (inner joins are not appropriate
-              in most cases because observations are frequently dropped).
-            
-            
-            See [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
-            [right_join][dplyr::right_join], or [inner_join][dplyr::inner_join] for 
-            more details
-}\if{html}{\out{</div>}}}
+See \link[dplyr:mutate-joins]{full_join}, \link[dplyr:mutate-joins]{left_join},
+\link[dplyr:mutate-joins]{right_join}, or \link[dplyr:mutate-joins]{inner_join} for
+more details}
 
 \item{warn_morerows}{logical, should a warning be passed when the output
 has more rows than \code{x} and more rows than \code{y}?}

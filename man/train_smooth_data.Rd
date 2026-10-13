@@ -76,8 +76,7 @@ with the values of all tuning parameter combinations and the
 training error rate for each combination (i.e. the \code{results}
 element of the output of \link[caret:train]{train}).
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    If `return_trainobject = TRUE`, the output of [train][caret::train]
-}\if{html}{\out{</div>}}
+If \code{return_trainobject = TRUE}, the output of \link[caret:train]{train}
 }
 \description{
 This function is based on \link[caret:train]{train}, which runs models
@@ -87,23 +86,22 @@ parameter values (in our case different smoothness parameters).
 \details{
 See \link[caret:train]{train} for more information.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     The default method is k-fold cross-validation 
-     (`trControl = caret::trainControl(method = "cv")`). 
-     
-     For less variable, but more computationally costly, cross-validation,
-     users may choose to increase the number of folds. This can be
-     done by altering the `number` argument in 
-     [trainControl][caret::trainControl], or by setting `method = "LOOCV"` 
-     for leave one out cross-validation where the number of folds is 
-     equal to the number of data points. 
-     
-     For less variable, but more computationally costly, cross-validation,
-     users may alternatively choose `method = "repeatedcv"` for 
-     repeated k-fold cross-validation.
+The default method is k-fold cross-validation
+(\code{trControl = caret::trainControl(method = "cv")}).
 
-     For more control, advanced users may wish to call 
-     [train][caret::train] directly, using 
-     [makemethod_train_smooth_data] to specify the `method` 
-     argument.
-}\if{html}{\out{</div>}}
+For less variable, but more computationally costly, cross-validation,
+users may choose to increase the number of folds. This can be
+done by altering the \code{number} argument in
+\link[caret:trainControl]{trainControl}, or by setting \code{method = "LOOCV"}
+for leave one out cross-validation where the number of folds is
+equal to the number of data points.
+
+For less variable, but more computationally costly, cross-validation,
+users may alternatively choose \code{method = "repeatedcv"} for
+repeated k-fold cross-validation.
+
+For more control, advanced users may wish to call
+\link[caret:train]{train} directly, using
+\link{makemethod_train_smooth_data} to specify the \code{method}
+argument.
 }

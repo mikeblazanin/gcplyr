@@ -23,51 +23,48 @@ write_blocks(
 \item{file}{\code{NULL}, a character string naming a file to write to, or a
 vector of character strings naming files to write to.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{        A file name is required when `output_format = "single"`
-        
-        A file name can be specified when `output_format = "pasted"`,
-        or `file` can be set to `NULL` as long as 
-        `block_name_location = "filename"` (where pasted 
-        `block_name` metadata will be used for the file name)
-        
-        File names can be specified when `output_format = "multiple"`,
-        or `file` can be set to `NULL` as long as 
-        `block_name_location = "filename"` (where the 
-        `block_name` metadata will be used for the file names)
-}\if{html}{\out{</div>}}}
+A file name is required when \code{output_format = "single"}
+
+A file name can be specified when \code{output_format = "pasted"},
+or \code{file} can be set to \code{NULL} as long as
+\code{block_name_location = "filename"} (where pasted
+\code{block_name} metadata will be used for the file name)
+
+File names can be specified when \code{output_format = "multiple"},
+or \code{file} can be set to \code{NULL} as long as
+\code{block_name_location = "filename"} (where the
+\code{block_name} metadata will be used for the file names)}
 
 \item{output_format}{One of "single", "pasted", "multiple".
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                 "single" will write all blocks into a single
-                 csv file, with an empty row between successive
-                 blocks.
-                 
-                 "pasted" will paste all blocks together using a
-                 `paste_sep`, and then write that now-pasted
-                 block to a single csv file.
-                 
-                 "multiple" will write each block to its own csv file.
-}\if{html}{\out{</div>}}}
+"single" will write all blocks into a single
+csv file, with an empty row between successive
+blocks.
+
+"pasted" will paste all blocks together using a
+\code{paste_sep}, and then write that now-pasted
+block to a single csv file.
+
+"multiple" will write each block to its own csv file.}
 
 \item{block_name_location}{Either \code{NULL}, 'filename' or 'file'.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                      If `NULL`, `block_name_location` will 
-                      be automatically selected based on 
-                      `output_format`. For 
-                      `output_format = 'single'` and 
-                      `output_format = 'pasted'`, 
-                      `block_name_location` defaults to 'file'.
-                      For `output_format = 'multiple'`, 
-                      `block_name_location` defaults to 'filename'
+If \code{NULL}, \code{block_name_location} will
+be automatically selected based on
+\code{output_format}. For
+\code{output_format = 'single'} and
+\code{output_format = 'pasted'},
+\code{block_name_location} defaults to 'file'.
+For \code{output_format = 'multiple'},
+\code{block_name_location} defaults to 'filename'
 
-                      If 'filename', the `block_name` metadata 
-                      will be used as the output file name(s) when
-                      no file name(s) are provided, or appended to
-                      file name(s) when they have been provided.
-                      
-                      If 'file', the `block_name` metadata will be
-                      included as a row in the output file.
-}\if{html}{\out{</div>}}}
+If 'filename', the \code{block_name} metadata
+will be used as the output file name(s) when
+no file name(s) are provided, or appended to
+file name(s) when they have been provided.
+
+If 'file', the \code{block_name} metadata will be
+included as a row in the output file.}
 
 \item{block_name_header}{The name of the field containing the
 \code{block_names}}

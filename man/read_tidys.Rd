@@ -29,29 +29,27 @@ where each one is a tidy-shaped data file}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{             "csv", "xls", or "xlsx".
-             
-             "tbl" or "table" to use [read.table] to read the file,
-             "csv2" to use [read.csv2], "delim" to 
-             use [read.delim], or "delim2" to use [read.delim2].
-             
-             If none provided, `read_tidys` will infer filetype(s) 
-             from the extension(s) in `files`. When extension is 
-             not "csv", "xls", or "xlsx", will use "table".
-}\if{html}{\out{</div>}}}
+"csv", "xls", or "xlsx".
+
+"tbl" or "table" to use \link{read.table} to read the file,
+"csv2" to use \link{read.csv2}, "delim" to
+use \link{read.delim}, or "delim2" to use \link{read.delim2}.
+
+If none provided, \code{read_tidys} will infer filetype(s)
+from the extension(s) in \code{files}. When extension is
+not "csv", "xls", or "xlsx", will use "table".}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data are located in \code{files}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            Can be a vector or list the same length as `files`, or
-            a single value that applies to all `files`. Values
-            can be numeric or a string that will be automatically
-            converted to numeric by [from_excel].
-            
-            If not provided, data is presumed to begin on the first
-            row and column of the file(s) and end on the last row and
-            column of the file(s).
-}\if{html}{\out{</div>}}}
+Can be a vector or list the same length as \code{files}, or
+a single value that applies to all \code{files}. Values
+can be numeric or a string that will be automatically
+converted to numeric by \link{from_excel}.
+
+If not provided, data is presumed to begin on the first
+row and column of the file(s) and end on the last row and
+column of the file(s).}
 
 \item{sheet}{The sheet of the input files where data is located (if input
 files are .xls or .xlsx). If not specified defaults to the first}
@@ -65,19 +63,18 @@ the \code{names_to_col} argument}
 or inferred from \code{files}) be added as a column to the
 output?
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                If `run_names_header` is `TRUE`, they will be added with
-                the column name "run_name"
-                
-                If `run_names_header` is `FALSE`, they will not be added.
-                
-                If `run_names_header` is a string, they will be added
-                and the column name will be the string specified
-                for `run_names_header`.
-                
-                If `run_names_header` is `NULL`, they only will be 
-                added if there are multiple tidy data.frames being read.
-                In which case, the column name will be "run_name"
-}\if{html}{\out{</div>}}}
+If \code{run_names_header} is \code{TRUE}, they will be added with
+the column name "run_name"
+
+If \code{run_names_header} is \code{FALSE}, they will not be added.
+
+If \code{run_names_header} is a string, they will be added
+and the column name will be the string specified
+for \code{run_names_header}.
+
+If \code{run_names_header} is \code{NULL}, they only will be
+added if there are multiple tidy data.frames being read.
+In which case, the column name will be "run_name"}
 
 \item{run_names_dot}{If \code{run_names} are inferred from filenames, should
 the leading './' (if any) be retained}

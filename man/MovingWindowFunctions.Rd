@@ -69,8 +69,7 @@ These functions use a moving window to smooth data
 Either \code{x} and \code{y} or \code{formula} and \code{data}
 must be provided.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     Values of `NULL` or `NA` will be ignored for any of
-     `window_width_n`, `window_width`,
-     `window_width_n_frac`, or `window_width_frac`
-}\if{html}{\out{</div>}}
+Values of \code{NULL} or \code{NA} will be ignored for any of
+\code{window_width_n}, \code{window_width},
+\code{window_width_n_frac}, or \code{window_width_frac}
 }

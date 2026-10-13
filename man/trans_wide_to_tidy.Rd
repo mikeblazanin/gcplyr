@@ -25,15 +25,14 @@ dataframes) or a list of vectors, with each
 vector corresponding to the same-index dataframe
 in \code{wides}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{                     Entries that are `NA` in the list will not be used
-                     
-                     If neither `data_cols` nor `id_cols` are 
-                     specified, user must provide arguments to 
-                     [pivot_longer][tidyr::pivot_longer] via `...` for at 
-                     least the `cols` argument and these arguments 
-                     provided via `...` will be used for all 
-                     `wides` dataframe's
-}\if{html}{\out{</div>}}}
+Entries that are \code{NA} in the list will not be used
+
+If neither \code{data_cols} nor \code{id_cols} are
+specified, user must provide arguments to
+\link[tidyr:pivot_longer]{pivot_longer} via \code{...} for at
+least the \code{cols} argument and these arguments
+provided via \code{...} will be used for all
+\code{wides} dataframe's}
 
 \item{names_to, values_to}{Specifies the output column names created by
 \link[tidyr:pivot_longer]{pivot_longer}. Each can be provided

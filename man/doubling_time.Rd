@@ -12,11 +12,10 @@ equivalent doubling time of}
 
 \item{x_scale}{Numeric to scale per-capita derivative values by
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{           Set `x_scale` to the ratio of the the units of 
-           `y` to the desired units. E.g. if `y` is in per-second, but the 
-           desired doubling time is in minutes, `x_scale = 60` 
-           (since there are 60 seconds in 1 minute).
-}\if{html}{\out{</div>}}}
+Set \code{x_scale} to the ratio of the the units of
+\code{y} to the desired units. E.g. if \code{y} is in per-second, but the
+desired doubling time is in minutes, \code{x_scale = 60}
+(since there are 60 seconds in 1 minute).}
 }
 \value{
 A vector of values for the doubling time equivalent to the

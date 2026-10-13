@@ -31,29 +31,27 @@ where each one is a widemeasures set of data}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{             "csv", "xls", or "xlsx".
-             
-             "tbl" or "table" to use [read.table] to read the file,
-             "csv2" to use [read.csv2], "delim" to 
-             use [read.delim], or "delim2" to use [read.delim2].
-             
-             If none provided, `read_wides` will infer filetype(s) 
-             from the extension(s) in `files`. When extension is 
-             not "csv", "xls", or "xlsx", will use "table".
-}\if{html}{\out{</div>}}}
+"csv", "xls", or "xlsx".
+
+"tbl" or "table" to use \link{read.table} to read the file,
+"csv2" to use \link{read.csv2}, "delim" to
+use \link{read.delim}, or "delim2" to use \link{read.delim2}.
+
+If none provided, \code{read_wides} will infer filetype(s)
+from the extension(s) in \code{files}. When extension is
+not "csv", "xls", or "xlsx", will use "table".}
 
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data are located in \code{files}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            Can be a vector or list the same length as `files`, or
-            a single value that applies to all `files`. Values
-            can be numeric or a string that will be automatically
-            converted to numeric by [from_excel].
-            
-            If not provided, data is presumed to begin on the first
-            row and column of the file(s) and end on the last row and
-            column of the file(s).
-}\if{html}{\out{</div>}}}
+Can be a vector or list the same length as \code{files}, or
+a single value that applies to all \code{files}. Values
+can be numeric or a string that will be automatically
+converted to numeric by \link{from_excel}.
+
+If not provided, data is presumed to begin on the first
+row and column of the file(s) and end on the last row and
+column of the file(s).}
 
 \item{header}{logical for whether there is a header in the data. If \code{FALSE}
 columns are simply numbered. If \code{TRUE}, the first row of the
@@ -88,17 +86,16 @@ associated with each read widemeasures. A named list where
 each item in the list is either: a vector of length 2, or
 a list containing two vectors.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            In the former case, each vector should provide the row and 
-            column where the metadata is located in all of the
-            blockmeasures input files.
-            
-            In the latter case, the first vector should provide the rows
-            where the metadata is located in each of the corresponding
-            input files, and the second vector should provide the 
-            columns where the metadata is located in each of the
-            corresponding input files. (This case is typically used 
-            when reading multiple blocks from a single file.)
-}\if{html}{\out{</div>}}}
+In the former case, each vector should provide the row and
+column where the metadata is located in all of the
+blockmeasures input files.
+
+In the latter case, the first vector should provide the rows
+where the metadata is located in each of the corresponding
+input files, and the second vector should provide the
+columns where the metadata is located in each of the
+corresponding input files. (This case is typically used
+when reading multiple blocks from a single file.)}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \link{read.csv},

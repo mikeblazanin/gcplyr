@@ -38,71 +38,66 @@ derivative is returned}
 
 \item{x_scale}{Numeric to scale \code{x} by in derivative calculation
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{           Set `x_scale` to the ratio of the units of 
-           `x` to the desired units. E.g. if `x` is in seconds, but the 
-           desired derivative is in units of /minute, set 
-           `x_scale = 60` (since there are 60 seconds in 1 minute).
-}\if{html}{\out{</div>}}}
+Set \code{x_scale} to the ratio of the units of
+\code{x} to the desired units. E.g. if \code{x} is in seconds, but the
+desired derivative is in units of /minute, set
+\code{x_scale = 60} (since there are 60 seconds in 1 minute).}
 
 \item{blank}{y-value associated with a "blank" where the density is 0.
 Is required when \code{percapita = TRUE}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{           If a vector of `blank` values is specified, `blank` values are
-           assumed to be in the same order as `unique(subset_by)`
-}\if{html}{\out{</div>}}}
+If a vector of \code{blank} values is specified, \code{blank} values are
+assumed to be in the same order as \code{unique(subset_by)}}
 
 \item{subset_by}{An optional vector as long as \code{y}.
 \code{y} will be split by the unique values of this vector
 and the derivative for each group will be calculated
 independently of the others.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{             This provides an internally-implemented approach similar
-             to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
-}\if{html}{\out{</div>}}}
+This provides an internally-implemented approach similar
+to \link[dplyr:group_by]{group_by} and \link[dplyr:mutate]{mutate}}
 
 \item{window_width, window_width_n, window_width_frac, window_width_n_frac}{Set how many data points are used to determine
 the slope at each point.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{             When all are `NULL`, `calc_deriv` 
-             calculates the difference or derivative
-             of each point with the next point, appending
-             `NA` at the end.
-                  
-             When one or multiple are specified, a linear regression 
-             is fit to all points in the window to determine the 
-             slope.
-                  
-             `window_width_n` specifies the width of the
-             window in number of data points. `window_width`
-             specifies the width of the window in units of `x`.
-             `window_width_n_frac` specifies the width of the
-             window as a fraction of the total number of data points.
-                  
-             When using multiple window specifications at the same 
-             time, windows are conservative. Points 
-             included in each window will meet all of the 
-             `window_width`, `window_width_n`, and
-             `window_width_n_frac`.
-             
-             A value of `window_width_n = 3` or 
-             `window_width_n = 5` is often a good default.
-}\if{html}{\out{</div>}}}
+When all are \code{NULL}, \code{calc_deriv}
+calculates the difference or derivative
+of each point with the next point, appending
+\code{NA} at the end.
+
+When one or multiple are specified, a linear regression
+is fit to all points in the window to determine the
+slope.
+
+\code{window_width_n} specifies the width of the
+window in number of data points. \code{window_width}
+specifies the width of the window in units of \code{x}.
+\code{window_width_n_frac} specifies the width of the
+window as a fraction of the total number of data points.
+
+When using multiple window specifications at the same
+time, windows are conservative. Points
+included in each window will meet all of the
+\code{window_width}, \code{window_width_n}, and
+\code{window_width_n_frac}.
+
+A value of \code{window_width_n = 3} or
+\code{window_width_n = 5} is often a good default.}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
 transformation of y-values.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{            `'log'` is only available when calculating per-capita
-            derivatives using a fitting approach (when non-default 
-            values are specified for `window_width` or 
-            `window_width_n`).
+\code{'log'} is only available when calculating per-capita
+derivatives using a fitting approach (when non-default
+values are specified for \code{window_width} or
+\code{window_width_n}).
 
-            For per-capita growth expected to be exponential or 
-            nearly-exponential, `"log"` is recommended, since 
-            exponential growth is linear when log-transformed. However, 
-            log-transformations must be used with care, since y-values 
-            at or below 0 will become undefined and results will be 
-            more sensitive to incorrect values of `blank`.
-}\if{html}{\out{</div>}}}
+For per-capita growth expected to be exponential or
+nearly-exponential, \code{"log"} is recommended, since
+exponential growth is linear when log-transformed. However,
+log-transformations must be used with care, since y-values
+at or below 0 will become undefined and results will be
+more sensitive to incorrect values of \code{blank}.}
 
 \item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
 
@@ -140,14 +135,13 @@ For per-capita derivatives, \code{trans_y = 'linear'} and
 \code{trans_y = 'log'} approach the same value as time resolution
 increases.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     For instance, let's assume exponential growth $N = e^rt$ with 
-     per-capita growth rate $r$.
-     
-     With `trans_y = 'linear'`, note that $dN/dt = r e^rt = r N$. 
-     So we can calculate per-capita growth rate as $r = dN/dt * 1/N$. 
-     
-     With `trans_y = 'log'`, note that $log(N) = log(e^rt) = rt$.
-     So we can calculate per-capita growth rate as the slope of a linear
-     fit of $log(N)$ against time, $r = log(N)/t$.
-}\if{html}{\out{</div>}}
+For instance, let's assume exponential growth $N = e^rt$ with
+per-capita growth rate $r$.
+
+With \code{trans_y = 'linear'}, note that $dN/dt = r e^rt = r N$.
+So we can calculate per-capita growth rate as $r = dN/dt * 1/N$.
+
+With \code{trans_y = 'log'}, note that $log(N) = log(e^rt) = rt$.
+So we can calculate per-capita growth rate as the slope of a linear
+fit of $log(N)$ against time, $r = log(N)/t$.
 }

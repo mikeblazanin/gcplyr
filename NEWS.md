@@ -2,6 +2,20 @@
 
 * Stuff here
 
+* Change to the default behavior of extr_val: the default setting is now na.rm = FALSE, to align its behavior with other gcplyr functions
+
+* Bug fix for extr_val where it had not been correctly retaining NA values when na.rm = FALSE
+
+* New sections in analysis vignette on maximum death rate and total death
+
+* Improvements to the explanation of derivatives in vignettes
+
+* Improvements to package description on CRAN and Github
+
+* Numerous documentation improvements for consistency of style and better interactivity
+
+* Various minor vignette improvements
+
 # gcplyr 1.12.0
 
 * Bug fix to all read_ and import_ functions where leading empty rows in xlsx or xls files were being dropped automatically, so that startrow and endrow argument values were incorrect

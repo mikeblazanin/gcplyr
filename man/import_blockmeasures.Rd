@@ -36,18 +36,15 @@ if \code{num_plates} is greater than one, a list of
 \code{data.frame}'s, where each \code{data.frame} is wide-shaped.
 }
 \description{
-Function to import blockmeasures from files and return widemeasures
+Function to import blockmeasures from files and return widemeasures.
 This function acts as a wrapper to call \link{read_blocks},
-\link{uninterleave}, then \link{trans_block_to_wide} in one go
+\link{uninterleave}, then \link{trans_block_to_wide} in one go.
 }
 \details{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Common arguments that you may want to provide via `...`
-         include:
-}\if{html}{\out{</div>}}
+Common arguments that you may want to provide via \code{...} include:
 
-\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol},
-\code{sheet} - specifying the location of design information
-inside \code{files} to \link{read_blocks}
+\code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, \code{sheet} - specifying the
+location of design information inside \code{files} to \link{read_blocks}
 
 \code{metadata} - specifying metadata to \link{read_blocks}
 

@@ -58,7 +58,7 @@ column of the file(s).}
 \item{sheet}{(optional) If data is in .xls or .xlsx files, which sheet it
 is located on. Defaults to the first sheet if not specified}
 
-\item{metadata}{(optional) non-spectrophotometric data that should be
+\item{metadata}{(optional) non-density data that should be
 associated with each read blockmeasures. A named list where
 each item in the list is either: a vector of length 2, or
 a list containing two vectors.

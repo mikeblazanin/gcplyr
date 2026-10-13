@@ -67,26 +67,25 @@ an object of the same class as returned by the smoothing method
 This function calls other functions to smooth growth curve data
 }
 \details{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{       For [moving_average] and [moving_median], 
-       passing `window_width` or `window_width_n` via 
-       `...` is required. `window_width` sets the width
-       of the moving window in units of `x`, while 
-       `window_width_n` sets the width in units of number
-       of data points. Larger values for either will produce more 
-       "smoothed" data.
-}\if{html}{\out{</div>}}
+For \link{moving_average} and \link{moving_median},
+passing \code{window_width} or \code{window_width_n} via
+\code{...} is required. \code{window_width} sets the width
+of the moving window in units of \code{x}, while
+\code{window_width_n} sets the width in units of number
+of data points. Larger values for either will produce more
+"smoothed" data.
 
 For \link{loess}, the \code{span} argument sets the fraction of
 data points that should be included in each calculation. It's
 typically best to specify, since the default of 0.75 is often
 too large for growth curves data. Larger values of \code{span}
-will produce more more "smoothed" data
+will produce more "smoothed" data
 
 For \link[mgcv:gam]{gam}, both arguments to \link[mgcv:gam]{gam} and
 \link[mgcv:s]{s} can be provided via \code{...}. Most frequently,
 the \code{k} argument to \link[mgcv:s]{s} sets the number of
-"knots" the spline-fitting can use. Smaller values will be more
-"smoothed".
+"knots" the spline-fitting can use. Smaller values of \code{k} will
+be more "smoothed".
 
 When using \code{sm_method = "gam"}, advanced users may also modify
 other parameters of \link[mgcv:s]{s}, including the smoothing basis

@@ -349,7 +349,7 @@ get_metadata <- function(df, row, col) {
 #'                 column of the file(s).
 #' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
 #'                 is located on. Defaults to the first sheet if not specified
-#' @param metadata (optional) non-spectrophotometric data that should be 
+#' @param metadata (optional) non-density data that should be 
 #'                 associated with each read blockmeasures. A named list where 
 #'                 each item in the list is either: a vector of length 2, or
 #'                 a list containing two vectors. 
@@ -1130,9 +1130,9 @@ read_tidys <- function(files, filetype = NULL,
 
 #' Import blockmeasures
 #' 
-#' Function to import blockmeasures from files and return widemeasures
+#' Function to import blockmeasures from files and return widemeasures.
 #' This function acts as a wrapper to call [read_blocks], 
-#' [uninterleave], then [trans_block_to_wide] in one go
+#' [uninterleave], then [trans_block_to_wide] in one go.
 #' 
 #' @param files Vector of filenames (as strings), each of which is a 
 #'              block-shaped file containing measures data. File formats
@@ -1144,12 +1144,11 @@ read_tidys <- function(files, filetype = NULL,
 #'                      rowname and column name
 #' @param ... Other arguments to pass to [read_blocks], [uninterleave],
 #'            or [trans_block_to_wide]
-#' @details     Common arguments that you may want to provide via `...`
-#'              include:
+#' @details
+#' Common arguments that you may want to provide via `...` include:
 #' 
-#' `startrow`, `endrow`, `startcol`, `endcol`, 
-#'              `sheet` - specifying the location of design information 
-#'              inside `files` to [read_blocks]
+#' `startrow`, `endrow`, `startcol`, `endcol`, `sheet` - specifying the 
+#'              location of design information inside `files` to [read_blocks]
 #'              
 #' `metadata` - specifying metadata to [read_blocks]
 #'              
@@ -2587,7 +2586,7 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'                      used without [s][mgcv::s] in the formula.
 #'
 #' @details 
-#'            For [moving_average] and [moving_median], 
+#' For [moving_average] and [moving_median], 
 #'            passing `window_width` or `window_width_n` via 
 #'            `...` is required. `window_width` sets the width
 #'            of the moving window in units of `x`, while 
@@ -2599,13 +2598,13 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            data points that should be included in each calculation. It's
 #'            typically best to specify, since the default of 0.75 is often
 #'            too large for growth curves data. Larger values of `span` 
-#'            will produce more more "smoothed" data
+#'            will produce more "smoothed" data
 #'            
 #' For [gam][mgcv::gam], both arguments to [gam][mgcv::gam] and 
 #'            [s][mgcv::s] can be provided via `...`. Most frequently, 
 #'            the `k` argument to [s][mgcv::s] sets the number of 
-#'            "knots" the spline-fitting can use. Smaller values will be more 
-#'            "smoothed".
+#'            "knots" the spline-fitting can use. Smaller values of `k` will 
+#'            be more "smoothed".
 #'            
 #' When using `sm_method = "gam"`, advanced users may also modify 
 #'            other parameters of [s][mgcv::s], including the smoothing basis 
@@ -3134,7 +3133,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 
 # Processing: Cross-validation ----
 
-#' Create method argument for [train][caret::train] of growth curve smoothers
+#' Create method argument for train of growth curve smoothers
 #' 
 #' This function generates a list which is compatible to be used as the
 #' `method` argument to [train][caret::train]. This enables users to

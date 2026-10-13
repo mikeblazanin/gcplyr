@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{makemethod_train_smooth_data}
 \alias{makemethod_train_smooth_data}
-\title{Create method argument for \link[caret:train]{train} of growth curve smoothers}
+\title{Create method argument for train of growth curve smoothers}
 \usage{
 makemethod_train_smooth_data(sm_method, tuneGrid = NULL)
 }

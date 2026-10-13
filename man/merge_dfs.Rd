@@ -50,16 +50,16 @@ both \code{x} and \code{y} (inner joins are not appropriate
 in most cases because observations are frequently dropped).
 }
 
-See \link[dplyr:mutate-joins]{full_join}, \link[dplyr:mutate-joins]{left_join},
-\link[dplyr:mutate-joins]{right_join}, or \link[dplyr:mutate-joins]{inner_join} for
+See \link[dplyr:full_join]{full_join}, \link[dplyr:left_join]{left_join},
+\link[dplyr:right_join]{right_join}, or \link[dplyr:inner_join]{inner_join} for
 more details}
 
 \item{warn_morerows}{logical, should a warning be passed when the output
 has more rows than \code{x} and more rows than \code{y}?}
 
 \item{...}{Other arguments to pass to the underlying join function. See
-\link[dplyr:mutate-joins]{full_join}, \link[dplyr:mutate-joins]{left_join},
-\link[dplyr:mutate-joins]{right_join}, or \link[dplyr:mutate-joins]{inner_join} for options.}
+\link[dplyr:full_join]{full_join}, \link[dplyr:left_join]{left_join},
+\link[dplyr:right_join]{right_join}, or \link[dplyr:inner_join]{inner_join} for options.}
 }
 \value{
 Data.frame containing merged output of \code{x} and
@@ -67,7 +67,7 @@ Data.frame containing merged output of \code{x} and
 }
 \description{
 This function is essentially a wrapper for any of \code{dplyr}'s
-\link[dplyr:mutate-joins]{mutate-joins} (by default, a \link[dplyr:mutate-joins]{full_join}).
+\link[dplyr:mutate-joins]{mutate-joins} (by default, a \link[dplyr:full_join]{full_join}).
 The most typical use of this function is to merge designs with measures
 data, or to use the \code{collapse} functionality to merge a list of data.frames
 into a single data.frame. Merging is done by column names that match

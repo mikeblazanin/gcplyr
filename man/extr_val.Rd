@@ -29,11 +29,11 @@ If \code{allNA_NA = TRUE}, identical to \code{x[i]} unless
 }
 \description{
 A wrapper for \code{[} that handles \code{NA} indices better when using
-inside \link[dplyr:summarise]{summarize}
+inside \link[dplyr:summarize]{summarize}
 }
 \details{
 This function was created to better handle the common situation
-of extracting values by index inside \link[dplyr:summarise]{summarize} when some
+of extracting values by index inside \link[dplyr:summarize]{summarize} when some
 indices may be \code{NA}.
 Often this arises when using a function to find indices of interest might
 fail to find any, as can sometimes happen when using
@@ -44,7 +44,7 @@ and \link{which.min}, respectively),
 \link{first_below} and \link{first_above}. When all indices are \code{NA},
 \code{[} returns a vector of all \code{NA} of length \code{length(x)}.
 Since this typically raises an undesirable warning or error from
-\link[dplyr:summarise]{summarize}, \code{extr_val} instead returns a single \code{NA}
+\link[dplyr:summarize]{summarize}, \code{extr_val} instead returns a single \code{NA}
 value.
 
 An alternative (but largely superseded) use of this function is to

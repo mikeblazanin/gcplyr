@@ -119,7 +119,7 @@ lettered A through Z, while columns will be numbered}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \link{read.csv},
-\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
+\link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx},
 or \link{read.table}}
 
 \item{extension}{Deprecated, use \code{filetype} instead}
@@ -127,7 +127,7 @@ or \link{read.table}}
 \item{block_name_header}{Deprecated, use \code{block_names_header} instead}
 
 \item{...}{Other arguments passed to \link{read.csv},
-\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
+\link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx},
 or \link{read.table}}
 }
 \value{

@@ -87,7 +87,7 @@ the file extension (if any) be retained}
 
 \item{na.strings}{A character vector of strings which are to be interpreted
 as \code{NA} values by \link{read.csv},
-\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx},
+\link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx},
 or \link{read.table}}
 
 \item{extension}{Deprecated, use \code{filetype} instead}
@@ -95,7 +95,7 @@ or \link{read.table}}
 \item{names_to_col}{Deprecated, use \code{run_names_header} instead}
 
 \item{...}{Other arguments passed to \link{read.csv},
-\link[readxl:read_excel]{read_xls}, \link[readxl:read_excel]{read_xlsx}, or
+\link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx}, or
 \link{read.table}
 sheet}
 }
@@ -105,8 +105,8 @@ A list of tidy-shaped data.frames named by filename
 }
 \description{
 A function that imports tidy-shaped files into R. Largely acts as a
-wrapper for \link{read.csv}, \link[readxl:read_excel]{read_xls},
-\link[readxl:read_excel]{read_xls}, or \link[readxl:read_excel]{read_xlsx}, but can handle
+wrapper for \link{read.csv}, \link[readxl:read_xls]{read_xls},
+\link[readxl:read_xls]{read_xls}, or \link[readxl:read_xlsx]{read_xlsx}, but can handle
 multiple files at once and has additional options for taking subsets
 of rows/columns rather than the entire file and for adding filename
 or run names as an added column in the output.

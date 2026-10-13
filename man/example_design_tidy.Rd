@@ -3,10 +3,7 @@
 \docType{data}
 \name{example_design_tidy}
 \alias{example_design_tidy}
-\title{Design for example growth curve data
-
-A tidy-shaped dataset with the experimental design (i.e. plate layout)
-for the example data included with \code{gcplyr}.}
+\title{Design for example growth curve data}
 \format{
 A dataframe with 96 rows and 3 variables:
 \itemize{
@@ -19,6 +16,10 @@ A dataframe with 96 rows and 3 variables:
 example_design_tidy
 }
 \description{
+A tidy-shaped dataset with the experimental design (i.e. plate layout)
+for the example data included with \code{gcplyr}.
+}
+\details{
 Wells A1...A8 through F1...F8 contain 48 different
 simulated bacterial strains growing alone. Wells G1...G8 through L1...L8
 contain the same 48 bacterial strains in an identical layout, but this

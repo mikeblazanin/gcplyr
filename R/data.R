@@ -2,7 +2,8 @@
 #' 
 #' A dataset containing example growth of 96 wells of simulated bacteria
 #'  or bacteria and phages
-#'  
+#'
+#' @details
 #' Wells A1...A8 through F1...F8 contain 48 different
 #' simulated bacterial strains growing alone. Wells G1...G8 through L1...L8
 #' contain the same 48 bacterial strains in an identical layout, but this
@@ -24,7 +25,8 @@
 #' 
 #' A dataset containing example growth of 96 wells of simulated bacteria
 #'  or bacteria and phages
-#'  
+#'
+#' @details
 #' Wells A1...A8 through F1...F8 contain 48 different
 #' simulated bacterial strains growing alone. Wells G1...G8 through L1...L8
 #' contain the same 48 bacterial strains in an identical layout, but this
@@ -42,10 +44,12 @@
 "example_widedata_noiseless"
 
 #' Design for example growth curve data
-#'  
+#'
+#' @description
 #' A tidy-shaped dataset with the experimental design (i.e. plate layout)
 #' for the example data included with `gcplyr`.
 #' 
+#' @details
 #' Wells A1...A8 through F1...F8 contain 48 different
 #' simulated bacterial strains growing alone. Wells G1...G8 through L1...L8
 #' contain the same 48 bacterial strains in an identical layout, but this

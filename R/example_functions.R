@@ -3,7 +3,7 @@
 #' This function makes it easy to generate R objects or files that are
 #' created in the vignette examples. Note that this function should not
 #' be counted on to produce the same output across different versions of
-#' \code{gcplyr}, as it will be frequently changed to match the examples
+#' `gcplyr`, as it will be frequently changed to match the examples
 #' in the vignettes.
 #' 
 #' @param vignette Number of the vignette the example object or file is created in.

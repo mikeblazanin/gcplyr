@@ -16,10 +16,8 @@
 #' during data collection by plate readers
 #'
 #' @format A dataframe with 97 rows and 97 variables:
-#' \describe{
-#'      \item{time}{time, in seconds, since growth curve began}
-#'      \item{A1, A2...H11, H12}{bacterial density in the given well}
-#'  }
+#' * `time`: time, in seconds, since growth curve began
+#' * `A1, A2...H11, H12`: bacterial density in the given well
 "example_widedata"
 
 #' Example growth curve data in wide format
@@ -39,16 +37,14 @@
 #' This data does not include any simulated noise
 #'
 #' @format A dataframe with 97 rows and 97 variables:
-#' \describe{
-#'      \item{time}{time, in seconds, since growth curve began}
-#'      \item{A1, A2...H11, H12}{bacterial density in the given well}
-#'  }
+#' * `time`: time, in seconds, since growth curve began
+#' * `A1, A2...H11, H12`: bacterial density in the given well
 "example_widedata_noiseless"
 
 #' Design for example growth curve data
 #'  
 #' A tidy-shaped dataset with the experimental design (i.e. plate layout)
-#' for the example data included with \code{gcplyr}.
+#' for the example data included with `gcplyr`.
 #' 
 #' Wells A1...A8 through F1...F8 contain 48 different
 #' simulated bacterial strains growing alone. Wells G1...G8 through L1...L8
@@ -56,9 +52,7 @@
 #' time growing in the presence of a phage
 #'
 #' @format A dataframe with 96 rows and 3 variables:
-#' \describe{
-#'      \item{Well}{The well of the plate}
-#'      \item{Bacteria_strain}{The numbered bacterial strain growing in each well}
-#'      \item{Phage}{Whether or not the bacteria were simulated growing with phages}
-#'  }
+#' * `Well`: The well of the plate
+#' * `Bacteria_strain`: The numbered bacterial strain growing in each well
+#' * `Phage`: Whether or not the bacteria were simulated growing with phages
 "example_design_tidy"

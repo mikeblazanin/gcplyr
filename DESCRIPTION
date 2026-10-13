@@ -6,14 +6,19 @@ Date: 2025-07-28
 Authors@R: person("Mike", "Blazanin", , "mikeblazanin@gmail.com",
                role = c("aut", "cre"), 
                comment = c(ORCID = "0000-0003-4630-6235"))
-Description: Easy wrangling and model-free analysis of
-    microbial growth curve data, as commonly output by plate readers.
-    Tools for reshaping common plate reader outputs into 'tidy' formats and
-    merging them with design information, making data easy to work with using 
-    'gcplyr' and other packages. Also streamlines common growth curve
-    processing steps, like smoothing and calculating derivatives, and
-    facilitates model-free characterization and analysis of growth data.
-    See methods at <https://mikeblazanin.github.io/gcplyr/>.
+Description: Easy importing, wrangling, and model-free analysis of microbial
+growth curve data, as commonly output by plate readers. Tools for flexibly
+importing all the common data formats output by plate readers and reshaping
+them into 'tidy' formats for analyses. Tools for importing experimental
+designs from files or generating them in R and merging design information
+with density data, making it easy to analyze with 'gcplyr' and 'tidyverse'
+or 'dplyr' functions, and to plot with 'ggplot2'. Streamlines extracting
+parameters like growth rate/doubling time, maximum density (carrying capacity), 
+lag time, area under the curve, diauxic shifts, extinction, and more without 
+fitting an equation for growth to your data. Has several methods to deal with 
+noise in growth curve data. See methods at 
+<https://mikeblazanin.github.io/gcplyr/>.
+    
 License: MIT + file LICENSE
 URL: https://mikeblazanin.github.io/gcplyr/, https://github.com/mikeblazanin/gcplyr/
 Depends: 

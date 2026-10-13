@@ -20,7 +20,7 @@
 
 #' Nicely print the contents of a data.frame
 #' 
-#' This function uses `write.table` to print the input `data.frame`
+#' This function uses [write.table] to print the input `data.frame`
 #' in a nicely-formatted manner that is easy to read
 #' 
 #' @param x The `data.frame` to be printed
@@ -68,7 +68,7 @@ check_input_dimensions <- function(input, input_name, needed_len,
 #' and uninterleaves them into the separate sources. For instance, a list of 
 #' blockmeasures that actually corresponds to two different plates can be 
 #' split into two lists, each of the blockmeasures corresponding to a single 
-#' plate. Uninterleave assumes that the desired sub-groups are perfectly
+#' plate. `uninterleave` assumes that the desired sub-groups are perfectly
 #' interleaved in the input (e.g. items belong to sub-groups 1,2,3,1,2,3,...)
 #' 
 #' @param interleaved_list A list of R objects
@@ -164,7 +164,7 @@ from_excel <- function(x) {
 #' Use this in cases where a parent function calls multiple sub-functions
 #' and passes the ... dots argument to each, but some arguments users
 #' specify in the ... dots argument only work for some of the sub-functions.
-#' In this case, parse_dots will check and run `FUN` with only
+#' In this case, `parse_dots` will check and run `FUN` with only
 #' the arguments that `FUN` accepts
 #' 
 #' @param FUN The function to be called
@@ -191,7 +191,7 @@ parse_dots <- function(FUN, SUBFUN = NULL, ...) {
 #' @param default The value for the argument if not specified in the `...`
 #' @param ... The `...` arguments
 #' 
-#' @return The value for argname, either the default or as-specified in `...`
+#' @return The value for `argname`, either the `default` or as-specified in `...`
 #' 
 #' @noRd
 check_dots <- function(argname, default, ...) {
@@ -203,7 +203,7 @@ check_dots <- function(argname, default, ...) {
 #' 
 #' @param blocks The list of blocks
 #' 
-#' @return TRUE or FALSE whether the blocks contain metadata
+#' @return `TRUE` or `FALSE` whether the blocks contain metadata
 #'         (also passes warning when inferring, or error when unable to)
 #' 
 #' @noRd
@@ -227,7 +227,7 @@ infer_block_metadata <- function(blocks) {
 #' 
 #' @param blocks The list of blocks
 #' @param nested_metadata A logical for if there is nested metadata in
-#'                        `blocks`. Will attempt to infer if left NULL
+#'                        `blocks`. Will attempt to infer if left `NULL`
 #' 
 #' @return vector of characters not found in the blocks that can be used
 #'         as a separator without issue (or error if none can be found)
@@ -268,19 +268,19 @@ find_char_for_sep <- function(blocks, nested_metadata = NULL) {
   } else {return(sep[which(not_in_blocks)])}
 }
 
-#' A better version of is.numeric
+#' A better version of [is.numeric]
 #' 
-#' This function works like is.numeric but also checks if x can be coerced to 
-#' numeric without warnings. If is.numeric or can be coerced to numeric, 
-#' returns TRUE. Otherwise, returns FALSE
+#' This function works like [is.numeric] but also checks if `x` can be coerced to 
+#' numeric without warnings. If [is.numeric] or can be coerced to numeric, 
+#' returns `TRUE`. Otherwise, returns `FALSE`
 #' 
 #' @param x Vector to check
 #' @param infinite_num Should infinite values (or values that are coerced
-#'                     to be infinite by as.numeric) be considered as numeric?
+#'                     to be infinite by [as.numeric]) be considered as numeric?
 #' @param nan_num Should NaN values (or values that are coerced
-#'                     to be infinite by as.numeric) be considered as numeric?
-#' @return TRUE if `x` is numeric or can be converted to numeric without
-#'         warnings. Otherwise, FALSE
+#'                     to be infinite by [as.numeric]) be considered as numeric?
+#' @return `TRUE` if `x` is numeric or can be converted to numeric without
+#'         warnings. Otherwise, `FALSE`
 #' 
 #' @noRd
 canbe.numeric <- function(x, infinite_num = TRUE, nan_num = TRUE) {
@@ -306,7 +306,7 @@ canbe.numeric <- function(x, infinite_num = TRUE, nan_num = TRUE) {
 #' 
 #' @param x Value or vector to force to numeric
 #' @param varname Name of the variable to use for error message if needed
-#' @return as.numeric(x) if canbe.numeric(x) == TRUE
+#' @return `as.numeric(x)` if `canbe.numeric(x) == TRUE`
 #' 
 #' @noRd
 make.numeric <- function(x, varname) {
@@ -318,16 +318,16 @@ make.numeric <- function(x, varname) {
 #' A function that removes na's values from a set of vectors
 #' 
 #' Vectors will have all indices removed where any of the vectors
-#' are NA at that index
+#' are `NA` at that index
 #' 
-#' @param ... Vectors to remove NA's from.
-#' @param na.rm logical, should NA's be removed
-#' @param stopifNA logical, should an error be passed if na.rm = FALSE
-#'                 and there are NA's in x or y?
-#' @return A list containing: each input ... vector with NA's removed
+#' @param ... Vectors to remove `NA`'s from.
+#' @param na.rm logical, should `NA`'s be removed
+#' @param stopifNA logical, should an error be passed if `na.rm = FALSE`
+#'                 and there are `NA`'s in x or y?
+#' @return A list containing: each input ... vector with `NA`'s removed
 #'                          
-#'                            vector of indices where NA's were removed
-#'                            (NULL when none were removed)
+#'                            vector of indices where `NA`'s were removed
+#'                            (`NULL` when none were removed)
 #' 
 #' @noRd
 rm_nas <- function(..., na.rm, stopifNA = FALSE) {
@@ -358,25 +358,25 @@ rm_nas <- function(..., na.rm, stopifNA = FALSE) {
   return(out)
 }
 
-#' A function that adds NA values to a vector or pair of vectors
+#' A function that adds `NA` values to a vector or pair of vectors
 #' 
-#' NA's will be added to x and y at indices specified where they had 
+#' `NA`'s will be added to `x` and `y` at indices specified where they had 
 #' been previously removed
 #' 
-#' Note: if x vector is empty (because all values were removed), this function
-#' will return a vector of all `NA`'s for x. However, if y vector is
+#' Note: if `x` vector is empty (because all values were removed), this function
+#' will return a vector of all `NA`'s for `x`. However, if `y` vector is
 #' empty (because all values were removed), this function will not return
-#' anything for y (because it's seen as NULL, the default value for y, which
+#' anything for `y` (because it's seen as `NULL`, the default value for `y`, which
 #' is an optional argument). See Github Issue #231
 #' 
-#' @param x Vector to add NA's to
-#' @param y Optional second vector to add NA's to
-#' @param nas_indices_removed Indices where NA's had previously been removed
-#'                            (AKA indices where NA's will be in the
+#' @param x Vector to add `NA`'s to
+#' @param y Optional second vector to add `NA`'s to
+#' @param nas_indices_removed Indices where `NA`'s had previously been removed
+#'                            (AKA indices where `NA`'s will be in the
 #'                            *output* vector)
-#' @return A list containing: x with NA's added
+#' @return A list containing: `x` with `NA`'s added
 #' 
-#'                            y with NA's added
+#'                            `y` with `NA`'s added
 #' 
 #' @noRd
 add_nas <- function(x, y = NULL, nas_indices_removed) {
@@ -405,17 +405,17 @@ add_nas <- function(x, y = NULL, nas_indices_removed) {
   } else {return(list(x = x, y = y))}
 }
 
-#' A function that reorders x and y based on x
+#' A function that reorders `x` and `y` based on `x`
 #' 
 #' @param x Vector to reorder based on
-#' @param y Vector to reorder based on x
+#' @param y Vector to reorder based on `x`
 #' @return A list containing: 
 #' 
-#'     [1] "x" = the reordered x
+#'     `[1]` "x" = the reordered `x`
 #' 
-#'     [2] "y" = the reordered y
+#'     `[2]` "y" = the reordered `y`
 #'                            
-#'     [3] "order" = the original order, such that:
+#'     `[3]` "order" = the original order, such that:
 #'                            
 #'     `return[["x"]][order(return[["order"]])] == x`
 #'                            
@@ -449,21 +449,21 @@ reorder_xy <- function(x = NULL, y) {
 #'                          number of `y` values).
 #' @param window_height The maximum change in `y` within each window.
 #' @param edge_NA logical for whether windows that pass the edge of the data
-#'                should be returned as NA or simply truncated at the edge
+#'                should be returned as `NA` or simply truncated at the edge
 #'                of the data.
 #'                
 #'                For instance, moving average-like functions typically want
-#'                edge_NA = TRUE so as not to calculate a moving-average
+#'                `edge_NA = TRUE` so as not to calculate a moving-average
 #'                on points near the edge of the domain with smaller n
 #'                
-#'                In contrast, extrema-finding typically want edge_NA = FALSE
+#'                In contrast, extrema-finding typically want `edge_NA = FALSE`
 #'                so that searching simply stops at the edge of the data
 #' @param force_height_multi_n 
 #'                logical for whether windows limits set by `window_height`
 #'                should always have at least 3 data points in them (or 2 
 #'                data points for windows located at the edge of the domain)
 #'                         
-#'                This is necessary for window-finding with window_height 
+#'                This is necessary for window-finding with `window_height` 
 #'                because otherwise you can end up with windows that contain 
 #'                only a single data-point, counting as both a max and a min
 #' @return A list of vectors, where each vector contains the indices
@@ -573,7 +573,7 @@ get_windows <- function(x, y, window_width = NULL, window_width_n = NULL,
 }
 
 #' A function that checks if the parent function is being called within
-#' mutate with grouped data or with subset_by specified
+#' [mutate][dplyr::mutate] with grouped data or with `subset_by` specified
 #' 
 #' @param func_name Name of the function to check for
 #' @param inherit_name Name of the attribute to check for
@@ -604,7 +604,7 @@ check_grouped <- function(func_name = "mutate", inherit_name = "grouped_df",
 }
 
 
-#' A function that runs tryCatch but returns the messages in a list
+#' A function that runs [tryCatch] but returns the messages in a list
 #' 
 #' @param expr The expression to run
 #' @return Returns list with $value $warning $error
@@ -643,8 +643,8 @@ gcTryCatch <- function(expr) {
 #' @param x3,y3 An additional point on the line
 #' @param m The slope of the line
 #' @param named logical indicating whether the returned value(s)
-#'              should be named according to what they are (m, x2, y2,
-#'              x3, or y3)
+#'              should be named according to what they are (`m`, `x2`, `y2`,
+#'              `x3`, or `y3`)
 #' 
 #' @details Note that there is no requirement that 
 #'          `x1` < `x2` < `x3`: the points can be in any order 
@@ -717,7 +717,7 @@ solve_linear <- function(x1, y1, x2 = NULL, y2 = NULL, x3 = NULL, y3 = NULL,
 #' A function that checks if all values in a vector are identical
 #' 
 #' @param x Vector to check
-#' @return TRUE if all values are the same, FALSE otherwise
+#' @return `TRUE` if all values are the same, `FALSE` otherwise
 #' 
 #' @noRd
 all_same <- function(x) {
@@ -725,7 +725,7 @@ all_same <- function(x) {
   } else {return(FALSE)}
 }
 
-#' Where is the Min() or Max() or first TRUE or FALSE?
+#' Where is the Min() or Max() or first `TRUE` or `FALSE`?
 #' 
 #' Determines the location, i.e. index, of the (first) minimum or maximum of
 #' a numeric (or logical) vector.
@@ -735,18 +735,18 @@ all_same <- function(x) {
 #'          is searched for.
 #' @param empty_NA logical, indicating if an empty value should be returned
 #'                 as `NA` (the default) or as `integer(0`) (the
-#'                 same as `which.min` and `which.max`).
+#'                 same as [which.min] and [which.max]).
 #' @details 
-#' These functions are wrappers for `which.min` and `which.max`,
+#' These functions are wrappers for [which.min] and [which.max],
 #' with the additional argument `empty_NA`.
 #'  
 #' @return 
-#'    If `empty_NA = FALSE`, identical to `which.min` or 
-#'    `which.max`
+#'    If `empty_NA = FALSE`, identical to [which.min] or 
+#'    [which.max]
 #'    
-#'    If `empty_NA = TRUE`, identical to `which.min` or 
-#'    `which.max` except that, in cases where `which.min` or 
-#'    `which.max` would return `integer(0)`, `which_min_gc` and
+#'    If `empty_NA = TRUE`, identical to [which.min] or 
+#'    [which.max] except that, in cases where [which.min] or 
+#'    [which.max] would return `integer(0)`, `which_min_gc` and
 #'    `which_max_gc` return `NA`
 #'          
 #' @name WhichMinMaxGC
@@ -776,20 +776,20 @@ which_max_gc <- function(x, empty_NA = TRUE) {
 #' @param na.rm a logical indicating whether missing values should be removed.
 #' @param allmissing_NA a logical indicating whether `NA` should be
 #'                      returned when there are no non-missing arguments
-#'                      passed to `min` or `max` (often because
+#'                      passed to [min] or [max] (often because
 #'                      `na.rm = TRUE` but all values are `NA`)
 #' 
 #' @details 
-#' These functions are wrappers for `min` and `max`,
+#' These functions are wrappers for [min] and [max],
 #' with the additional argument `allmissing_NA`.
 #'  
 #' @return 
-#'    If `allmissing_NA = FALSE`, identical to `min` or 
-#'    `max`.
+#'    If `allmissing_NA = FALSE`, identical to [min] or 
+#'    [max].
 #'    
-#'    If `allmissing_NA = TRUE`, identical to `min` or 
-#'    `max` except that, in cases where `min` or 
-#'    `max` would return an infinite value and raise a warning because
+#'    If `allmissing_NA = TRUE`, identical to [min] or 
+#'    [max] except that, in cases where [min] or 
+#'    [max] would return an infinite value and raise a warning because
 #'    there are no non-missing arguments, `min_gc` and
 #'    `max_gc` return `NA`
 #'          
@@ -828,22 +828,22 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #' Extract parts of an object
 #' 
 #' A wrapper for `[` that handles `NA` indices better when using
-#' inside `dplyr::summarize()`
+#' inside [summarize][dplyr::summarize]
 #' 
 #' @details
 #' This function was created to better handle the common situation
-#' of extracting values by index inside `dplyr::summarize` when some
+#' of extracting values by index inside [summarize][dplyr::summarize] when some
 #' indices may be `NA`.
 #' Often this arises when using a function to find indices of interest might
 #' fail to find any, as can sometimes happen when using
-#' `which_max_gc` or `which_min_gc` (wrappers for  `which.max` 
-#' and `which.min`, respectively), 
-#' `find_local_extrema` and its wrappers `first_maxima` and
-#' `first_minima`, or `find_threshold_crosses` and its wrappers
-#' `first_below` and `first_above`. When all indices are `NA`,
+#' [which_max_gc] or [which_min_gc] (wrappers for  [which.max] 
+#' and [which.min], respectively), 
+#' [find_local_extrema] and its wrappers [first_maxima] and
+#' [first_minima], or [find_threshold_crosses] and its wrappers
+#' [first_below] and [first_above]. When all indices are `NA`,
 #' `[` returns a vector of all `NA` of length `length(x)`.
 #' Since this typically raises an undesirable warning or error from 
-#' `dplyr::summarize`, `extr_val` instead returns a single `NA` 
+#' [summarize][dplyr::summarize], `extr_val` instead returns a single `NA` 
 #' value.
 #' 
 #' An alternative (but largely superseded) use of this function is to
@@ -878,13 +878,13 @@ extr_val <- function(x, i, allNA_NA = TRUE, na.rm = FALSE) {
   }
 }
 
-#' A function that takes a subset of x and y
+#' A function that takes a subset of `x` and `y`
 #' 
-#' Vectors will have all values removed where subset is FALSE or NA
+#' Vectors will have all values removed where `subset` is `FALSE` or `NA`
 #' 
 #' @param x,y Vector to remove values from.
-#' @param subset logical, TRUE values are kept
-#' @return A list containing: x and y with values removed
+#' @param subset logical, `TRUE` values are kept
+#' @return A list containing: `x` and `y` with values removed
 #'                            the original indices of the retained values
 #'                            that were returned, such that the original index
 #'                            of the ith value in the returned vector is
@@ -918,10 +918,10 @@ take_subset <- function(x = NULL, y = NULL, subset = NULL) {
   }
 }
 
-#' Parse formula and data into x and y
+#' Parse `formula` and `data` into `x` and `y`
 #' 
-#' This function parses a specified formula and data into a vector
-#' of x data and a vector of y data
+#' This function parses a specified `formula` and `data` into a vector
+#' of `x` data and a vector of `y` data
 #' 
 #' @param formula Formula specifying the numeric response and numeric predictor.
 #' @param data Dataframe containing variables in `formula`
@@ -956,7 +956,7 @@ parse_formula_data <- function(formula, data, s_term = FALSE) {
   return(list(x = x, y = y, predictor = predictor_var, response = response_var))
 }
 
-#' Change NA values to NULL
+#' Change `NA` values to `NULL`
 #' 
 #' @param x Input
 #' 

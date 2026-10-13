@@ -116,11 +116,11 @@ infer_names <- function(df,
 #' 
 #' @param filetype The vector of filetypes (often extensions) or `NULL`
 #' @param files The vector of filenames/paths
-#' @param needed_len Parameter to pass to [check_input_dimensions] for
+#' @param needed_len Parameter to pass to `check_input_dimensions` for
 #'                   desired length of output vector
-#' @param needed_name Parameter to pass to [check_input_dimensions] for
+#' @param needed_name Parameter to pass to `check_input_dimensions` for
 #'                    name of desired length for error message
-#' @param ... Other arguments to pass to [check_input_dimensions], most
+#' @param ... Other arguments to pass to `check_input_dimensions`, most
 #'            frequently `needed_name` for what the desired length 
 #'            corresponds to (e.g. number of files)
 #' 

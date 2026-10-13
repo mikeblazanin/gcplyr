@@ -888,7 +888,7 @@ extr_val <- function(x, i, allNA_NA = TRUE, na.rm = FALSE) {
 #'                            the original indices of the retained values
 #'                            that were returned, such that the original index
 #'                            of the ith value in the returned vector is
-#'                            indices[i]
+#'                            `indices[i]`
 #'                            
 #' @noRd
 take_subset <- function(x = NULL, y = NULL, subset = NULL) {

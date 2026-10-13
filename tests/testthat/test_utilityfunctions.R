@@ -135,12 +135,14 @@ test_that("solve_linear returns correctly", {
 })
   
 test_that("which_min_gc and which_max_gc return correctly", {
-  expect_equal(which_min_gc(c(5, 6, 7)), which.min(c(5, 6, 7)))
-  expect_equal(which_max_gc(c(5, 6, 7)), which.max(c(5, 6, 7)))
-  expect_equal(which_min_gc(c(5, 6, NA)), which.min(c(5, 6, NA)))
-  expect_equal(which_max_gc(c(5, 6, NA)), which.max(c(5, 6, NA)))
-  expect_equal(which_min_gc(c(TRUE, TRUE, FALSE)), which.min(c(TRUE, TRUE, FALSE)))
-  expect_equal(which_max_gc(c(TRUE, TRUE, FALSE)), which.max(c(TRUE, TRUE, FALSE)))
+  expect_equal(which_min_gc(c(5, 6, 7)), 1)
+  expect_equal(which_max_gc(c(5, 6, 7)), 3)
+  expect_equal(which_min_gc(c(5, 6, NA)), 1)
+  expect_equal(which_max_gc(c(5, 6, NA)), 2)
+  expect_equal(which_min_gc(c(NA, 6, 7)), 2)
+  expect_equal(which_max_gc(c(NA, 6, 7)), 3)
+  expect_equal(which_min_gc(c(TRUE, TRUE, FALSE)), 3)
+  expect_equal(which_max_gc(c(TRUE, TRUE, FALSE)), 1)
   expect_equal(which_min_gc(c(NA, NA)), NA)
   expect_equal(which_max_gc(c(NA, NA)), NA)
   expect_equal(which_min_gc(c(NA, NA), empty_NA = FALSE), which.min(c(NA, NA)))
@@ -153,8 +155,11 @@ test_that("extr_val returns correctly", {
   expect_equal(extr_val(1:10, 0), c(1:10)[0])
   expect_equal(extr_val(1:10, -2), c(1, 3:10))
   expect_equal(extr_val(c(1:5, c(NA, NA), 8:10), 5), 5)
-  expect_equal(extr_val(c(1:5, c(NA, NA), 8:10), 7), 9)
+  expect_equal(extr_val(c(1:5, c(NA, NA), 8:10), 7), as.numeric(NA))
+  expect_equal(extr_val(c(1:5, c(NA, NA), 8:10), 10), 10)
   expect_equal(extr_val(c(NA, NA, NA), 2), NA)
+  expect_equal(extr_val(1:10, NA), NA)
+  expect_equal(extr_val(1:10, c(NA, NA)), NA)
 })
 
 test_that("take_subset returns correctly", {

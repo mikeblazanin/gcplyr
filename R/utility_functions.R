@@ -827,24 +827,17 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 
 #' Extract parts of an object
 #' 
-#' A wrapper for \code{[} with better handling of NA's for use inside
-#' \code{dplyr::summarize()}
+#' A wrapper for \code{[} that handles \code{NA} indices better when using
+#' inside \code{dplyr::summarize()}
 #' 
 #' @details
-#' This function was created to make it easier to handle common situations
-#' that arise when using \code{dplyr::summarize} on data containing \code{NA}
-#' values in the data or in the indices of interest. 
-#' 
-#' The main use case arises because the \code{which.max} and \code{which.min}
-#' functions and their wrappers \code{which_max_gc} and \code{which_min_gc}
-#' take a vector of values, remove \code{NA} values by default, then return an 
-#' index of interest within the vector *after* \code{NA} values were removed. 
-#' \code{extr_val} makes it easy to use that index value on the vector with 
-#' \code{NA} values removed automatically.
-#' 
-#' The other use case arises when the indices of interest are all \code{NA}.
+#' This function was created to better handle the common situation
+#' of extracting values by index inside \code{dplyr::summarize} when some
+#' indices may be \code{NA}.
 #' Often this arises when using a function to find indices of interest might
 #' fail to find any, as can sometimes happen when using
+#' \code{which_max_gc} or \code{which_min_gc} (wrappers for  \code{which.max} 
+#' and \code{which.min}, respectively), 
 #' \code{find_local_extrema} and its wrappers \code{first_maxima} and
 #' \code{first_minima}, or \code{find_threshold_crosses} and its wrappers
 #' \code{first_below} and \code{first_above}. When all indices are \code{NA},
@@ -853,13 +846,10 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #' \code{dplyr::summarize}, \code{extr_val} instead returns a single \code{NA} 
 #' value.
 #' 
-#' Note that you should use extr_val with \code{na.rm = FALSE} when 
-#' using with these \code{gcplyr} functions because they return index values 
-#' for the *original* vector:
-#' \code{find_local_extrema} and its wrappers \code{first_maxima} and
-#' \code{first_minima}, or \code{find_threshold_crosses} and its wrappers
-#' \code{first_below} and \code{first_above}
-#' 
+#' An alternative (but largely superseded) use of this function is to
+#' extract a value by index *after* \code{NA} values have been removed.
+#' This is not applicable for any common functions with \code{gcplyr},
+#' which all return index values for the original vector.
 #' 
 #' @param x object from which to extract element(s)
 #' @param i index specifying element to extract.
@@ -867,7 +857,7 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #'                 when \code{all(is.na(i)) == TRUE}.
 #' @param na.rm a logical indicating whether missing values should be 
 #'              removed.
-#'  
+#'
 #' @return 
 #'    If \code{allNA_NA = FALSE} and \code{na.rm = FALSE}, identical to 
 #'    \code{x[i]}.
@@ -879,7 +869,7 @@ min_gc <- function(..., na.rm = TRUE, allmissing_NA = TRUE) {
 #'    \code{all(is.na(i)) == TRUE}, in which case returns \code{NA}
 #'    
 #' @export
-extr_val <- function(x, i, allNA_NA = TRUE, na.rm = TRUE) {
+extr_val <- function(x, i, allNA_NA = TRUE, na.rm = FALSE) {
   if(allNA_NA ==  TRUE && all(is.na(i))) {
     return(NA)
   } else {

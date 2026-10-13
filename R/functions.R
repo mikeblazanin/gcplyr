@@ -653,7 +653,7 @@ read_blocks <- function(files, filetype = NULL,
 #' A function that imports widemeasures in files into the R environment
 #' 
 #' @details
-#' `startrow`, `endrow`, `startcol`, `endcol`, `timecol`, `sheet` and `filetype` 
+#' `startrow`, `endrow`, `startcol`, `endcol`, `sheet` and `filetype` 
 #' can either be a single value that applies for all files or
 #' vectors or lists the same length as `files`, 
 #' 
@@ -3732,7 +3732,7 @@ doubling_time <- function(y, x_scale = 1) {
 #'    `find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]`
 #' 
 #'    `first_minima` returns only the first minima, so is a shortcut for
-#'    `find_local_extrema(return_maxima = FALSE, return_maxima = FALSE)[1]`
+#'    `find_local_extrema(return_maxima = FALSE, return_minima = TRUE)[1]`
 #' 
 #'    If `return = "index"`, the returned value(s) are the indices
 #'    corresponding to local extrema in the data

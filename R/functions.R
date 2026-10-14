@@ -3,19 +3,19 @@
 
 #' An internal function that handles name inference logic for other functions
 #' 
-#' This function takes in the fully-read dataframe alongside information
+#' This function takes in the fully-read `data.frame` alongside information
 #' about whether rows and columns have been specified, and whether `header`
 #' and `sider` have been specified.
 #' 
-#' @param df The dataframe
+#' @param df The `data.frame`
 #' @param startrow,endrow,startcol,endcol The rows & columns specified by user
 #' @param header,sider Whether the file contains a header or sider
 #'                     (can be `TRUE`, `FALSE`, or `NA`)
 #' 
-#' @details None of the specified arguments should be a vector, they should
+#' @details None of the specified arguments should be a `vector`, they should
 #'          all be single values or `NA`'s
 #' 
-#' @return a list: `list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)`
+#' @return a `list`: `list(startrow, endrow, startcol, endcol, rownames_col, colnames_row)`
 #' 
 #' @noRd
 infer_names <- function(df,
@@ -114,17 +114,17 @@ infer_names <- function(df,
 
 #' An internal function that handles checking and inferring (from extension) filetypes
 #' 
-#' @param filetype The vector of filetypes (often extensions) or `NULL`
-#' @param files The vector of filenames/paths
+#' @param filetype The `vector` of filetypes (often extensions) or `NULL`
+#' @param files The `vector` of filenames/paths
 #' @param needed_len Parameter to pass to `check_input_dimensions` for
-#'                   desired length of output vector
+#'                   desired length of output `vector`
 #' @param needed_name Parameter to pass to `check_input_dimensions` for
 #'                    name of desired length for error message
 #' @param ... Other arguments to pass to `check_input_dimensions`, most
 #'            frequently `needed_name` for what the desired length 
 #'            corresponds to (e.g. number of files)
 #' 
-#' @return vector of filetypes
+#' @return `vector` of filetypes
 #' 
 #' @noRd
 infer_check_filetype <- function(filetype, files, needed_len, needed_name, ...) {
@@ -151,12 +151,12 @@ infer_check_filetype <- function(filetype, files, needed_len, needed_name, ...) 
 
 #' An internal function that handles parsing of filestrings for saving
 #' 
-#' @param filestrings The vector of file/path strings
+#' @param filestrings The `vector` of file/path `string`s
 #' @param keep_dot Should the leading dot and slash be kept and returned
 #' @param keep_path Should the path to the file be kept and returned
 #' @param keep_ext Should the file extension be kept and returned
 #' 
-#' @return Vector of filestrings modified accordingly
+#' @return `vector` of filestrings modified accordingly
 #' 
 #' @noRd
 parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
@@ -181,10 +181,10 @@ parse_filestrings <- function(filestrings, keep_dot, keep_path, keep_ext) {
 #' @param filetype The type of file, one of:
 #'                 'tbl', 'table', 'csv', 'xls', 'xlsx', 'csv2', 'delim',
 #'                 'delim2'
-#' @param na.strings Strings to be interpreted as `NA`
+#' @param na.strings `string`s to be interpreted as `NA`
 #' @param sheet What sheet to read (only needed for 'xls' and 'xlsx')
 #' 
-#' @details None of the specified arguments should be a vector, they should
+#' @details None of the specified arguments should be a `vector`, they should
 #'          all be single values
 #' 
 #' @return The `data.frame` resulting from reading the file
@@ -298,7 +298,7 @@ read_gcfile <- function(file, filetype, na.strings, sheet = NULL, ...) {
 #' A function that gets metadata from a `row`,`col`. Gives a warning if out of range
 #' returns `NA`, otherwise returns the value
 #' 
-#' @param df The dataframe containing metadata at `row`,`col`
+#' @param df The `data.frame` containing metadata at `row`,`col`
 #' @param row The row where metadata should be
 #' @param col The column where metadata should be
 #' 
@@ -323,7 +323,7 @@ get_metadata <- function(df, row, col) {
 #' 
 #' A function that reads blocks into the R environment
 #' 
-#' @param files A vector of filepaths relative to the current working directory
+#' @param files A `vector` of filepaths relative to the current working directory
 #'              where each filepath is a single plate read
 #' @param filetype (optional) the type(s) of the files. Options include:
 #' 
@@ -339,10 +339,10 @@ get_metadata <- function(df, row, col) {
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the measures data are located in `files`.
 #'                 
-#' Can be a vector or list the same length as `files`, or
+#' Can be a `vector` or `list` the same length as `files`, or
 #'                 a single value that applies to all `files`. Values
-#'                 can be numeric or a string that will be automatically
-#'                 converted to numeric by [from_excel].
+#'                 can be `numeric` or a `string` that will be automatically
+#'                 converted to `numeric` by [from_excel].
 #'                 
 #' If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
@@ -350,21 +350,21 @@ get_metadata <- function(df, row, col) {
 #' @param sheet (optional) If data is in .xls or .xlsx files, which sheet it 
 #'                 is located on. Defaults to the first sheet if not specified
 #' @param metadata (optional) non-density data that should be 
-#'                 associated with each read blockmeasures. A named list where 
-#'                 each item in the list is either: a vector of length 2, or
-#'                 a list containing two vectors. 
+#'                 associated with each read blockmeasures. A named `list` where 
+#'                 each item in the `list` is either: a `vector` of length 2, or
+#'                 a `list` containing two `vector`s. 
 #'                 
-#' In the former case, each vector should provide the row and 
+#' In the former case, each `vector` should provide the row and 
 #'                 column where the metadata is located in all of the
 #'                 blockmeasures input files.
 #'                 
-#' In the latter case, the first vector should provide the rows
+#' In the latter case, the first `vector` should provide the rows
 #'                 where the metadata is located in each of the corresponding
-#'                 input files, and the second vector should provide the 
+#'                 input files, and the second `vector` should provide the 
 #'                 columns where the metadata is located in each of the
 #'                 corresponding input files. (This case is typically used 
 #'                 when reading multiple blocks from a single file.)
-#' @param block_names (optional) vector of names corresponding to each plate
+#' @param block_names (optional) `vector` of names corresponding to each plate
 #'                 in `files`. If not provided, `block_names` are inferred
 #'                 from the filenames
 #' @param block_names_header The name of the metadata field containing the
@@ -375,14 +375,14 @@ get_metadata <- function(df, row, col) {
 #'                        the path (if any) be retained
 #' @param block_names_ext If `block_names` are inferred from filenames, should 
 #'                        the file extension (if any) be retained
-#' @param header   `TRUE`, `FALSE`, or `NA`, or a vector of
+#' @param header   `TRUE`, `FALSE`, or `NA`, or a `vector` of
 #'                 such values, indicating whether the file(s) contains the
 #'                 column names as its first line. If `header = NA`
 #'                 will attempt to infer the presence of column names. If
 #'                 `header = FALSE` or no column names are inferred when 
 #'                 `header = NA`, column names will be generated
 #'                 automatically according to `wellnames_numeric`
-#' @param sider    `TRUE`, `FALSE`, or `NA`, or a vector of
+#' @param sider    `TRUE`, `FALSE`, or `NA`, or a `vector` of
 #'                 such values, indicating whether the file(s) contains the
 #'                 row names as its first column. If `sider = NA`
 #'                 will attempt to infer the presence of row names. If
@@ -390,7 +390,7 @@ get_metadata <- function(df, row, col) {
 #'                 `sider = NA`, row names will be generated
 #'                 automatically according to `wellnames_numeric`
 #' @param wellnames_numeric If row names and column names are not provided in the
-#'                        input dataframe as specified by `header`
+#'                        input `data.frame` as specified by `header`
 #'                        and `sider`, then names will be generated
 #'                        automatically according to `wellnames_numeric`.
 #'                        
@@ -399,7 +399,7 @@ get_metadata <- function(df, row, col) {
 #'                        
 #' If `wellnames_numeric` is `FALSE`, rows will be
 #'                        lettered A through Z, while columns will be numbered
-#' @param na.strings A character vector of strings which are to be interpreted
+#' @param na.strings A `character` `vector` of `string`s which are to be interpreted
 #'                   as `NA` values by [read.csv],
 #'                   [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
 #'                   or [read.table]
@@ -412,48 +412,48 @@ get_metadata <- function(df, row, col) {
 #' @details 
 #'  For `metadata`, `read_blocks` can handle an arbitrary number of additional
 #'  pieces of information to extract from each blockcurve file as metadata.
-#'  These pieces of information are specified as a named list of vectors
-#'  where each vector is the `c(row, column)` where the information is to be
+#'  These pieces of information are specified as a named `list` of `vector`s
+#'  where each `vector` is the `c(row, column)` where the information is to be
 #'  pulled from in the input files.
 #' 
-#'  This metadata is returned as the second list element of each
+#'  This metadata is returned as the second `list` element of each
 #'  blockcurve, e.g.:
 #'  
 #'   `[[1]]` 
 #'   
-#'   `[1]` "data" #1 
+#'   `[1]` `data` #1 
 #'   
-#'   `[2]` "metadata"  
+#'   `[2]` `metadata`  
 #'   
-#'   `[2][1]` name #1
+#'   `[2][1]` `name` #1
 #'   
-#'   `[2][2]` date-time #1
+#'   `[2][2]` `date-time` #1
 #'   
-#'   `[2][3]` temp #1
+#'   `[2][3]` `temp` #1
 #'   
 #'   `[[2]]` 
 #'   
-#'   `[1]` "data" #2 
+#'   `[1]` `data` #2 
 #'   
-#'   `[2]` "metadata"  
+#'   `[2]` `metadata`  
 #'   
-#'   `[2][1]` name #2
+#'   `[2][1]` `name` #2
 #'   
-#'   `[2][2]` date-time #2
+#'   `[2][2]` `date-time` #2
 #'   
-#'   `[2][3]` temp #2
+#'   `[2][3]` `temp` #2
 #'   
 #'   `...`
 #' 
 #'  Calling [uninterleave] on the output of `read_blocks` works on block data
 #'  and the associated metadata because [uninterleave] operates on the highest 
-#'  level entries of the list (the `[[1]]` `[[2]]` level items), 
+#'  level entries of the `list` (the `[[1]]` `[[2]]` level items), 
 #'  leaving the meta-data associated with the block data
 #' 
 #'  [trans_block_to_wide] integrates this metadata into the
-#'  wide-shaped dataframe it produces
+#'  wide-shaped `data.frame` it produces
 #' 
-#' @return A list where each entry is a list containing the block data frame
+#' @return A `list` where each entry is a `list` containing the block `data.frame`
 #'         followed by the `block_names` (or filenames, if `block_names` is not 
 #'         provided) and any specified metadata.
 #'
@@ -667,9 +667,9 @@ read_blocks <- function(files, filetype = NULL,
 #' @details
 #' `startrow`, `endrow`, `startcol`, `endcol`, `sheet` and `filetype` 
 #' can either be a single value that applies for all files or
-#' vectors or lists the same length as `files`, 
+#' `vector`s or `list`s the same length as `files`, 
 #' 
-#' @param files A vector of filepaths (relative to current working directory)
+#' @param files A `vector` of filepaths (relative to current working directory)
 #'              where each one is a widemeasures set of data
 #' @param filetype (optional) the type(s) of the files. Options include:
 #' 
@@ -685,15 +685,15 @@ read_blocks <- function(files, filetype = NULL,
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in `files`.
 #'                 
-#' Can be a vector or list the same length as `files`, or
+#' Can be a `vector` or `list` the same length as `files`, or
 #'                 a single value that applies to all `files`. Values
-#'                 can be numeric or a string that will be automatically
-#'                 converted to numeric by [from_excel].
+#'                 can be `numeric` or a `string` that will be automatically
+#'                 converted to `numeric` by [from_excel].
 #'                 
 #' If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
 #'                 column of the file(s).
-#' @param header logical for whether there is a header in the data. If `FALSE`
+#' @param header `logical` for whether there is a header in the data. If `FALSE`
 #'               columns are simply numbered. If `TRUE`, the first row of the
 #'               data (`startrow` if specified) is used 
 #'               as the column names
@@ -705,8 +705,8 @@ read_blocks <- function(files, filetype = NULL,
 #' @param run_names_header Should the run names (provided in `run_names`
 #'                     or inferred from `files`) be added as a column to 
 #'                     the widemeasures? If `run_names_header` is `NULL`, 
-#'                     they will not be. If `run_names_header` is a string, 
-#'                     that string will be the column header for the column 
+#'                     they will not be. If `run_names_header` is a `string`, 
+#'                     that `string` will be the column header for the column 
 #'                     where the names will be stored
 #' @param run_names_dot If `run_names` are inferred from filenames, should 
 #'                        the leading './' (if any) be retained
@@ -715,21 +715,21 @@ read_blocks <- function(files, filetype = NULL,
 #' @param run_names_ext If `run_names` are inferred from filenames, should 
 #'                        the file extension (if any) be retained
 #' @param metadata (optional) non-spectrophotometric data that should be 
-#'                 associated with each read widemeasures. A named list where 
-#'                 each item in the list is either: a vector of length 2, or
-#'                 a list containing two vectors. 
+#'                 associated with each read widemeasures. A named `list` where 
+#'                 each item in the `list` is either: a `vector` of length 2, or
+#'                 a `list` containing two `vector`s. 
 #'                 
-#' In the former case, each vector should provide the row and 
+#' In the former case, each `vector` should provide the row and 
 #'                 column where the metadata is located in all of the
 #'                 blockmeasures input files.
 #'                 
-#' In the latter case, the first vector should provide the rows
+#' In the latter case, the first `vector` should provide the rows
 #'                 where the metadata is located in each of the corresponding
-#'                 input files, and the second vector should provide the 
+#'                 input files, and the second `vector` should provide the 
 #'                 columns where the metadata is located in each of the
 #'                 corresponding input files. (This case is typically used 
 #'                 when reading multiple blocks from a single file.)
-#' @param na.strings A character vector of strings which are to be interpreted
+#' @param na.strings A `character` `vector` of `string`s which are to be interpreted
 #'                   as `NA` values by [read.csv],
 #'                   [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
 #'                   or [read.table]
@@ -739,8 +739,8 @@ read_blocks <- function(files, filetype = NULL,
 #'              [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx], or
 #'              [read.table]
 #'              
-#' @return A dataframe containing a single widemeasures, or
-#'         A list of widemeasures named by filename
+#' @return A `data.frame` containing a single widemeasures, or
+#'         A `list` of widemeasures named by filename
 #' 
 #' @export
 read_wides <- function(files, filetype = NULL, 
@@ -934,7 +934,7 @@ read_wides <- function(files, filetype = NULL,
 #' of rows/columns rather than the entire file and for adding filename 
 #' or run names as an added column in the output.
 #' 
-#' @param files A vector of filepaths (relative to current working directory)
+#' @param files A `vector` of filepaths (relative to current working directory)
 #'              where each one is a tidy-shaped data file
 #' @param filetype (optional) the type(s) of the files. Options include:
 #' 
@@ -950,10 +950,10 @@ read_wides <- function(files, filetype = NULL,
 #' @param startrow,endrow,startcol,endcol (optional) the rows and columns where 
 #'                 the data are located in `files`.
 #'                 
-#' Can be a vector or list the same length as `files`, or
+#' Can be a `vector` or `list` the same length as `files`, or
 #'                 a single value that applies to all `files`. Values
-#'                 can be numeric or a string that will be automatically
-#'                 converted to numeric by [from_excel].
+#'                 can be `numeric` or a `string` that will be automatically
+#'                 converted to `numeric` by [from_excel].
 #'                 
 #' If not provided, data is presumed to begin on the first
 #'                 row and column of the file(s) and end on the last row and
@@ -962,31 +962,31 @@ read_wides <- function(files, filetype = NULL,
 #'              files are .xls or .xlsx). If not specified defaults to the first
 #' @param run_names Names to give the tidy files read in. By default uses the
 #'                  file names if not specified. These names may be added
-#'                  to the resulting data frame depending on the value of
+#'                  to the resulting `data.frame` depending on the value of
 #'                  the `names_to_col` argument
 #' @param run_names_header Should the run names (provided in `run_names`
 #'                     or inferred from `files`) be added as a column to the
 #'                     output? 
 #'                     
 #' If `run_names_header` is `TRUE`, they will be added with
-#'                     the column name "run_name"
+#'                     the column name `run_name`
 #'                     
 #' If `run_names_header` is `FALSE`, they will not be added.
 #'                     
-#' If `run_names_header` is a string, they will be added
-#'                     and the column name will be the string specified
+#' If `run_names_header` is a `string`, they will be added
+#'                     and the column name will be the `string` specified
 #'                     for `run_names_header`.
 #'                     
 #' If `run_names_header` is `NULL`, they only will be 
-#'                     added if there are multiple tidy data.frames being read.
-#'                     In which case, the column name will be "run_name"
+#'                     added if there are multiple tidy `data.frame`s being read.
+#'                     In which case, the column name will be `run_name`
 #' @param run_names_dot If `run_names` are inferred from filenames, should 
 #'                        the leading './' (if any) be retained
 #' @param run_names_path If `run_names` are inferred from filenames, should 
 #'                        the path (if any) be retained
 #' @param run_names_ext If `run_names` are inferred from filenames, should 
 #'                        the file extension (if any) be retained
-#' @param na.strings A character vector of strings which are to be interpreted
+#' @param na.strings A `character` `vector` of `string`s which are to be interpreted
 #'                   as `NA` values by [read.csv],
 #'                   [read_xls][readxl::read_xls], [read_xlsx][readxl::read_xlsx],
 #'                   or [read.table]
@@ -1000,12 +1000,12 @@ read_wides <- function(files, filetype = NULL,
 #' @details
 #' `startrow`, `endrow`, `startcol`, `endcol`, 
 #' `sheet` and `filetype` can either be a single value that 
-#' applies for all files or vectors or lists the same length as `files`
+#' applies for all files or `vector`s or `list`s the same length as `files`
 #' 
 #' Note that the `startrow` is always assumed to be a header
 #' 
-#' @return A dataframe containing a single tidy data.frame, or
-#'         A list of tidy-shaped data.frames named by filename
+#' @return A `data.frame` containing a single tidy `data.frame`, or
+#'         A `list` of tidy-shaped `data.frame`s named by filename
 #'         
 #' @export
 read_tidys <- function(files, filetype = NULL, 
@@ -1134,13 +1134,13 @@ read_tidys <- function(files, filetype = NULL,
 #' This function acts as a wrapper to call [read_blocks], 
 #' [uninterleave], then [trans_block_to_wide] in one go.
 #' 
-#' @param files Vector of filenames (as strings), each of which is a 
+#' @param files `vector` of filenames (as `string`s), each of which is a 
 #'              block-shaped file containing measures data. File formats
 #'              can be .csv, .xls, or .xlsx
 #' @param num_plates Number of plates. If multiple plates [uninterleave] will be
 #'                   used to separate blockmeasures into those plates accordingly
 #' @param plate_names (optional) Names to put onto the plates when output
-#' @param wellnames_sep String to use as separator for well names between 
+#' @param wellnames_sep `string` to use as separator for well names between 
 #'                      rowname and column name
 #' @param ... Other arguments to pass to [read_blocks], [uninterleave],
 #'            or [trans_block_to_wide]
@@ -1162,7 +1162,7 @@ read_tidys <- function(files, filetype = NULL,
 #' @return If `num_plates = 1`, a wide-shaped `data.frame`
 #'         containing the measures data.
 #'         
-#' if `num_plates` is greater than one, a list of 
+#' if `num_plates` is greater than one, a `list` of 
 #'         `data.frame`'s, where each `data.frame` is wide-shaped.
 #'              
 #' @export       
@@ -1199,11 +1199,11 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' [paste_blocks], [trans_block_to_wide], [trans_wide_to_tidy], 
 #' and [separate_tidy]
 #'
-#' @param files A vector of filepaths relative to the current working directory
+#' @param files A `vector` of filepaths relative to the current working directory
 #'              where each filepath is a single plate read to be read by
 #'              [read_blocks].
 #' @param block_names
-#'              Vector of names corresponding to each design element (each
+#'              `vector` of names corresponding to each design element (each
 #'              block). Inferred from filenames, if not specified.
 #'              
 #' When `keep_blocknames = TRUE`, the output will have
@@ -1216,12 +1216,12 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' @param block_name_header 
 #'              When `keep_blocknames = TRUE`, the column name of the
 #'              column containing the `block_names`.
-#' @param join_as_cols logical indicating whether blocks (if there are multiple)
+#' @param join_as_cols `logical` indicating whether blocks (if there are multiple)
 #'              should be joined as columns (i.e. describe the same plate) in 
 #'              the tidy output. If `FALSE`, blocks are joined as rows
 #'              (i.e. describe different plates) in the tidy output.
 #' @param sep   If designs have been pasted together, this specifies the
-#'              string they should be split apart by via [separate_tidy].
+#'              `string` they should be split apart by via [separate_tidy].
 #' @param values_colname When `join_as_cols = FALSE` and `sep` is
 #'              not specified, all the design values will be in a column
 #'              named by `values_colname`. For other cases, see the
@@ -1229,11 +1229,11 @@ import_blockmeasures <- function(files, num_plates = 1,
 #' @param into  When `sep` is specified, `into` sets the names
 #'              of the columns after splitting (see **Value** section
 #'              for behavior when `into` is not set).
-#' @param keep_blocknames logical indicating whether the column containing
+#' @param keep_blocknames `logical` indicating whether the column containing
 #'              `block_names` (or those inferred from file names) should
 #'              be retained in the output. By default, blocknames are retained
 #'              only if `join_as_cols = FALSE`.
-#' @param warn_joinrows_nointo logical indicating whether warning should
+#' @param warn_joinrows_nointo `logical` indicating whether warning should
 #'              be raised when multiple blocks are joined as rows 
 #'              (`join_as_cols = FALSE`) and `sep` is specified,
 #'              but `into` is not specified.
@@ -1271,7 +1271,7 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              [separate_tidy].
 #'              
 #' @return A tidy-shaped `data.frame` containing the design information
-#'         from `files`. This always includes a "Well" column. 
+#'         from `files`. This always includes a `Well` column. 
 #'         
 #' If `keep_blocknames = TRUE`, this includes a column with the
 #'         column name specified by `block_name_header` and containing
@@ -1349,7 +1349,7 @@ import_blockdesigns <- function(
 
 # Design functions ----
 
-#' Make design data.frame(s)
+#' Make design `data.frame`(s)
 #' 
 #' This is a function to easily input experimental design elements
 #' for later merging with read data
@@ -1364,7 +1364,7 @@ import_blockdesigns <- function(
 #' @param block_name_header The name of the field containing the
 #'                          `block_names`
 #' @param output_format One of `c("blocks", "blocks_pasted", "wide", "tidy")`
-#'                      denoting the format of the resulting data.frame
+#'                      denoting the format of the resulting `data.frame`
 #'                      
 #' For easy merging with tidymeasures, leave as default
 #'                      of 'tidy'. 
@@ -1383,7 +1383,7 @@ import_blockdesigns <- function(
 #'                        
 #' If `wellnames_numeric` is `FALSE`, rows will be
 #'                        lettered A through Z, while columns will be numbered
-#' @param wellnames_sep A string used when concatenating rownames and column
+#' @param wellnames_sep A `string` used when concatenating rownames and column
 #'                      names to create well names, when 
 #'                      `output_format = "wide"` or 
 #'                      `output_format = "tidy"`
@@ -1395,37 +1395,37 @@ import_blockdesigns <- function(
 #'                        rownames and column names, should the column names
 #'                        come first. 
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
-#'                         that corresponds to the first value in the vector.
+#'                         that corresponds to the first value in the `vector`.
 #'                         
 #' Lookup table by default is 
 #'                         `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`. If,
 #'                         for example, `lookup_tbl_start = "A"`, then the lookup
 #'                         table will now be `c(A,B,...Y,Z,a,b,...,y,z)`
 #' @param pattern_split character to split pattern elements provided in
-#'                      `...` by, if they're not already a vector
-#' @param ... Each `...` argument must be named, and must be a list with 
+#'                      `...` by, if they're not already a `vector`
+#' @param ... Each `...` argument must be named, and must be a `list` with 
 #'            five elements:
 #' 
-#' 1. a vector of the values
+#' 1. a `vector` of the values
 #'              
-#' 2. a vector of the rows the pattern should be applied to
+#' 2. a `vector` of the rows the pattern should be applied to
 #'              
-#' 3. a vector of the columns the pattern should be applied to
+#' 3. a `vector` of the columns the pattern should be applied to
 #'              
-#' 4. a string or vector denoting the pattern in which the
+#' 4. a `string` or `vector` denoting the pattern in which the
 #'                 values should be filled into the rows and columns specified.
 #'                 
-#'    If it's a string, will be split by `pattern_split`.
-#'                 Pattern will be used as the indices of the values vector.
+#'    If it's a `string`, will be split by `pattern_split`.
+#'                 Pattern will be used as the indices of the values `vector`.
 #'               
 #'    0's refer to `NA`. The pattern will be recycled as necessary
 #'                 to fill all the wells of the rows and columns specified.
 #'               
-#' 5. a logical for whether this pattern should be filled byrow
+#' 5. a `logical` for whether this pattern should be filled byrow
 #'
 #' @return Depends on `output_format`:
 #' 
-#' If `output_format = "blocks"`, a list of `data.frame`'s
+#' If `output_format = "blocks"`, a `list` of `data.frame`'s
 #'         where each `data.frame` is block-shaped containing the
 #'         information for a single design element
 #'         
@@ -1615,12 +1615,12 @@ do you need to set `lookup_tbl_start` differently?")
 #' 
 #' A helper function for use with [make_design]
 #' 
-#' @param values Vector of values to use
-#' @param rows Vector of rows where pattern applies
-#' @param cols Vector of cols where pattern applies
-#' @param pattern Numeric pattern itself, where numbers refer to entries
+#' @param values `vector` of values to use
+#' @param rows `vector` of rows where pattern applies
+#' @param cols `vector` of cols where pattern applies
+#' @param pattern `numeric` pattern itself, where numbers refer to entries
 #'                in `values`
-#' @param byrow logical for whether pattern should be created by row
+#' @param byrow `logical` for whether pattern should be created by row
 #' 
 #' @return `list(values, rows, cols, pattern, byrow)`
 #' 
@@ -1647,12 +1647,12 @@ make_designpattern <- function(values, rows, cols,
 #' @export
 mdp <- make_designpattern
 
-#' Fill `output` data.frame with `data` and `metadata`
+#' Fill `output` `data.frame` with `data` and `metadata`
 #'
 #' This is an internal function used by [write_blocks] that does the 
 #' fill data and metadata step
 #' 
-#' @param output Data frame for data and metadata to be filled into
+#' @param output `data.frame` for data and metadata to be filled into
 #' @param input One data and metadata to fill into `output`
 #' @param rs index of the row in `output` where data and metadata should
 #'           start being filled in
@@ -1660,7 +1660,7 @@ mdp <- make_designpattern
 #'                         
 #' Use `NULL` for no metadata inclusion
 #'                         
-#' @return A list, where `[[1]]` is `output` containing the data and
+#' @return A `list`, where `[[1]]` is `output` returned containing the data and
 #'         metadata from `input` but properly formatted for writing.
 #'         
 #' And `[[2]]` is the updated `rs` to be used for subsequent
@@ -1698,14 +1698,14 @@ fill_data_metadata <- function(output, input, rs,
 
 #' Write block designs to csv
 #' 
-#' This function writes block-shaped lists (as created by
+#' This function writes block-shaped `list`s (as created by
 #' [read_blocks] or [make_design]) to csv files, including
 #' both `data` and `metadata` in a variety of output formats
 #' 
 #' 
-#' @param blocks list of block-shaped data to be written to file
-#' @param file `NULL`, a character string naming a file to write to, or a 
-#'             vector of character strings naming files to write to. 
+#' @param blocks `list` of block-shaped data to be written to file
+#' @param file `NULL`, a `character` `string` naming a file to write to, or a 
+#'             `vector` of `character` `string`s naming files to write to. 
 #' 
 #' A file name is required when `output_format = "single"`
 #'             
@@ -1754,7 +1754,7 @@ fill_data_metadata <- function(output, input, rs,
 #'                  will be used to paste together blocks.   
 #' @param filename_sep What character will be used to paste together 
 #'                     filenames when `block_name_location = 'filename'`.   
-#' @param na The string to use for missing values in the data.
+#' @param na The `string` to use for missing values in the data.
 #' @param dir The directory that file(s) will be written into. When 
 #'            `dir = NULL`, writes to the current working directory.
 #'            (Can only be used when `file = NULL`)
@@ -2029,20 +2029,20 @@ Putting block_names in filename and writing remaining metadata into file\n")
 #' 
 #' Takes blocks and returns them in a wide format
 #' 
-#' @param blocks Blocks, either a single dataframe or a list of
-#'                      dataframes
-#' @param wellnames_sep String to use as separator for well names between 
+#' @param blocks Blocks, either a single `data.frame` or a `list` of
+#'                      `data.frame`s
+#' @param wellnames_sep `string` to use as separator for well names between 
 #'                      row name and column name (ordered according to
 #'                      `colnames_first`
-#' @param nested_metadata A logical indicating the existence of nested metadata
-#'                        in the `blockmeasures` list, e.g. as is typically
+#' @param nested_metadata A `logical` indicating the existence of nested metadata
+#'                        in the blockmeasures `list`, e.g. as is typically
 #'                        output by [read_blocks]. If `NULL`, will 
 #'                        attempt to infer existence of nested metadata
 #' @param colnames_first  In the wellnames created by [paste]-ing the
 #'                        rownames and column names, should the column names
 #'                        come first?
 #'
-#' @return A single wide-shaped dataframe
+#' @return A single wide-shaped `data.frame`
 #' 
 #' @export
 trans_block_to_wide <- function(blocks, wellnames_sep = "", 
@@ -2155,37 +2155,37 @@ trans_block_to_wide <- function(blocks, wellnames_sep = "",
 #' Pivot wide-shaped into tidy
 #' 
 #' Essentially a wrapper for [pivot_longer][tidyr::pivot_longer] that works on both a 
-#' single wide-shaped dataframe as well as a list of wide-shaped dataframe's
+#' single wide-shaped `data.frame` as well as a `list` of wide-shaped `data.frame`'s
 #' 
-#' @param wides A single wide-shaped dataframe, or a list of wide-shaped
-#'                   dataframe's
+#' @param wides A single wide-shaped `data.frame`, or a `list` of wide-shaped
+#'                   `data.frame`'s
 #' @param data_cols,id_cols Specifies which columns have data vs are ID's
 #'                          (in [pivot_longer][tidyr::pivot_longer] parlance). Each can be
-#'                          a single vector (which will be applied for all
-#'                          dataframes) or a list of vectors, with each
-#'                          vector corresponding to the same-index dataframe
+#'                          a single `vector` (which will be applied for all
+#'                          `data.frame`s) or a `list` of `vector`s, with each
+#'                          `vector` corresponding to the same-index `data.frame`
 #'                          in `wides`
 #'                          
-#' Entries that are `NA` in the list will not be used
+#' Entries that are `NA` in the `list` will not be used
 #'                          
 #' If neither `data_cols` nor `id_cols` are 
 #'                          specified, user must provide arguments to 
 #'                          [pivot_longer][tidyr::pivot_longer] via `...` for at 
 #'                          least the `cols` argument and these arguments 
 #'                          provided via `...` will be used for all 
-#'                          `wides` dataframe's
+#'                          `wides` `data.frame`'s
 #' @param names_to,values_to Specifies the output column names created by
 #'                           [pivot_longer][tidyr::pivot_longer]. Each can be provided 
-#'                           as vectors the same length as `wides`
-#' @param values_to_numeric logical indicating whether values will be coerced
-#'                          to numeric. See below for when this may be
+#'                           as `vector`s the same length as `wides`
+#' @param values_to_numeric `logical` indicating whether values will be coerced
+#'                          to `numeric`. See below for when this may be
 #'                          overridden by arguments passed in `...`
 #' @param ... Other arguments to be passed to [pivot_longer][tidyr::pivot_longer]
 #'            Note that including `values_transform` here will override the
 #'            behavior of `values_to_numeric`
-#' @return Pivoted longer dataframe (if `wides` is a single dataframe)
-#'         or list of pivoted longer dataframes (if `wides` is
-#'         a list of dataframes)
+#' @return Pivoted longer `data.frame` (if `wides` is a single `data.frame`)
+#'         or `list` of pivoted longer `data.frame`s (if `wides` is
+#'         a `list` of `data.frame`s)
 #' 
 #' @export  
 trans_wide_to_tidy <- function(wides, 
@@ -2270,30 +2270,30 @@ trans_wide_to_tidy <- function(wides,
   }
 }
 
-#' Collapse a list of dataframes, or merge two dataframes together
+#' Collapse a `list` of `data.frame`s, or merge two `data.frame`s together
 #' 
 #' This function is essentially a wrapper for any of `dplyr`'s
 #' [mutate-joins][dplyr::mutate-joins] (by default, a [full_join][dplyr::full_join]). 
 #' The most typical use of this function is to merge designs with measures 
-#' data, or to use the `collapse` functionality to merge a list of data.frames 
-#' into a single data.frame. Merging is done by column names that match 
+#' data, or to use the `collapse` functionality to merge a `list` of `data.frame`s 
+#' into a single `data.frame`. Merging is done by column names that match 
 #' between `x` and `y`.
 #'  
-#' @param x First data.frame, or list of data frames, to be joined
-#' @param y Second data.frame, or list of data frames, to be joined
-#' @param by A character vector of variables to join by, passed directly
+#' @param x First `data.frame`, or `list` of `data.frame`s, to be joined
+#' @param y Second `data.frame`, or `list` of `data.frame`s, to be joined
+#' @param by A `character` `vector` of variables to join by, passed directly
 #'           to the join function
 #' @param drop Should only `complete_cases` of the resulting
-#'             data.frame be returned?
-#' @param collapse A logical indicating whether `x` or `y` is a list containing
-#'                 data frames that should be merged together before
+#'             `data.frame` be returned?
+#' @param collapse A `logical` indicating whether `x` or `y` is a `list` containing
+#'                 `data.frame`s that should be merged together before
 #'                 being merged with the other
 #' @param names_to Column name for where `names(x)` or `names(y)` 
 #'                 will be entered in if `collapse = TRUE`.
 #'                 
 #' If a value of `NA` then `names(x)` or 
 #'                 `names(y)` will not be put into a column in the
-#'                 returned data.frame
+#'                 returned `data.frame`
 #' @param join     Type of join used to merge `x` and `y`. Options
 #'                 are 'full' (default), 'inner', 'left', and 'right'.
 #'                 
@@ -2310,13 +2310,13 @@ trans_wide_to_tidy <- function(wides,
 #' See [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
 #'                 [right_join][dplyr::right_join], or [inner_join][dplyr::inner_join] for 
 #'                 more details
-#' @param warn_morerows logical, should a warning be passed when the output
+#' @param warn_morerows `logical`, should a warning be passed when the output
 #'                      has more rows than `x` and more rows than `y`?
 #' @param ... Other arguments to pass to the underlying join function. See 
 #'            [full_join][dplyr::full_join], [left_join][dplyr::left_join], 
 #'            [right_join][dplyr::right_join], or [inner_join][dplyr::inner_join] for options.
 #' 
-#' @return Data.frame containing merged output of `x` and
+#' @return `data.frame` containing merged output of `x` and
 #'         `y`
 #' 
 #' @export
@@ -2387,27 +2387,27 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   return(output)
 }
 
-#' Paste a list of blocks into a single block
+#' Paste a `list` of blocks into a single block
 #' 
 #' This function uses [paste] to concatenate the same-location entries
-#' of a list of data.frames together (i.e. all the first row-first column
+#' of a `list` of `data.frame`s together (i.e. all the first row-first column
 #' values are pasted together, all the second row-first column values are
 #' pasted together, etc.)
 #' 
-#' @param blocks Blocks, either a single data.frame or a list of
-#'                      data.frames
-#' @param sep String to use as separator for output pasted values
-#' @param nested_metadata A logical indicating the existence of nested metadata
-#'                        in the `blockmeasures` list, e.g. as is typically
+#' @param blocks Blocks, either a single `data.frame` or a `list` of
+#'                      `data.frame`s
+#' @param sep `string` to use as separator for output pasted values
+#' @param nested_metadata A `logical` indicating the existence of nested metadata
+#'                        in the blockmeasures `list`, e.g. as is typically
 #'                        output by [read_blocks]. If `NULL`, will attempt to
 #'                        infer existence of nested metadata
 #' 
-#' @return If `nested_metadata = TRUE` (or is inferred to be `TRUE`), a list
-#'         containing a list containing: 1. a `data.frame` with the
-#'         pasted data values from `blocks`, and 2. a vector with the 
+#' @return If `nested_metadata = TRUE` (or is inferred to be `TRUE`), a `list`
+#'         containing a `list` containing: 1. a `data.frame` with the
+#'         pasted data values from `blocks`, and 2. a `vector` with the 
 #'         pasted metadata values from `blocks`
 #'         
-#' If `nested_metadata = FALSE` (or is inferred to be `FALSE`), a list
+#' If `nested_metadata = FALSE` (or is inferred to be `FALSE`), a `list`
 #'         containing `data.frame`'s with the pasted values from
 #'         `blocks`
 #' 
@@ -2494,34 +2494,34 @@ paste_blocks <- function(blocks, sep = "_", nested_metadata = NULL) {
 #' Separate a column into multiple columns
 #' 
 #' This function is primarily a wrapper for [separate][tidyr::separate], which
-#' turns a single character column into multiple columns
+#' turns a single `character` column into multiple columns
 #' 
-#' @param data A data frame
+#' @param data A `data.frame`
 #' @param col  Column name or position
-#' @param into A character vector of the new column names. Use `NA` to
+#' @param into A `character` `vector` of the new column names. Use `NA` to
 #'             omit the variable in the output.
 #'             
 #' If `NULL`, `separate_tidy` will attempt to infer the new
 #'             column names by splitting the column name of `col`
 #' @param sep Separator between columns passed to [separate][tidyr::separate]:
 #' 
-#' If character, `sep` is interpreted as a regular expression.
+#' If `character`, `sep` is interpreted as a regular expression.
 #'            
-#' If numeric, `sep` is interpreted as character positions
+#' If `numeric`, `sep` is interpreted as character positions
 #'            to split at. Positive values start at 1 at the far-left of the
-#'            string; negative values start at -1 at the far-right of the
-#'            string. The length of `sep` should be one less than 
+#'            `string`; negative values start at -1 at the far-right of the
+#'            `string`. The length of `sep` should be one less than 
 #'            `into`
-#' @param coerce_NA  logical dictating if strings matching any of 
+#' @param coerce_NA  `logical` dictating if `string`s matching any of 
 #'                   `na.strings` will be coerced into  `NA` values 
 #'                   after separating.
-#' @param na.strings A character vector of strings which are to be interpreted
+#' @param na.strings A `character` `vector` of `string`s which are to be interpreted
 #'                   as `NA` values if `coerce_NA == TRUE`
-#' @param message_inferred_into logical whether column names for `into`
+#' @param message_inferred_into `logical` whether column names for `into`
 #'                              should be printed in a message when inferred
 #' @param ... Other arguments passed to [separate][tidyr::separate]
 #' 
-#' @return A data frame containing new columns in the place of `col`
+#' @return A `data.frame` containing new columns in the place of `col`
 #' 
 #' @export
 separate_tidy <- function(data, col, into = NULL, sep = "_",
@@ -2561,28 +2561,28 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'            [smooth.spline]. Typically includes tuning 
 #'            parameter(s), which in some cases are required.
 #'            See Details for more information.
-#' @param x An (often optional) vector of predictor values to smooth along 
+#' @param x An (often optional) `vector` of predictor values to smooth along 
 #'          (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density). If `NULL`,
+#' @param y A `vector` of response values to be smoothed (e.g. density). If `NULL`,
 #'          `formula` and `data` *must* be provided via `...`
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used to smooth data. Options include 
 #'                  "moving-average", "moving-median", "loess", "gam",
 #'                  and "smooth.spline".
-#' @param subset_by An optional vector as long as `y`. 
-#'                  `y` will be split by the unique values of this vector 
+#' @param subset_by An optional `vector` as long as `y`. 
+#'                  `y` will be split by the unique values of this `vector` 
 #'                  and the smoothed data for each group will be calculated 
 #'                  independently of the others.
 #'                  
 #' This provides an internally-implemented approach similar
 #'                  to [group_by][dplyr::group_by] and [mutate][dplyr::mutate]
-#' @param return_fitobject logical whether entire object returned
+#' @param return_fitobject `logical` whether entire object returned
 #'                         by fitting function should be returned. If `FALSE`,
 #'                         just fitted values are returned.
-#' @param warn_ungrouped logical whether warning should be issued when
+#' @param warn_ungrouped `logical` whether warning should be issued when
 #'                       `smooth_data` is being called on ungrouped data
 #'                       and `subset_by = NULL`.
-#' @param warn_gam_no_s logical whether warning should be issued when [gam][mgcv::gam] is 
+#' @param warn_gam_no_s `logical` whether warning should be issued when [gam][mgcv::gam] is 
 #'                      used without [s][mgcv::s] in the formula.
 #'
 #' @details 
@@ -2622,21 +2622,21 @@ separate_tidy <- function(data, col, into = NULL, sep = "_",
 #'          
 #' In this case, the formula should specify the response (e.g. density) 
 #'            and predictors. For [gam][mgcv::gam] smoothing, the formula should
-#'            typically be of the format: y ~ s(x), which uses 
+#'            typically be of the format: `y ~ s(x)`, which uses 
 #'            [s][mgcv::s] to smooth the data. The data argument should be a 
 #'            `data.frame` containing the variables in the formula.
-#'            In such cases, `subset_by` can still be specified as a vector
+#'            In such cases, `subset_by` can still be specified as a `vector`
 #'            with length `nrow(data)`
 #' 
 #' @return If `return_fitobject == FALSE:`
 #' 
-#' A vector, the same length as `y`, with the now-smoothed `y` values
+#' A `vector`, the same length as `y`, with the now-smoothed `y` values
 #'         
 #' If `return_fitobject == TRUE:`
 #'         
-#' A list the same length as `unique(subset_by)` where each element is
+#' A `list` the same length as `unique(subset_by)` where each element is
 #'         an object of the same class as returned by the smoothing method
-#'         (typically a named list-like object)
+#'         (typically a named `list`-like object)
 #' 
 #' @export
 smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
@@ -2777,11 +2777,11 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 
 #' Do all setup steps for moving window smoothing function
 #' 
-#' @param formula Formula specifying the numeric response (density) 
-#'                and numeric predictor (time).
-#' @param data Dataframe containing variables in `formula`
-#' @param x A vector of predictor values to smooth along (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density).
+#' @param formula Formula specifying the `numeric` response (density) 
+#'                and `numeric` predictor (time).
+#' @param data `data.frame` containing variables in `formula`
+#' @param x A `vector` of predictor values to smooth along (e.g. time)
+#' @param y A `vector` of response values to be smoothed (e.g. density).
 #' @param window_width_n Number of data points wide the moving window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving window (in units of `x`)
@@ -2789,12 +2789,12 @@ smooth_data <- function(..., x = NULL, y = NULL, sm_method, subset_by = NULL,
 #'                          number of data points).
 #' @param window_width_frac Width of the window (as a fraction of the range of
 #'                          `x`)
-#' @param na.rm logical whether `NA`'s should be removed before analyzing
-#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#' @param na.rm `logical` whether `NA`'s should be removed before analyzing
+#' @param warn_nonnumeric_sort `logical` whether warning should be issued when 
 #'                             predictor variable that data is sorted by is 
-#'                             non-numeric.
+#'                             non-`numeric`.
 #'                             
-#' @return List containing: x values, y values,
+#' @return `list` containing: `x` values, `y` values,
 #'                          indices for original order, 
 #'                          indices where `NA`'s were removed,
 #'                          `window_width_n`, 
@@ -2873,11 +2873,11 @@ setup_moving_smooth <- function(formula, data, x, y,
 #' 
 #' These functions use a moving window to smooth data
 #' 
-#' @param formula Formula specifying the numeric response (density) 
-#'                and numeric predictor (time).
-#' @param data Dataframe containing variables in `formula`
-#' @param x A vector of predictor values to smooth along (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density).
+#' @param formula Formula specifying the `numeric` response (density) 
+#'                and `numeric` predictor (time).
+#' @param data `data.frame` containing variables in `formula`
+#' @param x A `vector` of predictor values to smooth along (e.g. time)
+#' @param y A `vector` of response values to be smoothed (e.g. density).
 #' @param window_width_n Number of data points wide the moving window is
 #'                     (therefore, must be an odd number of points)
 #' @param window_width Width of the moving window (in units of `x`)
@@ -2885,10 +2885,10 @@ setup_moving_smooth <- function(formula, data, x, y,
 #'                          number of data points).
 #' @param window_width_frac Width of the window (as a fraction of the range of
 #'                          `x`)
-#' @param na.rm logical whether `NA`'s should be removed before analyzing
-#' @param warn_nonnumeric_sort logical whether warning should be issued when 
+#' @param na.rm `logical` whether `NA`'s should be removed before analyzing
+#' @param warn_nonnumeric_sort `logical` whether warning should be issued when 
 #'                             predictor variable that data is sorted by is 
-#'                             non-numeric.
+#'                             non-`numeric`.
 #' 
 #' @details Either `x` and `y` or `formula` and `data`
 #'          must be provided.
@@ -2897,7 +2897,7 @@ setup_moving_smooth <- function(formula, data, x, y,
 #'          `window_width_n`, `window_width`,
 #'          `window_width_n_frac`, or `window_width_frac`
 #'          
-#' @return Vector of smoothed data, with `NA`'s appended at both ends
+#' @return `vector` of smoothed data, with `NA`'s appended at both ends
 #' 
 #' @name MovingWindowFunctions
 NULL
@@ -2991,18 +2991,18 @@ moving_median <- function(formula = NULL, data = NULL, x = NULL, y = NULL,
 
 #' Predict data by linear interpolation from existing data
 #' 
-#' @param x A vector of known predictor values.
-#' @param y A vector of known response values.
-#' @param newdata A vector of new predictor values for which the response
+#' @param x A `vector` of known predictor values.
+#' @param y A `vector` of known response values.
+#' @param newdata A `vector` of new predictor values for which the response
 #'                value will be predicted
 #' @param extrapolate_predictions 
 #'                Boolean indicating whether values of `newdata` that are 
 #'                out of the domain of `x` should be predicted (by 
 #'                extrapolating the slope from the endpoints of `x`). If
 #'                `FALSE`, such values will be returned as `NA`.
-#' @param na.rm logical whether `NA`'s should be removed before making predictions
+#' @param na.rm `logical` whether `NA`'s should be removed before making predictions
 #'
-#' @return A vector of response values for each predictor value in 
+#' @return A `vector` of response values for each predictor value in 
 #'         `newdata`
 #'         
 #' @export
@@ -3076,12 +3076,12 @@ predict_interpolation <- function(
 #' a cubic smoothing spline to the supplied data, but includes the option
 #' to remove `NA` values, and returns values in the original order.
 #' 
-#' @param x A vector giving the values of the predictor variable.
-#' @param y A vector giving the values of the response variable. If `y` is
+#' @param x A `vector` giving the values of the predictor variable.
+#' @param y A `vector` giving the values of the response variable. If `y` is
 #'          missing or `NULL`, the responses are assumed to be specified
-#'          by `x`, with `x` the index vector.
+#'          by `x`, with `x` the index `vector`.
 #' @param ... Additional arguments passed to [smooth.spline].
-#' @param na.rm logical whether `NA`'s should be removed before analyzing.
+#' @param na.rm `logical` whether `NA`'s should be removed before analyzing.
 #'              Required to be `TRUE` if any `x` or `y` values are `NA`.
 #'              
 #' @details See [smooth.spline]              
@@ -3135,7 +3135,7 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 
 #' Create method argument for train of growth curve smoothers
 #' 
-#' This function generates a list which is compatible to be used as the
+#' This function generates a `list` which is compatible to be used as the
 #' `method` argument to [train][caret::train]. This enables users to
 #' call [train][caret::train] directly themselves with [smooth_data]
 #' smoothing functions.
@@ -3143,14 +3143,14 @@ gc_smooth.spline <- function(x, y = NULL, ..., na.rm = TRUE) {
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used. Options include "moving-average", "moving-median", 
 #'                  "loess", "gam", and "smooth.spline".
-#' @param tuneGrid A data frame with possible tuning value. The columns should 
+#' @param tuneGrid A `data.frame` with possible tuning values. The columns should 
 #'                 be named the same as the tuning parameters.
 #'                 
 #' Note that, when using [train][caret::train], the `tuneGrid`
 #'                 must be passed both to this function as well as directly
 #'                 to [train][caret::train].
 #' 
-#' @return A list that can be used as the method argument to
+#' @return A `list` that can be used as the `method` argument to
 #'         [train][caret::train]. Contains elements:
 #'         `library`, `type`, `prob`, `fit`,
 #'         `parameters`, `grid`, `fit`, and `predict`.
@@ -3272,32 +3272,32 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #' 
 #' @param ... Arguments passed to [smooth_data]. These arguments cannot
 #'            overlap with any of those to be tuned.
-#' @param x A vector of predictor values to smooth along (e.g. time)
-#' @param y A vector of response values to be smoothed (e.g. density).
+#' @param x A `vector` of predictor values to smooth along (e.g. time)
+#' @param y A `vector` of response values to be smoothed (e.g. density).
 #' @param sm_method Argument specifying which smoothing method should
 #'                  be used. Options include "moving-average", "moving-median", 
 #'                  "loess", "gam", and "smooth.spline".
-#' @param preProcess A string vector that defines a pre-processing of the
+#' @param preProcess A `string` `vector` that defines a pre-processing of the
 #'                   predictor data. The default is no pre-processing.
 #'                   See [train][caret::train] for more details.
-#' @param weights    A numeric vector of case weights. This argument currently
+#' @param weights    A `numeric` `vector` of case weights. This argument currently
 #'                   does not affect any `train_smooth_data` models.
-#' @param metric     A string that specifies what summary metric will be
+#' @param metric     A `string` that specifies what summary metric will be
 #'                   used to select the optimal model. By default, possible
 #'                   values are "RMSE" and "Rsquared" for regression.
 #'                   See [train][caret::train] for more details.
-#' @param maximize   A logical: should the metric be maximized or minimized?
-#' @param trControl  A list of values that define how this function acts.
+#' @param maximize   A `logical`: should the metric be maximized or minimized?
+#' @param trControl  A `list` of values that define how this function acts.
 #'                   See [train][caret::train] and [trainControl][caret::trainControl]
 #'                   for more details.
-#' @param tuneGrid A data frame with possible tuning values, or a named list
-#'                 containing vectors with possible tuning values. If a data 
+#' @param tuneGrid A `data.frame` with possible tuning values, or a named `list`
+#'                 containing `vector`s with possible tuning values. If a data 
 #'                 frame, the columns should be named the same as the tuning 
-#'                 parameters. If a list, the elements of the list should be
-#'                 named the same as the tuning parameters. If a list,
+#'                 parameters. If a `list`, the elements of the `list` should be
+#'                 named the same as the tuning parameters. If a `list`,
 #'                 [expand.grid] will be used to make all possible
 #'                 combinations of tuning parameter values.
-#' @param tuneLength An integer denoting the amount of granularity in
+#' @param tuneLength An `integer` denoting the amount of granularity in
 #'                   the tuning parameter grid. By default, this argument
 #'                   is the number of levels for each tuning parameter that
 #'                   should be generated. If `trControl` has the option
@@ -3305,7 +3305,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'                   of tuning parameter combinations that will be generated
 #'                   by the random search. (NOTE: If given, this argument
 #'                   must be named.)
-#' @param return_trainobject A logical indicating whether the entire result
+#' @param return_trainobject A `logical` indicating whether the entire result
 #'                           of [train][caret::train] should be returned, or
 #'                           only the `results` element.
 #'                           
@@ -3330,7 +3330,7 @@ makemethod_train_smooth_data <- function(sm_method, tuneGrid = NULL) {
 #'          [makemethod_train_smooth_data] to specify the `method` 
 #'          argument.
 #' 
-#' @return If `return_trainobject = FALSE` (the default), a data frame
+#' @return If `return_trainobject = FALSE` (the default), a `data.frame`
 #'         with the values of all tuning parameter combinations and the
 #'         training error rate for each combination (i.e. the `results`
 #'         element of the output of [train][caret::train]).
@@ -3381,31 +3381,31 @@ and dplyr::reframe instead")}
 
 # Processing: Derivatives ----
 
-#' Calculate derivatives of vector of data
+#' Calculate derivatives of `vector` of data
 #' 
-#' Provided a vector of `y` values, this function returns either the plain
+#' Provided a `vector` of `y` values, this function returns either the plain
 #' or per-capita difference or derivative between sequential values
 #' 
 #' @param y       Data to calculate difference or derivative of
-#' @param x       Vector of x values provided as a simple numeric.
+#' @param x       `vector` of `x` values provided as a simple `numeric`.
 #' @param return One of `c("difference", "derivative")` for whether the
 #'               differences in `y` should be returned, or the
 #'               derivative of `y` with respect to `x`
 #' @param percapita When `percapita = TRUE`, the per-capita difference or
 #'                  derivative is returned
-#' @param x_scale Numeric to scale `x` by in derivative calculation
+#' @param x_scale `numeric` to scale `x` by in derivative calculation
 #'                
 #' Set `x_scale` to the ratio of the units of 
 #'                `x` to the desired units. E.g. if `x` is in seconds, but the 
 #'                desired derivative is in units of /minute, set 
 #'                `x_scale = 60` (since there are 60 seconds in 1 minute).
-#' @param blank   y-value associated with a "blank" where the density is 0.
+#' @param blank   `y`-value associated with a "blank" where the density is 0.
 #'                Is required when `percapita = TRUE`.
 #'                
-#' If a vector of `blank` values is specified, `blank` values are
+#' If a `vector` of `blank` values is specified, `blank` values are
 #'                assumed to be in the same order as `unique(subset_by)`  
-#' @param subset_by An optional vector as long as `y`. 
-#'                  `y` will be split by the unique values of this vector 
+#' @param subset_by An optional `vector` as long as `y`. 
+#'                  `y` will be split by the unique values of this `vector` 
 #'                  and the derivative for each group will be calculated 
 #'                  independently of the others.
 #'                  
@@ -3439,7 +3439,7 @@ and dplyr::reframe instead")}
 #' A value of `window_width_n = 3` or 
 #'                  `window_width_n = 5` is often a good default.
 #' @param trans_y  One of `c("linear", "log")` specifying the
-#'                 transformation of y-values.
+#'                 transformation of `y`-values.
 #' 
 #' `'log'` is only available when calculating per-capita
 #'                 derivatives using a fitting approach (when non-default 
@@ -3449,19 +3449,19 @@ and dplyr::reframe instead")}
 #' For per-capita growth expected to be exponential or 
 #'                 nearly-exponential, `"log"` is recommended, since 
 #'                 exponential growth is linear when log-transformed. However, 
-#'                 log-transformations must be used with care, since y-values 
+#'                 log-transformations must be used with care, since `y`-values 
 #'                 at or below 0 will become undefined and results will be 
 #'                 more sensitive to incorrect values of `blank`.
-#' @param na.rm logical whether `NA`'s should be removed before analyzing
-#' @param warn_ungrouped logical whether warning should be issued when
+#' @param na.rm `logical` whether `NA`'s should be removed before analyzing
+#' @param warn_ungrouped `logical` whether warning should be issued when
 #'                       `calc_deriv` is being called on ungrouped data
 #'                       and `subset_by = NULL`.
-#' @param warn_logtransform_warnings logical whether warning should be issued 
+#' @param warn_logtransform_warnings `logical` whether warning should be issued 
 #'                             when `log(y)` produced warnings.
-#' @param warn_logtransform_infinite logical whether warning should be issued 
+#' @param warn_logtransform_infinite `logical` whether warning should be issued 
 #'                             when `log(y)` produced infinite values that will
 #'                             be treated as `NA`.
-#' @param warn_window_toosmall logical whether warning should be issued 
+#' @param warn_window_toosmall `logical` whether warning should be issued 
 #'                             when only one data point is in the window
 #'                             set by `window_width_n`, 
 #'                             `window_width`, or `window_width_n_frac`,
@@ -3481,10 +3481,10 @@ and dplyr::reframe instead")}
 #'          So we can calculate per-capita growth rate as the slope of a linear
 #'          fit of $log(N)$ against time, $r = log(N)/t$.
 #' 
-#' @return A vector of values for the plain (if `percapita = FALSE`)
+#' @return A `vector` of values for the plain (if `percapita = FALSE`)
 #'         or per-capita (if `percapita = TRUE`) difference 
 #'         (if `return = "difference"`) or derivative 
-#'         (if `return = "derivative"`) between `y` values. Vector
+#'         (if `return = "derivative"`) between `y` values. `vector`
 #'         will be the same length as `y`,  with `NA` values 
 #'         at the ends
 #' 
@@ -3645,19 +3645,19 @@ window_width_n_frac are used")}
 
 #' Calculate doubling time equivalent of per-capita growth rate
 #' 
-#' Provided a vector of per-capita growth rates, this function returns 
-#' the vector of equivalent doubling times
+#' Provided a `vector` of per-capita growth rates, this function returns 
+#' the `vector` of equivalent doubling times
 #' 
-#' @param y       Vector of per-capita derivative data to calculate the 
+#' @param y       `vector` of per-capita derivative data to calculate the 
 #'                equivalent doubling time of
-#' @param x_scale Numeric to scale per-capita derivative values by
+#' @param x_scale `numeric` to scale per-capita derivative values by
 #'                
 #' Set `x_scale` to the ratio of the the units of 
 #'                `y` to the desired units. E.g. if `y` is in per-second, but the 
 #'                desired doubling time is in minutes, `x_scale = 60` 
 #'                (since there are 60 seconds in 1 minute).
 #' 
-#' @return A vector of values for the doubling time equivalent to the
+#' @return A `vector` of values for the doubling time equivalent to the
 #'         per-capita growth rate supplied for `y`
 #' 
 #' @export   
@@ -3671,12 +3671,12 @@ doubling_time <- function(y, x_scale = 1) {
 
 # Analyze ----
 
-#' Find local extrema of a numeric vector
+#' Find local extrema of a `numeric` `vector`
 #' 
-#' These functions take a vector of `y` values and identify local extrema.
+#' These functions take a `vector` of `y` values and identify local extrema.
 #'   
-#' @param y Numeric vector of y values in which to identify local extrema
-#' @param x Optional numeric vector of corresponding x values
+#' @param y `numeric` `vector` of `y` values in which to identify local extrema
+#' @param x Optional `numeric` `vector` of corresponding `x` values
 #' @param window_width,window_width_n,window_height,window_width_frac,window_width_n_frac
 #'                   Arguments that set the width/height of the window used to
 #'                   search for local extrema.
@@ -3701,19 +3701,19 @@ doubling_time <- function(y, x_scale = 1) {
 #'                   sensitive to shallow local maxima/minima, while a larger 
 #'                   height will be less sensitive to shallow maxima/minima.
 #' @param return One of `c("index", "x", "y")`, determining whether the function
-#'               will return the index, x value, or y value associated with the
+#'               will return the index, `x` value, or `y` value associated with the
 #'               identified extremas
-#' @param return_maxima,return_minima logical for which classes of local extrema
+#' @param return_maxima,return_minima `logical` for which classes of local extrema
 #'                                    to return
 #' @param return_endpoints Should the first and last values in `y`
 #'                         be included if they are in the returned 
-#'                         vector of extrema?
-#' @param subset A vector of logical values indicating which `x` and `y` values
+#'                         `vector` of extrema?
+#' @param subset A `vector` of `logical` values indicating which `x` and `y` values
 #'               should be included (`TRUE`) or excluded (`FALSE`).
 #'               
 #' If `return = "index"`, index will be for the whole 
-#'               vector and not the subset of the vector
-#' @param na.rm logical whether `NA`'s should be removed before analyzing
+#'               `vector` and not the subset of the `vector`
+#' @param na.rm `logical` whether `NA`'s should be removed before analyzing
 #' @param width_limit Deprecated, use `window_width` instead
 #' @param width_limit_n Deprecated, use `window_width_n` instead
 #' @param height_limit Deprecated, use `window_height` instead
@@ -3736,7 +3736,7 @@ doubling_time <- function(y, x_scale = 1) {
 #' first local extrema is returned.
 #' 
 #' @return 
-#'    `find_local_extrema` returns a vector corresponding to all the 
+#'    `find_local_extrema` returns a `vector` corresponding to all the 
 #'    found local extrema.
 #' 
 #'    `first_maxima` returns only the first maxima, so is a shortcut for 
@@ -3748,10 +3748,10 @@ doubling_time <- function(y, x_scale = 1) {
 #'    If `return = "index"`, the returned value(s) are the indices
 #'    corresponding to local extrema in the data
 #'           
-#'    If `return = "x"`, the returned value(s) are the x value(s) 
+#'    If `return = "x"`, the returned value(s) are the `x` value(s) 
 #'    corresponding to local extrema in the data
 #'          
-#'    If `return = "y"`, the returned value(s) are the y value(s)
+#'    If `return = "y"`, the returned value(s) are the `y` value(s)
 #'    corresponding to local extrema in the data
 #' 
 #' @name ExtremaFunctions
@@ -3936,15 +3936,15 @@ use find_local_extrema for more flexibility")
 }
 
 
-#' Find point(s) when a numeric vector crosses some threshold
+#' Find point(s) when a `numeric` `vector` crosses some threshold
 #' 
-#' These functions take a vector of `y` values and identify points where
-#' the `y` values cross some `threshold` y value.
+#' These functions take a `vector` of `y` values and identify points where
+#' the `y` values cross some `threshold` `y` value.
 #' 
-#' @param y Numeric vector of y values in which to identify threshold
+#' @param y `numeric` `vector` of `y` values in which to identify threshold
 #'          crossing event(s)
-#' @param x Optional numeric vector of corresponding x values
-#' @param threshold Threshold y value of interest
+#' @param x Optional `numeric` `vector` of corresponding `x` values
+#' @param threshold Threshold `y` value of interest
 #' @param return One of `c("index", "x")`, determining whether the function
 #'               will return the `index` or `x` value associated with the
 #'               threshold-crossing event.
@@ -3956,27 +3956,27 @@ use find_local_extrema for more flexibility")
 #'               points immediately before and after the threshold-crossing
 #'               to return the exact `x` value when the threshold crossing
 #'               occurred
-#' @param subset A vector of logical values indicating which `x` and `y` values
+#' @param subset A `vector` of `logical` values indicating which `x` and `y` values
 #'               should be included (`TRUE`) or excluded (`FALSE`).
 #'               
 #' If `return = "index"`, index will be for the whole 
-#'               vector and not the subset of the vector
-#' @param return_rising logical for whether crossing events where `y`
+#'               `vector` and not the subset of the `vector`
+#' @param return_rising `logical` for whether crossing events where `y`
 #'                      rises above `threshold` should be returned
-#' @param return_falling logical for whether crossing events where `y`
+#' @param return_falling `logical` for whether crossing events where `y`
 #'                      falls below `threshold` should be returned
-#' @param return_endpoints logical for whether startpoint should be returned
+#' @param return_endpoints `logical` for whether startpoint should be returned
 #'                      when the startpoint is above `threshold` and
 #'                      `return_rising = TRUE`, or when the startpoint is
 #'                      below `threshold` and `return_falling = TRUE`
-#' @param na.rm logical whether `NA`'s should be removed before analyzing.
+#' @param na.rm `logical` whether `NA`'s should be removed before analyzing.
 #'              If `return = 'index'`, indices will refer to the original
-#'              `y` vector *including* `NA` values
+#'              `y` `vector` *including* `NA` values
 #' @param ... (for `first_above` and `first_below`) other arguments 
 #'            to pass to `find_threshold_crosses`
 #'  
 #' @return 
-#'    `find_threshold_crosses` returns a vector corresponding to all the 
+#'    `find_threshold_crosses` returns a `vector` corresponding to all the 
 #'    threshold crossings.
 #' 
 #'    `first_above` returns only the first time the `y` values
@@ -3990,7 +3990,7 @@ use find_local_extrema for more flexibility")
 #'    If `return = "index"`, the returned value(s) are the indices
 #'    immediately following threshold crossing(s)
 #'           
-#'    If `return = "x"`, the returned value(s) are the x value(s) 
+#'    If `return = "x"`, the returned value(s) are the `x` value(s) 
 #'    corresponding to threshold crossing(s)
 #'    
 #'    If no threshold-crossings are detected that meet the criteria, will
@@ -4119,29 +4119,29 @@ please use find_threshold_crosses for more flexibility")
 
 #' Calculate area under the curve
 #' 
-#' This function takes a vector of `x` and `y` values
+#' This function takes a `vector` of `x` and `y` values
 #' and returns a scalar for the area under the curve, calculated using 
 #' the trapezoid rule
 #'  
-#' @param x Numeric vector of x values
-#' @param y Numeric vector of y values
-#' @param xlim Vector, of length 2, delimiting the x range over which the
+#' @param x `numeric` `vector` of `x` values
+#' @param y `numeric` `vector` of `y` values
+#' @param xlim `vector`, of length 2, delimiting the `x` range over which the
 #'             area under the curve should be calculated (where `NA` can be
 #'             provided for the area to be calculated from the start or to
 #'             the end of the data)
 #' @param blank Value to be subtracted from `y` values before calculating
 #'              area under the curve
-#' @param subset A vector of logical values indicating which `x` and `y` values
+#' @param subset A `vector` of `logical` values indicating which `x` and `y` values
 #'               should be included (`TRUE`) or excluded (`FALSE`).
-#' @param na.rm a logical indicating whether missing values should be removed
-#' @param neg.rm a logical indicating whether `y` values below zero should 
+#' @param na.rm a `logical` indicating whether missing values should be removed
+#' @param neg.rm a `logical` indicating whether `y` values below zero should 
 #'               be treated as zeros. If `FALSE`, area under the curve
 #'               for negative `y` values will be calculated normally,
 #'               effectively subtracting from the returned value.
-#' @param warn_xlim_out_of_range logical whether warning should be issued when 
-#'                             `xlim` is lower than the lowest x value or higher
-#'                             than the highest x value.
-#' @param warn_negative_y logical whether warning should be issued when 
+#' @param warn_xlim_out_of_range `logical` whether warning should be issued when 
+#'                             `xlim` is lower than the lowest `x` value or higher
+#'                             than the highest `x` value.
+#' @param warn_negative_y `logical` whether warning should be issued when 
 #'                        `neg.rm == FALSE` but some `y` values are below 0.
 #' 
 #' @return A scalar for the total area under the curve
@@ -4242,37 +4242,37 @@ auc <- function(x, y, xlim = NULL, blank = 0, subset = NULL,
 
 #' Calculate centroid
 #' 
-#' This function takes a vector of `x` and `y` values
-#' and returns the x and/or y position of the centroid of mass of the
+#' This function takes a `vector` of `x` and `y` values
+#' and returns the `x` and/or `y` position of the centroid of mass of the
 #' area under the curve
 #'  
-#' @param x Numeric vector of x values
-#' @param y Numeric vector of y values
+#' @param x `numeric` `vector` of `x` values
+#' @param y `numeric` `vector` of `y` values
 #' @param return One of `c("x", "y", "both")`, determining whether the function
-#'               will return the x value of the centroid, the y value
-#'               of the centroid, or a vector containing x then y
-#' @param xlim Vector, of length 2, delimiting the x range over which the
+#'               will return the `x` value of the centroid, the `y` value
+#'               of the centroid, or a `vector` containing `x` then `y`
+#' @param xlim `vector`, of length 2, delimiting the `x` range over which the
 #'             centroid should be calculated (where `NA` can be
 #'             provided for the area to be calculated from the start or to
 #'             the end of the data)
 #' @param blank Value to be subtracted from `y` values before calculating
 #'              the centroid
-#' @param subset A vector of logical values indicating which `x` and `y` values
+#' @param subset A `vector` of `logical` values indicating which `x` and `y` values
 #'               should be included (`TRUE`) or excluded (`FALSE`).
-#' @param na.rm a logical indicating whether missing values should be removed
-#' @param neg.rm a logical indicating whether `y` values below zero should 
+#' @param na.rm a `logical` indicating whether missing values should be removed
+#' @param neg.rm a `logical` indicating whether `y` values below zero should 
 #'               be treated as zeros. If `FALSE`, the centroid
 #'               for negative `y` values will be calculated normally,
-#'               effectively pulling the centroid towards the x axis.
-#' @param warn_xlim_out_of_range logical whether warning should be issued when 
-#'                             `xlim` is lower than the lowest x value or higher
-#'                             than the highest x value.
-#' @param warn_negative_y logical whether warning should be issued when 
+#'               effectively pulling the centroid towards the `x` axis.
+#' @param warn_xlim_out_of_range `logical` whether warning should be issued when 
+#'                             `xlim` is lower than the lowest `x` value or higher
+#'                             than the highest `x` value.
+#' @param warn_negative_y `logical` whether warning should be issued when 
 #'                        `neg.rm == FALSE` but some `y` values are below 0.
 #' @param ... Other arguments to pass to `centroid`
 #' 
-#' @return A scalar for the x value (if `return = 'x'`) or
-#'         y value (if `return = 'y'`) of the centroid of the data
+#' @return A scalar for the `x` value (if `return = 'x'`) or
+#'         `y` value (if `return = 'y'`) of the centroid of the data
 #'         
 #' @details
 #' This function uses [st_centroid][sf::st_centroid] to calculate the centroid of mass
@@ -4427,53 +4427,53 @@ centroid_both <- function(x, y, return = "both", ...) {
 #' 
 #' Lag time is calculated by projecting a tangent line at the point
 #' of maximum (per-capita) derivative backwards to find the time when it
-#' intersects with the minimum y-value
+#' intersects with the minimum `y`-value
 #' 
-#' @param x Vector of x values (typically time)
-#' @param y Vector of y values (typically density)
-#' @param deriv Vector of derivative values (typically per-capita derivative)
-#' @param blank   y-value associated with a "blank" where the density is 0.
+#' @param x `vector` of `x` values (typically time)
+#' @param y `vector` of `y` values (typically density)
+#' @param deriv `vector` of derivative values (typically per-capita derivative)
+#' @param blank   `y`-value associated with a "blank" where the density is 0.
 #'                Is required when `trans_y = TRUE`.
 #'                
-#' A vector of `blank` values may be specified only when all of 
+#' A `vector` of `blank` values may be specified only when all of 
 #'                `slope`, `x1`, `y1`, and `y0` are provided
-#'                as vectors
+#'                as `vector`s
 #' @param trans_y  One of `c("linear", "log")` specifying the
-#'                 transformation of y-values.
+#'                 transformation of `y`-values.
 #' 
 #' `'log'` is the default, producing calculations of
 #'                 lag time assuming a transition to exponential growth
 #'                 
 #' `'linear'` is available for alternate uses
-#' @param na.rm a logical indicating whether missing values or values that
+#' @param na.rm a `logical` indicating whether missing values or values that
 #'              become `NA` or infinite during log-transformation should 
 #'              be removed
 #' @param slope Slope to project from `x1`,`y1` to `y0` (typically per-capita growth
 #'              rate). If not provided, will be calculated as `max(deriv)`
-#' @param x1 x value (typically time) to project slope from. If not provided,
+#' @param x1 `x` value (typically time) to project slope from. If not provided,
 #'           will be calculated as `x[which.max(deriv)]`.
-#' @param y1 y value (typically density) to project slope from. If not provided,
+#' @param y1 `y` value (typically density) to project slope from. If not provided,
 #'           will be calculated as `y[which.max(deriv)]`.
-#' @param y0 y value (typically density) to find intersection of slope from
+#' @param y0 `y` value (typically density) to find intersection of slope from
 #'             `x1`, `y1` with. If not provided, will be calculated as `min(y)`
-#' @param warn_logtransform_warnings logical whether warning should be issued 
+#' @param warn_logtransform_warnings `logical` whether warning should be issued 
 #'                             when `log(y)` produced warnings.
-#' @param warn_logtransform_infinite logical whether warning should be issued 
+#' @param warn_logtransform_infinite `logical` whether warning should be issued 
 #'                             when `log(y)` produced infinite values that will
 #'                             be treated as `NA`.
-#' @param warn_min_y_mismatch logical whether warning should be issued when 
+#' @param warn_min_y_mismatch `logical` whether warning should be issued when 
 #'                            `min(y)` does not equal 
 #'                            `min(y[!is.na(x)])`.
-#' @param warn_multiple_maxderiv logical whether warning should be issued when 
+#' @param warn_multiple_maxderiv `logical` whether warning should be issued when 
 #'                             there are multiple points in `deriv` that
 #'                             are tied for the highest, and only the first
 #'                             will be used.
-#' @param warn_one_lag logical whether warning should be issued when 
+#' @param warn_one_lag `logical` whether warning should be issued when 
 #'                     some, but not all, inputs are vectorized, and
 #'                     only one lag time value will be returned.
-#' @param warn_no_lag logical whether warning should be issued when calculated
+#' @param warn_no_lag `logical` whether warning should be issued when calculated
 #'                    lag time is less than the minimum value of `x`.
-#' @param warn_blank_length logical whether warning should be issued when an
+#' @param warn_blank_length `logical` whether warning should be issued when an
 #'                          unexpected number of `blank` values was 
 #'                          provided and only the first will be used
 #'                            
@@ -4483,13 +4483,13 @@ centroid_both <- function(x, y, return = "both", ...) {
 #' 
 #' Advanced users may wish to use alternate values for the slope of the tangent
 #' line (`slope`), origination point of the tangent line (`x1`, 
-#' `y1`), or minimum y-value `y0`. If specified, these values will 
+#' `y1`), or minimum `y`-value `y0`. If specified, these values will 
 #' override the default calculations. If and only if all of `slope`, 
 #' `x1`, `y1`, and `y0` are provided, `lag_time` is 
-#' vectorized on their inputs and will return a vector of lag time values.
+#' vectorized on their inputs and will return a `vector` of lag time values.
 #'
-#' @return Typically a scalar of the lag time in units of x. See Details for
-#' cases when value will be a vector.
+#' @return Typically a scalar of the lag time in units of `x`. See Details for
+#' cases when value will be a `vector`.
 #'             
 #' @export
 lag_time <- function(x = NULL, y = NULL, deriv = NULL, blank = NULL, 
@@ -4619,21 +4619,21 @@ only using the first for normalizing 'y0'")
 
 # Legacy Code ----
 
-#' Find the first local maxima of a numeric vector
+#' Find the first local maxima of a `numeric` `vector`
 #' 
 #' This function has been deprecated in favor of the identical new 
 #' function [first_maxima]
 #' 
-#' This function takes a vector of `y` values and returns the index
+#' This function takes a `vector` of `y` values and returns the index
 #' (by default) of the first local maxima. It serves as a shortcut
 #' for `find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]`
 #' 
 #' @seealso [first_maxima]
 #' 
-#' @param y Numeric vector of y values in which to identify local extrema
-#' @param x Optional numeric vector of corresponding x values
+#' @param y `numeric` `vector` of `y` values in which to identify local extrema
+#' @param x Optional `numeric` `vector` of corresponding `x` values
 #' @param return One of `c("index", "x", "y")`, determining whether the function
-#'               will return the index, x value, or y value associated with the
+#'               will return the index, `x` value, or `y` value associated with the
 #'               first maxima in `y` values
 #' @param window_width Width of the window (in units of `x`) used to
 #'                   search for local extrema. A narrower width will be more
@@ -4664,13 +4664,13 @@ only using the first for normalizing 'y0'")
 #'                         be allowed to be returned?
 #' @param ... Other parameters to pass to [find_local_extrema]
 #' 
-#' @return If `return = "index"`, a vector of indices corresponding 
+#' @return If `return = "index"`, a `vector` of indices corresponding 
 #'           to local extrema in the data
 #'           
-#' If `return = "x"`, a vector of x values corresponding
+#' If `return = "x"`, a `vector` of `x` values corresponding
 #'           to local extrema in the data
 #'          
-#' If `return = "y"`, a vector of y values corresponding
+#' If `return = "y"`, a `vector` of `y` values corresponding
 #'           to local extrema in the data
 #' 
 #' @details 
@@ -4695,7 +4695,7 @@ first_peak <- function(y, x = NULL,
 }
 
 
-#' Make tidy design data.frames
+#' Make tidy design `data.frame`s
 #' 
 #' This is a function to easily input experimental design elements
 #' for later merging with read data
@@ -4722,7 +4722,7 @@ first_peak <- function(y, x = NULL,
 #' @param nrows,ncols Number of rows and columns in the plate data
 #' @param block_row_names,block_col_names Names of the rows, columns
 #'                                     of the plate blockmeasures data
-#' @param wellnames_sep A string used when concatenating rownames and column
+#' @param wellnames_sep A `string` used when concatenating rownames and column
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
 #'                          well names
@@ -4734,7 +4734,7 @@ first_peak <- function(y, x = NULL,
 #' @param pattern_split character to split pattern elements provided in
 #'                      `...` by
 #' @param lookup_tbl_start Value in the lookup table for the split pattern values
-#'                         that corresponds to the first value in the vector.
+#'                         that corresponds to the first value in the `vector`.
 #'                         
 #' Lookup table by default is 
 #'                         `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`. If,
@@ -4743,23 +4743,23 @@ first_peak <- function(y, x = NULL,
 #' @param colnames_first  In the wellnames created by [paste]-ing the
 #'                        rownames and column names, should the column names
 #'                        come first
-#' @param ... Each `...` argument must be a list with five elements:
+#' @param ... Each `...` argument must be a `list` with five elements:
 #' 
-#' 1. a vector of the values
+#' 1. a `vector` of the values
 #'              
-#' 2. a vector of the rows the pattern should be applied to
+#' 2. a `vector` of the rows the pattern should be applied to
 #'              
-#' 3. a vector of the columns the pattern should be applied to
+#' 3. a `vector` of the columns the pattern should be applied to
 #'              
-#' 4. a string of the pattern itself, where numbers refer to
-#'               the indices in the values vector
+#' 4. a `string` of the pattern itself, where numbers refer to
+#'               the indices in the values `vector`
 #'               
 #'    0's refer to `NA`
 #'               
 #'    This pattern will be split using `pattern_split`, which
 #'               defaults to every character
 #'               
-#' 5. a logical for whether this pattern should be filled byrow
+#' 5. a `logical` for whether this pattern should be filled byrow
 #'              
 #' @return a tidy-shaped `data.frame` containing all the design elements
 #' 
@@ -4889,18 +4889,18 @@ make_tidydesign <- function(nrows = NULL, ncols = NULL,
 #' This function allows users to convert designs created with tidydesign
 #'  into a block format for easy output to csv for inclusion in lab notebooks,
 #'  etc in a human-readable format
-#' @param tidydesign A tidydesign data.frame (e.g. as created by [make_tidydesign])
-#' @param collapse `NULL` or a string to use for concatenating design elements
+#' @param tidydesign A tidydesign `data.frame` (e.g. as created by [make_tidydesign])
+#' @param collapse `NULL` or a `string` to use for concatenating design elements
 #'                 together. If `NULL` each design column will be put into its
-#'                 own block. If a string, that string will be used to [paste]
+#'                 own block. If a `string`, that `string` will be used to [paste]
 #'                 together all design elements and all design elements will
 #'                 be returned in a single block
-#' @param wellnames_sep A string used when concatenating rownames and column
+#' @param wellnames_sep A `string` used when concatenating rownames and column
 #'                      names to create well names
 #' @param wellnames_colname Header for newly-created column containing the
 #'                          well names
-#' @return A list of blockdesign data.frames (if `collapse` is not
-#'         `NULL` the list is of length 1
+#' @return A `list` of blockdesign `data.frame`s (if `collapse` is not
+#'         `NULL` the `list` is of length 1
 #'
 #' @export
 block_tidydesign <- function(tidydesign, collapse = NULL,

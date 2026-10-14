@@ -126,7 +126,7 @@ But first, we need to familiarize ourselves with one more `dplyr` function:  `su
 
 # Another brief primer on dplyr: summarize
 
-Here we're going to focus on the `summarize` function from `dplyr`, which *must* be used with the `group_by` function we covered in our first primer: [A brief primer on dplyr](vignette("05_process")). `summarize` carries out user-specified calculations on *each* group in a grouped `data.frame` independently, producing a new `data.frame` where each group is now just a single row. 
+Here we're going to focus on the `summarize` function from `dplyr`, which *must* be used with the `group_by` function we covered in our first primer: [A brief primer on dplyr](gc05_process.html). `summarize` carries out user-specified calculations on *each* group in a grouped `data.frame` independently, producing a new `data.frame` where each group is now just a single row. 
 
 For growth curves, this means we will:
 

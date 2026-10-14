@@ -1,3 +1,7 @@
+# gcplyr 1.13.0.9000
+
+* Stuff here
+
 # gcplyr 1.13.0
 
 * Change to the default behavior of extr_val: the default setting is now na.rm = FALSE, to align its behavior with other gcplyr functions

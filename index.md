@@ -1,5 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!--
 You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
 &#10;You can also embed plots in R chunks. In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
@@ -9,34 +10,31 @@ You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-da
 
 <!-- badges: start -->
 
-[![packageversion](https://img.shields.io/badge/Github-1.12.0-blue.svg?style=flat&logo=github)](commits/master)
+[![packageversion](https://img.shields.io/badge/Github-1.13.0-blue.svg?style=flat&logo=github)](commits/master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/gcplyr)](https://CRAN.R-project.org/package=gcplyr)
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-red.svg)](https://cran.r-project.org/web/licenses/MIT)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/gcplyr?color=yellow)](https://cran.r-project.org/package=gcplyr)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/gcplyr?color=orange)](https://cran.r-project.org/package=gcplyr)
 <!-- badges: end -->
 
 ## What this package can do
 
-`gcplyr` was created to make it easier to import, wrangle, and do
-model-free analyses of microbial growth curve data, as commonly output
-by plate readers.
+`gcplyr` makes it easier to import, wrangle, and do model-free analyses
+of microbial growth curve data, as commonly output by plate readers.
 
 - `gcplyr` can flexibly import all the common data formats output by
   plate readers and reshape them into ‘tidy’ formats for analyses.
-- `gcplyr` can import experimental designs from files or directly in
-  `R`, then merge this design information with density data.
-- This merged tidy-shaped data is then easy to work with and plot using
-  functions from `gcplyr` and popular packages `dplyr` and `ggplot2`.
-- `gcplyr` can calculate plain and per-capita derivatives of density
-  data.
-- `gcplyr` has several methods to deal with noise in density or
-  derivatives data.
+- `gcplyr` can import experimental designs from files or generate them
+  in `R`, and can merge experimental design information with density
+  data from plate readers.
+- `gcplyr` makes it easy to analyze growth curve data with `tidyverse`
+  or `dplyr` functions, and to plot growth curve data with `ggplot2`.
 - `gcplyr` can extract parameters like growth rate/doubling time,
   maximum density (carrying capacity), lag time, area under the curve,
   diauxic shifts, extinction, and more without fitting an equation for
   growth to your data.
+- `gcplyr` has several methods to deal with noise in growth curve data.
 
 **Please send all questions, requests, comments, and bugs to
 mikeblazanin \[at\] gmail \[dot\] com**

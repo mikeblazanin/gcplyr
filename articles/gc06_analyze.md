@@ -1074,7 +1074,7 @@ head(ex_dat_mrg_sum)
 #> 2 Strain 1        Phage Added A7             8.75      -6.63e+ 0
 #> 3 Strain 10       No Phage    B4            23.8       NA       
 #> 4 Strain 10       Phage Added B10            8.5       -4.79e+ 0
-#> 5 Strain 11       No Phage    B5            19.5       -2.72e-18
+#> 5 Strain 11       No Phage    B5            19.5        4.97e-17
 #> 6 Strain 11       Phage Added B11           24         NA    
 ```
 

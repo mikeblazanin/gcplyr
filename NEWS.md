@@ -1,14 +1,14 @@
-# gcplyr 1.12.0.9000
-
-* Stuff here
+# gcplyr 1.13.0
 
 * Change to the default behavior of extr_val: the default setting is now na.rm = FALSE, to align its behavior with other gcplyr functions
 
-* Bug fix for extr_val where it had not been correctly retaining NA values when na.rm = FALSE
+* Bug fix for extr_val where it had not been correctly retaining NA values when na.rm = FALSE, leading to incorrect indices being returned
+
+* Improved documentation for when extr_val should and should not be used
 
 * New sections in analysis vignette on maximum death rate and total death
 
-* Improvements to the explanation of derivatives in vignettes
+* Improvements to the explanation of derivatives/growth rates in vignettes
 
 * Improvements to package description on CRAN and Github
 

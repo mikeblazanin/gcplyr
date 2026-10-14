@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{make_tidydesign}
 \alias{make_tidydesign}
-\title{Make tidy design \code{data.frame}s}
+\title{Make tidy design data.frame's}
 \usage{
 make_tidydesign(
   nrows = NULL,

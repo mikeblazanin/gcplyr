@@ -4,7 +4,7 @@
 \alias{WhichMinMaxGC}
 \alias{which_min_gc}
 \alias{which_max_gc}
-\title{Where is the Min() or Max() or first \code{TRUE} or \code{FALSE}?}
+\title{Where is the Min() or Max() or first TRUE or FALSE?}
 \usage{
 which_min_gc(x, empty_NA = TRUE)
 

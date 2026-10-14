@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{make_design}
 \alias{make_design}
-\title{Make design \code{data.frame}(s)}
+\title{Make design data.frame(s)}
 \usage{
 make_design(
   nrows = NULL,

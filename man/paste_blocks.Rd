@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{paste_blocks}
 \alias{paste_blocks}
-\title{Paste a \code{list} of blocks into a single block}
+\title{Paste a list of blocks into a single block}
 \usage{
 paste_blocks(blocks, sep = "_", nested_metadata = NULL)
 }

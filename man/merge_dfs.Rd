@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{merge_dfs}
 \alias{merge_dfs}
-\title{Collapse a \code{list} of \code{data.frame}s, or merge two \code{data.frame}s together}
+\title{Collapse a list of data.frame's, or merge two data.frame's together}
 \usage{
 merge_dfs(
   x,

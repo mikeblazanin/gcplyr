@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{uninterleave}
 \alias{uninterleave}
-\title{Uninterleave \code{list}}
+\title{Uninterleave list}
 \usage{
 uninterleave(interleaved_list, n)
 }

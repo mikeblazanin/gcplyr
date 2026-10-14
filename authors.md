@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/mikeblazanin/gcplyr/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/mikeblazanin/gcplyr/blob/v1.13.0/inst/CITATION)
 
 Blazanin, M. gcplyr: an R package for microbial growth curve data
 analysis. BMC Bioinformatics 25, 232 (2024).

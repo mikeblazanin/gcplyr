@@ -1,5 +1,5 @@
 ## Submission
-This is a resubmission, version 1.12.0.
+This is a resubmission, version 1.13.0.
 
 ## R CMD check results
 

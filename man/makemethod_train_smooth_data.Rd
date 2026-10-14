@@ -11,7 +11,7 @@ makemethod_train_smooth_data(sm_method, tuneGrid = NULL)
 be used. Options include "moving-average", "moving-median",
 "loess", "gam", and "smooth.spline".}
 
-\item{tuneGrid}{A data frame with possible tuning value. The columns should
+\item{tuneGrid}{A \code{data.frame} with possible tuning values. The columns should
 be named the same as the tuning parameters.
 
 Note that, when using \link[caret:train]{train}, the \code{tuneGrid}
@@ -19,7 +19,7 @@ must be passed both to this function as well as directly
 to \link[caret:train]{train}.}
 }
 \value{
-A list that can be used as the method argument to
+A \code{list} that can be used as the \code{method} argument to
 \link[caret:train]{train}. Contains elements:
 \code{library}, \code{type}, \code{prob}, \code{fit},
 \code{parameters}, \code{grid}, \code{fit}, and \code{predict}.
@@ -28,7 +28,7 @@ See documentation on using a custom model model in
 \link[caret:train]{train} for more details.
 }
 \description{
-This function generates a list which is compatible to be used as the
+This function generates a \code{list} which is compatible to be used as the
 \code{method} argument to \link[caret:train]{train}. This enables users to
 call \link[caret:train]{train} directly themselves with \link{smooth_data}
 smoothing functions.

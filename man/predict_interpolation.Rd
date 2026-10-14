@@ -13,11 +13,11 @@ predict_interpolation(
 )
 }
 \arguments{
-\item{x}{A vector of known predictor values.}
+\item{x}{A \code{vector} of known predictor values.}
 
-\item{y}{A vector of known response values.}
+\item{y}{A \code{vector} of known response values.}
 
-\item{newdata}{A vector of new predictor values for which the response
+\item{newdata}{A \code{vector} of new predictor values for which the response
 value will be predicted}
 
 \item{extrapolate_predictions}{Boolean indicating whether values of \code{newdata} that are
@@ -25,10 +25,10 @@ out of the domain of \code{x} should be predicted (by
 extrapolating the slope from the endpoints of \code{x}). If
 \code{FALSE}, such values will be returned as \code{NA}.}
 
-\item{na.rm}{logical whether \code{NA}'s should be removed before making predictions}
+\item{na.rm}{\code{logical} whether \code{NA}'s should be removed before making predictions}
 }
 \value{
-A vector of response values for each predictor value in
+A \code{vector} of response values for each predictor value in
 \code{newdata}
 }
 \description{

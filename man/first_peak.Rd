@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{first_peak}
 \alias{first_peak}
-\title{Find the first local maxima of a numeric vector}
+\title{Find the first local maxima of a \code{numeric} \code{vector}}
 \usage{
 first_peak(
   y,
@@ -16,9 +16,9 @@ first_peak(
 )
 }
 \arguments{
-\item{y}{Numeric vector of y values in which to identify local extrema}
+\item{y}{\code{numeric} \code{vector} of \code{y} values in which to identify local extrema}
 
-\item{x}{Optional numeric vector of corresponding x values}
+\item{x}{Optional \code{numeric} \code{vector} of corresponding \code{x} values}
 
 \item{window_width}{Width of the window (in units of \code{x}) used to
 search for local extrema. A narrower width will be more
@@ -49,7 +49,7 @@ to shallow local maxima/minima, while a larger
 shallow maxima/minima.}
 
 \item{return}{One of \code{c("index", "x", "y")}, determining whether the function
-will return the index, x value, or y value associated with the
+will return the index, \code{x} value, or \code{y} value associated with the
 first maxima in \code{y} values}
 
 \item{return_endpoints}{Should the first or last value in \code{y}
@@ -58,13 +58,13 @@ be allowed to be returned?}
 \item{...}{Other parameters to pass to \link{find_local_extrema}}
 }
 \value{
-If \code{return = "index"}, a vector of indices corresponding
+If \code{return = "index"}, a \code{vector} of indices corresponding
 to local extrema in the data
 
-If \code{return = "x"}, a vector of x values corresponding
+If \code{return = "x"}, a \code{vector} of \code{x} values corresponding
 to local extrema in the data
 
-If \code{return = "y"}, a vector of y values corresponding
+If \code{return = "y"}, a \code{vector} of \code{y} values corresponding
 to local extrema in the data
 }
 \description{
@@ -72,7 +72,7 @@ This function has been deprecated in favor of the identical new
 function \link{first_maxima}
 }
 \details{
-This function takes a vector of \code{y} values and returns the index
+This function takes a \code{vector} of \code{y} values and returns the index
 (by default) of the first local maxima. It serves as a shortcut
 for \code{find_local_extrema(return_maxima = TRUE, return_minima = FALSE)[1]}
 

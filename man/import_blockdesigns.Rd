@@ -19,11 +19,11 @@ import_blockdesigns(
 )
 }
 \arguments{
-\item{files}{A vector of filepaths relative to the current working directory
+\item{files}{A \code{vector} of filepaths relative to the current working directory
 where each filepath is a single plate read to be read by
 \link{read_blocks}.}
 
-\item{block_names}{Vector of names corresponding to each design element (each
+\item{block_names}{\code{vector} of names corresponding to each design element (each
 block). Inferred from filenames, if not specified.
 
 When \code{keep_blocknames = TRUE}, the output will have
@@ -37,13 +37,13 @@ design column.}
 \item{block_name_header}{When \code{keep_blocknames = TRUE}, the column name of the
 column containing the \code{block_names}.}
 
-\item{join_as_cols}{logical indicating whether blocks (if there are multiple)
+\item{join_as_cols}{\code{logical} indicating whether blocks (if there are multiple)
 should be joined as columns (i.e. describe the same plate) in
 the tidy output. If \code{FALSE}, blocks are joined as rows
 (i.e. describe different plates) in the tidy output.}
 
 \item{sep}{If designs have been pasted together, this specifies the
-string they should be split apart by via \link{separate_tidy}.}
+\code{string} they should be split apart by via \link{separate_tidy}.}
 
 \item{values_colname}{When \code{join_as_cols = FALSE} and \code{sep} is
 not specified, all the design values will be in a column
@@ -54,12 +54,12 @@ named by \code{values_colname}. For other cases, see the
 of the columns after splitting (see \strong{Value} section
 for behavior when \code{into} is not set).}
 
-\item{keep_blocknames}{logical indicating whether the column containing
+\item{keep_blocknames}{\code{logical} indicating whether the column containing
 \code{block_names} (or those inferred from file names) should
 be retained in the output. By default, blocknames are retained
 only if \code{join_as_cols = FALSE}.}
 
-\item{warn_joinrows_nointo}{logical indicating whether warning should
+\item{warn_joinrows_nointo}{\code{logical} indicating whether warning should
 be raised when multiple blocks are joined as rows
 (\code{join_as_cols = FALSE}) and \code{sep} is specified,
 but \code{into} is not specified.}
@@ -74,7 +74,7 @@ See Details for more information}
 }
 \value{
 A tidy-shaped \code{data.frame} containing the design information
-from \code{files}. This always includes a "Well" column.
+from \code{files}. This always includes a \code{Well} column.
 
 If \code{keep_blocknames = TRUE}, this includes a column with the
 column name specified by \code{block_name_header} and containing

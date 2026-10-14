@@ -5,7 +5,7 @@
 \alias{example_widedata_noiseless}
 \title{Example growth curve data in wide format}
 \format{
-A dataframe with 97 rows and 97 variables:
+A \code{data.frame} with 97 rows and 97 variables:
 \itemize{
 \item \code{time}: time, in seconds, since growth curve began
 \item \verb{A1, A2...H11, H12}: bacterial density in the given well
@@ -19,8 +19,8 @@ A dataset containing example growth of 96 wells of simulated bacteria
 or bacteria and phages
 }
 \details{
-Wells A1...A8 through F1...F8 contain 48 different
-simulated bacterial strains growing alone. Wells G1...G8 through L1...L8
+Wells \code{A1...A8} through \code{F1...F8} contain 48 different
+simulated bacterial strains growing alone. Wells \code{G1...G8} through \code{L1...L8}
 contain the same 48 bacterial strains in an identical layout, but this
 time growing in the presence of a phage
 

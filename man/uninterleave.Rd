@@ -2,24 +2,24 @@
 % Please edit documentation in R/utility_functions.R
 \name{uninterleave}
 \alias{uninterleave}
-\title{Uninterleave list}
+\title{Uninterleave \code{list}}
 \usage{
 uninterleave(interleaved_list, n)
 }
 \arguments{
-\item{interleaved_list}{A list of R objects}
+\item{interleaved_list}{A \code{list} of R objects}
 
-\item{n}{How many output sub lists there should be (i.e. how many groups
-the interleaved list should be divided into)}
+\item{n}{How many output sub \code{list}s there should be (i.e. how many groups
+the interleaved \code{list} should be divided into)}
 }
 \value{
-A list of lists of R objects
+A \code{list} of \code{list}s of R objects
 }
 \description{
-Takes a list that is actually interleaved elements from multiple sources
-and uninterleaves them into the separate sources. For instance, a list of
+Takes a \code{list} that is actually interleaved elements from multiple sources
+and uninterleaves them into the separate sources. For instance, a \code{list} of
 blockmeasures that actually corresponds to two different plates can be
-split into two lists, each of the blockmeasures corresponding to a single
+split into two \code{list}s, each of the blockmeasures corresponding to a single
 plate. \code{uninterleave} assumes that the desired sub-groups are perfectly
-interleaved in the input (e.g. items belong to sub-groups 1,2,3,1,2,3,...)
+interleaved in the input (e.g. items belong to sub-groups \verb{1,2,3,1,2,3,...})
 }

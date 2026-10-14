@@ -18,10 +18,10 @@ write_blocks(
 )
 }
 \arguments{
-\item{blocks}{list of block-shaped data to be written to file}
+\item{blocks}{\code{list} of block-shaped data to be written to file}
 
-\item{file}{\code{NULL}, a character string naming a file to write to, or a
-vector of character strings naming files to write to.
+\item{file}{\code{NULL}, a \code{character} \code{string} naming a file to write to, or a
+\code{vector} of \code{character} \code{string}s naming files to write to.
 
 A file name is required when \code{output_format = "single"}
 
@@ -75,7 +75,7 @@ will be used to paste together blocks.}
 \item{filename_sep}{What character will be used to paste together
 filenames when \code{block_name_location = 'filename'}.}
 
-\item{na}{The string to use for missing values in the data.}
+\item{na}{The \code{string} to use for missing values in the data.}
 
 \item{dir}{The directory that file(s) will be written into. When
 \code{dir = NULL}, writes to the current working directory.
@@ -87,7 +87,7 @@ filenames when \code{block_name_location = 'filename'}.}
 Nothing, but R objects are written to files
 }
 \description{
-This function writes block-shaped lists (as created by
+This function writes block-shaped \code{list}s (as created by
 \link{read_blocks} or \link{make_design}) to csv files, including
 both \code{data} and \code{metadata} in a variety of output formats
 }

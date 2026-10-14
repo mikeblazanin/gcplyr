@@ -28,15 +28,15 @@ centroid_y(x, y, return = "y", ...)
 centroid_both(x, y, return = "both", ...)
 }
 \arguments{
-\item{x}{Numeric vector of x values}
+\item{x}{\code{numeric} \code{vector} of \code{x} values}
 
-\item{y}{Numeric vector of y values}
+\item{y}{\code{numeric} \code{vector} of \code{y} values}
 
 \item{return}{One of \code{c("x", "y", "both")}, determining whether the function
-will return the x value of the centroid, the y value
-of the centroid, or a vector containing x then y}
+will return the \code{x} value of the centroid, the \code{y} value
+of the centroid, or a \code{vector} containing \code{x} then \code{y}}
 
-\item{xlim}{Vector, of length 2, delimiting the x range over which the
+\item{xlim}{\code{vector}, of length 2, delimiting the \code{x} range over which the
 centroid should be calculated (where \code{NA} can be
 provided for the area to be calculated from the start or to
 the end of the data)}
@@ -44,32 +44,32 @@ the end of the data)}
 \item{blank}{Value to be subtracted from \code{y} values before calculating
 the centroid}
 
-\item{subset}{A vector of logical values indicating which \code{x} and \code{y} values
+\item{subset}{A \code{vector} of \code{logical} values indicating which \code{x} and \code{y} values
 should be included (\code{TRUE}) or excluded (\code{FALSE}).}
 
-\item{na.rm}{a logical indicating whether missing values should be removed}
+\item{na.rm}{a \code{logical} indicating whether missing values should be removed}
 
-\item{neg.rm}{a logical indicating whether \code{y} values below zero should
+\item{neg.rm}{a \code{logical} indicating whether \code{y} values below zero should
 be treated as zeros. If \code{FALSE}, the centroid
 for negative \code{y} values will be calculated normally,
-effectively pulling the centroid towards the x axis.}
+effectively pulling the centroid towards the \code{x} axis.}
 
-\item{warn_xlim_out_of_range}{logical whether warning should be issued when
-\code{xlim} is lower than the lowest x value or higher
-than the highest x value.}
+\item{warn_xlim_out_of_range}{\code{logical} whether warning should be issued when
+\code{xlim} is lower than the lowest \code{x} value or higher
+than the highest \code{x} value.}
 
-\item{warn_negative_y}{logical whether warning should be issued when
+\item{warn_negative_y}{\code{logical} whether warning should be issued when
 \code{neg.rm == FALSE} but some \code{y} values are below 0.}
 
 \item{...}{Other arguments to pass to \code{centroid}}
 }
 \value{
-A scalar for the x value (if \code{return = 'x'}) or
-y value (if \code{return = 'y'}) of the centroid of the data
+A scalar for the \code{x} value (if \code{return = 'x'}) or
+\code{y} value (if \code{return = 'y'}) of the centroid of the data
 }
 \description{
-This function takes a vector of \code{x} and \code{y} values
-and returns the x and/or y position of the centroid of mass of the
+This function takes a \code{vector} of \code{x} and \code{y} values
+and returns the \code{x} and/or \code{y} position of the centroid of mass of the
 area under the curve
 }
 \details{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{print_df}
 \alias{print_df}
-\title{Nicely print the contents of a data.frame}
+\title{Nicely print the contents of a \code{data.frame}}
 \usage{
 print_df(x, col.names = FALSE, row.names = FALSE)
 }

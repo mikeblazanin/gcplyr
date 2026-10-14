@@ -24,12 +24,12 @@ solve_linear(
 
 \item{m}{The slope of the line}
 
-\item{named}{logical indicating whether the returned value(s)
+\item{named}{\code{logical} indicating whether the returned value(s)
 should be named according to what they are (\code{m}, \code{x2}, \code{y2},
 \code{x3}, or \code{y3})}
 }
 \value{
-A named vector with the missing information from the line:
+A named \code{vector} with the missing information from the line:
 
 If \code{m} and \code{x2} are provided, \code{y2} will be returned
 
@@ -44,17 +44,17 @@ returned
 }
 \description{
 Takes a set of inputs that is sufficient information to infer a line
-and then returns information not provided (either the slope, an x point
-on the line, or a y point on the line)
+and then returns information not provided (either the slope, an \code{x} point
+on the line, or a \code{y} point on the line)
 }
 \details{
 Note that there is no requirement that
 \code{x1} < \code{x2} < \code{x3}: the points can be in any order
 along the line.
 
-\code{solve_linear} works with vectors of all inputs to solve
+\code{solve_linear} works with \code{vector}s of all inputs to solve
 multiple lines at once, where the \code{i}th element of each
 argument corresponds to the \code{i}th output. Note that all
-lines must be missing the same information. Input vectors
+lines must be missing the same information. Input \code{vector}s
 will be recycled as necessary.
 }

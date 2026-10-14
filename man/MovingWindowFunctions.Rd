@@ -33,14 +33,14 @@ moving_median(
 )
 }
 \arguments{
-\item{formula}{Formula specifying the numeric response (density)
-and numeric predictor (time).}
+\item{formula}{Formula specifying the \code{numeric} response (density)
+and \code{numeric} predictor (time).}
 
-\item{data}{Dataframe containing variables in \code{formula}}
+\item{data}{\code{data.frame} containing variables in \code{formula}}
 
-\item{x}{A vector of predictor values to smooth along (e.g. time)}
+\item{x}{A \code{vector} of predictor values to smooth along (e.g. time)}
 
-\item{y}{A vector of response values to be smoothed (e.g. density).}
+\item{y}{A \code{vector} of response values to be smoothed (e.g. density).}
 
 \item{window_width_n}{Number of data points wide the moving window is
 (therefore, must be an odd number of points)}
@@ -53,14 +53,14 @@ number of data points).}
 \item{window_width_frac}{Width of the window (as a fraction of the range of
 \code{x})}
 
-\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
+\item{na.rm}{\code{logical} whether \code{NA}'s should be removed before analyzing}
 
-\item{warn_nonnumeric_sort}{logical whether warning should be issued when
+\item{warn_nonnumeric_sort}{\code{logical} whether warning should be issued when
 predictor variable that data is sorted by is
-non-numeric.}
+non-\code{numeric}.}
 }
 \value{
-Vector of smoothed data, with \code{NA}'s appended at both ends
+\code{vector} of smoothed data, with \code{NA}'s appended at both ends
 }
 \description{
 These functions use a moving window to smooth data

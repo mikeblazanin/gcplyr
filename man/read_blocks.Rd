@@ -28,7 +28,7 @@ read_blocks(
 )
 }
 \arguments{
-\item{files}{A vector of filepaths relative to the current working directory
+\item{files}{A \code{vector} of filepaths relative to the current working directory
 where each filepath is a single plate read}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
@@ -46,10 +46,10 @@ not "csv", "xls", or "xlsx", will use "table".}
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the measures data are located in \code{files}.
 
-Can be a vector or list the same length as \code{files}, or
+Can be a \code{vector} or \code{list} the same length as \code{files}, or
 a single value that applies to all \code{files}. Values
-can be numeric or a string that will be automatically
-converted to numeric by \link{from_excel}.
+can be \code{numeric} or a \code{string} that will be automatically
+converted to \code{numeric} by \link{from_excel}.
 
 If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
@@ -59,22 +59,22 @@ column of the file(s).}
 is located on. Defaults to the first sheet if not specified}
 
 \item{metadata}{(optional) non-density data that should be
-associated with each read blockmeasures. A named list where
-each item in the list is either: a vector of length 2, or
-a list containing two vectors.
+associated with each read blockmeasures. A named \code{list} where
+each item in the \code{list} is either: a \code{vector} of length 2, or
+a \code{list} containing two \code{vector}s.
 
-In the former case, each vector should provide the row and
+In the former case, each \code{vector} should provide the row and
 column where the metadata is located in all of the
 blockmeasures input files.
 
-In the latter case, the first vector should provide the rows
+In the latter case, the first \code{vector} should provide the rows
 where the metadata is located in each of the corresponding
-input files, and the second vector should provide the
+input files, and the second \code{vector} should provide the
 columns where the metadata is located in each of the
 corresponding input files. (This case is typically used
 when reading multiple blocks from a single file.)}
 
-\item{block_names}{(optional) vector of names corresponding to each plate
+\item{block_names}{(optional) \code{vector} of names corresponding to each plate
 in \code{files}. If not provided, \code{block_names} are inferred
 from the filenames}
 
@@ -90,7 +90,7 @@ the path (if any) be retained}
 \item{block_names_ext}{If \code{block_names} are inferred from filenames, should
 the file extension (if any) be retained}
 
-\item{header}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+\item{header}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a \code{vector} of
 such values, indicating whether the file(s) contains the
 column names as its first line. If \code{header = NA}
 will attempt to infer the presence of column names. If
@@ -98,7 +98,7 @@ will attempt to infer the presence of column names. If
 \code{header = NA}, column names will be generated
 automatically according to \code{wellnames_numeric}}
 
-\item{sider}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a vector of
+\item{sider}{\code{TRUE}, \code{FALSE}, or \code{NA}, or a \code{vector} of
 such values, indicating whether the file(s) contains the
 row names as its first column. If \code{sider = NA}
 will attempt to infer the presence of row names. If
@@ -107,7 +107,7 @@ will attempt to infer the presence of row names. If
 automatically according to \code{wellnames_numeric}}
 
 \item{wellnames_numeric}{If row names and column names are not provided in the
-input dataframe as specified by \code{header}
+input \code{data.frame} as specified by \code{header}
 and \code{sider}, then names will be generated
 automatically according to \code{wellnames_numeric}.
 
@@ -117,7 +117,7 @@ will be numbered with "R" and "C" prefixes, respectively.
 If \code{wellnames_numeric} is \code{FALSE}, rows will be
 lettered A through Z, while columns will be numbered}
 
-\item{na.strings}{A character vector of strings which are to be interpreted
+\item{na.strings}{A \code{character} \code{vector} of \code{string}s which are to be interpreted
 as \code{NA} values by \link{read.csv},
 \link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx},
 or \link{read.table}}
@@ -131,7 +131,7 @@ or \link{read.table}}
 or \link{read.table}}
 }
 \value{
-A list where each entry is a list containing the block data frame
+A \code{list} where each entry is a \code{list} containing the block \code{data.frame}
 followed by the \code{block_names} (or filenames, if \code{block_names} is not
 provided) and any specified metadata.
 }
@@ -141,44 +141,44 @@ A function that reads blocks into the R environment
 \details{
 For \code{metadata}, \code{read_blocks} can handle an arbitrary number of additional
 pieces of information to extract from each blockcurve file as metadata.
-These pieces of information are specified as a named list of vectors
-where each vector is the \code{c(row, column)} where the information is to be
+These pieces of information are specified as a named \code{list} of \code{vector}s
+where each \code{vector} is the \code{c(row, column)} where the information is to be
 pulled from in the input files.
 
-This metadata is returned as the second list element of each
+This metadata is returned as the second \code{list} element of each
 blockcurve, e.g.:
 
 \verb{[[1]]}
 
-\verb{[1]} "data" #1
+\verb{[1]} \code{data} #1
 
-\verb{[2]} "metadata"
+\verb{[2]} \code{metadata}
 
-\verb{[2][1]} name #1
+\verb{[2][1]} \code{name} #1
 
-\verb{[2][2]} date-time #1
+\verb{[2][2]} \code{date-time} #1
 
-\verb{[2][3]} temp #1
+\verb{[2][3]} \code{temp} #1
 
 \verb{[[2]]}
 
-\verb{[1]} "data" #2
+\verb{[1]} \code{data} #2
 
-\verb{[2]} "metadata"
+\verb{[2]} \code{metadata}
 
-\verb{[2][1]} name #2
+\verb{[2][1]} \code{name} #2
 
-\verb{[2][2]} date-time #2
+\verb{[2][2]} \code{date-time} #2
 
-\verb{[2][3]} temp #2
+\verb{[2][3]} \code{temp} #2
 
 \code{...}
 
 Calling \link{uninterleave} on the output of \code{read_blocks} works on block data
 and the associated metadata because \link{uninterleave} operates on the highest
-level entries of the list (the \verb{[[1]]} \verb{[[2]]} level items),
+level entries of the \code{list} (the \verb{[[1]]} \verb{[[2]]} level items),
 leaving the meta-data associated with the block data
 
 \link{trans_block_to_wide} integrates this metadata into the
-wide-shaped dataframe it produces
+wide-shaped \code{data.frame} it produces
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{make_design}
 \alias{make_design}
-\title{Make design data.frame(s)}
+\title{Make design \code{data.frame}(s)}
 \usage{
 make_design(
   nrows = NULL,
@@ -30,7 +30,7 @@ of the plate blockmeasures data}
 \code{block_names}}
 
 \item{output_format}{One of \code{c("blocks", "blocks_pasted", "wide", "tidy")}
-denoting the format of the resulting data.frame
+denoting the format of the resulting \code{data.frame}
 
 For easy merging with tidymeasures, leave as default
 of 'tidy'.
@@ -51,7 +51,7 @@ will be numbered with "R" and "C" prefixes, respectively.
 If \code{wellnames_numeric} is \code{FALSE}, rows will be
 lettered A through Z, while columns will be numbered}
 
-\item{wellnames_sep}{A string used when concatenating rownames and column
+\item{wellnames_sep}{A \code{string} used when concatenating rownames and column
 names to create well names, when
 \code{output_format = "wide"} or
 \code{output_format = "tidy"}}
@@ -66,7 +66,7 @@ rownames and column names, should the column names
 come first.}
 
 \item{lookup_tbl_start}{Value in the lookup table for the split pattern values
-that corresponds to the first value in the vector.
+that corresponds to the first value in the \code{vector}.
 
 Lookup table by default is
 \code{c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)}. If,
@@ -74,29 +74,29 @@ for example, \code{lookup_tbl_start = "A"}, then the lookup
 table will now be \code{c(A,B,...Y,Z,a,b,...,y,z)}}
 
 \item{pattern_split}{character to split pattern elements provided in
-\code{...} by, if they're not already a vector}
+\code{...} by, if they're not already a \code{vector}}
 
-\item{...}{Each \code{...} argument must be named, and must be a list with
+\item{...}{Each \code{...} argument must be named, and must be a \code{list} with
 five elements:
 \enumerate{
-\item a vector of the values
-\item a vector of the rows the pattern should be applied to
-\item a vector of the columns the pattern should be applied to
-\item a string or vector denoting the pattern in which the
+\item a \code{vector} of the values
+\item a \code{vector} of the rows the pattern should be applied to
+\item a \code{vector} of the columns the pattern should be applied to
+\item a \code{string} or \code{vector} denoting the pattern in which the
 values should be filled into the rows and columns specified.
 
-If it's a string, will be split by \code{pattern_split}.
-Pattern will be used as the indices of the values vector.
+If it's a \code{string}, will be split by \code{pattern_split}.
+Pattern will be used as the indices of the values \code{vector}.
 
 0's refer to \code{NA}. The pattern will be recycled as necessary
 to fill all the wells of the rows and columns specified.
-\item a logical for whether this pattern should be filled byrow
+\item a \code{logical} for whether this pattern should be filled byrow
 }}
 }
 \value{
 Depends on \code{output_format}:
 
-If \code{output_format = "blocks"}, a list of \code{data.frame}'s
+If \code{output_format = "blocks"}, a \code{list} of \code{data.frame}'s
 where each \code{data.frame} is block-shaped containing the
 information for a single design element
 

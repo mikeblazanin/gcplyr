@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{merge_dfs}
 \alias{merge_dfs}
-\title{Collapse a list of dataframes, or merge two dataframes together}
+\title{Collapse a \code{list} of \code{data.frame}s, or merge two \code{data.frame}s together}
 \usage{
 merge_dfs(
   x,
@@ -17,18 +17,18 @@ merge_dfs(
 )
 }
 \arguments{
-\item{x}{First data.frame, or list of data frames, to be joined}
+\item{x}{First \code{data.frame}, or \code{list} of \code{data.frame}s, to be joined}
 
-\item{y}{Second data.frame, or list of data frames, to be joined}
+\item{y}{Second \code{data.frame}, or \code{list} of \code{data.frame}s, to be joined}
 
-\item{by}{A character vector of variables to join by, passed directly
+\item{by}{A \code{character} \code{vector} of variables to join by, passed directly
 to the join function}
 
 \item{drop}{Should only \code{complete_cases} of the resulting
-data.frame be returned?}
+\code{data.frame} be returned?}
 
-\item{collapse}{A logical indicating whether \code{x} or \code{y} is a list containing
-data frames that should be merged together before
+\item{collapse}{A \code{logical} indicating whether \code{x} or \code{y} is a \code{list} containing
+\code{data.frame}s that should be merged together before
 being merged with the other}
 
 \item{names_to}{Column name for where \code{names(x)} or \code{names(y)}
@@ -36,7 +36,7 @@ will be entered in if \code{collapse = TRUE}.
 
 If a value of \code{NA} then \code{names(x)} or
 \code{names(y)} will not be put into a column in the
-returned data.frame}
+returned \code{data.frame}}
 
 \item{join}{Type of join used to merge \code{x} and \code{y}. Options
 are 'full' (default), 'inner', 'left', and 'right'.
@@ -54,7 +54,7 @@ See \link[dplyr:full_join]{full_join}, \link[dplyr:left_join]{left_join},
 \link[dplyr:right_join]{right_join}, or \link[dplyr:inner_join]{inner_join} for
 more details}
 
-\item{warn_morerows}{logical, should a warning be passed when the output
+\item{warn_morerows}{\code{logical}, should a warning be passed when the output
 has more rows than \code{x} and more rows than \code{y}?}
 
 \item{...}{Other arguments to pass to the underlying join function. See
@@ -62,14 +62,14 @@ has more rows than \code{x} and more rows than \code{y}?}
 \link[dplyr:right_join]{right_join}, or \link[dplyr:inner_join]{inner_join} for options.}
 }
 \value{
-Data.frame containing merged output of \code{x} and
+\code{data.frame} containing merged output of \code{x} and
 \code{y}
 }
 \description{
 This function is essentially a wrapper for any of \code{dplyr}'s
 \link[dplyr:mutate-joins]{mutate-joins} (by default, a \link[dplyr:full_join]{full_join}).
 The most typical use of this function is to merge designs with measures
-data, or to use the \code{collapse} functionality to merge a list of data.frames
-into a single data.frame. Merging is done by column names that match
+data, or to use the \code{collapse} functionality to merge a \code{list} of \code{data.frame}s
+into a single \code{data.frame}. Merging is done by column names that match
 between \code{x} and \code{y}.
 }

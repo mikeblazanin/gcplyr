@@ -26,7 +26,7 @@ read_wides(
 )
 }
 \arguments{
-\item{files}{A vector of filepaths (relative to current working directory)
+\item{files}{A \code{vector} of filepaths (relative to current working directory)
 where each one is a widemeasures set of data}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
@@ -44,16 +44,16 @@ not "csv", "xls", or "xlsx", will use "table".}
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data are located in \code{files}.
 
-Can be a vector or list the same length as \code{files}, or
+Can be a \code{vector} or \code{list} the same length as \code{files}, or
 a single value that applies to all \code{files}. Values
-can be numeric or a string that will be automatically
-converted to numeric by \link{from_excel}.
+can be \code{numeric} or a \code{string} that will be automatically
+converted to \code{numeric} by \link{from_excel}.
 
 If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
 column of the file(s).}
 
-\item{header}{logical for whether there is a header in the data. If \code{FALSE}
+\item{header}{\code{logical} for whether there is a header in the data. If \code{FALSE}
 columns are simply numbered. If \code{TRUE}, the first row of the
 data (\code{startrow} if specified) is used
 as the column names}
@@ -68,8 +68,8 @@ file names if not specified}
 \item{run_names_header}{Should the run names (provided in \code{run_names}
 or inferred from \code{files}) be added as a column to
 the widemeasures? If \code{run_names_header} is \code{NULL},
-they will not be. If \code{run_names_header} is a string,
-that string will be the column header for the column
+they will not be. If \code{run_names_header} is a \code{string},
+that \code{string} will be the column header for the column
 where the names will be stored}
 
 \item{run_names_dot}{If \code{run_names} are inferred from filenames, should
@@ -82,22 +82,22 @@ the path (if any) be retained}
 the file extension (if any) be retained}
 
 \item{metadata}{(optional) non-spectrophotometric data that should be
-associated with each read widemeasures. A named list where
-each item in the list is either: a vector of length 2, or
-a list containing two vectors.
+associated with each read widemeasures. A named \code{list} where
+each item in the \code{list} is either: a \code{vector} of length 2, or
+a \code{list} containing two \code{vector}s.
 
-In the former case, each vector should provide the row and
+In the former case, each \code{vector} should provide the row and
 column where the metadata is located in all of the
 blockmeasures input files.
 
-In the latter case, the first vector should provide the rows
+In the latter case, the first \code{vector} should provide the rows
 where the metadata is located in each of the corresponding
-input files, and the second vector should provide the
+input files, and the second \code{vector} should provide the
 columns where the metadata is located in each of the
 corresponding input files. (This case is typically used
 when reading multiple blocks from a single file.)}
 
-\item{na.strings}{A character vector of strings which are to be interpreted
+\item{na.strings}{A \code{character} \code{vector} of \code{string}s which are to be interpreted
 as \code{NA} values by \link{read.csv},
 \link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx},
 or \link{read.table}}
@@ -111,8 +111,8 @@ or \link{read.table}}
 \link{read.table}}
 }
 \value{
-A dataframe containing a single widemeasures, or
-A list of widemeasures named by filename
+A \code{data.frame} containing a single widemeasures, or
+A \code{list} of widemeasures named by filename
 }
 \description{
 A function that imports widemeasures in files into the R environment
@@ -120,5 +120,5 @@ A function that imports widemeasures in files into the R environment
 \details{
 \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol}, \code{sheet} and \code{filetype}
 can either be a single value that applies for all files or
-vectors or lists the same length as \code{files},
+\code{vector}s or \code{list}s the same length as \code{files},
 }

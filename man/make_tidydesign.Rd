@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{make_tidydesign}
 \alias{make_tidydesign}
-\title{Make tidy design data.frames}
+\title{Make tidy design \code{data.frame}s}
 \usage{
 make_tidydesign(
   nrows = NULL,
@@ -24,7 +24,7 @@ make_tidydesign(
 \item{block_row_names, block_col_names}{Names of the rows, columns
 of the plate blockmeasures data}
 
-\item{wellnames_sep}{A string used when concatenating rownames and column
+\item{wellnames_sep}{A \code{string} used when concatenating rownames and column
 names to create well names}
 
 \item{wellnames_colname}{Header for newly-created column containing the
@@ -37,7 +37,7 @@ and numbering for columns? If \code{FALSE}, rows and columns
 will be numbered with "R" and "C" prefix.}
 
 \item{lookup_tbl_start}{Value in the lookup table for the split pattern values
-that corresponds to the first value in the vector.
+that corresponds to the first value in the \code{vector}.
 
 Lookup table by default is
 \code{c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)}. If,
@@ -51,19 +51,19 @@ table will now be \code{c(A,B,...Y,Z,a,b,...,y,z)}}
 rownames and column names, should the column names
 come first}
 
-\item{...}{Each \code{...} argument must be a list with five elements:
+\item{...}{Each \code{...} argument must be a \code{list} with five elements:
 \enumerate{
-\item a vector of the values
-\item a vector of the rows the pattern should be applied to
-\item a vector of the columns the pattern should be applied to
-\item a string of the pattern itself, where numbers refer to
-the indices in the values vector
+\item a \code{vector} of the values
+\item a \code{vector} of the rows the pattern should be applied to
+\item a \code{vector} of the columns the pattern should be applied to
+\item a \code{string} of the pattern itself, where numbers refer to
+the indices in the values \code{vector}
 
 0's refer to \code{NA}
 
 This pattern will be split using \code{pattern_split}, which
 defaults to every character
-\item a logical for whether this pattern should be filled byrow
+\item a \code{logical} for whether this pattern should be filled byrow
 }}
 }
 \value{

@@ -16,16 +16,16 @@ make_designpattern(
 mdp(values, rows, cols, pattern = 1:length(values), byrow = TRUE)
 }
 \arguments{
-\item{values}{Vector of values to use}
+\item{values}{\code{vector} of values to use}
 
-\item{rows}{Vector of rows where pattern applies}
+\item{rows}{\code{vector} of rows where pattern applies}
 
-\item{cols}{Vector of cols where pattern applies}
+\item{cols}{\code{vector} of cols where pattern applies}
 
-\item{pattern}{Numeric pattern itself, where numbers refer to entries
+\item{pattern}{\code{numeric} pattern itself, where numbers refer to entries
 in \code{values}}
 
-\item{byrow}{logical for whether pattern should be created by row}
+\item{byrow}{\code{logical} for whether pattern should be created by row}
 }
 \value{
 \code{list(values, rows, cols, pattern, byrow)}

@@ -24,7 +24,7 @@ read_tidys(
 )
 }
 \arguments{
-\item{files}{A vector of filepaths (relative to current working directory)
+\item{files}{A \code{vector} of filepaths (relative to current working directory)
 where each one is a tidy-shaped data file}
 
 \item{filetype}{(optional) the type(s) of the files. Options include:
@@ -42,10 +42,10 @@ not "csv", "xls", or "xlsx", will use "table".}
 \item{startrow, endrow, startcol, endcol}{(optional) the rows and columns where
 the data are located in \code{files}.
 
-Can be a vector or list the same length as \code{files}, or
+Can be a \code{vector} or \code{list} the same length as \code{files}, or
 a single value that applies to all \code{files}. Values
-can be numeric or a string that will be automatically
-converted to numeric by \link{from_excel}.
+can be \code{numeric} or a \code{string} that will be automatically
+converted to \code{numeric} by \link{from_excel}.
 
 If not provided, data is presumed to begin on the first
 row and column of the file(s) and end on the last row and
@@ -56,7 +56,7 @@ files are .xls or .xlsx). If not specified defaults to the first}
 
 \item{run_names}{Names to give the tidy files read in. By default uses the
 file names if not specified. These names may be added
-to the resulting data frame depending on the value of
+to the resulting \code{data.frame} depending on the value of
 the \code{names_to_col} argument}
 
 \item{run_names_header}{Should the run names (provided in \code{run_names}
@@ -64,17 +64,17 @@ or inferred from \code{files}) be added as a column to the
 output?
 
 If \code{run_names_header} is \code{TRUE}, they will be added with
-the column name "run_name"
+the column name \code{run_name}
 
 If \code{run_names_header} is \code{FALSE}, they will not be added.
 
-If \code{run_names_header} is a string, they will be added
-and the column name will be the string specified
+If \code{run_names_header} is a \code{string}, they will be added
+and the column name will be the \code{string} specified
 for \code{run_names_header}.
 
 If \code{run_names_header} is \code{NULL}, they only will be
-added if there are multiple tidy data.frames being read.
-In which case, the column name will be "run_name"}
+added if there are multiple tidy \code{data.frame}s being read.
+In which case, the column name will be \code{run_name}}
 
 \item{run_names_dot}{If \code{run_names} are inferred from filenames, should
 the leading './' (if any) be retained}
@@ -85,7 +85,7 @@ the path (if any) be retained}
 \item{run_names_ext}{If \code{run_names} are inferred from filenames, should
 the file extension (if any) be retained}
 
-\item{na.strings}{A character vector of strings which are to be interpreted
+\item{na.strings}{A \code{character} \code{vector} of \code{string}s which are to be interpreted
 as \code{NA} values by \link{read.csv},
 \link[readxl:read_xls]{read_xls}, \link[readxl:read_xlsx]{read_xlsx},
 or \link{read.table}}
@@ -100,8 +100,8 @@ or \link{read.table}}
 sheet}
 }
 \value{
-A dataframe containing a single tidy data.frame, or
-A list of tidy-shaped data.frames named by filename
+A \code{data.frame} containing a single tidy \code{data.frame}, or
+A \code{list} of tidy-shaped \code{data.frame}s named by filename
 }
 \description{
 A function that imports tidy-shaped files into R. Largely acts as a
@@ -114,7 +114,7 @@ or run names as an added column in the output.
 \details{
 \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol},
 \code{sheet} and \code{filetype} can either be a single value that
-applies for all files or vectors or lists the same length as \code{files}
+applies for all files or \code{vector}s or \code{list}s the same length as \code{files}
 
 Note that the \code{startrow} is always assumed to be a header
 }

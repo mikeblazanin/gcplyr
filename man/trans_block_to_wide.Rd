@@ -12,15 +12,15 @@ trans_block_to_wide(
 )
 }
 \arguments{
-\item{blocks}{Blocks, either a single dataframe or a list of
-dataframes}
+\item{blocks}{Blocks, either a single \code{data.frame} or a \code{list} of
+\code{data.frame}s}
 
-\item{wellnames_sep}{String to use as separator for well names between
+\item{wellnames_sep}{\code{string} to use as separator for well names between
 row name and column name (ordered according to
 \code{colnames_first}}
 
-\item{nested_metadata}{A logical indicating the existence of nested metadata
-in the \code{blockmeasures} list, e.g. as is typically
+\item{nested_metadata}{A \code{logical} indicating the existence of nested metadata
+in the blockmeasures \code{list}, e.g. as is typically
 output by \link{read_blocks}. If \code{NULL}, will
 attempt to infer existence of nested metadata}
 
@@ -29,7 +29,7 @@ rownames and column names, should the column names
 come first?}
 }
 \value{
-A single wide-shaped dataframe
+A single wide-shaped \code{data.frame}
 }
 \description{
 Takes blocks and returns them in a wide format

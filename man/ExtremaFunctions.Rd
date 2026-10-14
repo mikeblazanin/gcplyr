@@ -5,7 +5,7 @@
 \alias{find_local_extrema}
 \alias{first_maxima}
 \alias{first_minima}
-\title{Find local extrema of a numeric vector}
+\title{Find local extrema of a \code{numeric} \code{vector}}
 \usage{
 find_local_extrema(
   y,
@@ -53,9 +53,9 @@ first_minima(
 )
 }
 \arguments{
-\item{y}{Numeric vector of y values in which to identify local extrema}
+\item{y}{\code{numeric} \code{vector} of \code{y} values in which to identify local extrema}
 
-\item{x}{Optional numeric vector of corresponding x values}
+\item{x}{Optional \code{numeric} \code{vector} of corresponding \code{x} values}
 
 \item{window_width, window_width_n, window_height, window_width_frac, window_width_n_frac}{Arguments that set the width/height of the window used to
 search for local extrema.
@@ -81,23 +81,23 @@ sensitive to shallow local maxima/minima, while a larger
 height will be less sensitive to shallow maxima/minima.}
 
 \item{return}{One of \code{c("index", "x", "y")}, determining whether the function
-will return the index, x value, or y value associated with the
+will return the index, \code{x} value, or \code{y} value associated with the
 identified extremas}
 
-\item{return_maxima, return_minima}{logical for which classes of local extrema
+\item{return_maxima, return_minima}{\code{logical} for which classes of local extrema
 to return}
 
 \item{return_endpoints}{Should the first and last values in \code{y}
 be included if they are in the returned
-vector of extrema?}
+\code{vector} of extrema?}
 
-\item{subset}{A vector of logical values indicating which \code{x} and \code{y} values
+\item{subset}{A \code{vector} of \code{logical} values indicating which \code{x} and \code{y} values
 should be included (\code{TRUE}) or excluded (\code{FALSE}).
 
 If \code{return = "index"}, index will be for the whole
-vector and not the subset of the vector}
+\code{vector} and not the subset of the \code{vector}}
 
-\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
+\item{na.rm}{\code{logical} whether \code{NA}'s should be removed before analyzing}
 
 \item{width_limit}{Deprecated, use \code{window_width} instead}
 
@@ -109,7 +109,7 @@ vector and not the subset of the vector}
 parameters to pass to \code{find_local_extrema}}
 }
 \value{
-\code{find_local_extrema} returns a vector corresponding to all the
+\code{find_local_extrema} returns a \code{vector} corresponding to all the
 found local extrema.
 
 \code{first_maxima} returns only the first maxima, so is a shortcut for
@@ -121,14 +121,14 @@ found local extrema.
 If \code{return = "index"}, the returned value(s) are the indices
 corresponding to local extrema in the data
 
-If \code{return = "x"}, the returned value(s) are the x value(s)
+If \code{return = "x"}, the returned value(s) are the \code{x} value(s)
 corresponding to local extrema in the data
 
-If \code{return = "y"}, the returned value(s) are the y value(s)
+If \code{return = "y"}, the returned value(s) are the \code{y} value(s)
 corresponding to local extrema in the data
 }
 \description{
-These functions take a vector of \code{y} values and identify local extrema.
+These functions take a \code{vector} of \code{y} values and identify local extrema.
 }
 \details{
 For \code{find_local_extrema}, one of \code{window_width},

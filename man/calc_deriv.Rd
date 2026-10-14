@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{calc_deriv}
 \alias{calc_deriv}
-\title{Calculate derivatives of vector of data}
+\title{Calculate derivatives of \code{vector} of data}
 \usage{
 calc_deriv(
   y,
@@ -27,7 +27,7 @@ calc_deriv(
 \arguments{
 \item{y}{Data to calculate difference or derivative of}
 
-\item{x}{Vector of x values provided as a simple numeric.}
+\item{x}{\code{vector} of \code{x} values provided as a simple \code{numeric}.}
 
 \item{return}{One of \code{c("difference", "derivative")} for whether the
 differences in \code{y} should be returned, or the
@@ -36,21 +36,21 @@ derivative of \code{y} with respect to \code{x}}
 \item{percapita}{When \code{percapita = TRUE}, the per-capita difference or
 derivative is returned}
 
-\item{x_scale}{Numeric to scale \code{x} by in derivative calculation
+\item{x_scale}{\code{numeric} to scale \code{x} by in derivative calculation
 
 Set \code{x_scale} to the ratio of the units of
 \code{x} to the desired units. E.g. if \code{x} is in seconds, but the
 desired derivative is in units of /minute, set
 \code{x_scale = 60} (since there are 60 seconds in 1 minute).}
 
-\item{blank}{y-value associated with a "blank" where the density is 0.
+\item{blank}{\code{y}-value associated with a "blank" where the density is 0.
 Is required when \code{percapita = TRUE}.
 
-If a vector of \code{blank} values is specified, \code{blank} values are
+If a \code{vector} of \code{blank} values is specified, \code{blank} values are
 assumed to be in the same order as \code{unique(subset_by)}}
 
-\item{subset_by}{An optional vector as long as \code{y}.
-\code{y} will be split by the unique values of this vector
+\item{subset_by}{An optional \code{vector} as long as \code{y}.
+\code{y} will be split by the unique values of this \code{vector}
 and the derivative for each group will be calculated
 independently of the others.
 
@@ -85,7 +85,7 @@ A value of \code{window_width_n = 3} or
 \code{window_width_n = 5} is often a good default.}
 
 \item{trans_y}{One of \code{c("linear", "log")} specifying the
-transformation of y-values.
+transformation of \code{y}-values.
 
 \code{'log'} is only available when calculating per-capita
 derivatives using a fitting approach (when non-default
@@ -95,39 +95,39 @@ values are specified for \code{window_width} or
 For per-capita growth expected to be exponential or
 nearly-exponential, \code{"log"} is recommended, since
 exponential growth is linear when log-transformed. However,
-log-transformations must be used with care, since y-values
+log-transformations must be used with care, since \code{y}-values
 at or below 0 will become undefined and results will be
 more sensitive to incorrect values of \code{blank}.}
 
-\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing}
+\item{na.rm}{\code{logical} whether \code{NA}'s should be removed before analyzing}
 
-\item{warn_ungrouped}{logical whether warning should be issued when
+\item{warn_ungrouped}{\code{logical} whether warning should be issued when
 \code{calc_deriv} is being called on ungrouped data
 and \code{subset_by = NULL}.}
 
-\item{warn_logtransform_warnings}{logical whether warning should be issued
+\item{warn_logtransform_warnings}{\code{logical} whether warning should be issued
 when \code{log(y)} produced warnings.}
 
-\item{warn_logtransform_infinite}{logical whether warning should be issued
+\item{warn_logtransform_infinite}{\code{logical} whether warning should be issued
 when \code{log(y)} produced infinite values that will
 be treated as \code{NA}.}
 
-\item{warn_window_toosmall}{logical whether warning should be issued
+\item{warn_window_toosmall}{\code{logical} whether warning should be issued
 when only one data point is in the window
 set by \code{window_width_n},
 \code{window_width}, or \code{window_width_n_frac},
 and so \code{NA} will be returned.}
 }
 \value{
-A vector of values for the plain (if \code{percapita = FALSE})
+A \code{vector} of values for the plain (if \code{percapita = FALSE})
 or per-capita (if \code{percapita = TRUE}) difference
 (if \code{return = "difference"}) or derivative
-(if \code{return = "derivative"}) between \code{y} values. Vector
+(if \code{return = "derivative"}) between \code{y} values. \code{vector}
 will be the same length as \code{y},  with \code{NA} values
 at the ends
 }
 \description{
-Provided a vector of \code{y} values, this function returns either the plain
+Provided a \code{vector} of \code{y} values, this function returns either the plain
 or per-capita difference or derivative between sequential values
 }
 \details{

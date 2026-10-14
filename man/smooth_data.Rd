@@ -22,10 +22,10 @@ smooth_data(
 parameter(s), which in some cases are required.
 See Details for more information.}
 
-\item{x}{An (often optional) vector of predictor values to smooth along
+\item{x}{An (often optional) \code{vector} of predictor values to smooth along
 (e.g. time)}
 
-\item{y}{A vector of response values to be smoothed (e.g. density). If \code{NULL},
+\item{y}{A \code{vector} of response values to be smoothed (e.g. density). If \code{NULL},
 \code{formula} and \code{data} \emph{must} be provided via \code{...}}
 
 \item{sm_method}{Argument specifying which smoothing method should
@@ -33,35 +33,35 @@ be used to smooth data. Options include
 "moving-average", "moving-median", "loess", "gam",
 and "smooth.spline".}
 
-\item{subset_by}{An optional vector as long as \code{y}.
-\code{y} will be split by the unique values of this vector
+\item{subset_by}{An optional \code{vector} as long as \code{y}.
+\code{y} will be split by the unique values of this \code{vector}
 and the smoothed data for each group will be calculated
 independently of the others.
 
 This provides an internally-implemented approach similar
 to \link[dplyr:group_by]{group_by} and \link[dplyr:mutate]{mutate}}
 
-\item{return_fitobject}{logical whether entire object returned
+\item{return_fitobject}{\code{logical} whether entire object returned
 by fitting function should be returned. If \code{FALSE},
 just fitted values are returned.}
 
-\item{warn_ungrouped}{logical whether warning should be issued when
+\item{warn_ungrouped}{\code{logical} whether warning should be issued when
 \code{smooth_data} is being called on ungrouped data
 and \code{subset_by = NULL}.}
 
-\item{warn_gam_no_s}{logical whether warning should be issued when \link[mgcv:gam]{gam} is
+\item{warn_gam_no_s}{\code{logical} whether warning should be issued when \link[mgcv:gam]{gam} is
 used without \link[mgcv:s]{s} in the formula.}
 }
 \value{
 If \verb{return_fitobject == FALSE:}
 
-A vector, the same length as \code{y}, with the now-smoothed \code{y} values
+A \code{vector}, the same length as \code{y}, with the now-smoothed \code{y} values
 
 If \verb{return_fitobject == TRUE:}
 
-A list the same length as \code{unique(subset_by)} where each element is
+A \code{list} the same length as \code{unique(subset_by)} where each element is
 an object of the same class as returned by the smoothing method
-(typically a named list-like object)
+(typically a named \code{list}-like object)
 }
 \description{
 This function calls other functions to smooth growth curve data
@@ -103,9 +103,9 @@ can be passed to \code{smooth_data} via the \code{...} argument
 
 In this case, the formula should specify the response (e.g. density)
 and predictors. For \link[mgcv:gam]{gam} smoothing, the formula should
-typically be of the format: y ~ s(x), which uses
+typically be of the format: \code{y ~ s(x)}, which uses
 \link[mgcv:s]{s} to smooth the data. The data argument should be a
 \code{data.frame} containing the variables in the formula.
-In such cases, \code{subset_by} can still be specified as a vector
+In such cases, \code{subset_by} can still be specified as a \code{vector}
 with length \code{nrow(data)}
 }

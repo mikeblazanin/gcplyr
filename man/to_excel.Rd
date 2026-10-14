@@ -7,10 +7,10 @@
 to_excel(x)
 }
 \arguments{
-\item{x}{A vector of numbers in base-10}
+\item{x}{A \code{vector} of numbers in base-10}
 }
 \value{
-A vector of letters in Excel-style base-26 format
+A \code{vector} of letters in Excel-style base-26 format
 }
 \description{
 A function that converts numbers into base-26 Excel-style letters

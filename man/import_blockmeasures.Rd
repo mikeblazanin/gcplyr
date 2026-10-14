@@ -13,7 +13,7 @@ import_blockmeasures(
 )
 }
 \arguments{
-\item{files}{Vector of filenames (as strings), each of which is a
+\item{files}{\code{vector} of filenames (as \code{string}s), each of which is a
 block-shaped file containing measures data. File formats
 can be .csv, .xls, or .xlsx}
 
@@ -22,7 +22,7 @@ used to separate blockmeasures into those plates accordingly}
 
 \item{plate_names}{(optional) Names to put onto the plates when output}
 
-\item{wellnames_sep}{String to use as separator for well names between
+\item{wellnames_sep}{\code{string} to use as separator for well names between
 rowname and column name}
 
 \item{...}{Other arguments to pass to \link{read_blocks}, \link{uninterleave},
@@ -32,7 +32,7 @@ or \link{trans_block_to_wide}}
 If \code{num_plates = 1}, a wide-shaped \code{data.frame}
 containing the measures data.
 
-if \code{num_plates} is greater than one, a list of
+if \code{num_plates} is greater than one, a \code{list} of
 \code{data.frame}'s, where each \code{data.frame} is wide-shaped.
 }
 \description{

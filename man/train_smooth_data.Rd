@@ -23,41 +23,41 @@ train_smooth_data(
 \item{...}{Arguments passed to \link{smooth_data}. These arguments cannot
 overlap with any of those to be tuned.}
 
-\item{x}{A vector of predictor values to smooth along (e.g. time)}
+\item{x}{A \code{vector} of predictor values to smooth along (e.g. time)}
 
-\item{y}{A vector of response values to be smoothed (e.g. density).}
+\item{y}{A \code{vector} of response values to be smoothed (e.g. density).}
 
 \item{sm_method}{Argument specifying which smoothing method should
 be used. Options include "moving-average", "moving-median",
 "loess", "gam", and "smooth.spline".}
 
-\item{preProcess}{A string vector that defines a pre-processing of the
+\item{preProcess}{A \code{string} \code{vector} that defines a pre-processing of the
 predictor data. The default is no pre-processing.
 See \link[caret:train]{train} for more details.}
 
-\item{weights}{A numeric vector of case weights. This argument currently
+\item{weights}{A \code{numeric} \code{vector} of case weights. This argument currently
 does not affect any \code{train_smooth_data} models.}
 
-\item{metric}{A string that specifies what summary metric will be
+\item{metric}{A \code{string} that specifies what summary metric will be
 used to select the optimal model. By default, possible
 values are "RMSE" and "Rsquared" for regression.
 See \link[caret:train]{train} for more details.}
 
-\item{maximize}{A logical: should the metric be maximized or minimized?}
+\item{maximize}{A \code{logical}: should the metric be maximized or minimized?}
 
-\item{trControl}{A list of values that define how this function acts.
+\item{trControl}{A \code{list} of values that define how this function acts.
 See \link[caret:train]{train} and \link[caret:trainControl]{trainControl}
 for more details.}
 
-\item{tuneGrid}{A data frame with possible tuning values, or a named list
-containing vectors with possible tuning values. If a data
+\item{tuneGrid}{A \code{data.frame} with possible tuning values, or a named \code{list}
+containing \code{vector}s with possible tuning values. If a data
 frame, the columns should be named the same as the tuning
-parameters. If a list, the elements of the list should be
-named the same as the tuning parameters. If a list,
+parameters. If a \code{list}, the elements of the \code{list} should be
+named the same as the tuning parameters. If a \code{list},
 \link{expand.grid} will be used to make all possible
 combinations of tuning parameter values.}
 
-\item{tuneLength}{An integer denoting the amount of granularity in
+\item{tuneLength}{An \code{integer} denoting the amount of granularity in
 the tuning parameter grid. By default, this argument
 is the number of levels for each tuning parameter that
 should be generated. If \code{trControl} has the option
@@ -66,12 +66,12 @@ of tuning parameter combinations that will be generated
 by the random search. (NOTE: If given, this argument
 must be named.)}
 
-\item{return_trainobject}{A logical indicating whether the entire result
+\item{return_trainobject}{A \code{logical} indicating whether the entire result
 of \link[caret:train]{train} should be returned, or
 only the \code{results} element.}
 }
 \value{
-If \code{return_trainobject = FALSE} (the default), a data frame
+If \code{return_trainobject = FALSE} (the default), a \code{data.frame}
 with the values of all tuning parameter combinations and the
 training error rate for each combination (i.e. the \code{results}
 element of the output of \link[caret:train]{train}).

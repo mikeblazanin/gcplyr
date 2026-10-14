@@ -2,34 +2,34 @@
 % Please edit documentation in R/functions.R
 \name{paste_blocks}
 \alias{paste_blocks}
-\title{Paste a list of blocks into a single block}
+\title{Paste a \code{list} of blocks into a single block}
 \usage{
 paste_blocks(blocks, sep = "_", nested_metadata = NULL)
 }
 \arguments{
-\item{blocks}{Blocks, either a single data.frame or a list of
-data.frames}
+\item{blocks}{Blocks, either a single \code{data.frame} or a \code{list} of
+\code{data.frame}s}
 
-\item{sep}{String to use as separator for output pasted values}
+\item{sep}{\code{string} to use as separator for output pasted values}
 
-\item{nested_metadata}{A logical indicating the existence of nested metadata
-in the \code{blockmeasures} list, e.g. as is typically
+\item{nested_metadata}{A \code{logical} indicating the existence of nested metadata
+in the blockmeasures \code{list}, e.g. as is typically
 output by \link{read_blocks}. If \code{NULL}, will attempt to
 infer existence of nested metadata}
 }
 \value{
-If \code{nested_metadata = TRUE} (or is inferred to be \code{TRUE}), a list
-containing a list containing: 1. a \code{data.frame} with the
-pasted data values from \code{blocks}, and 2. a vector with the
+If \code{nested_metadata = TRUE} (or is inferred to be \code{TRUE}), a \code{list}
+containing a \code{list} containing: 1. a \code{data.frame} with the
+pasted data values from \code{blocks}, and 2. a \code{vector} with the
 pasted metadata values from \code{blocks}
 
-If \code{nested_metadata = FALSE} (or is inferred to be \code{FALSE}), a list
+If \code{nested_metadata = FALSE} (or is inferred to be \code{FALSE}), a \code{list}
 containing \code{data.frame}'s with the pasted values from
 \code{blocks}
 }
 \description{
 This function uses \link{paste} to concatenate the same-location entries
-of a list of data.frames together (i.e. all the first row-first column
+of a \code{list} of \code{data.frame}s together (i.e. all the first row-first column
 values are pasted together, all the second row-first column values are
 pasted together, etc.)
 }

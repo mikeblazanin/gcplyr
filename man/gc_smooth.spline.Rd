@@ -7,15 +7,15 @@
 gc_smooth.spline(x, y = NULL, ..., na.rm = TRUE)
 }
 \arguments{
-\item{x}{A vector giving the values of the predictor variable.}
+\item{x}{A \code{vector} giving the values of the predictor variable.}
 
-\item{y}{A vector giving the values of the response variable. If \code{y} is
+\item{y}{A \code{vector} giving the values of the response variable. If \code{y} is
 missing or \code{NULL}, the responses are assumed to be specified
-by \code{x}, with \code{x} the index vector.}
+by \code{x}, with \code{x} the index \code{vector}.}
 
 \item{...}{Additional arguments passed to \link{smooth.spline}.}
 
-\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing.
+\item{na.rm}{\code{logical} whether \code{NA}'s should be removed before analyzing.
 Required to be \code{TRUE} if any \code{x} or \code{y} values are \code{NA}.}
 }
 \value{

@@ -11,12 +11,12 @@ which_min_gc(x, empty_NA = TRUE)
 which_max_gc(x, empty_NA = TRUE)
 }
 \arguments{
-\item{x}{numeric (logical, integer, or double) vector or an \code{R} object
-for which the internal coercion to double works whose min or max
+\item{x}{\code{numeric} (\code{logical}, \code{integer}, or \code{double}) \code{vector} or an R object
+for which the internal coercion to \code{double} works whose min or max
 is searched for.}
 
-\item{empty_NA}{logical, indicating if an empty value should be returned
-as \code{NA} (the default) or as \verb{integer(0}) (the
+\item{empty_NA}{\code{logical}, indicating if an empty value should be returned
+as \code{NA} (the default) or as \code{integer(0)} (the
 same as \link{which.min} and \link{which.max}).}
 }
 \value{
@@ -30,7 +30,7 @@ If \code{empty_NA = TRUE}, identical to \link{which.min} or
 }
 \description{
 Determines the location, i.e. index, of the (first) minimum or maximum of
-a numeric (or logical) vector.
+a \code{numeric} (or \code{logical}) \code{vector}.
 }
 \details{
 These functions are wrappers for \link{which.min} and \link{which.max},

@@ -15,31 +15,31 @@ trans_wide_to_tidy(
 )
 }
 \arguments{
-\item{wides}{A single wide-shaped dataframe, or a list of wide-shaped
-dataframe's}
+\item{wides}{A single wide-shaped \code{data.frame}, or a \code{list} of wide-shaped
+\code{data.frame}'s}
 
 \item{data_cols, id_cols}{Specifies which columns have data vs are ID's
 (in \link[tidyr:pivot_longer]{pivot_longer} parlance). Each can be
-a single vector (which will be applied for all
-dataframes) or a list of vectors, with each
-vector corresponding to the same-index dataframe
+a single \code{vector} (which will be applied for all
+\code{data.frame}s) or a \code{list} of \code{vector}s, with each
+\code{vector} corresponding to the same-index \code{data.frame}
 in \code{wides}
 
-Entries that are \code{NA} in the list will not be used
+Entries that are \code{NA} in the \code{list} will not be used
 
 If neither \code{data_cols} nor \code{id_cols} are
 specified, user must provide arguments to
 \link[tidyr:pivot_longer]{pivot_longer} via \code{...} for at
 least the \code{cols} argument and these arguments
 provided via \code{...} will be used for all
-\code{wides} dataframe's}
+\code{wides} \code{data.frame}'s}
 
 \item{names_to, values_to}{Specifies the output column names created by
 \link[tidyr:pivot_longer]{pivot_longer}. Each can be provided
-as vectors the same length as \code{wides}}
+as \code{vector}s the same length as \code{wides}}
 
-\item{values_to_numeric}{logical indicating whether values will be coerced
-to numeric. See below for when this may be
+\item{values_to_numeric}{\code{logical} indicating whether values will be coerced
+to \code{numeric}. See below for when this may be
 overridden by arguments passed in \code{...}}
 
 \item{...}{Other arguments to be passed to \link[tidyr:pivot_longer]{pivot_longer}
@@ -47,11 +47,11 @@ Note that including \code{values_transform} here will override the
 behavior of \code{values_to_numeric}}
 }
 \value{
-Pivoted longer dataframe (if \code{wides} is a single dataframe)
-or list of pivoted longer dataframes (if \code{wides} is
-a list of dataframes)
+Pivoted longer \code{data.frame} (if \code{wides} is a single \code{data.frame})
+or \code{list} of pivoted longer \code{data.frame}s (if \code{wides} is
+a \code{list} of \code{data.frame}s)
 }
 \description{
 Essentially a wrapper for \link[tidyr:pivot_longer]{pivot_longer} that works on both a
-single wide-shaped dataframe as well as a list of wide-shaped dataframe's
+single wide-shaped \code{data.frame} as well as a \code{list} of wide-shaped \code{data.frame}'s
 }

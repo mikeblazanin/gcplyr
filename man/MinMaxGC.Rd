@@ -11,11 +11,11 @@ max_gc(..., na.rm = TRUE, allmissing_NA = TRUE)
 min_gc(..., na.rm = TRUE, allmissing_NA = TRUE)
 }
 \arguments{
-\item{...}{numeric or character arguments}
+\item{...}{\code{numeric} or \code{character} arguments}
 
-\item{na.rm}{a logical indicating whether missing values should be removed.}
+\item{na.rm}{a \code{logical} indicating whether missing values should be removed.}
 
-\item{allmissing_NA}{a logical indicating whether \code{NA} should be
+\item{allmissing_NA}{a \code{logical} indicating whether \code{NA} should be
 returned when there are no non-missing arguments
 passed to \link{min} or \link{max} (often because
 \code{na.rm = TRUE} but all values are \code{NA})}

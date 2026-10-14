@@ -5,7 +5,7 @@
 \alias{find_threshold_crosses}
 \alias{first_below}
 \alias{first_above}
-\title{Find point(s) when a numeric vector crosses some threshold}
+\title{Find point(s) when a \code{numeric} \code{vector} crosses some threshold}
 \usage{
 find_threshold_crosses(
   y,
@@ -38,12 +38,12 @@ first_above(
 )
 }
 \arguments{
-\item{y}{Numeric vector of y values in which to identify threshold
+\item{y}{\code{numeric} \code{vector} of \code{y} values in which to identify threshold
 crossing event(s)}
 
-\item{x}{Optional numeric vector of corresponding x values}
+\item{x}{Optional \code{numeric} \code{vector} of corresponding \code{x} values}
 
-\item{threshold}{Threshold y value of interest}
+\item{threshold}{Threshold \code{y} value of interest}
 
 \item{return}{One of \code{c("index", "x")}, determining whether the function
 will return the \code{index} or \code{x} value associated with the
@@ -57,32 +57,32 @@ points immediately before and after the threshold-crossing
 to return the exact \code{x} value when the threshold crossing
 occurred}
 
-\item{return_rising}{logical for whether crossing events where \code{y}
+\item{return_rising}{\code{logical} for whether crossing events where \code{y}
 rises above \code{threshold} should be returned}
 
-\item{return_falling}{logical for whether crossing events where \code{y}
+\item{return_falling}{\code{logical} for whether crossing events where \code{y}
 falls below \code{threshold} should be returned}
 
-\item{return_endpoints}{logical for whether startpoint should be returned
+\item{return_endpoints}{\code{logical} for whether startpoint should be returned
 when the startpoint is above \code{threshold} and
 \code{return_rising = TRUE}, or when the startpoint is
 below \code{threshold} and \code{return_falling = TRUE}}
 
-\item{subset}{A vector of logical values indicating which \code{x} and \code{y} values
+\item{subset}{A \code{vector} of \code{logical} values indicating which \code{x} and \code{y} values
 should be included (\code{TRUE}) or excluded (\code{FALSE}).
 
 If \code{return = "index"}, index will be for the whole
-vector and not the subset of the vector}
+\code{vector} and not the subset of the \code{vector}}
 
-\item{na.rm}{logical whether \code{NA}'s should be removed before analyzing.
+\item{na.rm}{\code{logical} whether \code{NA}'s should be removed before analyzing.
 If \code{return = 'index'}, indices will refer to the original
-\code{y} vector \emph{including} \code{NA} values}
+\code{y} \code{vector} \emph{including} \code{NA} values}
 
 \item{...}{(for \code{first_above} and \code{first_below}) other arguments
 to pass to \code{find_threshold_crosses}}
 }
 \value{
-\code{find_threshold_crosses} returns a vector corresponding to all the
+\code{find_threshold_crosses} returns a \code{vector} corresponding to all the
 threshold crossings.
 
 \code{first_above} returns only the first time the \code{y} values
@@ -96,13 +96,13 @@ fall below the \code{threshold}, so is a shortcut for
 If \code{return = "index"}, the returned value(s) are the indices
 immediately following threshold crossing(s)
 
-If \code{return = "x"}, the returned value(s) are the x value(s)
+If \code{return = "x"}, the returned value(s) are the \code{x} value(s)
 corresponding to threshold crossing(s)
 
 If no threshold-crossings are detected that meet the criteria, will
 return \code{NA}
 }
 \description{
-These functions take a vector of \code{y} values and identify points where
-the \code{y} values cross some \code{threshold} y value.
+These functions take a \code{vector} of \code{y} values and identify points where
+the \code{y} values cross some \code{threshold} \code{y} value.
 }

@@ -16,11 +16,11 @@ separate_tidy(
 )
 }
 \arguments{
-\item{data}{A data frame}
+\item{data}{A \code{data.frame}}
 
 \item{col}{Column name or position}
 
-\item{into}{A character vector of the new column names. Use \code{NA} to
+\item{into}{A \code{character} \code{vector} of the new column names. Use \code{NA} to
 omit the variable in the output.
 
 If \code{NULL}, \code{separate_tidy} will attempt to infer the new
@@ -28,30 +28,30 @@ column names by splitting the column name of \code{col}}
 
 \item{sep}{Separator between columns passed to \link[tidyr:separate]{separate}:
 
-If character, \code{sep} is interpreted as a regular expression.
+If \code{character}, \code{sep} is interpreted as a regular expression.
 
-If numeric, \code{sep} is interpreted as character positions
+If \code{numeric}, \code{sep} is interpreted as character positions
 to split at. Positive values start at 1 at the far-left of the
-string; negative values start at -1 at the far-right of the
-string. The length of \code{sep} should be one less than
+\code{string}; negative values start at -1 at the far-right of the
+\code{string}. The length of \code{sep} should be one less than
 \code{into}}
 
-\item{coerce_NA}{logical dictating if strings matching any of
+\item{coerce_NA}{\code{logical} dictating if \code{string}s matching any of
 \code{na.strings} will be coerced into  \code{NA} values
 after separating.}
 
-\item{na.strings}{A character vector of strings which are to be interpreted
+\item{na.strings}{A \code{character} \code{vector} of \code{string}s which are to be interpreted
 as \code{NA} values if \code{coerce_NA == TRUE}}
 
-\item{message_inferred_into}{logical whether column names for \code{into}
+\item{message_inferred_into}{\code{logical} whether column names for \code{into}
 should be printed in a message when inferred}
 
 \item{...}{Other arguments passed to \link[tidyr:separate]{separate}}
 }
 \value{
-A data frame containing new columns in the place of \code{col}
+A \code{data.frame} containing new columns in the place of \code{col}
 }
 \description{
 This function is primarily a wrapper for \link[tidyr:separate]{separate}, which
-turns a single character column into multiple columns
+turns a single \code{character} column into multiple columns
 }

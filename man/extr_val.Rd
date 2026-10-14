@@ -11,10 +11,10 @@ extr_val(x, i, allNA_NA = TRUE, na.rm = FALSE)
 
 \item{i}{index specifying element to extract.}
 
-\item{allNA_NA}{logical indicating whether \code{NA} should be returned
+\item{allNA_NA}{\code{logical} indicating whether \code{NA} should be returned
 when \code{all(is.na(i)) == TRUE}.}
 
-\item{na.rm}{a logical indicating whether missing values should be
+\item{na.rm}{a \code{logical} indicating whether missing values should be
 removed.}
 }
 \value{
@@ -42,7 +42,7 @@ and \link{which.min}, respectively),
 \link{find_local_extrema} and its wrappers \link{first_maxima} and
 \link{first_minima}, or \link{find_threshold_crosses} and its wrappers
 \link{first_below} and \link{first_above}. When all indices are \code{NA},
-\code{[} returns a vector of all \code{NA} of length \code{length(x)}.
+\code{[} returns a \code{vector} of all \code{NA} of length \code{length(x)}.
 Since this typically raises an undesirable warning or error from
 \link[dplyr:summarize]{summarize}, \code{extr_val} instead returns a single \code{NA}
 value.
@@ -50,5 +50,5 @@ value.
 An alternative (but largely superseded) use of this function is to
 extract a value by index \emph{after} \code{NA} values have been removed.
 This is not applicable for any common functions with \code{gcplyr},
-which all return index values for the original vector.
+which all return index values for the original \code{vector}.
 }

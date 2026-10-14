@@ -18,7 +18,7 @@
 
 # Utility functions ----
 
-#' Nicely print the contents of a `data.frame`
+#' Nicely print the contents of a data.frame
 #' 
 #' This function uses [write.table] to print the input `data.frame`
 #' in a nicely-formatted manner that is easy to read
@@ -62,7 +62,7 @@ check_input_dimensions <- function(input, input_name, needed_len,
   }
 }
 
-#' Uninterleave `list`
+#' Uninterleave list
 #' 
 #' Takes a `list` that is actually interleaved elements from multiple sources
 #' and uninterleaves them into the separate sources. For instance, a `list` of 
@@ -725,7 +725,7 @@ all_same <- function(x) {
   } else {return(FALSE)}
 }
 
-#' Where is the Min() or Max() or first `TRUE` or `FALSE`?
+#' Where is the Min() or Max() or first TRUE or FALSE?
 #' 
 #' Determines the location, i.e. index, of the (first) minimum or maximum of
 #' a `numeric` (or `logical`) `vector`.
@@ -885,7 +885,6 @@ extr_val <- function(x, i, allNA_NA = TRUE, na.rm = FALSE) {
 #' @param x,y `vector` to remove values from.
 #' @param subset `logical`, `TRUE` values are kept
 #' @return A `list` containing: 
-#'    1) `x` with values removed
 #'    2) `y` with values removed
 #'    3) the original indices of the retained values
 #'       that were returned, such that the original index

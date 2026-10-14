@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{calc_deriv}
 \alias{calc_deriv}
-\title{Calculate derivatives of \code{vector} of data}
+\title{Calculate derivatives of vector of data}
 \usage{
 calc_deriv(
   y,

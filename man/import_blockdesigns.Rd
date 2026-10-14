@@ -103,9 +103,8 @@ This function acts as a wrapper that calls \link{read_blocks},
 and \link{separate_tidy}
 }
 \details{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Other common arguments that you may want to provide via 
-         `...` include:
-}\if{html}{\out{</div>}}
+Other common arguments that you may want to provide via
+\code{...} include:
 
 \code{startrow}, \code{endrow}, \code{startcol}, \code{endcol},
 \code{sheet} - specifying the location of design information

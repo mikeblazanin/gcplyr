@@ -5,7 +5,7 @@
 \alias{find_threshold_crosses}
 \alias{first_below}
 \alias{first_above}
-\title{Find point(s) when a \code{numeric} \code{vector} crosses some threshold}
+\title{Find point(s) when a numeric vector crosses some threshold}
 \usage{
 find_threshold_crosses(
   y,

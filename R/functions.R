@@ -1244,7 +1244,8 @@ import_blockmeasures <- function(files, num_plates = 1,
 #'              
 #' See Details for more information
 #'              
-#' @details     Other common arguments that you may want to provide via 
+#' @details
+#' Other common arguments that you may want to provide via 
 #'              `...` include:
 #' 
 #' `startrow`, `endrow`, `startcol`, `endcol`, 
@@ -1349,7 +1350,7 @@ import_blockdesigns <- function(
 
 # Design functions ----
 
-#' Make design `data.frame`(s)
+#' Make design data.frame(s)
 #' 
 #' This is a function to easily input experimental design elements
 #' for later merging with read data
@@ -2270,7 +2271,7 @@ trans_wide_to_tidy <- function(wides,
   }
 }
 
-#' Collapse a `list` of `data.frame`s, or merge two `data.frame`s together
+#' Collapse a list of data.frame's, or merge two data.frame's together
 #' 
 #' This function is essentially a wrapper for any of `dplyr`'s
 #' [mutate-joins][dplyr::mutate-joins] (by default, a [full_join][dplyr::full_join]). 
@@ -2387,7 +2388,7 @@ merge_dfs <- function(x, y = NULL, by = NULL, drop = FALSE,
   return(output)
 }
 
-#' Paste a `list` of blocks into a single block
+#' Paste a list of blocks into a single block
 #' 
 #' This function uses [paste] to concatenate the same-location entries
 #' of a `list` of `data.frame`s together (i.e. all the first row-first column
@@ -3381,7 +3382,7 @@ and dplyr::reframe instead")}
 
 # Processing: Derivatives ----
 
-#' Calculate derivatives of `vector` of data
+#' Calculate derivatives of vector of data
 #' 
 #' Provided a `vector` of `y` values, this function returns either the plain
 #' or per-capita difference or derivative between sequential values
@@ -3671,7 +3672,7 @@ doubling_time <- function(y, x_scale = 1) {
 
 # Analyze ----
 
-#' Find local extrema of a `numeric` `vector`
+#' Find local extrema of a numeric vector
 #' 
 #' These functions take a `vector` of `y` values and identify local extrema.
 #'   
@@ -3936,7 +3937,7 @@ use find_local_extrema for more flexibility")
 }
 
 
-#' Find point(s) when a `numeric` `vector` crosses some threshold
+#' Find point(s) when a numeric vector crosses some threshold
 #' 
 #' These functions take a `vector` of `y` values and identify points where
 #' the `y` values cross some `threshold` `y` value.
@@ -4695,7 +4696,7 @@ first_peak <- function(y, x = NULL,
 }
 
 
-#' Make tidy design `data.frame`s
+#' Make tidy design data.frame's
 #' 
 #' This is a function to easily input experimental design elements
 #' for later merging with read data

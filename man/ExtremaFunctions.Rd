@@ -5,7 +5,7 @@
 \alias{find_local_extrema}
 \alias{first_maxima}
 \alias{first_minima}
-\title{Find local extrema of a \code{numeric} \code{vector}}
+\title{Find local extrema of a numeric vector}
 \usage{
 find_local_extrema(
   y,

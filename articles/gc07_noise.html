@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Dealing with noise • gcplyr</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Dealing with noise">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.12.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.13.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
 Blazanin</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/v1.12.0/vignettes/gc07_noise.Rmd" class="external-link"><code>vignettes/gc07_noise.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mikeblazanin/gcplyr/blob/master/vignettes/gc07_noise.Rmd" class="external-link"><code>vignettes/gc07_noise.Rmd</code></a></small>
       <div class="d-none name"><code>gc07_noise.Rmd</code></div>
     </div>
 
@@ -117,7 +117,7 @@ dealing with noise in our growth curve data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.12.0, Build Date: 2025-07-28)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. gcplyr: an R package for microbial growth</span></span>
@@ -179,7 +179,7 @@ of that data with simulated noise added to it.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in scale_y_continuous(trans = "log10"): <span style="color: #00BB00;">log-10</span></span></span>
 <span><span class="co">#&gt; transformation introduced infinite values.</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-1-1.png" class="r-plt" alt="" width="700"></p>
 <p>Great! Here we can see how the noisy (points) and noiseless (red
 line) data compare. We’ve plotted our data with log-transformed y-axes,
 which are useful because exponential growth is a straight line when
@@ -206,9 +206,9 @@ like.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Plot per-capita derivative</span></span>
@@ -220,9 +220,9 @@ like.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span>
-<span><span class="co">#&gt; Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Removed 4 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-2-2.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-2-2.png" class="r-plt" alt="" width="700"></p>
 <p>Those values are jumping all over the place! Let’s see what we can do
 to address this.</p>
 </div>
@@ -242,7 +242,7 @@ occurs when the density is very close to 0:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
 <span><span class="co">#&gt; infinite values.</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Plot per-capita derivative</span></span>
@@ -252,7 +252,7 @@ occurs when the density is very close to 0:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-3-2.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-3-2.png" class="r-plt" alt="" width="700"></p>
 <p>Per-capita growth rates are often very noisy when the density is
 close to 0, so it can make sense to simply exclude those data
 points.</p>
@@ -264,7 +264,7 @@ points.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0.01</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Plot per-capita derivative</span></span>
@@ -274,7 +274,7 @@ points.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Well</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 3 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="700"></p>
 <p>When we limit our analysis to data points where the density is not
 too close to 0, much of the noise in our per-capita derivative
 disappears.</p>
@@ -286,8 +286,12 @@ the bacteria when their density is at least 0.01.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarize</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ex_dat_mrg</span>, <span class="va">Well</span>, <span class="va">Bacteria_strain</span>, <span class="va">Phage</span>, <span class="va">noise</span><span class="op">)</span>,</span>
 <span>            max_growth_rate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">derivpercap_2</span><span class="op">[</span><span class="va">Measurements</span> <span class="op">&gt;</span> <span class="fl">0.01</span><span class="op">]</span>, </span>
 <span>                                  na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; `summarise()` has grouped output by 'Well', 'Bacteria_strain', 'Phage'. You can</span></span>
-<span><span class="co">#&gt; override using the `.groups` argument.</span></span>
+<span><span class="co">#&gt; `summarise()` has regrouped the output.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Summaries were computed grouped by <span style="color: #0000BB;">Well</span>, <span style="color: #0000BB;">Bacteria_strain</span>, <span style="color: #0000BB;">Phage</span>, and <span style="color: #0000BB;">noise</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Output is grouped by <span style="color: #0000BB;">Well</span>, <span style="color: #0000BB;">Bacteria_strain</span>, and <span style="color: #0000BB;">Phage</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `summarise(.groups = "drop_last")` to silence this message.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Use `summarise(.by = c(Well, Bacteria_strain, Phage, noise))` for</span></span>
+<span><span class="co">#&gt;   per-operation grouping (`?dplyr::dplyr_by`) instead.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ex_dat_mrg_sum</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Groups:   Well, Bacteria_strain, Phage [3]</span></span></span>
@@ -352,11 +356,11 @@ one that is sufficient for your analyses to succeed.</p>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_grey.html" class="external-link">scale_color_grey</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">0.8</span>, end <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 13 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 52 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>       </span>
 <span><span class="co">#Plot per-capita derivative</span></span>
@@ -370,11 +374,11 @@ one that is sufficient for your analyses to succeed.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_grey.html" class="external-link">scale_color_grey</a></span><span class="op">(</span>start <span class="op">=</span> <span class="fl">0.8</span>, end <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 14 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 53 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 16 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-6-2.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="700"></p>
 <p>As we can see, increasing the width of the window reduces the effects
 of noise, getting us closer to the noiseless data (red line). However,
 it also starts making peaks shorter and valleys shallower. Finding the
@@ -461,9 +465,9 @@ is just our raw, unsmoothed data).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
 <span><span class="co">#&gt; infinite values.</span></span>
-<span><span class="co">#&gt; Warning: Removed 12 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 48 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
 <p>Here we can see that <code>moving-median</code> has done a great job
 excluding noise without biasing our data very far from the true values
 (red line). However, it has produced a smoothed density that is fairly
@@ -508,9 +512,9 @@ with <code>window_width_n</code> values of 5 or 9 data points wide
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
 <span><span class="co">#&gt; infinite values.</span></span>
-<span><span class="co">#&gt; Warning: Removed 12 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 48 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="700"></p>
 <p>Here we can see that <code>moving-average</code> has helped reduce
 the effects of some of that early noise. However, as the window width
 gets larger, it starts biasing our data more strongly
@@ -559,9 +563,9 @@ followed by <code>moving-average</code>:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation introduced</span></span>
 <span><span class="co">#&gt; infinite values.</span></span>
-<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 16 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
 <p>Here we can see that the combination of minimal
 <code>moving-median</code> and <code>moving-average</code> smoothing has
 produced a curve that has most of the noise removed with minimal
@@ -656,7 +660,7 @@ lower values are better) to decide what the best parameter value is.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">training_results</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">window_width_n</span>, y <span class="op">=</span> <span class="va">RMSE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
 <p>Based on this plot, a window_width_n of 1 has the lowest average
 error of all the values we tested.</p>
 <p>However, often you’ll want to test different values from the defaults
@@ -673,7 +677,7 @@ you want to test with the <code>tuneGrid</code> argument:</p>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">training_results</span>,</span>
 <span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">window_width_n</span>, y <span class="op">=</span> <span class="va">RMSE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
 <p>Here we can see for our example data that cross-validation suggests
 little smoothing is necessary. This makes sense, since our example data
 has noise that is most problematic for our derivatives, and
@@ -719,11 +723,11 @@ introduction of bias.</p>
 <span>                                 <span class="va">noise</span> <span class="op">==</span> <span class="st">"No"</span>, <span class="va">window_width_n</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span>,</span>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 7 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 28 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 1 row containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 4 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Plot per-capita derivative</span></span>
@@ -737,11 +741,11 @@ introduction of bias.</p>
 <span>            lty <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Removed 8 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 29 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span>
-<span><span class="co">#&gt; Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 24 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_line()`).</span></span></code></pre></div>
-<p><img src="gc07_noise_files/figure-html/unnamed-chunk-13-2.png" width="700"></p>
+<p><img src="gc07_noise_files/figure-html/unnamed-chunk-13-2.png" class="r-plt" alt="" width="700"></p>
 <p>Here we can see that calculating derivatives from smoothed raw data
 can be a powerfully useful combination.</p>
 </div>
@@ -793,7 +797,7 @@ for analyzing growth curves.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

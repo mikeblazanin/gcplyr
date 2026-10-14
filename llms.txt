@@ -1,0 +1,251 @@
+# gcplyr
+
+## What this package can do
+
+`gcplyr` makes it easier to import, wrangle, and do model-free analyses
+of microbial growth curve data, as commonly output by plate readers.
+
+- `gcplyr` can flexibly import all the common data formats output by
+  plate readers and reshape them into ‘tidy’ formats for analyses.
+- `gcplyr` can import experimental designs from files or generate them
+  in `R`, and can merge experimental design information with density
+  data from plate readers.
+- `gcplyr` makes it easy to analyze growth curve data with `tidyverse`
+  or `dplyr` functions, and to plot growth curve data with `ggplot2`.
+- `gcplyr` can extract parameters like growth rate/doubling time,
+  maximum density (carrying capacity), lag time, area under the curve,
+  diauxic shifts, extinction, and more without fitting an equation for
+  growth to your data.
+- `gcplyr` has several methods to deal with noise in growth curve data.
+
+**Please send all questions, requests, comments, and bugs to
+mikeblazanin \[at\] gmail \[dot\] com**
+
+## Installation
+
+You can install the version most-recently released on CRAN by running
+the following line in R:
+
+``` r
+
+install.packages("gcplyr")
+```
+
+You can install the most recently-released version from
+[GitHub](https://github.com/mikeblazanin/gcplyr/) by running the
+following lines in R:
+
+``` r
+
+install.packages("devtools")
+devtools::install_github("mikeblazanin/gcplyr")
+```
+
+## Getting Started
+
+The best way to get started is to read through the articles series,
+which breaks down a typical workflow using `gcplyr` from start to
+finish, starting with the introduction:
+
+1.  **Introduction:
+    [`vignette("gc01_gcplyr")`](https://mikeblazanin.github.io/gcplyr/articles/gc01_gcplyr.md)**
+2.  Importing and transforming data:
+    [`vignette("gc02_import_reshape")`](https://mikeblazanin.github.io/gcplyr/articles/gc02_import_reshape.md)
+3.  Incorporating experimental designs:
+    [`vignette("gc03_incorporate_designs")`](https://mikeblazanin.github.io/gcplyr/articles/gc03_incorporate_designs.md)
+4.  Pre-processing and plotting your data:
+    [`vignette("gc04_preprocess_plot")`](https://mikeblazanin.github.io/gcplyr/articles/gc04_preprocess_plot.md)
+5.  Processing your data:
+    [`vignette("gc05_process")`](https://mikeblazanin.github.io/gcplyr/articles/gc05_process.md)
+6.  Analyzing your data:
+    [`vignette("gc06_analyze")`](https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.md)
+7.  Dealing with noise:
+    [`vignette("gc07_noise")`](https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.md)
+8.  Best practices and other tips:
+    [`vignette("gc08_conclusion")`](https://mikeblazanin.github.io/gcplyr/articles/gc08_conclusion.md)
+9.  Working with multiple plates:
+    [`vignette("gc09_multiple_plates")`](https://mikeblazanin.github.io/gcplyr/articles/gc09_multiple_plates.md)
+10. Using make_design to generate experimental designs:
+    [`vignette("gc10_using_make_design")`](https://mikeblazanin.github.io/gcplyr/articles/gc10_using_make_design.md)
+
+## Citation
+
+Please cite software as:
+
+Blazanin, M. gcplyr: an R package for microbial growth curve data
+analysis. BMC Bioinformatics 25, 232 (2024).
+<https://doi.org/10.1186/s12859-024-05817-3>
+
+# Package index
+
+## Reading files
+
+Functions for reading files into R
+
+- [`read_blocks()`](https://mikeblazanin.github.io/gcplyr/reference/read_blocks.md)
+  : Read blocks
+- [`read_wides()`](https://mikeblazanin.github.io/gcplyr/reference/read_wides.md)
+  : Read wides
+- [`read_tidys()`](https://mikeblazanin.github.io/gcplyr/reference/read_tidys.md)
+  : Read tidy-shaped files
+
+## Importing files
+
+Wrapper functions that read and transform data
+
+- [`import_blockmeasures()`](https://mikeblazanin.github.io/gcplyr/reference/import_blockmeasures.md)
+  : Import blockmeasures
+- [`import_blockdesigns()`](https://mikeblazanin.github.io/gcplyr/reference/import_blockdesigns.md)
+  : Import blockdesigns
+
+## Creating designs
+
+Functions to facilitate generating designs
+
+- [`make_design()`](https://mikeblazanin.github.io/gcplyr/reference/make_design.md)
+  : Make design data.frame(s)
+- [`make_designpattern()`](https://mikeblazanin.github.io/gcplyr/reference/make_designpattern.md)
+  [`mdp()`](https://mikeblazanin.github.io/gcplyr/reference/make_designpattern.md)
+  : Make design pattern
+- [`write_blocks()`](https://mikeblazanin.github.io/gcplyr/reference/write_blocks.md)
+  : Write block designs to csv
+
+## Manipulating data in R
+
+Functions that transform, manipulate, or reshape data
+
+- [`trans_block_to_wide()`](https://mikeblazanin.github.io/gcplyr/reference/trans_block_to_wide.md)
+  : Transform blocks to wides
+- [`trans_wide_to_tidy()`](https://mikeblazanin.github.io/gcplyr/reference/trans_wide_to_tidy.md)
+  : Pivot wide-shaped into tidy
+- [`merge_dfs()`](https://mikeblazanin.github.io/gcplyr/reference/merge_dfs.md)
+  : Collapse a list of data.frame's, or merge two data.frame's together
+- [`paste_blocks()`](https://mikeblazanin.github.io/gcplyr/reference/paste_blocks.md)
+  : Paste a list of blocks into a single block
+- [`separate_tidy()`](https://mikeblazanin.github.io/gcplyr/reference/separate_tidy.md)
+  : Separate a column into multiple columns
+
+## Processing growth curve data
+
+Functions to smooth or calculate derivatives of growth curve data
+
+- [`smooth_data()`](https://mikeblazanin.github.io/gcplyr/reference/smooth_data.md)
+  : Smooth data
+- [`moving_average()`](https://mikeblazanin.github.io/gcplyr/reference/MovingWindowFunctions.md)
+  [`moving_median()`](https://mikeblazanin.github.io/gcplyr/reference/MovingWindowFunctions.md)
+  : Moving window smoothing
+- [`calc_deriv()`](https://mikeblazanin.github.io/gcplyr/reference/calc_deriv.md)
+  : Calculate derivatives of vector of data
+- [`gc_smooth.spline()`](https://mikeblazanin.github.io/gcplyr/reference/gc_smooth.spline.md)
+  : Fit a Smoothing Spline
+- [`train_smooth_data()`](https://mikeblazanin.github.io/gcplyr/reference/train_smooth_data.md)
+  : Test efficacy of different smoothing parameters
+- [`makemethod_train_smooth_data()`](https://mikeblazanin.github.io/gcplyr/reference/makemethod_train_smooth_data.md)
+  : Create method argument for train of growth curve smoothers
+- [`predict_interpolation()`](https://mikeblazanin.github.io/gcplyr/reference/predict_interpolation.md)
+  : Predict data by linear interpolation from existing data
+
+## Analyzing growth curve data
+
+Functions to analyze growth curve data by summarizing into metrics
+
+- [`find_local_extrema()`](https://mikeblazanin.github.io/gcplyr/reference/ExtremaFunctions.md)
+  [`first_maxima()`](https://mikeblazanin.github.io/gcplyr/reference/ExtremaFunctions.md)
+  [`first_minima()`](https://mikeblazanin.github.io/gcplyr/reference/ExtremaFunctions.md)
+  : Find local extrema of a numeric vector
+- [`find_threshold_crosses()`](https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.md)
+  [`first_below()`](https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.md)
+  [`first_above()`](https://mikeblazanin.github.io/gcplyr/reference/ThresholdFunctions.md)
+  : Find point(s) when a numeric vector crosses some threshold
+- [`auc()`](https://mikeblazanin.github.io/gcplyr/reference/auc.md) :
+  Calculate area under the curve
+- [`doubling_time()`](https://mikeblazanin.github.io/gcplyr/reference/doubling_time.md)
+  : Calculate doubling time equivalent of per-capita growth rate
+- [`lag_time()`](https://mikeblazanin.github.io/gcplyr/reference/lag_time.md)
+  : Calculate lag time
+- [`centroid()`](https://mikeblazanin.github.io/gcplyr/reference/CentroidFunctions.md)
+  [`centroid_x()`](https://mikeblazanin.github.io/gcplyr/reference/CentroidFunctions.md)
+  [`centroid_y()`](https://mikeblazanin.github.io/gcplyr/reference/CentroidFunctions.md)
+  [`centroid_both()`](https://mikeblazanin.github.io/gcplyr/reference/CentroidFunctions.md)
+  : Calculate centroid
+
+## Utility functions
+
+Various functions providing simple utilities
+
+- [`uninterleave()`](https://mikeblazanin.github.io/gcplyr/reference/uninterleave.md)
+  : Uninterleave list
+- [`to_excel()`](https://mikeblazanin.github.io/gcplyr/reference/to_excel.md)
+  : A function that converts numbers into base-26 Excel-style letters
+- [`from_excel()`](https://mikeblazanin.github.io/gcplyr/reference/from_excel.md)
+  : A function that converts base-26 Excel-style letters to numbers
+- [`solve_linear()`](https://mikeblazanin.github.io/gcplyr/reference/solve_linear.md)
+  : Return missing information about a line
+- [`max_gc()`](https://mikeblazanin.github.io/gcplyr/reference/MinMaxGC.md)
+  [`min_gc()`](https://mikeblazanin.github.io/gcplyr/reference/MinMaxGC.md)
+  : Maxima and Minima
+- [`which_min_gc()`](https://mikeblazanin.github.io/gcplyr/reference/WhichMinMaxGC.md)
+  [`which_max_gc()`](https://mikeblazanin.github.io/gcplyr/reference/WhichMinMaxGC.md)
+  : Where is the Min() or Max() or first TRUE or FALSE?
+- [`extr_val()`](https://mikeblazanin.github.io/gcplyr/reference/extr_val.md)
+  : Extract parts of an object
+- [`print_df()`](https://mikeblazanin.github.io/gcplyr/reference/print_df.md)
+  : Nicely print the contents of a data.frame
+
+## Example data
+
+Example wide-shaped data.frames of growth curves data
+
+- [`example_widedata`](https://mikeblazanin.github.io/gcplyr/reference/example_widedata.md)
+  : Example noisy growth curve data in wide format
+- [`example_widedata_noiseless`](https://mikeblazanin.github.io/gcplyr/reference/example_widedata_noiseless.md)
+  : Example growth curve data in wide format
+- [`example_design_tidy`](https://mikeblazanin.github.io/gcplyr/reference/example_design_tidy.md)
+  : Design for example growth curve data
+
+## Example function
+
+Function to generate files or objects seen in documentation examples
+
+- [`make_example()`](https://mikeblazanin.github.io/gcplyr/reference/make_example.md)
+  : Create R objects or files as seen in vignette examples
+
+## Legacy functions
+
+These functions have been deprecated
+
+- [`first_peak()`](https://mikeblazanin.github.io/gcplyr/reference/first_peak.md)
+  :
+
+  Find the first local maxima of a `numeric` `vector`
+
+- [`make_tidydesign()`](https://mikeblazanin.github.io/gcplyr/reference/make_tidydesign.md)
+  : Make tidy design data.frame's
+
+- [`block_tidydesign()`](https://mikeblazanin.github.io/gcplyr/reference/block_tidydesign.md)
+  : Turn tidydesign into block format
+
+# Articles
+
+### All vignettes
+
+- [Introduction to using
+  gcplyr](https://mikeblazanin.github.io/gcplyr/articles/gc01_gcplyr.md):
+- [Importing and reshaping
+  data](https://mikeblazanin.github.io/gcplyr/articles/gc02_import_reshape.md):
+- [Incorporating experimental
+  designs](https://mikeblazanin.github.io/gcplyr/articles/gc03_incorporate_designs.md):
+- [Pre-processing and plotting
+  data](https://mikeblazanin.github.io/gcplyr/articles/gc04_preprocess_plot.md):
+- [Processing
+  data](https://mikeblazanin.github.io/gcplyr/articles/gc05_process.md):
+- [Analyzing
+  data](https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.md):
+- [Dealing with
+  noise](https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.md):
+- [Best practices and other
+  tips](https://mikeblazanin.github.io/gcplyr/articles/gc08_conclusion.md):
+- [Working with multiple
+  plates](https://mikeblazanin.github.io/gcplyr/articles/gc09_multiple_plates.md):
+- [Using make_design to generate experimental
+  designs](https://mikeblazanin.github.io/gcplyr/articles/gc10_using_make_design.md):

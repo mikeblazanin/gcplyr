@@ -1,0 +1,112 @@
+# Make tidy design data.frame's
+
+This is a function to easily input experimental design elements for
+later merging with read data
+
+## Usage
+
+``` r
+make_tidydesign(
+  nrows = NULL,
+  ncols = NULL,
+  block_row_names = NULL,
+  block_col_names = NULL,
+  wellnames_sep = "",
+  wellnames_colname = "Well",
+  wellnames_Excel = TRUE,
+  lookup_tbl_start = 1,
+  pattern_split = "",
+  colnames_first = FALSE,
+  ...
+)
+```
+
+## Arguments
+
+- nrows, ncols:
+
+  Number of rows and columns in the plate data
+
+- block_row_names, block_col_names:
+
+  Names of the rows, columns of the plate blockmeasures data
+
+- wellnames_sep:
+
+  A `string` used when concatenating rownames and column names to create
+  well names
+
+- wellnames_colname:
+
+  Header for newly-created column containing the well names
+
+- wellnames_Excel:
+
+  If `block_row_names` or `block_col_names` are not specified, should
+  rows and columns be named using Excel-style base-26 lettering for rows
+  and numbering for columns? If `FALSE`, rows and columns will be
+  numbered with "R" and "C" prefix.
+
+- lookup_tbl_start:
+
+  Value in the lookup table for the split pattern values that
+  corresponds to the first value in the `vector`.
+
+  Lookup table by default is `c(1,2,...,8,9,A,B,...Y,Z,a,b,...,y,z)`.
+  If, for example, `lookup_tbl_start = "A"`, then the lookup table will
+  now be `c(A,B,...Y,Z,a,b,...,y,z)`
+
+- pattern_split:
+
+  character to split pattern elements provided in `...` by
+
+- colnames_first:
+
+  In the wellnames created by
+  [paste](https://rdrr.io/r/base/paste.html)-ing the rownames and column
+  names, should the column names come first
+
+- ...:
+
+  Each `...` argument must be a `list` with five elements:
+
+  1.  a `vector` of the values
+
+  2.  a `vector` of the rows the pattern should be applied to
+
+  3.  a `vector` of the columns the pattern should be applied to
+
+  4.  a `string` of the pattern itself, where numbers refer to the
+      indices in the values `vector`
+
+      0's refer to `NA`
+
+      This pattern will be split using `pattern_split`, which defaults
+      to every character
+
+  5.  a `logical` for whether this pattern should be filled byrow
+
+## Value
+
+a tidy-shaped `data.frame` containing all the design elements
+
+## Details
+
+Note that either `nrows` or `block_row_names` must be provided and that
+either `ncols` or `block_col_names` must be provided
+
+Examples:
+
+    my_example <- make_tidydesign(nrows = 8, ncols = 12,
+        design_element_name = list(c("Value1", "Value2", "Value3"),
+                          rowstart:rowend, colstart:colend,
+                          "111222333000", TRUE)
+
+To make it easier to pass arguments, use
+[make_designpattern](https://mikeblazanin.github.io/gcplyr/reference/make_designpattern.md):
+
+    my_example <- make_tidydesign(nrows = 8, ncols = 12,
+      design_element_name = make_designpattern(values = c("L", "G", "C"),
+                                                rows = 2:7, cols = 2:11,
+                                                pattern = "11223300",
+                                                byrow = TRUE))

@@ -1,6 +1,6 @@
-# gcplyr 1.13.0.9000
+# gcplyr 1.13.1
 
-* Stuff here
+* Fixed broken vignette links
 
 # gcplyr 1.13.0
 

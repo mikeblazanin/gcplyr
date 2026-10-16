@@ -28,7 +28,10 @@ R CMD INSTALL gcplyr_X.X.X.tar.gz
            rjava dependency
       devtools::check_win_devel()
 3. Organize, edit, and proofread NEWS.md. Commit.
-4. Decide new version number, update DESCRIPTION version (dropping .9000) and date, commit
+4. Decide new version number
+   update DESCRIPTION version (dropping .9000)
+   update date
+   commit
 5. devtools::install()
 6. Re-build vignettes (see code in vignette to re-build all formats at once). Commit
 7. Re-knit README.Rmd and index.Rmd. Save & commit newly generated README.md files

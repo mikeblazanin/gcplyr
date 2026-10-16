@@ -1,5 +1,9 @@
 # Changelog
 
+## gcplyr 1.13.1
+
+- Fixed broken vignette links
+
 ## gcplyr 1.13.0
 
 - Change to the default behavior of extr_val: the default setting is now

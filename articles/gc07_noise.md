@@ -34,7 +34,7 @@ If you haven’t already, load the necessary packages.
 
 library(gcplyr)
 #> ## 
-#> ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)
+#> ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)
 #> ## See http://github.com/mikeblazanin/gcplyr for additional documentation
 #> ## Please cite software as:
 #> ##   Blazanin, Michael. gcplyr: an R package for microbial growth

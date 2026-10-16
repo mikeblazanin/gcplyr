@@ -34,7 +34,7 @@ If you haven’t already, load the necessary packages.
 
 library(gcplyr)
 #> ## 
-#> ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)
+#> ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)
 #> ## See http://github.com/mikeblazanin/gcplyr for additional documentation
 #> ## Please cite software as:
 #> ##   Blazanin, Michael. gcplyr: an R package for microbial growth
@@ -146,8 +146,8 @@ functions.
 
 Here we’re going to focus on the `summarize` function from `dplyr`,
 which *must* be used with the `group_by` function we covered in our
-first primer: [A brief primer on
-dplyr](https://mikeblazanin.github.io/gcplyr/articles/gc05_process.md).
+first primer in the Processing Data article
+\[[`vignette("gc05_process")`](https://mikeblazanin.github.io/gcplyr/articles/gc05_process.md)\].
 `summarize` carries out user-specified calculations on *each* group in a
 grouped `data.frame` independently, producing a new `data.frame` where
 each group is now just a single row.
@@ -1074,7 +1074,7 @@ head(ex_dat_mrg_sum)
 #> 2 Strain 1        Phage Added A7             8.75      -6.63e+ 0
 #> 3 Strain 10       No Phage    B4            23.8       NA       
 #> 4 Strain 10       Phage Added B10            8.5       -4.79e+ 0
-#> 5 Strain 11       No Phage    B5            19.5        4.97e-17
+#> 5 Strain 11       No Phage    B5            19.5       -2.72e-18
 #> 6 Strain 11       Phage Added B11           24         NA    
 ```
 

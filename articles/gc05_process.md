@@ -34,7 +34,7 @@ If you haven’t already, load the necessary packages.
 
 library(gcplyr)
 #> ## 
-#> ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)
+#> ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)
 #> ## See http://github.com/mikeblazanin/gcplyr for additional documentation
 #> ## Please cite software as:
 #> ##   Blazanin, Michael. gcplyr: an R package for microbial growth
@@ -90,10 +90,10 @@ alongside, `gcplyr`-based and/or fitting-based analyses).
 So, how do we directly quantify attributes of growth curves? Generally,
 we find features of the density data and its derivatives. Different
 projects may desire different analyses, so this article and the
-[Analyzing
-Data](https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.md)
-and [Dealing with
-Noise](https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.md)
+Analyzing Data
+\[[`vignette("gc06_analyze")`](https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.md)\]
+and Dealing with Noise
+\[[`vignette("gc07_noise")`](https://mikeblazanin.github.io/gcplyr/articles/gc07_noise.md)\]
 articles are written to highlight common analyses, rather than
 prescribing what everyone should do.
 
@@ -101,8 +101,8 @@ A number of common metrics (listed below) can’t be quantified from the
 density data alone, but instead are calculated involving a derivative of
 the density data. If you intend to calculate any of those metrics, or
 just want to calculate or plot the derivatives, continue reading.
-Otherwise, feel free to skip right to the [Analyzing
-Data](https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.md)
+Otherwise, feel free to skip right to the Analyzing Data
+\[[`vignette("gc06_analyze")`](https://mikeblazanin.github.io/gcplyr/articles/gc06_analyze.md)\]
 article.
 
 **Metrics requiring a derivative:**

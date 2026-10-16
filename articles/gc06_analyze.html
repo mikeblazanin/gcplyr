@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gcplyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.13.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.13.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,7 +117,7 @@ curves into a number of metrics.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mikeblazanin.github.io/gcplyr/">gcplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; ## </span></span>
-<span><span class="co">#&gt; ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)</span></span>
+<span><span class="co">#&gt; ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)</span></span>
 <span><span class="co">#&gt; ## See http://github.com/mikeblazanin/gcplyr for additional documentation</span></span>
 <span><span class="co">#&gt; ## Please cite software as:</span></span>
 <span><span class="co">#&gt; ##   Blazanin, Michael. gcplyr: an R package for microbial growth</span></span>
@@ -248,7 +248,8 @@ with <code>gcplyr</code> functions.</p>
 </h2>
 <p>Here we’re going to focus on the <code>summarize</code> function from
 <code>dplyr</code>, which <em>must</em> be used with the
-<code>group_by</code> function we covered in our first primer: <a href="gc05_process.html">A brief primer on dplyr</a>.
+<code>group_by</code> function we covered in our first primer in the
+Processing Data article [<code><a href="../articles/gc05_process.html">vignette("gc05_process")</a></code>].
 <code>summarize</code> carries out user-specified calculations on
 <em>each</em> group in a grouped <code>data.frame</code> independently,
 producing a new <code>data.frame</code> where each group is now just a
@@ -1159,7 +1160,7 @@ analyses within <code>summarize</code>).</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Strain 1        Phage Added A7             8.75      -<span style="color: #BB0000;">6.63</span><span style="color: #949494;">e</span>+ 0</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Strain 10       No Phage    B4            23.8       <span style="color: #BB0000;">NA</span>   <span style="color: #949494;"> </span>   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Strain 10       Phage Added B10            8.5       -<span style="color: #BB0000;">4.79</span><span style="color: #949494;">e</span>+ 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5            19.5        4.97<span style="color: #949494;">e</span><span style="color: #BB0000;">-17</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Strain 11       No Phage    B5            19.5       -<span style="color: #BB0000;">2.72</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-18</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Strain 11       Phage Added B11           24         <span style="color: #BB0000;">NA</span>   <span style="color: #949494;"> </span></span></span></code></pre></div>
 </div>
 <div class="section level3">

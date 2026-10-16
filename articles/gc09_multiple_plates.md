@@ -36,7 +36,7 @@ If you haven’t already, load the necessary packages.
 
 library(gcplyr)
 #> ## 
-#> ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)
+#> ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)
 #> ## See http://github.com/mikeblazanin/gcplyr for additional documentation
 #> ## Please cite software as:
 #> ##   Blazanin, Michael. gcplyr: an R package for microbial growth
@@ -266,12 +266,12 @@ tidy_plates_collapsed <- merge_dfs(tidy_plates, collapse = TRUE)
 
 print_df(head(tidy_plates_collapsed), col.names = TRUE)
 #> file Experiment Start_date Time Well Measurements
-#> widedata Experiment_1 2026-10-14 0 A1 0.002
-#> widedata Experiment_1 2026-10-14 0 B1 0.002
-#> widedata Experiment_1 2026-10-14 0 C1 0.002
-#> widedata Experiment_1 2026-10-14 0 D1 0.002
-#> widedata Experiment_1 2026-10-14 0 E1 0.002
-#> widedata Experiment_1 2026-10-14 0 F1 0.002
+#> widedata Experiment_1 2026-10-16 0 A1 0.002
+#> widedata Experiment_1 2026-10-16 0 B1 0.002
+#> widedata Experiment_1 2026-10-16 0 C1 0.002
+#> widedata Experiment_1 2026-10-16 0 D1 0.002
+#> widedata Experiment_1 2026-10-16 0 E1 0.002
+#> widedata Experiment_1 2026-10-16 0 F1 0.002
 ```
 
 ## Merging designs with multiple plates
@@ -316,12 +316,12 @@ data_and_designs <- merge_dfs(tidy_plates, collapse = TRUE)
 #> Joining with `by = join_by(file, Experiment, Start_date, Time, Well,
 #> Measurements, Bacteria_strain)`
 print_df(head(data_and_designs))
-#> widedata Experiment_1 2026-10-14 0 A1 0.002  Strain 1
-#> widedata Experiment_1 2026-10-14 0 B1 0.002  Strain 7
-#> widedata Experiment_1 2026-10-14 0 C1 0.002 Strain 13
-#> widedata Experiment_1 2026-10-14 0 D1 0.002 Strain 19
-#> widedata Experiment_1 2026-10-14 0 E1 0.002 Strain 25
-#> widedata Experiment_1 2026-10-14 0 F1 0.002 Strain 31
+#> widedata Experiment_1 2026-10-16 0 A1 0.002  Strain 1
+#> widedata Experiment_1 2026-10-16 0 B1 0.002  Strain 7
+#> widedata Experiment_1 2026-10-16 0 C1 0.002 Strain 13
+#> widedata Experiment_1 2026-10-16 0 D1 0.002 Strain 19
+#> widedata Experiment_1 2026-10-16 0 E1 0.002 Strain 25
+#> widedata Experiment_1 2026-10-16 0 F1 0.002 Strain 31
 ```
 
 ### Plates with a shared design
@@ -349,10 +349,10 @@ data_and_designs <- merge_dfs(tidy_plates, example_design, collapse = TRUE)
 #> Measurements, Bacteria_strain)`
 #> Joining with `by = join_by(Well, Bacteria_strain)`
 print_df(head(data_and_designs))
-#> widedata Experiment_1 2026-10-14 0 A1 0.002  Strain 1
-#> widedata Experiment_1 2026-10-14 0 B1 0.002  Strain 7
-#> widedata Experiment_1 2026-10-14 0 C1 0.002 Strain 13
-#> widedata Experiment_1 2026-10-14 0 D1 0.002 Strain 19
-#> widedata Experiment_1 2026-10-14 0 E1 0.002 Strain 25
-#> widedata Experiment_1 2026-10-14 0 F1 0.002 Strain 31
+#> widedata Experiment_1 2026-10-16 0 A1 0.002  Strain 1
+#> widedata Experiment_1 2026-10-16 0 B1 0.002  Strain 7
+#> widedata Experiment_1 2026-10-16 0 C1 0.002 Strain 13
+#> widedata Experiment_1 2026-10-16 0 D1 0.002 Strain 19
+#> widedata Experiment_1 2026-10-16 0 E1 0.002 Strain 25
+#> widedata Experiment_1 2026-10-16 0 F1 0.002 Strain 31
 ```

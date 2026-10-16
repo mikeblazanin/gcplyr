@@ -33,7 +33,7 @@ If you haven’t already, load the necessary packages.
 
 library(gcplyr)
 #> ## 
-#> ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)
+#> ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)
 #> ## See http://github.com/mikeblazanin/gcplyr for additional documentation
 #> ## Please cite software as:
 #> ##   Blazanin, Michael. gcplyr: an R package for microbial growth
@@ -503,7 +503,7 @@ print_df(head(read.csv("widedata.csv", header = FALSE,
                        colClasses = "character"), 
               c(10, 10)))
 #> Experiment name Experiment_1                                                
-#>      Start date   2026-10-14                                                
+#>      Start date   2026-10-16                                                
 #>                                                                             
 #>                                                                             
 #>            Time           A1    B1    C1    D1    E1    F1    G1    H1    A2
@@ -583,12 +583,12 @@ imported_widedata <- read_wides(files = "widedata.csv",
                                                 "start_date" = c(2, 2)))
 head(imported_widedata, c(6, 8))
 #>        file experiment_name start_date Time    A1    B1    C1    D1
-#> 6  widedata    Experiment_1 2026-10-14    0 0.002 0.002 0.002 0.002
-#> 7  widedata    Experiment_1 2026-10-14  900 0.002 0.002 0.002 0.002
-#> 8  widedata    Experiment_1 2026-10-14 1800 0.002 0.002 0.002 0.002
-#> 9  widedata    Experiment_1 2026-10-14 2700 0.002 0.002 0.002 0.002
-#> 10 widedata    Experiment_1 2026-10-14 3600 0.002 0.002 0.002 0.003
-#> 11 widedata    Experiment_1 2026-10-14 4500 0.002 0.003 0.002 0.003
+#> 6  widedata    Experiment_1 2026-10-16    0 0.002 0.002 0.002 0.002
+#> 7  widedata    Experiment_1 2026-10-16  900 0.002 0.002 0.002 0.002
+#> 8  widedata    Experiment_1 2026-10-16 1800 0.002 0.002 0.002 0.002
+#> 9  widedata    Experiment_1 2026-10-16 2700 0.002 0.002 0.002 0.002
+#> 10 widedata    Experiment_1 2026-10-16 3600 0.002 0.002 0.002 0.003
+#> 11 widedata    Experiment_1 2026-10-16 4500 0.002 0.003 0.002 0.003
 ```
 
 You can also specify the location of metadata with Excel-style

@@ -30,7 +30,7 @@ other packages we’ll need.
 
 library(gcplyr)
 #> ## 
-#> ## gcplyr (Version 1.13.0, Build Date: 2026-10-14)
+#> ## gcplyr (Version 1.13.1, Build Date: 2026-10-16)
 #> ## See http://github.com/mikeblazanin/gcplyr for additional documentation
 #> ## Please cite software as:
 #> ##   Blazanin, Michael. gcplyr: an R package for microbial growth
@@ -149,7 +149,7 @@ head(data_sum)
 #>   <fct> <chr>           <chr>       <dbl>      <dbl>    <dbl> <dbl>
 #> 1 A1    Strain 1        No Phage     2.11      1.00      1.18  15.9
 #> 2 A2    Strain 2        No Phage     1.74      1.31      1.21  19.3
-#> 3 A3    Strain 3        No Phage     2.14      0.915     1.15  15.1
+#> 3 A3    Strain 3        No Phage     2.13      0.915     1.15  15.1
 #> 4 A4    Strain 4        No Phage     1.68      1.43      1.21  20.1
 #> 5 A5    Strain 5        No Phage     1.67      1.47      1.21  20.3
 #> 6 A6    Strain 6        No Phage     2.41      0.789     1.05  12.8

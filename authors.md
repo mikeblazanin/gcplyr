@@ -22,5 +22,5 @@ https://doi.org/10.1186/s12859-024-05817-3
       journal = {BMC Bioinformatics},
       volume = {25},
       number = {232},
-      note = {version 1.13.0},
+      note = {version 1.13.1},
     }

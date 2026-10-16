@@ -67,9 +67,9 @@ Broadly speaking, there are two main approaches to analyzing growth curves data:
 
 At this point, since the data is now well-organized, advanced users may also decide they want to write their own custom analyses (in lieu of, or alongside, `gcplyr`-based and/or fitting-based analyses).
 
-So, how do we directly quantify attributes of growth curves? Generally, we find features of the density data and its derivatives. Different projects may desire different analyses, so this article and the [Analyzing Data](gc06_analyze.html) and [Dealing with Noise](gc07_noise.html) articles are written to highlight common analyses, rather than prescribing what everyone should do.
+So, how do we directly quantify attributes of growth curves? Generally, we find features of the density data and its derivatives. Different projects may desire different analyses, so this article and the Analyzing Data [`vignette("gc06_analyze")`] and Dealing with Noise [`vignette("gc07_noise")`] articles are written to highlight common analyses, rather than prescribing what everyone should do.
 
-A number of common metrics (listed below) can't be quantified from the density data alone, but instead are calculated involving a derivative of the density data. If you intend to calculate any of those metrics, or just want to calculate or plot the derivatives, continue reading. Otherwise, feel free to skip right to the [Analyzing Data](gc06_analyze.html) article.
+A number of common metrics (listed below) can't be quantified from the density data alone, but instead are calculated involving a derivative of the density data. If you intend to calculate any of those metrics, or just want to calculate or plot the derivatives, continue reading. Otherwise, feel free to skip right to the Analyzing Data [`vignette("gc06_analyze")`] article.
 
 **Metrics requiring a derivative:**
 

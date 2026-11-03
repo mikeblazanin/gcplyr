@@ -17,10 +17,11 @@ dat$package <- relevel(factor(dat$package), ref = "gcplyr")
 dat <- mutate(group_by(dat, package),
               sm_count2 = smooth_data(x = as.numeric(date), y = count,
                                      sm_method = "loess",
-                                     span = 28/length(unique(dat$date))),
+                                     degree = 1,
+                                     span = 150/length(unique(dat$date))),
               sm_count = smooth_data(x = as.numeric(date), y = count,
                                      sm_method = "moving-average",
-                                     window_width_n = 15))
+                                     window_width_n = 61))
 
 print(summarize(group_by(dat, package), downloads = mean(count)))
 
@@ -36,10 +37,10 @@ ggplot(data = plotdat, aes(x = date)) +
   # geom_point(data = filter(plotdat, package != "gcplyr"), 
   #            aes(y = count, color = package), alpha = 0.5) +
   geom_line(data = filter(plotdat, package != "gcplyr"), 
-            aes(y = sm_count, color = package), alpha = 0.8) +
+            aes(y = sm_count2, color = package), alpha = 0.8) +
   scale_color_manual(values = colors[c(1,2,3,7)]) +
-  geom_point(data = filter(plotdat, package == "gcplyr"),
-             aes(y = count), alpha = 0.5) +
+  # geom_point(data = filter(plotdat, package == "gcplyr"),
+  #            aes(y = count), alpha = 0.25, size = 0.4) +
   geom_line(data = filter(plotdat, package == "gcplyr"), 
-            aes(y = sm_count), lwd = 1.25, alpha = 0.5) +
+            aes(y = sm_count2), lwd = 1.25, alpha = 0.5) +
   theme_bw()
